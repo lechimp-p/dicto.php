@@ -1,0 +1,22 @@
+{
+    "name": "lechimp-p/php-dicto",
+    "version": "0.7.0",
+    "description": "An implementation of the dicto-tool (scg.unibe.ch/dicto) in and for PHP.",
+    "keywords": ["form", "formlet"],
+    "type": "script",
+    "license": "MIT",
+    "homepage": "https://github.com/lechimp-p/php-dicto",
+    "authors": [
+        {
+            "name": "Richard Klees",
+            "email": "richard.klees@rwth-aachen.de"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/lechimp-p/php-dicto/internal/issues",
+        "source": "https://github.com/lechimp-p/php-dicto"
+    },
+    "autoload" : {
+        "psr-4" : { "Lechimp\\Dicto\\" : "src" }
+    }
+}

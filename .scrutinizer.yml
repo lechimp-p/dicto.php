@@ -1,0 +1,15 @@
+before_commands:
+    - composer install
+checks:
+    php: true
+filter:
+    excluded_paths:
+        - 'tests/*'
+build:
+    tests:
+        override:
+            -
+                command: 'phpunit --bootstrap vendor/autoload.php --coverage-clover=coverage-file tests'
+                coverage:
+                    file: 'coverage-file'
+                    format: 'php-clover'
