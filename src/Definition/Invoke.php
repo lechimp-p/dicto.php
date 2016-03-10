@@ -30,5 +30,14 @@ class Invoke extends Rule {
     public function invoke(_Function $fun) {
         return Invoke($this, $fun);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function explain($text) {
+        $r = new Invoke($this->mode(), $this->left, $this->right);
+        $r->setExplanation($text);
+        return $r;
+    }
 }
 

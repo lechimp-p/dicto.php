@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class Rule {
+abstract class Rule extends Definition {
     const MODE_CANNOT   = "CANNOT";
     const MODE_MUST     = "MUST";
     const MODE_ONLY_CAN = "ONLY_CAN";
@@ -29,6 +29,13 @@ class Rule {
     public function __construct($mode) {
         assert('in_array($mode, self::$modes)');
         $this->mode = $mode;
+    }
+
+    /**
+     * @return string
+     */
+    public function mode() {
+        return $this->mode;
     }
 }
 

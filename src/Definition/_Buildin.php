@@ -11,5 +11,13 @@
 namespace Lechimp\Dicto\Definition;
 
 class _Buildin extends _Variable {
+    /**
+     * @inheritdoc
+     */
+    public function explain($text) {
+        $v = new _Buildin();
+        $v->setExplanation($text);
+        return $v;
+    }
 }
 

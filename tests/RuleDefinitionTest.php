@@ -83,44 +83,21 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         catch (\InvalidArgumentException $_) {};
     }
 
+
     /**
-     * @dataProvider base_variable_2tuple_provider
+     * @dataProvider all_base_variables_provider
      */
-    public function test_cannot_invoke($l, $r) {
-        $rule = $l->cannot()->invoke($r);
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rule", $rule);
+    public function test_explain_variables($var) {
+        $var2 = $var->explain("EXPLANATION");
+        $this->assertEquals(get_class($var), get_class($var2));
     }
 
     /**
-     * @dataProvider base_variable_2tuple_provider
+     * @dataProvider some_rules_provider
      */
-    public function test_cannot_depend_on($l, $r) {
-        $rule = $l->cannot()->depend_on($r);
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rule", $rule);
-    }
-
-    /**
-     * @dataProvider base_variable_2tuple_provider
-     */
-    public function test_must_depend_on($l, $r) {
-        $rule = $l->must()->depend_on($r);
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rule", $rule);
-    }
-
-    /**
-     * @dataProvider base_variable_2tuple_provider
-     */
-    public function test_only_can($l, $r) {
-        $rule = Dicto::only($l)->can()->depend_on($r);
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rule", $rule);
-    }
-
-    /**
-     * @dataProvider base_variable_2tuple_provider
-     */
-    public function test_cannot_contain_text($l, $r) {
-        $rule = $l->cannot()->contain_text("Foo");
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rule", $rule);
+    public function test_explain_rules($rule) {
+        $rule2 = $rule->explain("EXPLANATION");
+        $this->assertEquals(get_class($rule), get_class($rule2));
     }
 
     public function same_base_variable_2tuple_provider() {
@@ -172,5 +149,19 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
             , array(Dicto::_every()->_file())
             , array(Dicto::_every()->_buildin())
             );
+    }
+
+    public function some_rules_provider() {
+        $vars = $this->base_variable_2tuple_provider();
+        $ret = array();
+        foreach ($vars as $tup) {
+            list($l, $r) = $tup;
+            $ret[] = array($l->cannot()->invoke($r));
+            $ret[] = array($l->cannot()->depend_on($r));
+            $ret[] = array($l->must()->depend_on($r));
+            $ret[] = array(Dicto::only($l)->can()->depend_on($r));
+            $ret[] = array($l->cannot()->contain_text("Foo"));
+        }
+        return $ret;
     }
 }

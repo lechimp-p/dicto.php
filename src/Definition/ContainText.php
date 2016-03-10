@@ -16,14 +16,29 @@ class ContainText extends Rule {
      */
     private $var;
 
-    public function __construct($mode, _Variable $var, $text) {
+    /**
+     * @var string
+     */
+    private $regexp;
+
+    public function __construct($mode, _Variable $var, $regexp) {
         parent::__construct($mode);
-        assert('is_string($text)');
+        preg_match("%$regexp%", "");
         $this->var = $var;
+        $this->regexp = $regexp;
     }
 
     public function invoke(_Function $fun) {
         return Invoke($this, $fun);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function explain($text) {
+        $r = new ContainText($this->mode(), $this->var, $this->regexp);
+        $r->setExplanation($text);
+        return $r;
     }
 }
 

@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class _Variable {
+abstract class _Variable extends Definition {
     /**
      * @param   _Variable $other
      * @throws  AssertionException when not ($other instanceof static::class)

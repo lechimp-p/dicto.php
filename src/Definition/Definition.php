@@ -10,14 +10,23 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class _Function extends _Variable {
+/**
+ * Base class for all definitions. 
+ */
+abstract class Definition {
     /**
-     * @inheritdoc
+     * @var string|null
      */
-    public function explain($text) {
-        $v = new _Function();
-        $v->setExplanation($text);
-        return $v;
+    private $explanation = null;
+
+    /**
+     * @param   string
+     */
+    abstract public function explain($explanation);
+
+    protected function setExplanation($explanation) {
+        assert('is_string($explanation)');
+        $this->explanation = $explanation;
     }
 }
 

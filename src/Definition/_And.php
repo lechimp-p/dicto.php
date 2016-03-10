@@ -32,4 +32,13 @@ class _And extends _Variable {
         $this->left = $left;
         $this->right = $right;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function explain($text) {
+        $v = new _And($this->left, $this->right);
+        $v->setExplanation($text);
+        return $v;
+    }
 }

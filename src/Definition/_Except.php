@@ -32,4 +32,13 @@ class _Except extends _Variable {
         $this->left = $left;
         $this->right = $right;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function explain($text) {
+        $v = new _Except($this->left, $this->right);
+        $v->setExplanation($text);
+        return $v;
+    }
 }
