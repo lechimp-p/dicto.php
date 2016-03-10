@@ -10,6 +10,6 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class _File extends Variable {
+class _File extends _Variable {
 }
 

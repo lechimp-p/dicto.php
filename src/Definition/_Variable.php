@@ -10,22 +10,22 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class Variable {
+class _Variable {
     /**
-     * @param   Variable $other
+     * @param   _Variable $other
      * @throws  AssertionException when not ($other instanceof static::class)
-     * @return  Variable 
+     * @return  _Variable
      */
-    public function _and(Variable $other) {
+    public function _and(_Variable $other) {
         return new _And($this, $other);
     } 
 
     /**
-     * @param   Variable $other
+     * @param   _Variable $other
      * @throws  AssertionException when not ($other instanceof static::class)
-     * @return  Variable 
+     * @return  _Variable
      */
-    public function _except(Variable $other) {
+    public function _except(_Variable $other) {
         return new _Except($this, $other);
     } 
 

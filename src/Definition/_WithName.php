@@ -20,11 +20,11 @@ class _WithName {
     private $regexp;
 
     /**
-     * @var Variable
+     * @var _Variable
      */
     private $other;
 
-    public function __construct($regexp, Variable $other) {
+    public function __construct($regexp, _Variable $other) {
         preg_match("%$regexp%", "");
         $this->regexp = $regexp;
         $this->other = $other;

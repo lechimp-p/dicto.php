@@ -10,6 +10,6 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class _Buildin extends Variable {
+class _Buildin extends _Variable {
 }
 

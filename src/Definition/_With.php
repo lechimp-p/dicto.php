@@ -15,11 +15,11 @@ namespace Lechimp\Dicto\Definition;
  */
 class _With {
     /**
-     * @var Variable
+     * @var _Variable
      */
     private $other;
 
-    public function __construct(Variable $other) {
+    public function __construct(_Variable $other) {
         $this->other = $other;
     }
 
