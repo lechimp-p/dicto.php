@@ -23,7 +23,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider variables_with_and_provider
+     * @dataProvider same_variable_2tuple_provider 
      */
     public function test_variable_and(Def\_Variable $left, Def\_Variable $right) {
         $var = $left->_and($right);
@@ -31,7 +31,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider variables_with_except_provider
+     * @dataProvider same_variable_2tuple_provider 
      */
     public function test_variable_except(Def\_Variable $left, Def\_Variable $right) {
         $var = $left->_except($right);
@@ -54,7 +54,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider variables_with_name_provider
+     * @dataProvider all_base_variables_provider 
      */
     public function test_variable_with_name(Def\_Variable $var) {
         $named = $var->_with()->_name("foo.*");
@@ -77,27 +77,21 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         catch (\InvalidArgumentException $_) {};
     }
 
-    public function variables_with_and_provider() {
-        return array
-            ( array(Dicto::_every()->_class(), Dicto::_every()->_class())
-            , array(Dicto::_every()->_function(), Dicto::_every()->_function())
-            , array(Dicto::_every()->_global(), Dicto::_every()->_global())
-            , array(Dicto::_every()->_buildin(), Dicto::_every()->_buildin())
-            , array(Dicto::_every()->_file(), Dicto::_every()->_file())
-            );
+    public function same_variable_2tuple_provider() {
+        $ls = $this->all_base_variables_provider();
+        $rs = $this->all_base_variables_provider();
+        $amount = count($ls);
+        assert($amount == count($rs));
+        $ret = array();
+        for($i = 0; $i < $amount; $i++) {
+            $l = $ls[$i];
+            $r = $rs[$i];
+            $ret[] = array($l[0], $r[0]);
+        }
+        return $ret;
     }
 
-    public function variables_with_except_provider() {
-        return array
-            ( array(Dicto::_every()->_class(), Dicto::_every()->_class())
-            , array(Dicto::_every()->_function(), Dicto::_every()->_function())
-            , array(Dicto::_every()->_global(), Dicto::_every()->_global())
-            , array(Dicto::_every()->_buildin(), Dicto::_every()->_buildin())
-            , array(Dicto::_every()->_file(), Dicto::_every()->_file())
-            );
-    }
-
-    public function variables_with_name_provider() {
+    public function all_base_variables_provider() {
         return array
             ( array(Dicto::_every()->_class())
             , array(Dicto::_every()->_function())
