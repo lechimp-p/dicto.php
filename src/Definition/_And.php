@@ -22,7 +22,13 @@ class _And extends Variable {
     private $right;
 
     public function __construct(Variable $left, Variable $right) {
-        assert('get_class($left) === get_class($right)');
+        if (get_class($left) !== get_class($right)) {
+            throw new \InvalidArgumentException(
+                get_class($left).
+                " and ".
+                get_class($right).
+                " do not have the same class.");
+        }
         $this->left = $left;
         $this->right = $right;
     }

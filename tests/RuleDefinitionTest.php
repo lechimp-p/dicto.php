@@ -62,9 +62,19 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_and_only_works_on_same_type() {
+        try {
+            Dicto::_every()->_class()->_and(Dicto::_every()->_function());
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\InvalidArgumentException $_) {};
     }
 
     public function test_except_only_works_on_same_type() {
+        try {
+            Dicto::_every()->_class()->_except(Dicto::_every()->_function());
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\InvalidArgumentException $_) {};
     }
 
     public function variables_with_and_provider() {
