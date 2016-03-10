@@ -7,4 +7,4 @@ php:
     - hhvm
     - nightly
 install: composer install
-script: phpunit -v --bootstrap vendor/autoload.php tests
+script: run_tests.sh
