@@ -23,7 +23,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider same_variable_2tuple_provider 
+     * @dataProvider same_base_variable_2tuple_provider 
      */
     public function test_variable_and(Def\_Variable $left, Def\_Variable $right) {
         $var = $left->_and($right);
@@ -31,7 +31,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider same_variable_2tuple_provider 
+     * @dataProvider same_base_variable_2tuple_provider 
      */
     public function test_variable_except(Def\_Variable $left, Def\_Variable $right) {
         $var = $left->_except($right);
@@ -77,7 +77,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         catch (\InvalidArgumentException $_) {};
     }
 
-    public function same_variable_2tuple_provider() {
+    public function same_base_variable_2tuple_provider() {
         $ls = $this->all_base_variables_provider();
         $rs = $this->all_base_variables_provider();
         $amount = count($ls);
