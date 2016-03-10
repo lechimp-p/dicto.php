@@ -8,15 +8,23 @@
  * a copy of the along with the code.
  */
 
-namespace Lechimp\Dicto;
+namespace Lechimp\Dicto\Definition;
 
-class Dicto {
-    public static function _every() {
-        return new Definition\_Every;
+/**
+ * Provides fluid interface to cannot.
+ */
+class Only {
+    /**
+     * @var _Variable
+     */
+    private $var;
+
+    public function __construct(_Variable $var) {
+        $this->var = $var;
     }
 
-    public static function only(Definition\_Variable $var) {
-        return new Definition\Only($var);
+    public function can() {
+        return new Can($this->var);
     }
 }
 

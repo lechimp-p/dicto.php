@@ -83,6 +83,46 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         catch (\InvalidArgumentException $_) {};
     }
 
+    /**
+     * @dataProvider base_variable_2tuple_provider
+     */
+    public function test_cannot_invoke($l, $r) {
+        $rule = $l->cannot()->invoke($r);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rule", $rule);
+    }
+
+    /**
+     * @dataProvider base_variable_2tuple_provider
+     */
+    public function test_cannot_depend_on($l, $r) {
+        $rule = $l->cannot()->depend_on($r);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rule", $rule);
+    }
+
+    /**
+     * @dataProvider base_variable_2tuple_provider
+     */
+    public function test_must_depend_on($l, $r) {
+        $rule = $l->must()->depend_on($r);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rule", $rule);
+    }
+
+    /**
+     * @dataProvider base_variable_2tuple_provider
+     */
+    public function test_only_can($l, $r) {
+        $rule = Dicto::only($l)->can()->depend_on($r);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rule", $rule);
+    }
+
+    /**
+     * @dataProvider base_variable_2tuple_provider
+     */
+    public function test_cannot_contain_text($l, $r) {
+        $rule = $l->cannot()->contain_text("Foo");
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rule", $rule);
+    }
+
     public function same_base_variable_2tuple_provider() {
         $ls = $this->all_base_variables_provider();
         $rs = $this->all_base_variables_provider();
@@ -106,6 +146,18 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
                 if (get_class($l[0]) === get_class($r[0])) {
                     continue;
                 }
+                $ret[] = array($l[0], $r[0]);
+            }
+        }
+        return $ret;
+    }
+
+    public function base_variable_2tuple_provider() {
+        $ls = $this->all_base_variables_provider();
+        $rs = $this->all_base_variables_provider();
+        $ret = array();
+        foreach ($ls as $l) {
+            foreach ($rs as $r) {
                 $ret[] = array($l[0], $r[0]);
             }
         }

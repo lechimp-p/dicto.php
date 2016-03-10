@@ -32,5 +32,13 @@ class _Variable {
     public function _with() {
         return new _With($this);
     } 
+
+    public function cannot() {
+        return new Cannot($this);
+    }
+
+    public function must() {
+        return new Must($this);
+    }
 }
 
