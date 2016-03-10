@@ -61,17 +61,23 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\_Variable", $var);
     }
 
-    public function test_and_only_works_on_same_type() {
+    /**
+     * @dataProvider different_base_variable_2tuple_provider
+     */
+    public function test_and_only_works_on_same_type($l, $r) {
         try {
-            Dicto::_every()->_class()->_and(Dicto::_every()->_function());
+            $l->_and($r);
             $this->assertFalse("This should not happen.");
         }
         catch (\InvalidArgumentException $_) {};
     }
 
-    public function test_except_only_works_on_same_type() {
+    /**
+     * @dataProvider different_base_variable_2tuple_provider 
+     */
+    public function test_except_only_works_on_same_type($l, $r) {
         try {
-            Dicto::_every()->_class()->_except(Dicto::_every()->_function());
+            $l->_except($r);
             $this->assertFalse("This should not happen.");
         }
         catch (\InvalidArgumentException $_) {};
@@ -87,6 +93,21 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
             $l = $ls[$i];
             $r = $rs[$i];
             $ret[] = array($l[0], $r[0]);
+        }
+        return $ret;
+    }
+
+    public function different_base_variable_2tuple_provider() {
+        $ls = $this->all_base_variables_provider();
+        $rs = $this->all_base_variables_provider();
+        $ret = array();
+        foreach ($ls as $l) {
+            foreach ($rs as $r) {
+                if (get_class($l[0]) === get_class($r[0])) {
+                    continue;
+                }
+                $ret[] = array($l[0], $r[0]);
+            }
         }
         return $ret;
     }
