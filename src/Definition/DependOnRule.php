@@ -10,35 +10,32 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class ContainText extends Rule {
+class DependOnRule extends Rule {
     /**
      * @var Variable
      */
-    private $var;
+    private $left;
 
     /**
-     * @var string
+     * @var Variable
      */
-    private $regexp;
+    private $right;
 
-    public function __construct($mode, Variable $var, $regexp) {
+    public function __construct($mode, Variable $left, Variable $right) {
         parent::__construct($mode);
-        if (!is_string($regexp) or @preg_match("%$regexp%", "") === false) {
-            throw new \InvalidArgumentException("Invalid regexp: '%regexp'");
-        }
-        $this->var = $var;
-        $this->regexp = $regexp;
+        $this->left = $left;
+        $this->right = $right;
     }
 
     public function invoke(FunctionVariable $fun) {
-        return Invoke($this, $fun);
+        return InvokeRule($this, $fun);
     }
 
     /**
      * @inheritdoc
      */
     public function explain($text) {
-        $r = new ContainText($this->mode(), $this->var, $this->regexp);
+        $r = new DependOnRule($this->mode(), $this->left, $this->right);
         $r->setExplanation($text);
         return $r;
     }

@@ -13,7 +13,7 @@ namespace Lechimp\Dicto\Definition;
 /**
  * Provides fluid interface to cannot.
  */
-class Must {
+class MustFluid {
     /**
      * @var Variable
      */
@@ -24,15 +24,15 @@ class Must {
     }
 
     public function invoke(Variable $var) {
-        return new Invoke(Rule::MODE_MUST, $this->var, $var);
+        return new InvokeRule(Rule::MODE_MUST, $this->var, $var);
     }
 
     public function depend_on(Variable $var) {
-        return new DependOn(Rule::MODE_MUST, $this->var, $var);
+        return new DependOnRule(Rule::MODE_MUST, $this->var, $var);
     }
 
     public function contain_text($text) {
-        return new ContainText(Rule::MODE_MUST, $this->var, $var);
+        return new ContainTextRule(Rule::MODE_MUST, $this->var, $var);
     }
 }
 

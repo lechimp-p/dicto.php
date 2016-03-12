@@ -12,11 +12,11 @@ namespace Lechimp\Dicto;
 
 class Dicto {
     public static function _every() {
-        return new Definition\_Every;
+        return new Definition\EveryFluid;
     }
 
     public static function only(Definition\Variable $var) {
-        return new Definition\Only($var);
+        return new Definition\OnlyFluid($var);
     }
 }
 

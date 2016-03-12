@@ -13,7 +13,7 @@ namespace Lechimp\Dicto\Definition;
 /**
  * Provides fluid interface to _every.
  */
-class _Every {
+class EveryFluid {
     public function _class() {
         return new ClassVariable;
     }

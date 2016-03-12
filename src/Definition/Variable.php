@@ -30,15 +30,15 @@ abstract class Variable extends Definition {
     } 
 
     public function _with() {
-        return new _With($this);
+        return new WithFluid($this);
     } 
 
     public function cannot() {
-        return new Cannot($this);
+        return new CannotFluid($this);
     }
 
     public function must() {
-        return new Must($this);
+        return new MustFluid($this);
     }
 }
 

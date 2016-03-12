@@ -13,7 +13,7 @@ namespace Lechimp\Dicto\Definition;
 /**
  * Provides fluid interface to cannot.
  */
-class Cannot {
+class CannotFluid {
     /**
      * @var Variable
      */
@@ -24,15 +24,15 @@ class Cannot {
     }
 
     public function invoke(Variable $var) {
-        return new Invoke(Rule::MODE_CANNOT, $this->var, $var);
+        return new InvokeRule(Rule::MODE_CANNOT, $this->var, $var);
     }
 
     public function depend_on(Variable $var) {
-        return new DependOn(Rule::MODE_CANNOT, $this->var, $var);
+        return new DependOnRule(Rule::MODE_CANNOT, $this->var, $var);
     }
 
     public function contain_text($text) {
-        return new ContainText(Rule::MODE_CANNOT, $this->var, $text);
+        return new ContainTextRule(Rule::MODE_CANNOT, $this->var, $text);
     }
 }
 

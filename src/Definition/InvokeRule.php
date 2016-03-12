@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class Invoke extends Rule {
+class InvokeRule extends Rule {
     /**
      * @var Variable
      */
@@ -28,14 +28,14 @@ class Invoke extends Rule {
     }
 
     public function invoke(FunctionVariable $fun) {
-        return Invoke($this, $fun);
+        return InvokeRule($this, $fun);
     }
 
     /**
      * @inheritdoc
      */
     public function explain($text) {
-        $r = new Invoke($this->mode(), $this->left, $this->right);
+        $r = new InvokeRule($this->mode(), $this->left, $this->right);
         $r->setExplanation($text);
         return $r;
     }
