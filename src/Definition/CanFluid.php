@@ -32,7 +32,7 @@ class CanFluid {
     }
 
     public function contain_text($text) {
-        return new ContainTextRule(Rule::MODE_ONLY_CAN, $this->var, $var);
+        return new ContainTextRule(Rule::MODE_ONLY_CAN, $this->var, $text);
     }
 }
 
