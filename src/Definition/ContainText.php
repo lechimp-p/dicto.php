@@ -23,7 +23,9 @@ class ContainText extends Rule {
 
     public function __construct($mode, _Variable $var, $regexp) {
         parent::__construct($mode);
-        preg_match("%$regexp%", "");
+        if (!is_string($regexp) or @preg_match("%$regexp%", "") === false) {
+            throw new \InvalidArgumentException("Invalid regexp: '%regexp'");
+        }
         $this->var = $var;
         $this->regexp = $regexp;
     }

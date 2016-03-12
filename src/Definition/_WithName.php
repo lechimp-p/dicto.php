@@ -25,9 +25,25 @@ class _WithName extends _Variable {
     private $other;
 
     public function __construct($regexp, _Variable $other) {
-        preg_match("%$regexp%", "");
+        if (!is_string($regexp) or @preg_match("%$regexp%", "") === false) {
+            throw new \InvalidArgumentException("Invalid regexp: '%regexp'");
+        }
         $this->regexp = $regexp;
         $this->other = $other;
+    }
+
+    /**
+     * @return  string
+     */
+    public function regexp() {
+        return $this->regexp;
+    }
+
+    /**
+     * @return  _Variable
+     */
+    public function variable() {
+        return $this->other;
     }
 
     /**
