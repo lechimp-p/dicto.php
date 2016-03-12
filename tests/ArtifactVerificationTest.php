@@ -87,4 +87,140 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
                 )
             );
     }
+
+    public function test_depend_on_1() {
+        $cls_dep = new ClassMock("AnotherClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun_dep = new FunctionMock("a_function");
+        $cls = new ClassMock("AClass", array($cls_dep, $bldin_dep, $fun_dep));
+
+        $classes = Dicto::_every()->_class();
+        $rule = $classes->cannot()->depend_on($classes);
+
+        $violations = $this->verifier->violations_in($rule, $cls);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($cls, $violation->artifact());
+        $this->assertSame($cls_dep, $violation->violator());
+    }
+
+    public function test_depend_on_2() {
+        $cls_dep = new ClassMock("AnotherClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun_dep = new FunctionMock("a_function");
+        $cls = new ClassMock("AClass", array($cls_dep, $bldin_dep, $fun_dep));
+
+        $classes = Dicto::_every()->_class()->_with()->_name("B.*");
+        $rule = $classes->cannot()->depend_on($classes);
+
+        $violations = $this->verifier->violations_in($rule, $cls);
+
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_depend_on_3() {
+        $cls_dep = new ClassMock("AnotherClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun_dep = new FunctionMock("a_function");
+        $cls = new ClassMock("AClass", array($cls_dep, $bldin_dep, $fun_dep));
+
+        $classes = Dicto::_every()->_class()->_with()->_name("A.*");
+        $rule = $classes->cannot()->depend_on($classes);
+
+        $violations = $this->verifier->violations_in($rule, $cls);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($cls, $violation->artifact());
+        $this->assertSame($cls_dep, $violation->violator());
+    }
+
+    public function test_depend_on_4() {
+        $cls_dep = new ClassMock("AnotherClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun_dep = new FunctionMock("a_function");
+        $cls = new ClassMock("AClass", array($cls_dep, $bldin_dep, $fun_dep));
+
+        $classes = Dicto::_every()->_class()->_with()->_name("A.*");
+        $a_function = Dicto::_every()->_function()->_with()->_name("a_.*");
+        $rule = $classes->cannot()->depend_on($a_function);
+
+        $violations = $this->verifier->violations_in($rule, $cls);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($cls, $violation->artifact());
+        $this->assertSame($fun_dep, $violation->violator());
+    }
+
+    public function test_depend_on_5() {
+        $cls_dep = new ClassMock("AnotherClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun_dep = new FunctionMock("a_function");
+        $cls = new ClassMock("AClass", array($cls_dep, $bldin_dep, $fun_dep));
+
+        $classes = Dicto::_every()->_class();
+        $a_function = Dicto::_every()->_function()->_with()->_name("a_.*");
+        $rule = $classes->must()->depend_on($a_function);
+
+        $violations = $this->verifier->violations_in($rule, $cls);
+
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_depend_on_6() {
+        $cls_dep = new ClassMock("AnotherClass");
+        $bldin_dep = new BuildinMock("@");
+        $cls = new ClassMock("AClass", array($cls_dep, $bldin_dep));
+
+        $classes = Dicto::_every()->_class();
+        $a_function = Dicto::_every()->_function()->_with()->_name("a_.*");
+        $rule = $classes->must()->depend_on($a_function);
+
+        $violations = $this->verifier->violations_in($rule, $cls);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($cls, $violation->artifact());
+        $this->assertSame($cls, $violation->violator());
+    }
+
+    public function test_depend_on_7() {
+        $cls_dep = new ClassMock("AnotherClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun_dep = new FunctionMock("a_function");
+        $cls = new ClassMock("AClass", array($cls_dep, $bldin_dep, $fun_dep));
+
+        $classes = Dicto::_every()->_class()->_with()->_name("A.*");
+        $a_function = Dicto::_every()->_function()->_with()->_name("a_.*");
+        $rule = Dicto::only($classes)->can()->depend_on($a_function);
+
+        $violations = $this->verifier->violations_in($rule, $cls);
+
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_depend_on_8() {
+        $cls_dep = new ClassMock("AnotherClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun_dep = new FunctionMock("a_function");
+        $cls = new ClassMock("AClass", array($cls_dep, $bldin_dep, $fun_dep));
+
+        $classes = Dicto::_every()->_class()->_with()->_name("B.*");
+        $a_function = Dicto::_every()->_function()->_with()->_name("a_.*");
+        $rule = Dicto::only($classes)->can()->depend_on($a_function);
+
+        $violations = $this->verifier->violations_in($rule, $cls);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($cls, $violation->artifact());
+        $this->assertSame($fun_dep, $violation->violator());
+    }
 }
