@@ -10,18 +10,18 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class _Except extends _Variable {
+class AndVariable extends Variable {
     /**
-     * @var _Variable
+     * @var Variable
      */
     private $left;
 
     /**
-     * @var _Variable
+     * @var Variable
      */
     private $right;
 
-    public function __construct(_Variable $left, _Variable $right) {
+    public function __construct(Variable $left, Variable $right) {
         if (get_class($left) !== get_class($right)) {
             throw new \InvalidArgumentException(
                 get_class($left).
@@ -37,7 +37,7 @@ class _Except extends _Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new _Except($this->left, $this->right);
+        $v = new AndVariable($this->left, $this->right);
         $v->setExplanation($text);
         return $v;
     }

@@ -15,19 +15,19 @@ namespace Lechimp\Dicto\Definition;
  */
 class Can {
     /**
-     * @var _Variable
+     * @var Variable
      */
     private $var;
 
-    public function __construct(_Variable $var) {
+    public function __construct(Variable $var) {
         $this->var = $var;
     }
 
-    public function invoke(_Variable $var) {
+    public function invoke(Variable $var) {
         return new Invoke(Rule::MODE_ONLY_CAN, $this->var, $var);
     }
 
-    public function depend_on(_Variable $var) {
+    public function depend_on(Variable $var) {
         return new DependOn(Rule::MODE_ONLY_CAN, $this->var, $var);
     }
 

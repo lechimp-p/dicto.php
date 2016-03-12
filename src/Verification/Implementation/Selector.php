@@ -17,7 +17,7 @@ class Selector implements Verification\Selector {
     /**
      * @inheritdocs
      */
-    public function matches(Definition\_Variable $def, Verification\Artifact $artifact) {
+    public function matches(Definition\Variable $def, Verification\Artifact $artifact) {
         $cls = get_class($def);
         switch ($cls) {
             case "Lechimp\\Dicto\\Definition\\ClassVariable":

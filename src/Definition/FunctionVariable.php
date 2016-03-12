@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class FunctionVariable extends _Variable {
+class FunctionVariable extends Variable {
     /**
      * @inheritdoc
      */

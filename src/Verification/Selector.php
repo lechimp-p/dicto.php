@@ -20,9 +20,9 @@ interface Selector {
     /**
      * Does the variable definition match the artifact?
      *
-     * @param   Definition\_Variable    $def
+     * @param   Definition\Variable    $def
      * @param   Artifact                $artifact
      * @return  bool
      */
-    public function matches(Definition\_Variable $def, Artifact $artifact);
+    public function matches(Definition\Variable $def, Artifact $artifact);
 }

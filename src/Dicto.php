@@ -15,7 +15,7 @@ class Dicto {
         return new Definition\_Every;
     }
 
-    public static function only(Definition\_Variable $var) {
+    public static function only(Definition\Variable $var) {
         return new Definition\Only($var);
     }
 }

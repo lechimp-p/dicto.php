@@ -13,18 +13,18 @@ namespace Lechimp\Dicto\Definition;
 /**
  * Provides fluid interface to _with.
  */
-class WithNameVariable extends _Variable {
+class WithNameVariable extends Variable {
     /**
      * @var string
      */
     private $regexp;
 
     /**
-     * @var _Variable
+     * @var Variable
      */
     private $other;
 
-    public function __construct($regexp, _Variable $other) {
+    public function __construct($regexp, Variable $other) {
         if (!is_string($regexp) or @preg_match("%$regexp%", "") === false) {
             throw new \InvalidArgumentException("Invalid regexp: '%regexp'");
         }
@@ -40,7 +40,7 @@ class WithNameVariable extends _Variable {
     }
 
     /**
-     * @return  _Variable
+     * @return  Variable
      */
     public function variable() {
         return $this->other;

@@ -12,16 +12,16 @@ namespace Lechimp\Dicto\Definition;
 
 class DependOn extends Rule {
     /**
-     * @var _Variable
+     * @var Variable
      */
     private $left;
 
     /**
-     * @var _Variable
+     * @var Variable
      */
     private $right;
 
-    public function __construct($mode, _Variable $left, _Variable $right) {
+    public function __construct($mode, Variable $left, Variable $right) {
         parent::__construct($mode);
         $this->left = $left;
         $this->right = $right;

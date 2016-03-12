@@ -14,51 +14,51 @@ use Lechimp\Dicto\Definition as Def;
 class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     public function test_variable_class() {
         $var = Dicto::_every()->_class();
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\_Variable", $var);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variable", $var);
     } 
 
     public function test_variable_function() {
         $var = Dicto::_every()->_function();
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\_Variable", $var);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\Variable", $var);
     }
 
     /**
      * @dataProvider same_base_variable_2tuple_provider 
      */
-    public function test_variable_and(Def\_Variable $left, Def\_Variable $right) {
+    public function test_variable_and(Def\Variable $left, Def\Variable $right) {
         $var = $left->_and($right);
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\_Variable", $var);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variable", $var);
     }
 
     /**
      * @dataProvider same_base_variable_2tuple_provider 
      */
-    public function test_variable_except(Def\_Variable $left, Def\_Variable $right) {
+    public function test_variable_except(Def\Variable $left, Def\Variable $right) {
         $var = $left->_except($right);
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\_Variable", $var);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variable", $var);
     }
 
     public function test_variable_buildin() {
         $var = Dicto::_every()->_buildin();
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\_Variable", $var);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variable", $var);
     }
 
     public function test_variable_global() {
         $var = Dicto::_every()->_global();
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\_Variable", $var);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variable", $var);
     }
 
     public function test_variable_file() {
         $var = Dicto::_every()->_file();
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\_Variable", $var);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variable", $var);
     }
 
     /**
      * @dataProvider all_base_variables_provider 
      */
-    public function test_variable_with_name(Def\_Variable $var) {
+    public function test_variable_with_name(Def\Variable $var) {
         $named = $var->_with()->_name("foo.*");
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\_Variable", $var);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variable", $var);
     }
 
     /**

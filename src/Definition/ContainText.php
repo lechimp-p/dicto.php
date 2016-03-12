@@ -12,7 +12,7 @@ namespace Lechimp\Dicto\Definition;
 
 class ContainText extends Rule {
     /**
-     * @var _Variable
+     * @var Variable
      */
     private $var;
 
@@ -21,7 +21,7 @@ class ContainText extends Rule {
      */
     private $regexp;
 
-    public function __construct($mode, _Variable $var, $regexp) {
+    public function __construct($mode, Variable $var, $regexp) {
         parent::__construct($mode);
         if (!is_string($regexp) or @preg_match("%$regexp%", "") === false) {
             throw new \InvalidArgumentException("Invalid regexp: '%regexp'");
