@@ -100,6 +100,23 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(get_class($rule), get_class($rule2));
     }
 
+    public function test_with_name_flawed_regexp() {
+        try {
+            $named = Dicto::_every()->_class()->_with()->_name("(foo.*");
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\InvalidArgumentException $_) {}
+    }
+
+    public function test_contains_text_flawed_regexp() {
+        try {
+            $l  = Dicto::_every()->_file();
+            $l->cannot()->contain_text("(foo.*");
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\InvalidArgumentException $_) {}
+    }
+
     public function same_base_variable_2tuple_provider() {
         $ls = $this->all_base_variables_provider();
         $rs = $this->all_base_variables_provider();
