@@ -33,6 +33,12 @@ class Selector implements Verification\Selector {
             case "Lechimp\\Dicto\\Definition\\WithNameVariable":
                 return $this->matches($def->variable(), $artifact)
                    and $this->matches_regexp($def->regexp(), $artifact->name());
+            case "Lechimp\\Dicto\\Definition\\AndVariable":
+                return $this->matches($def->left(), $artifact)
+                    or $this->matches($def->right(), $artifact);
+            case "Lechimp\\Dicto\\Definition\\ExceptVariable":
+                return $this->matches($def->left(), $artifact)
+                   and !$this->matches($def->right(), $artifact);
             default:
                 throw new \Exception("Unknown variable type $cls");
         }
