@@ -58,7 +58,7 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->class_one = new ClassMock("ClassOne");
         $this->class_two = new ClassMock("ClassTwo");
-        $this->class_three = new ClassMock("ClassThree");
+        $this->class_three = new ClassMock("ClsThree");
         $this->function_one = new FunctionMock("function_one");
         $this->function_two = new FunctionMock("function_two");
         $this->global_one = new GlobalMock("global_one");
@@ -242,7 +242,7 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->selector->matches($var, $this->file_one));
         $this->assertFalse($this->selector->matches($var, $this->buildin_one));
 
-        $this->assertFalse($this->selector->matches($var, $this->class_two));
+        $this->assertTrue($this->selector->matches($var, $this->class_two));
         $this->assertFalse($this->selector->matches($var, $this->function_two));
         $this->assertFalse($this->selector->matches($var, $this->global_two));
         $this->assertFalse($this->selector->matches($var, $this->file_two));
@@ -268,6 +268,6 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->selector->matches($var, $this->file_two));
         $this->assertFalse($this->selector->matches($var, $this->buildin_two));
 
-        $this->assertTrue($this->selector->matches($var, $this->class_three));
+        $this->assertFalse($this->selector->matches($var, $this->class_three));
     }
 }
