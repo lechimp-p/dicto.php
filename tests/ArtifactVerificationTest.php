@@ -30,11 +30,11 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
 
     public function has_subject_test_provider() {
         $every_class = Dicto::_every()->_class();
-        $every_function = Dicto::_every()->_function();
+        $any_function = Dicto::_every()->_function();
         $named_class = Dicto::_every()->_class()->_with()->_name("Foo.*");
         return array
             (array
-                ( $every_class->cannot()->invoke($every_function)
+                ( $every_class->cannot()->invoke($any_function)
                 , new ClassMock("AClass")
                 , true
                 )
@@ -44,44 +44,44 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
                 , true
                 )
             , array
-                ( $every_class->must()->invoke($every_function)
+                ( $every_class->must()->invoke($any_function)
                 , new ClassMock("AClass")
                 , true
                 )
             , array
-                ( $named_class->cannot()->invoke($every_function)
+                ( $named_class->cannot()->invoke($any_function)
                 , new ClassMock("AClass")
                 , false
                 )
             , array
-                ( $every_class->cannot()->invoke($every_function)
+                ( $every_class->cannot()->invoke($any_function)
                 , new FunctionMock("a_function")
                 , false
                 )
             , array
-                ( $every_class->cannot()->invoke($every_function)
+                ( $every_class->cannot()->invoke($any_function)
                 , new GlobalMock("a_global")
                 , false
                 )
             , array
-                ( $every_class->cannot()->invoke($every_function)
+                ( $every_class->cannot()->invoke($any_function)
                 , new BuildinMock("a_buildin")
                 , false
                 )
             , array
-                ( $every_class->cannot()->invoke($every_function)
+                ( $every_class->cannot()->invoke($any_function)
                 , new FileMock("a_file")
                 , false
                 )
             , array
                 // With only, the subjects really are all classes that are
                 // not contained in the variable.
-                ( Dicto::only($named_class)->can()->invoke($every_function)
+                ( Dicto::only($named_class)->can()->invoke($any_function)
                 , new ClassMock("AClass")
                 , true
                 )
             , array
-                ( Dicto::only($named_class)->can()->invoke($every_function)
+                ( Dicto::only($named_class)->can()->invoke($any_function)
                 , new ClassMock("FooClass")
                 , false
                 )
