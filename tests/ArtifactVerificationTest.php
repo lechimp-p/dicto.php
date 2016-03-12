@@ -88,6 +88,8 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             );
     }
 
+    // DEPEND ON
+
     public function test_depend_on_1() {
         $cls_dep = new ClassMock("AnotherClass");
         $bldin_dep = new BuildinMock("@");
@@ -222,5 +224,254 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         $this->assertSame($rule, $violation->rule());
         $this->assertSame($cls, $violation->artifact());
         $this->assertSame($fun_dep, $violation->violator());
+    }
+
+    public function test_depend_on_9() {
+        $cls_dep = new ClassMock("AClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun_dep = new FunctionMock("b_function");
+        $fun = new FunctionMock("a_function", array($cls_dep, $bldin_dep, $fun_dep), array($fun_dep));
+
+        $functions = Dicto::_every()->_function();
+        $silencer = Dicto::_every()->_buildin()->_with()->_name("@");
+        $rule = $functions->cannot()->depend_on($silencer);
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($fun, $violation->artifact());
+        $this->assertSame($bldin_dep, $violation->violator());
+    }
+
+    // Invoke
+
+    public function test_invoke_1() {
+        $cls_dep = new ClassMock("AClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun1_dep = new FunctionMock("b_function");
+        $fun2_dep = new FunctionMock("c_function");
+        $fun = new FunctionMock("a_function", array($cls_dep, $bldin_dep, $fun1_dep), array($fun2_dep));
+
+        $functions = Dicto::_every()->_function();
+        $c_function = Dicto::_every()->_function()->_with()->_name("c_function");
+        $rule = $functions->cannot()->invoke($c_function);
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($fun, $violation->artifact());
+        $this->assertSame($fun2_dep, $violation->violator());
+    }
+
+    public function test_invoke_2() {
+        $cls_dep = new ClassMock("AClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun1_dep = new FunctionMock("b_function");
+        $fun2_dep = new FunctionMock("c_function");
+        $fun = new FunctionMock("a_function", array($cls_dep, $bldin_dep, $fun1_dep), array($fun2_dep));
+
+        $functions = Dicto::_every()->_function();
+        $b_function = Dicto::_every()->_function()->_with()->_name("b_function");
+        $rule = $functions->cannot()->invoke($b_function);
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_invoke_3() {
+        $cls_dep = new ClassMock("AClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun1_dep = new FunctionMock("b_function");
+        $fun2_dep = new FunctionMock("c_function");
+        $fun = new FunctionMock("a_function", array($cls_dep, $bldin_dep, $fun1_dep), array($fun2_dep));
+
+        $functions = Dicto::_every()->_function();
+        $c_function = Dicto::_every()->_function()->_with()->_name("c_function");
+        $rule = $functions->must()->invoke($c_function);
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_invoke_4() {
+        $cls_dep = new ClassMock("AClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun1_dep = new FunctionMock("b_function");
+        $fun2_dep = new FunctionMock("c_function");
+        $fun = new FunctionMock("a_function", array($cls_dep, $bldin_dep, $fun1_dep), array($fun2_dep));
+
+        $functions = Dicto::_every()->_function();
+        $b_function = Dicto::_every()->_function()->_with()->_name("b_function");
+        $rule = $functions->must()->invoke($b_function);
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(0, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($fun, $violation->artifact());
+        $this->assertSame($fun, $violation->violator());
+    }
+
+    public function test_invoke_5() {
+        $cls_dep = new ClassMock("AClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun1_dep = new FunctionMock("b_function");
+        $fun2_dep = new FunctionMock("c_function");
+        $fun = new FunctionMock("a_function", array($cls_dep, $bldin_dep, $fun1_dep), array($fun2_dep));
+
+        $a_function = Dicto::_every()->_function()->_with()->_name("a_function");
+        $c_function = Dicto::_every()->_function()->_with()->_name("c_function");
+        $rule = Dicto::only($a_function)->can()->invoke($c_function);
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_invoke_6() {
+        $cls_dep = new ClassMock("AClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun1_dep = new FunctionMock("b_function");
+        $fun2_dep = new FunctionMock("c_function");
+        $fun = new FunctionMock("a_function", array($cls_dep, $bldin_dep, $fun1_dep), array($fun1_dep));
+
+        $a_function = Dicto::_every()->_function()->_with()->_name("a_function");
+        $c_function = Dicto::_every()->_function()->_with()->_name("c_function");
+        $rule = Dicto::only($a_function)->can()->invoke($c_function);
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_invoke_7() {
+        $cls_dep = new ClassMock("AClass");
+        $bldin_dep = new BuildinMock("@");
+        $fun1_dep = new FunctionMock("b_function");
+        $fun2_dep = new FunctionMock("c_function");
+        $fun = new FunctionMock("a_function", array($cls_dep, $bldin_dep, $fun1_dep), array($fun2_dep));
+
+        $c_functions = Dicto::_every()->_function()->_with()->_name("c_function");
+        $b_function = Dicto::_every()->_function()->_with()->_name("b_function");
+        $rule = Dicto::only($c_function)->can()->invoke($c_function);
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(0, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($fun, $violation->artifact());
+        $this->assertSame($fun2_dep, $violation->violator());
+    }
+
+    // CONTAINS TEXT
+
+    public function test_contains_text_1() {
+        $cls = new ClassMock("AClass", array(), array(), "foobar");
+
+        $classes = Dicto::_every()->_class();
+        $rule = $classes->cannot()->contain_text("foo");
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($cls, $violation->artifact());
+        $violator = $violation->violator();
+        $this->assertInstanceOf("Lechimp\\Verification\\SourceCodeLineArtifact", $violator);
+        $this->assertEquals(0, $violator->line());
+        $this->assertEquals("foo", $violator->content());
+    }
+
+    public function test_contains_text_2() {
+        $cls = new ClassMock("AClass", array(), array(), "foobar");
+
+        $classes = Dicto::_every()->_class();
+        $rule = $classes->cannot()->contain_text("baz");
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_contains_text_3() {
+        $cls = new ClassMock("AClass", array(), array(), "foobar");
+
+        $classes = Dicto::_every()->_class();
+        $rule = $classes->must()->contain_text("foo");
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_contains_text_4() {
+        $cls = new ClassMock("AClass", array(), array(), "foobar");
+
+        $classes = Dicto::_every()->_class();
+        $rule = $classes->must()->contain_text("baz");
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($cls, $violation->artifact());
+        $this->assertSame($cls, $violation->violator());
+    }
+
+    public function test_contains_text_5() {
+        $cls = new ClassMock("AClass", array(), array(), "foobar");
+
+        $a_classes = Dicto::_every()->_class()->_with()->_name("AClass");
+        $rule = Dicto::only($classes)->can()->contain_text("foo");
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_contains_text_6() {
+        $cls = new ClassMock("AClass", array(), array(), "foobar");
+
+        $b_classes = Dicto::_every()->_class()->_with()->_name("BClass");
+        $rule = Dicto::only($classes)->can()->contain_text("foo");
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($cls, $violation->artifact());
+        $violator = $violation->violator();
+        $this->assertInstanceOf("Lechimp\\Verification\\SourceCodeLineArtifact", $violator);
+        $this->assertEquals(0, $violator->line());
+        $this->assertEquals("foo", $violator->content());
+    }
+
+    public function test_contains_text_7() {
+        $cls = new ClassMock("AClass", array(), array(), "bar\n\nfoo");
+
+        $classes = Dicto::_every()->_class();
+        $rule = $classes->cannot()->contain_text("foo");
+
+        $violations = $this->verifier->violations_in($rule, $fun);
+
+        $this->assertCount(1, $violations);
+        $violation = $violations[0];
+        $this->assertSame($rule, $violation->rule());
+        $this->assertSame($cls, $violation->artifact());
+        $violator = $violation->violator();
+        $this->assertInstanceOf("Lechimp\\Verification\\SourceCodeLineArtifact", $violator);
+        $this->assertEquals(2, $violator->line());
+        $this->assertEquals("foo", $violator->content());
     }
 }
