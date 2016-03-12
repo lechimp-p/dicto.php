@@ -37,14 +37,14 @@ class AndVariable extends Variable {
      * @return  Variable
      */
     public function left() {
-        return $left;
+        return $this->left;
     }
 
     /**
      * @return  Variable
      */
     public function right() {
-        return $right;
+        return $this->right;
     }
 
     /**
