@@ -11,45 +11,21 @@
 use Lechimp\Dicto\Dicto as Dicto;
 use Lechimp\Dicto\Verification as Ver;
 
-class ClassMock implements Ver\ClassArtifact {
-    public function __construct($name) {
+class ArtifactMock {
+    public function __construct($name, $deps = array()) {
         $this->name = $name;
+        $this->deps = $deps;
     }
 
     public function name() { return $this->name; }
+    public function dependencies() { return $this->deps; }
 }
 
-class FunctionMock implements Ver\FunctionArtifact {
-    public function __construct($name) {
-        $this->name = $name;
-    }
-
-    public function name() { return $this->name; }
-}
-
-class GlobalMock implements Ver\GlobalArtifact {
-    public function __construct($name) {
-        $this->name = $name;
-    }
-
-    public function name() { return $this->name; }
-}
-
-class FileMock implements Ver\FileArtifact {
-    public function __construct($name) {
-        $this->name = $name;
-    }
-
-    public function name() { return $this->name; }
-}
-
-class BuildinMock implements Ver\BuildinArtifact {
-    public function __construct($name) {
-        $this->name = $name;
-    }
-
-    public function name() { return $this->name; }
-}
+class ClassMock extends ArtifactMock implements Ver\ClassArtifact {};
+class FunctionMock extends ArtifactMock implements Ver\FunctionArtifact {};
+class GlobalMock extends ArtifactMock implements Ver\GlobalArtifact {};
+class BuildinMock extends ArtifactMock implements Ver\BuildinArtifact {};
+class FileMock extends ArtifactMock implements Ver\FileArtifact {};
 
 class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
