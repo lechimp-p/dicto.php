@@ -14,16 +14,10 @@ class InvokeRule extends Rule {
     /**
      * @var Variable
      */
-    private $left;
-
-    /**
-     * @var Variable
-     */
     private $right;
 
     public function __construct($mode, Variable $left, Variable $right) {
-        parent::__construct($mode);
-        $this->left = $left;
+        parent::__construct($mode, $left);
         $this->right = $right;
     }
 
@@ -35,7 +29,7 @@ class InvokeRule extends Rule {
      * @inheritdoc
      */
     public function explain($text) {
-        $r = new InvokeRule($this->mode(), $this->left, $this->right);
+        $r = new InvokeRule($this->mode(), $this->subject(), $this->right);
         $r->setExplanation($text);
         return $r;
     }

@@ -12,21 +12,15 @@ namespace Lechimp\Dicto\Definition;
 
 class ContainTextRule extends Rule {
     /**
-     * @var Variable
-     */
-    private $var;
-
-    /**
      * @var string
      */
     private $regexp;
 
     public function __construct($mode, Variable $var, $regexp) {
-        parent::__construct($mode);
+        parent::__construct($mode, $var);
         if (!is_string($regexp) or @preg_match("%$regexp%", "") === false) {
             throw new \InvalidArgumentException("Invalid regexp: '%regexp'");
         }
-        $this->var = $var;
         $this->regexp = $regexp;
     }
 
@@ -38,7 +32,7 @@ class ContainTextRule extends Rule {
      * @inheritdoc
      */
     public function explain($text) {
-        $r = new ContainTextRule($this->mode(), $this->var, $this->regexp);
+        $r = new ContainTextRule($this->mode(), $this->subject(), $this->regexp);
         $r->setExplanation($text);
         return $r;
     }

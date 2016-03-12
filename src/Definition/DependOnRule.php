@@ -14,16 +14,10 @@ class DependOnRule extends Rule {
     /**
      * @var Variable
      */
-    private $left;
-
-    /**
-     * @var Variable
-     */
     private $right;
 
     public function __construct($mode, Variable $left, Variable $right) {
-        parent::__construct($mode);
-        $this->left = $left;
+        parent::__construct($mode, $left);
         $this->right = $right;
     }
 
@@ -35,7 +29,7 @@ class DependOnRule extends Rule {
      * @inheritdoc
      */
     public function explain($text) {
-        $r = new DependOnRule($this->mode(), $this->left, $this->right);
+        $r = new DependOnRule($this->mode(), $this->subject(), $this->right);
         $r->setExplanation($text);
         return $r;
     }

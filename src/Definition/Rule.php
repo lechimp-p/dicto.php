@@ -26,9 +26,15 @@ abstract class Rule extends Definition {
      */
     private $mode;
 
-    public function __construct($mode) {
+    /**
+     * @var Variable
+     */
+    private $subject;
+
+    public function __construct($mode, Variable $subject) {
         assert('in_array($mode, self::$modes)');
         $this->mode = $mode;
+        $this->subject = $subject;
     }
 
     /**
@@ -36,6 +42,13 @@ abstract class Rule extends Definition {
      */
     public function mode() {
         return $this->mode;
+    }
+
+    /**
+     * @return Variable
+     */
+    public function subject() {
+        return $this->subject;
     }
 }
 
