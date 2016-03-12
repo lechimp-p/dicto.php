@@ -207,7 +207,7 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($this->selector->matches($var, $this->class_two));
         $this->assertFalse($this->selector->matches($var, $this->function_two));
         $this->assertFalse($this->selector->matches($var, $this->global_two));
-        $this->assertTrue($this->selector->matches($var, $this->file_two));
+        $this->assertFalse($this->selector->matches($var, $this->file_two));
         $this->assertFalse($this->selector->matches($var, $this->buildin_two));
     }
 
