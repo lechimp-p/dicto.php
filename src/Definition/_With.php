@@ -24,6 +24,6 @@ class _With {
     }
 
     public function _name($regexp) {
-        return new _WithName($regexp, $this->other); 
+        return new WithNameVariable($regexp, $this->other); 
     }
 }

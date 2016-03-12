@@ -27,7 +27,7 @@ class DependOn extends Rule {
         $this->right = $right;
     }
 
-    public function invoke(_Function $fun) {
+    public function invoke(FunctionVariable $fun) {
         return Invoke($this, $fun);
     }
 

@@ -10,12 +10,12 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class _File extends _Variable {
+class BuildinVariable extends _Variable {
     /**
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new _File();
+        $v = new BuildinVariable();
         $v->setExplanation($text);
         return $v;
     }

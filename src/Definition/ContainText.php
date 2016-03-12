@@ -30,7 +30,7 @@ class ContainText extends Rule {
         $this->regexp = $regexp;
     }
 
-    public function invoke(_Function $fun) {
+    public function invoke(FunctionVariable $fun) {
         return Invoke($this, $fun);
     }
 

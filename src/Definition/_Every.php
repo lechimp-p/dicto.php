@@ -15,18 +15,18 @@ namespace Lechimp\Dicto\Definition;
  */
 class _Every {
     public function _class() {
-        return new _Class;
+        return new ClassVariable;
     }
     public function _function() {
-        return new _Function;
+        return new FunctionVariable;
     }
     public function _global() {
-        return new _Global;
+        return new GlobalVariable;
     }
     public function _buildin() {
-        return new _Buildin;
+        return new BuildinVariable;
     }
     public function _file() {
-        return new _File;
+        return new FileVariable;
     }
 }

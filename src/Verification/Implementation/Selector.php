@@ -20,17 +20,17 @@ class Selector implements Verification\Selector {
     public function matches(Definition\_Variable $def, Verification\Artifact $artifact) {
         $cls = get_class($def);
         switch ($cls) {
-            case "Lechimp\\Dicto\\Definition\\_Class":
+            case "Lechimp\\Dicto\\Definition\\ClassVariable":
                 return $artifact instanceof Verification\ClassArtifact;
-            case "Lechimp\\Dicto\\Definition\\_Function":
+            case "Lechimp\\Dicto\\Definition\\FunctionVariable":
                 return $artifact instanceof Verification\FunctionArtifact;
-            case "Lechimp\\Dicto\\Definition\\_Global":
+            case "Lechimp\\Dicto\\Definition\\GlobalVariable":
                 return $artifact instanceof Verification\GlobalArtifact;
-            case "Lechimp\\Dicto\\Definition\\_Buildin":
+            case "Lechimp\\Dicto\\Definition\\BuildinVariable":
                 return $artifact instanceof Verification\BuildinArtifact;
-            case "Lechimp\\Dicto\\Definition\\_File":
+            case "Lechimp\\Dicto\\Definition\\FileVariable":
                 return $artifact instanceof Verification\FileArtifact;
-            case "Lechimp\\Dicto\\Definition\\_WithName":
+            case "Lechimp\\Dicto\\Definition\\WithNameVariable":
                 return $this->matches($def->variable(), $artifact)
                    and $this->matches_regexp($def->regexp(), $artifact->name());
             default:
