@@ -32,7 +32,7 @@ class MustFluid {
     }
 
     public function contain_text($text) {
-        return new ContainTextRule(Rule::MODE_MUST, $this->var, $var);
+        return new ContainTextRule(Rule::MODE_MUST, $this->var, $text);
     }
 }
 
