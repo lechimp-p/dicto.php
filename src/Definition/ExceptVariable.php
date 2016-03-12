@@ -34,6 +34,20 @@ class ExceptVariable extends Variable {
     }
 
     /**
+     * @return  Variable
+     */
+    public function left() {
+        return $left;
+    }
+
+    /**
+     * @return  Variable
+     */
+    public function right() {
+        return $right;
+    }
+
+    /**
      * @inheritdoc
      */
     public function explain($text) {
