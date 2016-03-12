@@ -51,9 +51,6 @@ class BuildinMock implements Ver\BuildinArtifact {
     public function name() { return $this->name; }
 }
 
-class BuildinFunctionMock extends BuildinMock implements Ver\FunctionArtifact {
-}
-
 class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->class_one = new ClassMock("ClassOne");
