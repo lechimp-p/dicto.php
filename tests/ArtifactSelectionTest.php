@@ -55,7 +55,7 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->class_one = new ClassMock("ClassOne");
         $this->function_one = new FunctionMock("function_one");
-        $this->global_one = new FunctionMock("global_one");
+        $this->global_one = new GlobalMock("global_one");
         $this->file_one = new FileMock("file_one");
         $this->buildin_one = new BuildinMock("buildin_one");
 
