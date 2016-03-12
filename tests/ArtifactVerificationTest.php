@@ -36,34 +36,54 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             (array
                 ( $every_class->cannot()->invoke($every_function)
                 , new ClassMock("AClass")
-                , true 
+                , true
                 )
             , array
                 ( $every_class->cannot()->depend_on($named_class)
                 , new ClassMock("AClass")
-                , true 
+                , true
                 )
             , array
                 ( $every_class->must()->invoke($every_function)
                 , new ClassMock("AClass")
-                , true 
+                , true
                 )
             , array
                 ( $named_class->cannot()->invoke($every_function)
                 , new ClassMock("AClass")
-                , false 
+                , false
+                )
+            , array
+                ( $every_class->cannot()->invoke($every_function)
+                , new FunctionMock("a_function")
+                , false
+                )
+            , array
+                ( $every_class->cannot()->invoke($every_function)
+                , new GlobalMock("a_global")
+                , false
+                )
+            , array
+                ( $every_class->cannot()->invoke($every_function)
+                , new BuildinMock("a_buildin")
+                , false
+                )
+            , array
+                ( $every_class->cannot()->invoke($every_function)
+                , new FileMock("a_file")
+                , false
                 )
             , array
                 // With only, the subjects really are all classes that are
                 // not contained in the variable.
                 ( Dicto::only($named_class)->can()->invoke($every_function)
                 , new ClassMock("AClass")
-                , true 
+                , true
                 )
             , array
                 ( Dicto::only($named_class)->can()->invoke($every_function)
                 , new ClassMock("FooClass")
-                , false 
+                , false
                 )
             );
     }
