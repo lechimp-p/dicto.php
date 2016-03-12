@@ -1,6 +1,6 @@
 {
     "name": "lechimp-p/php-dicto",
-    "version": "0.7.0",
+    "version": "0.1.0",
     "description": "An implementation of the dicto-tool (scg.unibe.ch/dicto) in and for PHP.",
     "keywords": ["form", "formlet"],
     "type": "script",
