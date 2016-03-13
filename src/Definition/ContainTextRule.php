@@ -29,6 +29,13 @@ class ContainTextRule extends Rule {
     }
 
     /**
+     * @return  string
+     */
+    public function regexp() {
+        return $this->regexp;
+    }
+
+    /**
      * @inheritdoc
      */
     public function explain($text) {
