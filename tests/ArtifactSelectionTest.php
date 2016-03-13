@@ -12,20 +12,29 @@ use Lechimp\Dicto\Dicto as Dicto;
 use Lechimp\Dicto\Verification as Ver;
 
 class ArtifactMock {
-    public function __construct($name, $deps = array()) {
+    public function __construct($name, $deps = array(), $invocations = array(), $source = "") {
         $this->name = $name;
         $this->deps = $deps;
+        $this->invocations = $invocations;
+        $this->source = $source;
     }
 
     public function name() { return $this->name; }
     public function dependencies() { return $this->deps; }
+    public function invocations() { return $this->invocations; }
+    public function source() { return $this->source; }
+    public function file() { return new FileMock($this->name.".src"); }
+    public function start_line() { return 0; }
+    public function end_line() { return count($this->source())-1; }
 }
 
 class ClassMock extends ArtifactMock implements Ver\ClassArtifact {};
 class FunctionMock extends ArtifactMock implements Ver\FunctionArtifact {};
 class GlobalMock extends ArtifactMock implements Ver\GlobalArtifact {};
 class BuildinMock extends ArtifactMock implements Ver\BuildinArtifact {};
-class FileMock extends ArtifactMock implements Ver\FileArtifact {};
+class FileMock extends ArtifactMock implements Ver\FileArtifact {
+    public function file() { return $this; }
+};
 
 class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     public function setUp() {

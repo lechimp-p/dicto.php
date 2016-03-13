@@ -312,7 +312,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
 
         $violations = $this->verifier->violations_in($rule, $fun);
 
-        $this->assertCount(0, $violations);
+        $this->assertCount(1, $violations);
         $violation = $violations[0];
         $this->assertSame($rule, $violation->rule());
         $this->assertSame($fun, $violation->artifact());
@@ -358,17 +358,13 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         $fun2_dep = new FunctionMock("c_function");
         $fun = new FunctionMock("a_function", array($cls_dep, $bldin_dep, $fun1_dep), array($fun2_dep));
 
-        $c_functions = Dicto::_every()->_function()->_with()->_name("c_function");
+        $c_function = Dicto::_every()->_function()->_with()->_name("c_function");
         $b_function = Dicto::_every()->_function()->_with()->_name("b_function");
-        $rule = Dicto::only($c_function)->can()->invoke($c_function);
+        $rule = Dicto::only($c_function)->can()->invoke($b_function);
 
         $violations = $this->verifier->violations_in($rule, $fun);
 
         $this->assertCount(0, $violations);
-        $violation = $violations[0];
-        $this->assertSame($rule, $violation->rule());
-        $this->assertSame($fun, $violation->artifact());
-        $this->assertSame($fun2_dep, $violation->violator());
     }
 
     // CONTAINS TEXT
@@ -379,16 +375,17 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         $classes = Dicto::_every()->_class();
         $rule = $classes->cannot()->contain_text("foo");
 
-        $violations = $this->verifier->violations_in($rule, $fun);
+        $violations = $this->verifier->violations_in($rule, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
         $this->assertSame($rule, $violation->rule());
         $this->assertSame($cls, $violation->artifact());
         $violator = $violation->violator();
-        $this->assertInstanceOf("Lechimp\\Verification\\SourceCodeLineArtifact", $violator);
-        $this->assertEquals(0, $violator->line());
-        $this->assertEquals("foo", $violator->content());
+        $this->assertInstanceOf("Lechimp\\Dicto\\Verification\\SourceCodeLineArtifact", $violator);
+        $this->assertEquals(0, $violator->start_line());
+        $this->assertEquals(0, $violator->end_line());
+        $this->assertEquals("foobar", $violator->source());
     }
 
     public function test_contains_text_2() {
@@ -397,7 +394,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         $classes = Dicto::_every()->_class();
         $rule = $classes->cannot()->contain_text("baz");
 
-        $violations = $this->verifier->violations_in($rule, $fun);
+        $violations = $this->verifier->violations_in($rule, $cls);
 
         $this->assertCount(0, $violations);
     }
@@ -408,7 +405,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         $classes = Dicto::_every()->_class();
         $rule = $classes->must()->contain_text("foo");
 
-        $violations = $this->verifier->violations_in($rule, $fun);
+        $violations = $this->verifier->violations_in($rule, $cls);
 
         $this->assertCount(0, $violations);
     }
@@ -419,7 +416,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         $classes = Dicto::_every()->_class();
         $rule = $classes->must()->contain_text("baz");
 
-        $violations = $this->verifier->violations_in($rule, $fun);
+        $violations = $this->verifier->violations_in($rule, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -432,9 +429,9 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         $cls = new ClassMock("AClass", array(), array(), "foobar");
 
         $a_classes = Dicto::_every()->_class()->_with()->_name("AClass");
-        $rule = Dicto::only($classes)->can()->contain_text("foo");
+        $rule = Dicto::only($a_classes)->can()->contain_text("foo");
 
-        $violations = $this->verifier->violations_in($rule, $fun);
+        $violations = $this->verifier->violations_in($rule, $cls);
 
         $this->assertCount(0, $violations);
     }
@@ -443,18 +440,19 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         $cls = new ClassMock("AClass", array(), array(), "foobar");
 
         $b_classes = Dicto::_every()->_class()->_with()->_name("BClass");
-        $rule = Dicto::only($classes)->can()->contain_text("foo");
+        $rule = Dicto::only($b_classes)->can()->contain_text("foo");
 
-        $violations = $this->verifier->violations_in($rule, $fun);
+        $violations = $this->verifier->violations_in($rule, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
         $this->assertSame($rule, $violation->rule());
         $this->assertSame($cls, $violation->artifact());
         $violator = $violation->violator();
-        $this->assertInstanceOf("Lechimp\\Verification\\SourceCodeLineArtifact", $violator);
-        $this->assertEquals(0, $violator->line());
-        $this->assertEquals("foo", $violator->content());
+        $this->assertInstanceOf("Lechimp\\Dicto\\Verification\\SourceCodeLineArtifact", $violator);
+        $this->assertEquals(0, $violator->start_line());
+        $this->assertEquals(0, $violator->end_line());
+        $this->assertEquals("foobar", $violator->source());
     }
 
     public function test_contains_text_7() {
@@ -463,15 +461,16 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         $classes = Dicto::_every()->_class();
         $rule = $classes->cannot()->contain_text("foo");
 
-        $violations = $this->verifier->violations_in($rule, $fun);
+        $violations = $this->verifier->violations_in($rule, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
         $this->assertSame($rule, $violation->rule());
         $this->assertSame($cls, $violation->artifact());
         $violator = $violation->violator();
-        $this->assertInstanceOf("Lechimp\\Verification\\SourceCodeLineArtifact", $violator);
-        $this->assertEquals(2, $violator->line());
-        $this->assertEquals("foo", $violator->content());
+        $this->assertInstanceOf("Lechimp\\Dicto\\Verification\\SourceCodeLineArtifact", $violator);
+        $this->assertEquals(2, $violator->start_line());
+        $this->assertEquals(2, $violator->end_line());
+        $this->assertEquals("foo", $violator->source());
     }
 }
