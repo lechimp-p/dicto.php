@@ -53,8 +53,19 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
         $this->selector = new Ver\Implementation\Selector;
     }
 
+    public function get_var($definition) {
+        Dicto::startDefinition();
+        $definition();
+        $defs = Dicto::endDefinition();
+        $variables = $defs->variables();
+
+        return array_pop($variables); 
+    }
+
     public function test_match_every_class() {
-        $var = Dicto::_every()->_class();
+        $var = $this->get_var(function() { 
+            Dicto::allClasses()->means()->classes();
+        });
 
         $this->assertTrue($this->selector->matches($var, $this->class_one));
         $this->assertFalse($this->selector->matches($var, $this->function_one));
@@ -70,7 +81,9 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_every_function() {
-        $var = Dicto::_every()->_function();
+        $var = $this->get_var(function() { 
+            Dicto::allFunctions()->means()->functions();
+        });
 
         $this->assertFalse($this->selector->matches($var, $this->class_one));
         $this->assertTrue($this->selector->matches($var, $this->function_one));
@@ -86,7 +99,9 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_every_global() {
-        $var = Dicto::_every()->_global();
+        $var = $this->get_var(function() { 
+            Dicto::allGlobals()->means()->globals();
+        });
 
         $this->assertFalse($this->selector->matches($var, $this->class_one));
         $this->assertFalse($this->selector->matches($var, $this->function_one));
@@ -102,7 +117,9 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_every_file() {
-        $var = Dicto::_every()->_file();
+        $var = $this->get_var(function() { 
+            Dicto::allFiles()->means()->files();
+        });
 
         $this->assertFalse($this->selector->matches($var, $this->class_one));
         $this->assertFalse($this->selector->matches($var, $this->function_one));
@@ -118,7 +135,9 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_every_buildin() {
-        $var = Dicto::_every()->_buildin();
+        $var = $this->get_var(function() { 
+            Dicto::allBuildins()->means()->buildins();
+        });
 
         $this->assertFalse($this->selector->matches($var, $this->class_one));
         $this->assertFalse($this->selector->matches($var, $this->function_one));
@@ -134,7 +153,9 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_every_class_with_name() {
-        $var = Dicto::_every()->_class()->_with()->_name(".*One");
+        $var = $this->get_var(function() { 
+            Dicto::OneClasses()->means()->classes()->with()->name(".*One");
+        });
 
         $this->assertTrue($this->selector->matches($var, $this->class_one));
         $this->assertFalse($this->selector->matches($var, $this->function_one));
@@ -150,7 +171,9 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_every_function_with_name() {
-        $var = Dicto::_every()->_function()->_with()->_name(".*one");
+        $var = $this->get_var(function() { 
+            Dicto::OneFunctions()->means()->functions()->with()->name(".*one");
+        });
 
         $this->assertFalse($this->selector->matches($var, $this->class_one));
         $this->assertTrue($this->selector->matches($var, $this->function_one));
@@ -166,7 +189,9 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_every_global_with_name() {
-        $var = Dicto::_every()->_global()->_with()->_name(".*one");
+        $var = $this->get_var(function() { 
+            Dicto::OneGlobals()->means()->globals()->with()->name(".*one");
+        });
 
         $this->assertFalse($this->selector->matches($var, $this->class_one));
         $this->assertFalse($this->selector->matches($var, $this->function_one));
@@ -182,7 +207,9 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_every_file_with_name() {
-        $var = Dicto::_every()->_file()->_with()->_name(".*one");
+        $var = $this->get_var(function() { 
+            Dicto::OneFiles()->means()->files()->with()->name(".*one");
+        });
 
         $this->assertFalse($this->selector->matches($var, $this->class_one));
         $this->assertFalse($this->selector->matches($var, $this->function_one));
@@ -198,7 +225,9 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_every_buildin_with_name() {
-        $var = Dicto::_every()->_buildin()->_with()->_name(".*one");
+        $var = $this->get_var(function() { 
+            Dicto::OneBuildins()->means()->buildins()->with()->name(".*one");
+        });
 
         $this->assertFalse($this->selector->matches($var, $this->class_one));
         $this->assertFalse($this->selector->matches($var, $this->function_one));
@@ -214,9 +243,11 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_two_classes_and() {
-        $named1 = Dicto::_every()->_class()->_with()->_name("Class.*");
-        $named2 = Dicto::_every()->_class()->_with()->_name(".*One");
-        $var = $named1->_and($named2);
+        $var = $this->get_var(function() { 
+            Dicto::namedClasses1()->means()->classes()->with()->name("Class.*");
+            Dicto::namedClasses2()->means()->classes()->with()->name(".*One");
+            Dicto::namedClasses3()->means()->namedClasses1()->as_well_as()->namedClasses2();
+        });
 
         $this->assertTrue($this->selector->matches($var, $this->class_one));
         $this->assertFalse($this->selector->matches($var, $this->function_one));
@@ -234,9 +265,11 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_match_two_classes_except() {
-        $named1 = Dicto::_every()->_class()->_with()->_name("Class.*");
-        $named2 = Dicto::_every()->_class()->_with()->_name(".*One");
-        $var = $named1->_except($named2);
+        $var = $this->get_var(function() { 
+            Dicto::namedClasses1()->means()->classes()->with()->name("Class.*");
+            Dicto::namedClasses2()->means()->classes()->with()->name(".*One");
+            Dicto::namedClasses3()->means()->namedClasses1()->but_not()->namedClasses2();
+        });
 
         $this->assertFalse($this->selector->matches($var, $this->class_one));
         $this->assertFalse($this->selector->matches($var, $this->function_one));
