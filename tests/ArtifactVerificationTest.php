@@ -30,7 +30,6 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         return $rules[0]; 
     }
 
-
     /**
      * @dataProvider has_subject_test_provider
      */
