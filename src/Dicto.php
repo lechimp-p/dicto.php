@@ -34,9 +34,5 @@ class Dicto {
             return new Definition\Fluid\RuleVar;
         }
     }
-
-    public static function _every() {
-        return new Definition\EveryFluid;
-    }
 }
 
