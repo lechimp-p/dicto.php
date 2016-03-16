@@ -10,11 +10,7 @@
 
 namespace Lechimp\Dicto\Definition\Fluid;
 
-class Functions {
-    public function with() {
-        return new With;
-    }
-
-    public function explain($explanation) {
+class Invoke {
+    public function __call($name, $arguments) {
     }
 }

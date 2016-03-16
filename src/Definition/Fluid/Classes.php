@@ -14,4 +14,7 @@ class Classes {
     public function with() {
         return new With;
     }
+
+    public function explain($explanation) {
+    }
 }

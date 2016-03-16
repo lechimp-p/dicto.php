@@ -14,4 +14,7 @@ class Buildins {
     public function with() {
         return new With;
     }
+
+    public function explain($explanation) {
+    }
 }

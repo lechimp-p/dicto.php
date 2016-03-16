@@ -10,11 +10,12 @@
 
 namespace Lechimp\Dicto\Definition\Fluid;
 
-class Functions {
-    public function with() {
-        return new With;
+class RuleVar {
+    public function cannot() {
+        return new Cannot;
     }
 
-    public function explain($explanation) {
+    public function must() {
+        return new Must;
     }
 }

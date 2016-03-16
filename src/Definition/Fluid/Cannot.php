@@ -10,11 +10,15 @@
 
 namespace Lechimp\Dicto\Definition\Fluid;
 
-class Functions {
-    public function with() {
-        return new With;
+class Cannot {
+    public function contain_text($regexp) {
     }
 
-    public function explain($explanation) {
+    public function invoke() {
+        return new Invoke;
+    }
+
+    public function depend_on() {
+        return new DependOn;
     }
 }

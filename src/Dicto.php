@@ -11,23 +11,32 @@
 namespace Lechimp\Dicto;
 
 class Dicto {
+    static $new_vars = array();
+
     public static function startDefinition() {
+        self::$new_vars = array();
     }
 
     public static function endDefinition() {
         return new Definition\Ruleset;
     }
 
+    public static function only() {
+        return new Definition\Fluid\Only();
+    }
+
     public static function __callStatic($name, $arguments) {
-        return new Definition\Fluid\NewVar;
+        if (!in_array($name, self::$new_vars)) {
+            self::$new_vars[] = $name;
+            return new Definition\Fluid\NewVar;
+        }
+        else {
+            return new Definition\Fluid\RuleVar;
+        }
     }
 
     public static function _every() {
         return new Definition\EveryFluid;
-    }
-
-    public static function only(Definition\Variable $var) {
-        return new Definition\OnlyFluid($var);
     }
 }
 
