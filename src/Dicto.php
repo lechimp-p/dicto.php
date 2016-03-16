@@ -11,6 +11,17 @@
 namespace Lechimp\Dicto;
 
 class Dicto {
+    public static function startDefinition() {
+    }
+
+    public static function endDefinition() {
+        return new Definition\Ruleset;
+    }
+
+    public static function __callStatic($name, $arguments) {
+        return new Definition\Fluid\NewVar;
+    }
+
     public static function _every() {
         return new Definition\EveryFluid;
     }
