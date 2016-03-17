@@ -17,7 +17,7 @@ abstract class Variable extends Definition {
      * @return  Variable
      */
     public function _and(Variable $other) {
-        return new AndVariable($this, $other);
+        return new AsWellAs($this, $other);
     } 
 
     /**
@@ -26,7 +26,7 @@ abstract class Variable extends Definition {
      * @return  Variable
      */
     public function _except(Variable $other) {
-        return new ExceptVariable($this, $other);
+        return new ButNot($this, $other);
     } 
 
     public function _with() {

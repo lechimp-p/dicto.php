@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class ExceptVariable extends Variable {
+class ButNot extends Variable {
     /**
      * @var Variable
      */
@@ -51,7 +51,7 @@ class ExceptVariable extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new ExceptVariable($this->left, $this->right);
+        $v = new ButNot($this->left, $this->right);
         $v->setExplanation($text);
         return $v;
     }

@@ -20,23 +20,23 @@ class Selector implements Verification\Selector {
     public function matches(Definition\Variable $def, Verification\Artifact $artifact) {
         $cls = get_class($def);
         switch ($cls) {
-            case "Lechimp\\Dicto\\Definition\\ClassVariable":
+            case "Lechimp\\Dicto\\Definition\\Classes":
                 return $artifact instanceof Verification\ClassArtifact;
-            case "Lechimp\\Dicto\\Definition\\FunctionVariable":
+            case "Lechimp\\Dicto\\Definition\\Functions":
                 return $artifact instanceof Verification\FunctionArtifact;
-            case "Lechimp\\Dicto\\Definition\\GlobalVariable":
+            case "Lechimp\\Dicto\\Definition\\Globals":
                 return $artifact instanceof Verification\GlobalArtifact;
-            case "Lechimp\\Dicto\\Definition\\BuildinVariable":
+            case "Lechimp\\Dicto\\Definition\\Buildins":
                 return $artifact instanceof Verification\BuildinArtifact;
-            case "Lechimp\\Dicto\\Definition\\FileVariable":
+            case "Lechimp\\Dicto\\Definition\\Files":
                 return $artifact instanceof Verification\FileArtifact;
-            case "Lechimp\\Dicto\\Definition\\WithNameVariable":
+            case "Lechimp\\Dicto\\Definition\\WithName":
                 return $this->matches($def->variable(), $artifact)
                    and $this->matches_regexp($def->regexp(), $artifact->name());
-            case "Lechimp\\Dicto\\Definition\\AndVariable":
+            case "Lechimp\\Dicto\\Definition\\AsWellAs":
                 return $this->matches($def->left(), $artifact)
                     or $this->matches($def->right(), $artifact);
-            case "Lechimp\\Dicto\\Definition\\ExceptVariable":
+            case "Lechimp\\Dicto\\Definition\\ButNot":
                 return $this->matches($def->left(), $artifact)
                    and !$this->matches($def->right(), $artifact);
             default:

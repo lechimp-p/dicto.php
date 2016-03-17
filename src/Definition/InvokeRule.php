@@ -21,7 +21,7 @@ class InvokeRule extends Rule {
         $this->invokes = $invokes;
     }
 
-    public function invoke(FunctionVariable $fun) {
+    public function invoke(Functions $fun) {
         return InvokeRule($this, $fun);
     }
 

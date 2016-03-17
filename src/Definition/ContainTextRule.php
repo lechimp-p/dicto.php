@@ -24,7 +24,7 @@ class ContainTextRule extends Rule {
         $this->regexp = $regexp;
     }
 
-    public function invoke(FunctionVariable $fun) {
+    public function invoke(Functions $fun) {
         return InvokeRule($this, $fun);
     }
 

@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class AndVariable extends Variable {
+class AsWellAs extends Variable {
     /**
      * @var Variable
      */
@@ -51,7 +51,7 @@ class AndVariable extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new AndVariable($this->left, $this->right);
+        $v = new AsWellAs($this->left, $this->right);
         $v->setExplanation($text);
         return $v;
     }

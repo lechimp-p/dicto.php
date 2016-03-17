@@ -10,12 +10,12 @@
 
 namespace Lechimp\Dicto\Definition;
 
-class GlobalVariable extends Variable {
+class Files extends Variable {
     /**
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new GlobalVariable();
+        $v = new Files();
         $v->setExplanation($text);
         return $v;
     }

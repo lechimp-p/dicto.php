@@ -13,7 +13,7 @@ namespace Lechimp\Dicto\Definition;
 /**
  * Provides fluid interface to _with.
  */
-class WithNameVariable extends Variable {
+class WithName extends Variable {
     /**
      * @var string
      */
@@ -50,7 +50,7 @@ class WithNameVariable extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new ClassVariable();
+        $v = new Classes();
         $v->setExplanation($text);
         return $v;
     }
