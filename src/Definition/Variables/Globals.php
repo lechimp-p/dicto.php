@@ -8,7 +8,7 @@
  * a copy of the along with the code.
  */
 
-namespace Lechimp\Dicto\Definition;
+namespace Lechimp\Dicto\Definition\Variables;
 
 class Globals extends Variable {
     /**
