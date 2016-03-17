@@ -9,41 +9,77 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
+use Lechimp\Dicto\Definition\Variables as Vars;
 use Lechimp\Dicto\Definition as Def;
 
+/**
+ * Provides fluid interface for means().
+ */
 class Means extends Base {
     /**
-     * @var string
+     * Say that the variable means classes.
+     *
+     * @return  Classes
      */
-    protected $name;
-
-    public function __construct(Def\RuleDefinitionRT $rt, $name) {
-        parent::__construct($rt);
-        assert('is_string($name)');
-        $this->name = $name;
-    }
-
     public function classes() {
-        return new Classes;
+        // This is the first valid definition of a variable.
+        $this->rt->current_var_is(new Vars\Classes($this->rt->get_current_var_name()));
+
+        return new Classes($this->rt);
     }
 
+    /**
+     * Say that the variable means functions.
+     *
+     * @return  Functions
+     */
     public function functions() {
-        return new Functions;
+        return new Functions($this->rt);
     }
 
+    /**
+     * Say that the variable means buildins.
+     *
+     * @return  Buildins
+     */
     public function buildins() {
-        return new Buildins;
+        return new Buildins($this->rt);
     }
 
+    /**
+     * Say that the variable means globals.
+     *
+     * @return  Globals
+     */
     public function globals() {
-        return new Globals;
+        return new Globals($this->rt);
     }
 
+    /**
+     * Say that the variable means files.
+     *
+     * @return  Files
+     */
     public function files() {
-        return new Files;
+        return new Files($this->rt);
     }
 
+    /**
+     * Talk about an existing variable.
+     *
+     * @throws  \InvalidArgumentException   if $arguments are passed
+     * @throws  \RuntimeException           if $name is unknown are passed
+     * @return  ExistingVar
+     */
     public function __call($name, $arguments) {
-        return new ExistingVar;
+        if (count($arguments) != 0) {
+            # ToDo: This is used in Dicto::__callstatic as well.
+            throw new \InvalidArgumentException(
+                "No arguments are allowed for the reference to a variable.");
+        }
+        $this->rt->throw_on_missing_var($name);
+
+        $this->rt->current_var_is($this->rt->get_var($name));
+        return new ExistingVar($this->rt);
     }
 }

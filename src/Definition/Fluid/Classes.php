@@ -9,8 +9,17 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
+use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Definition\Variables as Vars;
 
-class Classes {
+/**
+ * Provides fluid interface for classes().
+ */
+class Classes extends Base {
+    public function __construct(Def\RuleDefinitionRT $rt) {
+        parent::__construct($rt);
+    }
+
     public function with() {
         return new With;
     }

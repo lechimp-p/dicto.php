@@ -9,13 +9,27 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
+use Lechimp\Dicto\Definition as Def;
 
-class ExistingVar {
+/**
+ * Provides fluid interface to existing $varname().
+ */
+class ExistingVar extends Base {
+    /**
+     * Say to mean this variable and another variable.
+     *
+     * @return  AsWellAs
+     */
     public function as_well_as() {
-        return new AsWellAs;
+        return new AsWellAs($this->rt);
     }
 
+    /**
+     * Say to mean this variable but not another variable.
+     *
+     * @return  ButNot
+     */
     public function but_not() {
-        return new ButNot;
+        return new ButNot($this->rt);
     }
 }

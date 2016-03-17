@@ -9,8 +9,20 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
+use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Definition\Variables as Vars;
 
-class Functions {
+/**
+ * Provides fluid interface for functions().
+ */
+class Functions extends Base {
+    public function __construct(Def\RuleDefinitionRT $rt) {
+        parent::__construct($rt);
+
+        // This is the first valid definition of a variable.
+        $this->rt->current_var_is(new Vars\Functions($this->rt->get_current_var_name()));
+    }
+
     public function with() {
         return new With;
     }

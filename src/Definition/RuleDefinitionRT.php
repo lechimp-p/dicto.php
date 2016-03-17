@@ -23,12 +23,20 @@ class RuleDefinitionRT {
     private $vars;
 
     /**
+     * ToDo: I think, this is not necessary and current_var is sufficient.
+     *
      * @var string|null
+     */
+    private $current_var_name;
+
+    /**
+     * @var Variables\Variable|null
      */
     private $current_var;
 
     public function __construct() {
         $this->vars = array();
+        $this->current_var_name = null;
         $this->current_var = null;
     }
 
@@ -38,21 +46,24 @@ class RuleDefinitionRT {
      * @return  Ruleset
      */
     public function ruleset() {
-        return new Ruleset();
+        $this->maybe_save_current_var();
+
+        return new Ruleset($this->vars, array());
     }
 
     /**
      * Define a new variable or reference an already defined variable to define
      * a rule.
      *
+     * @throws  \RuntimeException   if previous variable declaration was not finished
      * @return  NewVar|RuleVar
      */
     public function variable($name) {
         $this->maybe_save_current_var();
 
         if (!array_key_exists($name, $this->vars)) {
-            $this->current_var = $name;
-            return new Fluid\NewVar($this, $name);
+            $this->current_var_name = $name;
+            return new Fluid\NewVar($this);
         }
         else {
             return new Fluid\RuleVar($this, $name);
@@ -72,11 +83,69 @@ class RuleDefinitionRT {
 
     /**
      * Save the currently defined variable, if there is any.
+     *
+     * @throws  \RuntimeException   if previous variable declaration was not finished
      */
-    public function maybe_save_current_var() {
-        if ($this->current_var !== null) {
-            $this->vars[$this->current_var] = "VARIABLE";
+    protected function maybe_save_current_var() {
+        if ($this->current_var_name !== null) {
+            if ($this->current_var === null) {
+                throw new \RuntimeException(
+                        "The declaration of ".$this->current_var_name.
+                        " was not finished.");
+            }
+            $this->vars[$this->current_var_name] = $this->current_var;
+            $this->current_var_name = null;
             $this->current_var = null;
+        }
+    }
+
+    /**
+     * Get the name of the current var.
+     *
+     * @return  string
+     */
+    public function get_current_var_name() {
+        assert('is_string($this->current_var_name)');
+        return $this->current_var_name;
+    }
+
+    /**
+     * Get the name of the current var.
+     *
+     * @return  string
+     */
+    public function get_current_var() {
+        assert('$this->current_var !== null');
+        return $this->current_var;
+    }
+
+    /**
+     * Get an already defined variable.
+     *
+     * @param   string  $name
+     * @return  Variables\Variable
+     */
+    public function get_var($name) {
+        assert('array_key_exists($name, $this->vars)');
+        return $this->vars[$name];
+    }
+
+    /**
+     * Announce what the current variable is atm.
+     *
+     * @param   Variables\Variable  $var
+     */
+    public function current_var_is(Variables\Variable $var) {
+        assert('$this->current_var_name !== null');
+        $this->current_var = $var;
+    }
+
+    /**
+     * Throws a RuntimeException on missing variable $var.
+     */
+    public function throw_on_missing_var($var) {
+        if (!array_key_exists($var, $this->vars)) {
+            throw new \RuntimeException("Missing variable $var");
         }
     }
 }

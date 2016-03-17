@@ -9,10 +9,20 @@
  */
 
 namespace Lechimp\Dicto\Definition\Variables;
-use namespace Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Definition as Def;
 
 
 abstract class Variable extends Def\Definition {
+    /**
+     * @var string
+     */
+    private $name;
+
+    public function __construct($name) {
+        assert('is_string($name)');
+        $this->name = $name;
+    }
+
     /**
      * @param   Variable $other
      * @throws  AssertionException when not ($other instanceof static::class)

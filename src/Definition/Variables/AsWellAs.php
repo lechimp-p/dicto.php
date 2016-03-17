@@ -21,7 +21,8 @@ class AsWellAs extends Variable {
      */
     private $right;
 
-    public function __construct(Variable $left, Variable $right) {
+    public function __construct($name, Variable $left, Variable $right) {
+        parent::__construct($name);
         if (get_class($left) !== get_class($right)) {
             throw new \InvalidArgumentException(
                 get_class($left).

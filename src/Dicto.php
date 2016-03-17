@@ -51,6 +51,7 @@ class Dicto {
     /**
      * Define a only-rule.
      *
+     * @throws  \RuntimeException   if previous variable declaration has not finished
      * @throws  \RuntimeException
      * @return  Fluid\Only
      */
@@ -67,10 +68,12 @@ class Dicto {
      * a rule.
      *
      * @throws  \InvalidArgumentException   if $arguments are passed
+     * @throws  \RuntimeException           if previous variable declaration was not finished
      * @throws  \RuntimeException           if definition was not started 
      * @return  NewVar|RuleVar
      */
     public static function __callStatic($name, $arguments) {
+        # ToDo: This is used in Definition\Fluid\Means as well.
         if (count($arguments) != 0) {
             throw new \InvalidArgumentException(
                 "No arguments are allowed for definition of ".
