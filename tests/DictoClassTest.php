@@ -50,4 +50,23 @@ class DictoClassTest extends PHPUnit_Framework_TestCase {
         }
         catch (\InvalidArgumentException $e) {}
     }
+
+    public function test_no_unfinished_var_decl() {
+        try {
+            Dicto::startDefinition();
+            Dicto::Foo();
+            Dicto::Foo();
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\RuntimeException $e) {}
+    }
+
+    public function test_throw_on_unknown_var_in_var_decl() {
+        try {
+            Dicto::startDefinition();
+            Dicto::Foo()->means()->Bar();
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\RuntimeException $e) {}
+    }
 }
