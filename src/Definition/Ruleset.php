@@ -25,10 +25,10 @@ class Ruleset {
     private $rules;
 
     public function __construct(array $variables, array $rules) {
-        $this->variables = array_map(function (Variables\Variable $v) 
+        $this->variables = array_map(function (Variables\Variable $v)
                                         { return $v; }, $variables);
 
-        $this->rules = array_map(function (Rule $r) 
+        $this->rules = array_map(function (Rule $r)
                                         { return $r; }, $rules);
     }
 
