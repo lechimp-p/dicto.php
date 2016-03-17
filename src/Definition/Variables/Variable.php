@@ -9,8 +9,10 @@
  */
 
 namespace Lechimp\Dicto\Definition\Variables;
+use namespace Lechimp\Dicto\Definition as Def;
 
-abstract class Variable extends Definition\Variables {
+
+abstract class Variable extends Def\Definition {
     /**
      * @param   Variable $other
      * @throws  AssertionException when not ($other instanceof static::class)
