@@ -25,7 +25,7 @@ class Means extends Base {
         // This is the first valid definition of a variable.
         $this->rt->current_var_is(new Vars\Classes($this->rt->get_current_var_name()));
 
-        return new Classes($this->rt);
+        return new ExistingVar($this->rt);
     }
 
     /**
@@ -34,7 +34,10 @@ class Means extends Base {
      * @return  Functions
      */
     public function functions() {
-        return new Functions($this->rt);
+        // This is the first valid definition of a variable.
+        $this->rt->current_var_is(new Vars\Functions($this->rt->get_current_var_name()));
+
+        return new ExistingVar($this->rt);
     }
 
     /**
@@ -43,7 +46,10 @@ class Means extends Base {
      * @return  Buildins
      */
     public function buildins() {
-        return new Buildins($this->rt);
+        // This is the first valid definition of a variable.
+        $this->rt->current_var_is(new Vars\Buildins($this->rt->get_current_var_name()));
+
+        return new ExistingVar($this->rt);
     }
 
     /**
@@ -52,7 +58,10 @@ class Means extends Base {
      * @return  Globals
      */
     public function globals() {
-        return new Globals($this->rt);
+        // This is the first valid definition of a variable.
+        $this->rt->current_var_is(new Vars\Globals($this->rt->get_current_var_name()));
+
+        return new ExistingVar($this->rt);
     }
 
     /**
@@ -61,7 +70,10 @@ class Means extends Base {
      * @return  Files
      */
     public function files() {
-        return new Files($this->rt);
+        // This is the first valid definition of a variable.
+        $this->rt->current_var_is(new Vars\Files($this->rt->get_current_var_name()));
+
+        return new ExistingVar($this->rt);
     }
 
     /**

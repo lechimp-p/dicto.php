@@ -12,7 +12,8 @@ namespace Lechimp\Dicto\Definition\Fluid;
 use Lechimp\Dicto\Definition as Def;
 
 /**
- * Provides fluid interface to existing $varname().
+ * Provides fluid interface to entities that were already defined before, at
+ * least a bit.
  */
 class ExistingVar extends Base {
     /**
@@ -31,5 +32,22 @@ class ExistingVar extends Base {
      */
     public function but_not() {
         return new ButNot($this->rt);
+    }
+
+    /**
+     * Say that you want to state some properties of the variable.
+     *
+     * @return  With
+     */
+    public function with() {
+        return new With($this->rt);
+    }
+
+    /**
+     * Explain something about the variable.
+     *
+     * @return  null
+     */
+    public function explain($explanation) {
     }
 }
