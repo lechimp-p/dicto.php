@@ -34,7 +34,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         foreach ($names as $name) {
             $this->assertArrayHasKey($name, $variables);
             $var = $variables[$name];
-            $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variable", $var);
+            $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variables\\Variable", $var);
         }
     }
 
@@ -116,6 +116,20 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         $this->check_single_var_definition($name, function ($n) use ($def) {
             $var = $def($n);
             $var->explain("EXPLANATION");
+        });
+    }
+
+    public function test_means_as_id() {
+        $this->check_var_definitions(array("Bar", "Foo"), function() {
+            Dicto::Bar()->means()->classes();
+            Dicto::Foo()->means()->Bar();
+        });
+    }
+
+    public function test_and_chaining() {
+        $this->check_var_definitions(array("Bar", "Foo"), function() {
+            Dicto::Foo()->means()->classes();
+            Dicto::Bar()->means()->Foo()->as_well_as()->Foo()->as_well_as()->Foo();
         });
     }
 
