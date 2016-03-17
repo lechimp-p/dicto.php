@@ -9,9 +9,29 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
+use Lechimp\Dicto\Definition as Def;
 
-class NewVar {
+/**
+ * A new variable definition was started.
+ */
+class NewVar extends Base {
+    /**
+     * @var string
+     */
+    protected $name;
+
+    public function __construct(Def\RuleDefinitionRT $rt, $name) {
+        parent::__construct($rt);
+        assert('is_string($name)');
+        $this->name = $name;
+    }
+
+    /**
+     * Define what the variable means.
+     *
+     * @return  Means
+     */
     public function means() {
-        return new Means;
+        return new Means($this->rt, $this->name);
     }
 }

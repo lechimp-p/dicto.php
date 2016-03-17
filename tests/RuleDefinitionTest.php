@@ -12,6 +12,10 @@ use Lechimp\Dicto\Dicto as Dicto;
 use Lechimp\Dicto\Definition as Def;
 
 class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
+    public function tearDown() {
+        Dicto::discardDefinition();
+    }
+
     public function test_ruleset() {
         Dicto::startDefinition();
         $defs = Dicto::endDefinition();

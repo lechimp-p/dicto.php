@@ -53,6 +53,10 @@ class ArtifactSelectionTest extends PHPUnit_Framework_TestCase {
         $this->selector = new Ver\Implementation\Selector;
     }
 
+    public function tearDown() {
+        Dicto::discardDefinition();
+    }
+
     public function get_var($definition) {
         Dicto::startDefinition();
         $definition();

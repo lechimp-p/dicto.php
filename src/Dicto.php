@@ -11,28 +11,76 @@
 namespace Lechimp\Dicto;
 
 class Dicto {
-    static $new_vars = array();
+    private function __construct() {}
 
+    static private $rt = null;
+
+    /**
+     * Discard the current definition if there is any.
+     */
+    public static function discardDefinition() {
+        self::$rt = null; 
+    }
+
+    /**
+     * Start the definition of a new ruleset.
+     *
+     * @throws  \RuntimeException   if definition was already started
+     */
     public static function startDefinition() {
-        self::$new_vars = array();
+        if (self::$rt !== null) {
+            throw new \RuntimeException("Already started a rule definition");
+        }
+        self::$rt = new Definition\RuleDefinitionRT();
     }
 
+    /**
+     * Discard the current definition if there is any.
+     *
+     * @throws  \RuntimeException   if definition was not started or already ended
+     */
     public static function endDefinition() {
-        return new Definition\Ruleset;
+        if (self::$rt === null) {
+            throw new \RuntimeException("Already ended or not even started the rule definition");
+        }
+        $rule_set = self::$rt->ruleset();
+        self::discardDefinition();
+        return $rule_set;
     }
 
+    /**
+     * Define a only-rule.
+     *
+     * @throws  \RuntimeException
+     * @return  Fluid\Only
+     */
     public static function only() {
-        return new Definition\Fluid\Only();
+        if (self::$rt === null) {
+            throw new \RuntimeException(
+                "No variable definition allowed outside ruleset definition.");
+        }
+        return self::$rt->only();
     }
 
+    /**
+     * Define a new variable or reference an already defined variable to define
+     * a rule.
+     *
+     * @throws  \InvalidArgumentException   if $arguments are passed
+     * @throws  \RuntimeException           if definition was not started 
+     * @return  NewVar|RuleVar
+     */
     public static function __callStatic($name, $arguments) {
-        if (!in_array($name, self::$new_vars)) {
-            self::$new_vars[] = $name;
-            return new Definition\Fluid\NewVar;
+        if (count($arguments) != 0) {
+            throw new \InvalidArgumentException(
+                "No arguments are allowed for definition of ".
+                "or reference to variable.");
+        } 
+        if (self::$rt === null) {
+            throw new \RuntimeException(
+                "No variable definition allowed outside ruleset definition.");
         }
-        else {
-            return new Definition\Fluid\RuleVar;
-        }
+        return self::$rt->variable($name);
     }
 }
 

@@ -20,6 +20,10 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         $this->verifier = new Ver\Implementation\Verifier($selector);
     }
 
+    public function tearDown() {
+        Dicto::discardDefinition();
+    }
+
     public function get_rule($definition) {
         Dicto::startDefinition();
         $definition();
