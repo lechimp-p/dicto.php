@@ -23,6 +23,10 @@ abstract class Variable extends Def\Definition {
         $this->name = $name;
     }
 
+    public function name() {
+        return $this->name;
+    }
+
     /**
      * @param   Variable $other
      * @throws  AssertionException when not ($other instanceof static::class)
