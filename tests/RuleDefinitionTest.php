@@ -51,7 +51,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     } 
 
     /**
-     * @dataProvider same_base_variable_2tuple_provider 
+     * @dataProvider base_variable_2tuple_provider 
      */
     public function test_variable_and($l, $r, $def) {
         $this->check_var_definitions(array($l, $r, "both"), function() use ($l, $r, $def) {
@@ -61,7 +61,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider same_base_variable_2tuple_provider 
+     * @dataProvider base_variable_2tuple_provider 
      */
     public function test_variable_except($l, $r, $def) {
         $this->check_var_definitions(array($l, $r, "one"), function() use ($l, $r, $def) {
@@ -79,35 +79,6 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
             $var->with()->name("foo.*");
         });
     }
-
-    /**
-     * @dataProvider different_base_variable_2tuple_provider
-     */
-    public function test_and_only_works_on_same_type($l, $r, $def) {
-        try {
-            $this->check_single_var_definition("__IRRELEVANT__", function($_) use ($l, $r, $def) {
-                $def();
-                Dicto::wont_happen()->means()->$l()->as_well_as()->$r();
-            });
-            $this->assertFalse("This should not happen.");
-        }
-        catch (\InvalidArgumentException $_) {};
-    }
-
-    /**
-     * @dataProvider different_base_variable_2tuple_provider 
-     */
-    public function test_except_only_works_on_same_type($l, $r, $def) {
-        try {
-            $this->check_single_var_definition("__IRRELEVANT__", function($_) use ($l, $r, $def) {
-                $def();
-                Dicto::wont_happen()->means()->$l()->but_not()->$r();
-            });
-            $this->assertFalse("This should not happen.");
-        }
-        catch (\InvalidArgumentException $_) {};
-    }
-
 
     /**
      * @dataProvider all_base_variables_provider

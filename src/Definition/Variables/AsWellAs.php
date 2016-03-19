@@ -23,13 +23,6 @@ class AsWellAs extends Variable {
 
     public function __construct($name, Variable $left, Variable $right) {
         parent::__construct($name);
-        if (get_class($left) !== get_class($right)) {
-            throw new \InvalidArgumentException(
-                get_class($left).
-                " and ".
-                get_class($right).
-                " do not have the same class.");
-        }
         $this->left = $left;
         $this->right = $right;
     }
