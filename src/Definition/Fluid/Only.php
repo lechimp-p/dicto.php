@@ -10,8 +10,13 @@
 
 namespace Lechimp\Dicto\Definition\Fluid;
 
-class Only {
+class Only extends Base {
     public function __call($name, $arguments) {
-        return new OnlyVar;
+        if (count($arguments) != 0) {
+            throw new \InvalidArgumentException(
+                "No arguments are allowed for a reference to a variable.");
+        }
+        $this->rt->throw_on_missing_var($name);
+        return new RuleVar($this->rt, $name);
     }
 }

@@ -142,6 +142,15 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
         return $this->verifier->violations_in($rule, $artifact);
     }
 
+    public function get_violations_and_rule($def, $artifact) {
+        $rule = $this->get_rule($def);
+        return array
+            ( $this->verifier->violations_in($rule, $artifact)
+            , $rule
+            );
+    }
+
+
     public function test_depend_on_1() {
         $cls_dep = new ClassMock("AnotherClass");
         $bldin_dep = new BuildinMock("@");
@@ -444,7 +453,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::AllClasses()->means()->classes();
             Dicto::AllClasses()->cannot()->contain_text("foo");
         };
-        $violations = $this->get_violations($def, $cls);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -488,7 +497,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::AllClasses()->means()->classes();
             Dicto::AllClasses()->must()->contain_text("baz");
         };
-        $violations = $this->get_violations($def, $cls);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -516,7 +525,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::BClass()->means()->classes()->with()->name("BClass");
             Dicto::only()->BClass()->can()->contain_text("foo");
         };
-        $violations = $this->get_violations($def, $cls);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -536,7 +545,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::AllClasses()->means()->classes();
             Dicto::AllClasses()->cannot()->contain_text("foo");
         };
-        $violations = $this->get_violations($def, $cls);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];

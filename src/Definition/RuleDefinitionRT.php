@@ -34,10 +34,16 @@ class RuleDefinitionRT {
      */
     private $current_var;
 
+    /**
+     * @var Rule[]
+     */
+    private $rules;
+
     public function __construct() {
         $this->vars = array();
         $this->current_var_name = null;
         $this->current_var = null;
+        $this->rules = array();
     }
 
     /**
@@ -48,7 +54,7 @@ class RuleDefinitionRT {
     public function ruleset() {
         $this->maybe_save_current_var();
 
-        return new Ruleset($this->vars, array());
+        return new Ruleset($this->vars, $this->rules);
     }
 
     /**
@@ -66,6 +72,7 @@ class RuleDefinitionRT {
             return new Fluid\NewVar($this);
         }
         else {
+            $this->throw_on_missing_var($name);
             return new Fluid\RuleVar($this, $name);
         }
     }
@@ -147,5 +154,12 @@ class RuleDefinitionRT {
         if (!array_key_exists($var, $this->vars)) {
             throw new \RuntimeException("Missing variable $var");
         }
+    }
+
+    /**
+     * Add a rule to the set.
+     */
+    public function add_rule(Rule $rule) {
+        $this->rules[] = $rule;
     }
 }
