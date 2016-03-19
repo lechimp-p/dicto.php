@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Verification;
 
-use \Lechimp\Dicto\Definition as Definition;
+use \Lechimp\Dicto\Definition as Def;
 
 /**
  * Interface to an algorithm that decides whether an artifact matches
@@ -24,5 +24,5 @@ interface Selector {
      * @param   Artifact                $artifact
      * @return  bool
      */
-    public function matches(Definition\Variable $def, Artifact $artifact);
+    public function matches(Def\Variables\Variable $def, Artifact $artifact);
 }

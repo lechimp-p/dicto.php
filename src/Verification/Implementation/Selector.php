@@ -10,33 +10,33 @@
 
 namespace Lechimp\Dicto\Verification\Implementation;
 
-use \Lechimp\Dicto\Verification as Verification;
-use \Lechimp\Dicto\Definition as Definition;
+use \Lechimp\Dicto\Verification as Ver;
+use \Lechimp\Dicto\Definition as Def;
 
-class Selector implements Verification\Selector {
+class Selector implements Ver\Selector {
     /**
      * @inheritdocs
      */
-    public function matches(Definition\Variable $def, Verification\Artifact $artifact) {
+    public function matches(Def\Variables\Variable $def, Ver\Artifact $artifact) {
         $cls = get_class($def);
         switch ($cls) {
-            case "Lechimp\\Dicto\\Definition\\Classes":
-                return $artifact instanceof Verification\ClassArtifact;
-            case "Lechimp\\Dicto\\Definition\\Functions":
-                return $artifact instanceof Verification\FunctionArtifact;
-            case "Lechimp\\Dicto\\Definition\\Globals":
-                return $artifact instanceof Verification\GlobalArtifact;
-            case "Lechimp\\Dicto\\Definition\\Buildins":
-                return $artifact instanceof Verification\BuildinArtifact;
-            case "Lechimp\\Dicto\\Definition\\Files":
-                return $artifact instanceof Verification\FileArtifact;
-            case "Lechimp\\Dicto\\Definition\\WithName":
+            case "Lechimp\\Dicto\\Definition\\Variables\\Classes":
+                return $artifact instanceof Ver\ClassArtifact;
+            case "Lechimp\\Dicto\\Definition\\Variables\\Functions":
+                return $artifact instanceof Ver\FunctionArtifact;
+            case "Lechimp\\Dicto\\Definition\\Variables\\Globals":
+                return $artifact instanceof Ver\GlobalArtifact;
+            case "Lechimp\\Dicto\\Definition\\Variables\\Buildins":
+                return $artifact instanceof Ver\BuildinArtifact;
+            case "Lechimp\\Dicto\\Definition\\Variables\\Files":
+                return $artifact instanceof Ver\FileArtifact;
+            case "Lechimp\\Dicto\\Definition\\Variables\\WithName":
                 return $this->matches($def->variable(), $artifact)
                    and $this->matches_regexp($def->regexp(), $artifact->name());
-            case "Lechimp\\Dicto\\Definition\\AsWellAs":
+            case "Lechimp\\Dicto\\Definition\\Variables\\AsWellAs":
                 return $this->matches($def->left(), $artifact)
                     or $this->matches($def->right(), $artifact);
-            case "Lechimp\\Dicto\\Definition\\ButNot":
+            case "Lechimp\\Dicto\\Definition\\Variables\\ButNot":
                 return $this->matches($def->left(), $artifact)
                    and !$this->matches($def->right(), $artifact);
             default:
