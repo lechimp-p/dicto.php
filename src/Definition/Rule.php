@@ -31,7 +31,7 @@ abstract class Rule extends Definition {
      */
     private $subject;
 
-    public function __construct($mode, Variable $subject) {
+    public function __construct($mode, Variables\Variable $subject) {
         assert('in_array($mode, self::$modes)');
         $this->mode = $mode;
         $this->subject = $subject;
