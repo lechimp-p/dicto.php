@@ -78,7 +78,7 @@ class Dicto {
             throw new \InvalidArgumentException(
                 "No arguments are allowed for definition of ".
                 "or reference to variable.");
-        } 
+        }
         if (self::$rt === null) {
             throw new \RuntimeException(
                 "No variable definition allowed outside ruleset definition.");
