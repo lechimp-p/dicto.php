@@ -2,4 +2,6 @@
   It does neither have a name nor dependencies or invocations. Or has it? Maybe i
   already made the mistake when introducing an Artifact as violator in Violation.
   But that could yield usefull information for the output of violations...
-* Remove outdate _and, _except, ... on Variable.
+* Remove outdate _and, _except, ... on Variable. Looks also like Rules could need
+  a general cleanup. What is DependOn::invoke? What is a better name for 
+  Invoke::invokes?
