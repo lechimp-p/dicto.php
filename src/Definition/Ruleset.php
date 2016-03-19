@@ -28,7 +28,7 @@ class Ruleset {
         $this->variables = array_map(function (Variables\Variable $v)
                                         { return $v; }, $variables);
 
-        $this->rules = array_map(function (Rule $r)
+        $this->rules = array_map(function (Rules\Rule $r)
                                         { return $r; }, $rules);
     }
 

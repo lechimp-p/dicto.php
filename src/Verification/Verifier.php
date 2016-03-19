@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Verification;
 
-use \Lechimp\Dicto\Definition as Definition;
+use \Lechimp\Dicto\Definition as Def;
 
 /**
  * Basic interface to an algorithm that checks violations of rules on
@@ -24,7 +24,7 @@ interface Verifier {
      * @param   Artifact            $artifact
      * @return  bool
      */
-    public function has_subject(Definition\Rule $rule, Artifact $artifact);
+    public function has_subject(Def\Rules\Rule $rule, Artifact $artifact);
 
     /**
      * Get violations of a rule on an artifact.
@@ -33,5 +33,5 @@ interface Verifier {
      * @param   Artifact            $artifact
      * @return  Violation[]
      */
-    public function violations_in(Definition\Rule $rule, Artifact $artifact);
+    public function violations_in(Def\Rules\Rule $rule, Artifact $artifact);
 }

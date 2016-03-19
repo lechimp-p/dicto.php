@@ -9,18 +9,18 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
-use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Definition\Rules as Rules;
 
 class RuleVar extends BaseWithName {
     public function cannot() {
-        return new RuleMode($this->rt, $this->name, Def\Rule::MODE_CANNOT);
+        return new RuleMode($this->rt, $this->name, Rules\Rule::MODE_CANNOT);
     }
 
     public function must() {
-        return new RuleMode($this->rt, $this->name, Def\Rule::MODE_MUST);
+        return new RuleMode($this->rt, $this->name, Rules\Rule::MODE_MUST);
     }
 
     public function can() {
-        return new RuleMode($this->rt, $this->name, Def\Rule::MODE_ONLY_CAN);
+        return new RuleMode($this->rt, $this->name, Rules\Rule::MODE_ONLY_CAN);
     }
 }

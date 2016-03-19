@@ -8,15 +8,16 @@
  * a copy of the along with the code.
  */
 
-namespace Lechimp\Dicto\Definition;
+namespace Lechimp\Dicto\Definition\Rules;
+use Lechimp\Dicto\Definition\Variables as Vars;
 
-class ContainTextRule extends Rule {
+class ContainText extends Rule {
     /**
      * @var string
      */
     private $regexp;
 
-    public function __construct($mode, Variables\Variable $var, $regexp) {
+    public function __construct($mode, Vars\Variable $var, $regexp) {
         parent::__construct($mode, $var);
         if (!is_string($regexp) or @preg_match("%$regexp%", "") === false) {
             throw new \InvalidArgumentException("Invalid regexp: '%regexp'");

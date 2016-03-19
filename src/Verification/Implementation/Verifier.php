@@ -11,7 +11,7 @@
 namespace Lechimp\Dicto\Verification\Implementation;
 
 use \Lechimp\Dicto\Verification as Verification;
-use \Lechimp\Dicto\Definition as Definition;
+use \Lechimp\Dicto\Definition as Def;
 
 class Verifier implements Verification\Verifier {
     /**
@@ -26,13 +26,13 @@ class Verifier implements Verification\Verifier {
     /**
      * @inheritdocs
      */
-    public function has_subject(Definition\Rule $rule, Verification\Artifact $artifact) {
+    public function has_subject(Def\Rules\Rule $rule, Verification\Artifact $artifact) {
         $mode = $rule->mode(); 
         switch($mode) {
-            case Definition\Rule::MODE_CANNOT:
-            case Definition\Rule::MODE_MUST:
+            case Def\Rules\Rule::MODE_CANNOT:
+            case Def\Rules\Rule::MODE_MUST:
                 return $this->selector->matches($rule->subject(), $artifact);
-            case Definition\Rule::MODE_ONLY_CAN:
+            case Def\Rules\Rule::MODE_ONLY_CAN:
                 return !$this->selector->matches($rule->subject(), $artifact);
             default:
                 throw new \Exception("Unknown rule mode '$mode'");
@@ -42,30 +42,30 @@ class Verifier implements Verification\Verifier {
     /**
      * @inheritdocs
      */
-    public function violations_in(Definition\Rule $rule, Verification\Artifact $artifact) {
+    public function violations_in(Def\Rules\Rule $rule, Verification\Artifact $artifact) {
         if (!$this->has_subject($rule, $artifact)) {
             return array();
         }
 
         $cls = get_class($rule);
         switch ($cls) {
-            case "Lechimp\\Dicto\\Definition\\DependOnRule":
+            case "Lechimp\\Dicto\\Definition\\Rules\\DependOn":
                 return $this->depend_on_violations($rule, $artifact);
-            case "Lechimp\\Dicto\\Definition\\InvokeRule":
+            case "Lechimp\\Dicto\\Definition\\Rules\\Invoke":
                 return $this->invoke_violations($rule, $artifact);
-            case "Lechimp\\Dicto\\Definition\\ContainTextRule":
+            case "Lechimp\\Dicto\\Definition\\Rules\\ContainText":
                 return $this->contains_text_violations($rule, $artifact);
             default:
                 throw new \Exception("Unknown rule type '$cls'");
         }
     }
 
-    protected function depend_on_violations(Definition\DependOnRule $rule, Verification\Artifact $artifact) {
+    protected function depend_on_violations(Def\Rules\DependOn $rule, Verification\Artifact $artifact) {
         $mode = $rule->mode();
         $var = $rule->dependency();
         switch($mode) {
-            case Definition\Rule::MODE_ONLY_CAN:
-            case Definition\Rule::MODE_CANNOT:
+            case Def\Rules\Rule::MODE_ONLY_CAN:
+            case Def\Rules\Rule::MODE_CANNOT:
                 $violations = array();
                 foreach ($artifact->dependencies() as $dep) {
                     if ($this->selector->matches($var, $dep)) {
@@ -73,7 +73,7 @@ class Verifier implements Verification\Verifier {
                     }
                 }
                 return $violations;
-            case Definition\Rule::MODE_MUST:
+            case Def\Rules\Rule::MODE_MUST:
                 foreach ($artifact->dependencies() as $dep) {
                     if ($this->selector->matches($var, $dep)) {
                         return array();
@@ -85,12 +85,12 @@ class Verifier implements Verification\Verifier {
         }
     }
 
-    protected function invoke_violations(Definition\InvokeRule $rule, Verification\Artifact $artifact) {
+    protected function invoke_violations(Def\Rules\Invoke $rule, Verification\Artifact $artifact) {
         $mode = $rule->mode();
         $var = $rule->invokes();
         switch($mode) {
-            case Definition\Rule::MODE_ONLY_CAN:
-            case Definition\Rule::MODE_CANNOT:
+            case Def\Rules\Rule::MODE_ONLY_CAN:
+            case Def\Rules\Rule::MODE_CANNOT:
                 $violations = array();
                 foreach ($artifact->invocations() as $dep) {
                     assert('$dep instanceof Lechimp\\Dicto\\Verification\\FunctionArtifact');
@@ -99,7 +99,7 @@ class Verifier implements Verification\Verifier {
                     }
                 }
                 return $violations;
-            case Definition\Rule::MODE_MUST:
+            case Def\Rules\Rule::MODE_MUST:
                 foreach ($artifact->invocations() as $dep) {
                     assert('$dep instanceof Lechimp\\Dicto\\Verification\\FunctionArtifact');
                     if ($this->selector->matches($var, $dep)) {
@@ -112,12 +112,12 @@ class Verifier implements Verification\Verifier {
         }
     }
 
-    protected function contains_text_violations(Definition\ContainTextRule $rule, Verification\Artifact $artifact) {
+    protected function contains_text_violations(Def\Rules\ContainText $rule, Verification\Artifact $artifact) {
         $mode = $rule->mode();
         $regexp = $rule->regexp();
         switch($mode) {
-            case Definition\Rule::MODE_ONLY_CAN:
-            case Definition\Rule::MODE_CANNOT:
+            case Def\Rules\Rule::MODE_ONLY_CAN:
+            case Def\Rules\Rule::MODE_CANNOT:
                 $violations = array();
                 $source = $artifact->source();
                 $lines = explode("\n", $artifact->source());
@@ -130,7 +130,7 @@ class Verifier implements Verification\Verifier {
                     $count++;
                 }
                 return $violations;
-            case Definition\Rule::MODE_MUST:
+            case Def\Rules\Rule::MODE_MUST:
                 $source = $artifact->source();
                 if (preg_match("%$regexp%", $source)) {
                     return array();

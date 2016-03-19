@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Verification;
 
-use \Lechimp\Dicto\Definition as Definition;
+use \Lechimp\Dicto\Definition as Def;
 
 class Violation {
     /**
@@ -19,7 +19,7 @@ class Violation {
     private $artifact;
 
     /**
-     * @var Definition\Rule
+     * @var Def\Rules\Rule
      */
     private $rule;
 
@@ -28,7 +28,7 @@ class Violation {
      */
     private $violator;
 
-    public function __construct(Artifact $artifact, Definition\Rule $rule, Artifact $violator) {
+    public function __construct(Artifact $artifact, Def\Rules\Rule $rule, Artifact $violator) {
         $this->artifact = $artifact;
         $this->rule = $rule;
         $this->violator = $violator;

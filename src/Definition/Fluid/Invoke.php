@@ -22,6 +22,6 @@ class Invoke extends BaseWithNameAndMode {
         $left = $this->rt->get_var($this->name);
         $right = $this->rt->get_var($name);
         $this->rt->add_rule(
-            new Def\InvokeRule($this->mode, $left, $right));
+            new Def\Rules\Invoke($this->mode, $left, $right));
     }
 }

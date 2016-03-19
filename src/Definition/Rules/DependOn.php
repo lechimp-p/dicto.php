@@ -8,17 +8,25 @@
  * a copy of the along with the code.
  */
 
-namespace Lechimp\Dicto\Definition;
+namespace Lechimp\Dicto\Definition\Rules;
+use Lechimp\Dicto\Definition\Variables as Vars;
 
-class InvokeRule extends Rule {
+class DependOn extends Rule {
     /**
      * @var Variable
      */
-    private $invokes;
+    private $dependency;
 
-    public function __construct($mode, Variables\Variable $left, Variables\Variable $invokes) {
+    public function __construct($mode, Vars\Variable $left, Vars\Variable $dependency) {
         parent::__construct($mode, $left);
-        $this->invokes = $invokes;
+        $this->dependency = $dependency;
+    }
+
+    /**
+     * @var Variable
+     */
+    public function dependency() {
+        return $this->dependency;
     }
 
     public function invoke(Functions $fun) {
@@ -26,17 +34,10 @@ class InvokeRule extends Rule {
     }
 
     /**
-     * @return Variable
-     */
-    public function invokes() {
-        return $this->invokes;
-    }
-
-    /**
      * @inheritdoc
      */
     public function explain($text) {
-        $r = new InvokeRule($this->mode(), $this->subject(), $this->invokes);
+        $r = new DependOnRule($this->mode(), $this->subject(), $this->dependency);
         $r->setExplanation($text);
         return $r;
     }

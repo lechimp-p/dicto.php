@@ -8,9 +8,10 @@
  * a copy of the along with the code.
  */
 
-namespace Lechimp\Dicto\Definition;
+namespace Lechimp\Dicto\Definition\Rules;
+use Lechimp\Dicto\Definition as Def;
 
-abstract class Rule extends Definition {
+abstract class Rule extends Def\Definition {
     const MODE_CANNOT   = "CANNOT";
     const MODE_MUST     = "MUST";
     const MODE_ONLY_CAN = "ONLY_CAN";
@@ -31,7 +32,7 @@ abstract class Rule extends Definition {
      */
     private $subject;
 
-    public function __construct($mode, Variables\Variable $subject) {
+    public function __construct($mode, Def\Variables\Variable $subject) {
         assert('in_array($mode, self::$modes)');
         $this->mode = $mode;
         $this->subject = $subject;

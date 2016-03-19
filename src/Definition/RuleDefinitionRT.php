@@ -35,7 +35,7 @@ class RuleDefinitionRT {
     private $current_var;
 
     /**
-     * @var Rule[]
+     * @var Rules\Rule[]
      */
     private $rules;
 
@@ -159,7 +159,7 @@ class RuleDefinitionRT {
     /**
      * Add a rule to the set.
      */
-    public function add_rule(Rule $rule) {
+    public function add_rule(Rules\Rule $rule) {
         $this->rules[] = $rule;
     }
 }

@@ -18,7 +18,7 @@ class RuleMode extends BaseWithNameAndMode  {
     public function contain_text($regexp) {
         $var = $this->rt->get_var($this->name);
         $this->rt->add_rule(
-            new Def\ContainTextRule($this->mode, $var, $regexp));
+            new Def\Rules\ContainText($this->mode, $var, $regexp));
    }
 
     public function invoke() {
