@@ -9,8 +9,19 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
+use Lechimp\Dicto\Definition as Def;
 
-class DependOn {
+class DependOn extends BaseWithNameAndMode {
     public function __call($name, $arguments) {
+        if (count($arguments) != 0) {
+            throw new \InvalidArgumentException(
+                "No arguments are allowed for a reference to a variable.");
+        }
+        $this->rt->throw_on_missing_var($name);
+
+        $left = $this->rt->get_var($this->name);
+        $right = $this->rt->get_var($name);
+        $this->rt->add_rule(
+            new Def\DependOnRule($this->mode, $left, $right));
     }
 }

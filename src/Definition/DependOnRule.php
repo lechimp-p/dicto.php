@@ -16,7 +16,7 @@ class DependOnRule extends Rule {
      */
     private $dependency;
 
-    public function __construct($mode, Variable $left, Variable $dependency) {
+    public function __construct($mode, Variables\Variable $left, Variables\Variable $dependency) {
         parent::__construct($mode, $left);
         $this->dependency = $dependency;
     }

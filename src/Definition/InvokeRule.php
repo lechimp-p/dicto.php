@@ -16,7 +16,7 @@ class InvokeRule extends Rule {
      */
     private $invokes;
 
-    public function __construct($mode, Variable $left, Variable $invokes) {
+    public function __construct($mode, Variables\Variable $left, Variables\Variable $invokes) {
         parent::__construct($mode, $left);
         $this->invokes = $invokes;
     }

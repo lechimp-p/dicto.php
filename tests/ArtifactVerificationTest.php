@@ -161,7 +161,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::allClasses()->means()->classes();
             Dicto::allClasses()->cannot()->depend_on()->allClasses();
         };
-        $violations = $this->get_violations($def, $cls);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -195,7 +195,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::AClasses()->means()->classes()->with()->name("A.*");
             Dicto::AClasses()->cannot()->depend_on()->AClasses();
         };
-        $violations = $this->get_violations($def, $cls);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -215,7 +215,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::AFunctions()->means()->functions()->with()->name("a_*");
             Dicto::AClasses()->cannot()->depend_on()->AFunctions();
         };
-        $violations = $this->get_violations($def, $cls);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -250,7 +250,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::AFunctions()->means()->functions()->with()->name("a_*");
             Dicto::AllClasses()->must()->depend_on()->AFunctions();
         };
-        $violations = $this->get_violations($def, $cls);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -286,7 +286,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::AFunctions()->means()->functions()->with()->name("a_*");
             Dicto::only()->BClasses()->can()->depend_on()->AFunctions();
         };
-        $violations = $this->get_violations($def, $cls);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $cls);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -306,7 +306,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::Silencer()->means()->buildins()->with()->name("@");
             Dicto::AllFunctions()->cannot()->depend_on()->Silencer();
         };
-        $violations = $this->get_violations($def, $fun);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $fun);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -329,7 +329,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::CFunction()->means()->functions()->with()->name("c_function");
             Dicto::AllFunctions()->cannot()->invoke()->CFunction();
         };
-        $violations = $this->get_violations($def, $fun);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $fun);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
@@ -384,7 +384,7 @@ class ArtifactVerificationTest extends PHPUnit_Framework_TestCase {
             Dicto::BFunction()->means()->functions()->with()->name("b_function");
             Dicto::AllFunctions()->must()->invoke()->BFunction();
         };
-        $violations = $this->get_violations($def, $fun);
+        list($violations, $rule) = $this->get_violations_and_rule($def, $fun);
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
