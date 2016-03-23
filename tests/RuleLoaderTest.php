@@ -22,6 +22,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
             , "ABClasses"
             , "AFunctions"
             , "BFunctions"
+            , "ANotBFunctions"
             , "Suppressor"
             , "FooFiles"
             );
@@ -56,7 +57,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $vars = $ruleset->variables();
         $this->assertInternalType("array", $vars);
         $this->assertCount(count(self::$VARIABLES_IN_RULES_PHP), $vars);
-        foreach ($variables as $var) {
+        foreach ($vars as $var) {
             $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variables\\Variable", $var);
         }
 
