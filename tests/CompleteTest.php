@@ -10,11 +10,13 @@
 
 use Lechimp\Dicto\Dicto as Dicto;
 
-class CompleteTest extends PHPUnit_Framework_TestCase {
+abstract class CompleteTest extends PHPUnit_Framework_TestCase {
     protected static $violations;
 
-    public function setUpBeforeClass() {
-        $analyzer = $this->get_analyzer(__DIR__."/data/rules.php", __DIR__."/data/content");
+    abstract static protected function get_app();
+
+    static public function setUpBeforeClass() {
+        $run = static::get_app(__DIR__."/data/rules.php", __DIR__."/data/content");
         self::$violations = $analyzer->result();
     }
 
