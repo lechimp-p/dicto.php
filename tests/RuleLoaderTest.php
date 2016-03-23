@@ -88,7 +88,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
     public function test_AClasses($vars) {
         $AClasses = $vars["AClasses"];
         $AClasses_expected = new Vars\WithName( "A.*", new Vars\Classes("AClasses"));
-        $this->assertEqual($AClasses_expected, $AClasses);
+        $this->assertEquals($AClasses_expected, $AClasses);
     }
 
     /**
@@ -98,10 +98,10 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $ABClasses = $vars["ABClasses"];
         $ABClasses_expected = new Vars\AsWellAs
                                     ( "ABClasses"
-                                    , new WithName( "A.*", new Vars\Classes("AClasses"))
-                                    , new WithName( "B.*", new Vars\Classes("BClasses"))
+                                    , new Vars\WithName( "A.*", new Vars\Classes("AClasses"))
+                                    , new Vars\WithName( "B.*", new Vars\Classes("BClasses"))
                                     );
-        $this->assertEqual($ABClasses_expected, $ABClasses);
+        $this->assertEquals($ABClasses_expected, $ABClasses);
     }
 
     /**
@@ -111,10 +111,10 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $ANotBFunctions = $vars["ANotBFunctions"];
         $ANotBFunctions_expected = new Vars\ButNot
                                     ( "ANotBFunctions"
-                                    , new WithName( "A.*", new Vars\Functions("AFunctions"))
-                                    , new WithName( "B.*", new Vars\Functions("BFunctions"))
+                                    , new Vars\WithName( "a_.*", new Vars\Functions("AFunctions"))
+                                    , new Vars\WithName( "b_.*", new Vars\Functions("BFunctions"))
                                     );
-        $this->assertEqual($ABFunctions_expected, $ABFunctions);
+        $this->assertEquals($ANotBFunctions_expected, $ANotBFunctions);
     }
 
     /**
@@ -122,8 +122,8 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      */
     public function test_Suppressor($vars) {
         $Suppressor = $vars["Suppressor"];
-        $Suppressor = new Vars\WithName( "@", new Vars\Buildins("Suppressor"));
-        $this->assertEqual($Suppressor_expected, $Suppressor);
+        $Suppressor_expected = new Vars\WithName( "@", new Vars\Buildins("Suppressor"));
+        $this->assertEquals($Suppressor_expected, $Suppressor);
     }
 
     /**
@@ -131,8 +131,8 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      */
     public function test_FooFiles($vars) {
         $FooFiles = $vars["FooFiles"];
-        $FooFiles_expected = new WithName("foo", new Vars\Files("FooFiles"));
-        $this->assertEqual($ABFunctions_expected, $ABFunctions);
+        $FooFiles_expected = new Vars\WithName("foo", new Vars\Files("FooFiles"));
+        $this->assertEquals($FooFiles_expected, $FooFiles);
     }
 
     // RULES

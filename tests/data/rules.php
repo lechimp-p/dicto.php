@@ -10,12 +10,14 @@
 
 use Lechimp\Dicto\Dicto as Dicto;
 
+// adjust RuleLoaderTest::VARIABLES_IN_RULES_PHP and tests
+// if you change these.
 Dicto::AClasses()->means()->classes()->with()->name("A.*");
 Dicto::BClasses()->means()->classes()->with()->name("B.*");
 Dicto::ABClasses()->means()->AClasses()->as_well_as()->BClasses();
-Dicto::AFunctions()->means()->functions()->with()->name("a_*");
-Dicto::BFunctions()->means()->functions()->with()->name("b_*");
-Dicto::ANotBFunctions()->means()->functions()->with()->name("b_*");
+Dicto::AFunctions()->means()->functions()->with()->name("a_.*");
+Dicto::BFunctions()->means()->functions()->with()->name("b_.*");
+Dicto::ANotBFunctions()->means()->AFunctions()->but_not()->BFunctions();
 Dicto::Suppressor()->means()->buildins()->with()->name("@");
 Dicto::FooFiles()->means()->files()->with()->name("foo");
 
