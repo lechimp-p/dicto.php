@@ -1,20 +1,31 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under The MIT License. You should have received 
+ * This software is licensed under The MIT License. You should have received
  * a copy of the along with the code.
  */
 
 use Lechimp\Dicto as Dicto;
+use Lechimp\Dicto\Definition\Variables as Vars;
 
 define("__RuleLoaderTest_PATH_TO_RULES_PHP", __DIR__."/data/rules.php");
+define("__RuleLoaderTest_VARIABLES_IN_RULES_PHP", array
+            ( "AClasses"
+            , "BClasses"
+            , "ABClasses"
+            , "AFunctions"
+            , "BFunctions"
+            , "Suppressor"
+            , "FooFiles"
+            ));
 
 abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
     const PATH_TO_RULES_PHP = __RuleLoaderTest_PATH_TO_RULES_PHP;
     const AMOUNT_OF_RULES_IN_RULES_PHP = 1;
+    const VARIABLES_IN_RULES_PHP = __RuleLoaderTest_PATH_TO_RULES_PHP;
 
     abstract protected function get_rule_loader();
 
@@ -23,8 +34,17 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $this->rule_printer = new Dicto\Output\RulePrinter();
     }
 
-    public function test_loads_rules() {
-        $rules = $this->loader->load_rules_from(self::PATH_TO_RULES_PHP);
+    public function test_loads_ruleset() {
+        $ruleset = $this->loader->load_rules_from(self::PATH_TO_RULES_PHP);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Ruleset", $ruleset);
+        return $ruleset;
+    }
+
+    /**
+     * @depends test_loads_ruleset
+     */
+    public function test_loads_rules($ruleset) {
+        $rules = $ruleset->rules();
         $this->assertInternalType("array", $rules);
         $this->assertCount(self::AMOUNT_OF_RULES_IN_RULES_PHP, $rules);
         foreach ($rules as $rule) {
@@ -39,6 +59,46 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         foreach ($rules as $rule) {
             $dict[$this->rule_printer->pprint($rule)] = $rule;
         }
+    }
+
+    /**
+     * @depends test_loads_ruleset
+     */
+    public function test_loads_variables($rules) {
+        $vars = $ruleset->variables();
+        $this->assertInternalType("array", $vars);
+        $this->assertCount(count(self::VARIABLES_IN_RULES_PHP), $vars);
+        foreach ($variables as $var) {
+            $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variables\\Variable", $var);
+        }
+
+        return $this->vars_to_dict($vars);
+    }
+
+    public function vars_to_dict($vars) {
+        $dict = array();
+        foreach ($vars as $var) {
+            $dict[$var->name()] = $var;
+        }
+    }
+
+    /**
+     * @depends test_loads_variables
+     */
+    public function test_loads_all_variables($vars) {
+        foreach (self::VARIABLES_IN_RULES_PHP as $var_name) {
+            $this->assertArrayHasKey($var_name, $vars);
+        }
+        return $vars;
+    }
+
+    /**
+     * @depends test_loads_all_variables
+     */
+    public function test_AClasses($vars) {
+        $AClasses = $vars["AClasses"];
+        $AClasses_expected = new Vars\WithName( "A.*", new Vars\Classes($name));
+        $this->assertEqual($AClasses_expected, $AClasses);
     }
 
     /**
