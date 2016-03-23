@@ -52,7 +52,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
     /**
      * @depends test_loads_ruleset
      */
-    public function test_loads_variables($rules) {
+    public function test_loads_variables($ruleset) {
         $vars = $ruleset->variables();
         $this->assertInternalType("array", $vars);
         $this->assertCount(count(self::$VARIABLES_IN_RULES_PHP), $vars);
@@ -68,6 +68,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         foreach ($vars as $var) {
             $dict[$var->name()] = $var;
         }
+        return $dict;
     }
 
     /**
@@ -154,6 +155,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         foreach ($rules as $rule) {
             $dict[$this->rule_printer->pprint($rule)] = $rule;
         }
+        return $dict;
     }
 
     /**
