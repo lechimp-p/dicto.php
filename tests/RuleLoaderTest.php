@@ -12,7 +12,11 @@ use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Definition\Variables as Vars;
 
 define("__RuleLoaderTest_PATH_TO_RULES_PHP", __DIR__."/data/rules.php");
-define("__RuleLoaderTest_VARIABLES_IN_RULES_PHP", array
+
+abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
+    const PATH_TO_RULES_PHP = __RuleLoaderTest_PATH_TO_RULES_PHP;
+    const AMOUNT_OF_RULES_IN_RULES_PHP = 1;
+    static $VARIABLES_IN_RULES_PHP = array
             ( "AClasses"
             , "BClasses"
             , "ABClasses"
@@ -20,12 +24,7 @@ define("__RuleLoaderTest_VARIABLES_IN_RULES_PHP", array
             , "BFunctions"
             , "Suppressor"
             , "FooFiles"
-            ));
-
-abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
-    const PATH_TO_RULES_PHP = __RuleLoaderTest_PATH_TO_RULES_PHP;
-    const AMOUNT_OF_RULES_IN_RULES_PHP = 1;
-    const VARIABLES_IN_RULES_PHP = __RuleLoaderTest_PATH_TO_RULES_PHP;
+            );
 
     abstract protected function get_rule_loader();
 
@@ -67,7 +66,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
     public function test_loads_variables($rules) {
         $vars = $ruleset->variables();
         $this->assertInternalType("array", $vars);
-        $this->assertCount(count(self::VARIABLES_IN_RULES_PHP), $vars);
+        $this->assertCount(count(self::$VARIABLES_IN_RULES_PHP), $vars);
         foreach ($variables as $var) {
             $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variables\\Variable", $var);
         }
@@ -86,7 +85,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      * @depends test_loads_variables
      */
     public function test_loads_all_variables($vars) {
-        foreach (self::VARIABLES_IN_RULES_PHP as $var_name) {
+        foreach (self::$VARIABLES_IN_RULES_PHP as $var_name) {
             $this->assertArrayHasKey($var_name, $vars);
         }
         return $vars;
@@ -97,9 +96,55 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      */
     public function test_AClasses($vars) {
         $AClasses = $vars["AClasses"];
-        $AClasses_expected = new Vars\WithName( "A.*", new Vars\Classes($name));
+        $AClasses_expected = new Vars\WithName( "A.*", new Vars\Classes("AClasses"));
         $this->assertEqual($AClasses_expected, $AClasses);
     }
+
+    /**
+     * @depends test_loads_all_variables
+     */
+    public function test_ABClasses($vars) {
+        $ABClasses = $vars["ABClasses"];
+        $ABClasses_expected = new Vars\AsWellAs
+                                    ( "ABClasses"
+                                    , new WithName( "A.*", new Vars\Classes("AClasses"))
+                                    , new WithName( "B.*", new Vars\Classes("BClasses"))
+                                    );
+        $this->assertEqual($ABClasses_expected, $ABClasses);
+    }
+
+    /**
+     * @depends test_loads_all_variables
+     */
+    public function test_ANotBFunctions($vars) {
+        $ANotBFunctions = $vars["ANotBFunctions"];
+        $ANotBFunctions_expected = new Vars\ButNot
+                                    ( "ANotBFunctions"
+                                    , new WithName( "A.*", new Vars\Functions("AFunctions"))
+                                    , new WithName( "B.*", new Vars\Functions("BFunctions"))
+                                    );
+        $this->assertEqual($ABFunctions_expected, $ABFunctions);
+    }
+
+    /**
+     * @depends test_loads_all_variables
+     */
+    public function test_Suppressor($vars) {
+        $Suppressor = $vars["Suppressor"];
+        $Suppressor = new Vars\WithName( "@", new Vars\Buildins("Suppressor"));
+        $this->assertEqual($Suppressor_expected, $Suppressor);
+    }
+
+    /**
+     * @depends test_loads_all_variables
+     */
+    public function test_FooFiles($vars) {
+        $FooFiles = $vars["FooFiles"];
+        $FooFiles_expected = new WithName("foo", new Vars\Files("FooFiles"));
+        $this->assertEqual($ABFunctions_expected, $ABFunctions);
+    }
+
+
 
     /**
      * @depends test_loads_rules
