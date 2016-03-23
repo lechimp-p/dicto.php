@@ -39,6 +39,14 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         return $ruleset;
     }
 
+    public function test_throws_on_invalid_file() {
+        try {
+            $this->loader->load_rules_from("fooooo.py");
+            $this->assertFalse("Should have thrown.");
+        }
+        catch (\InvalidArgumentException $e) {}
+    }
+
     // VARIABLES
 
     /**
