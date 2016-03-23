@@ -39,26 +39,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         return $ruleset;
     }
 
-    /**
-     * @depends test_loads_ruleset
-     */
-    public function test_loads_rules($ruleset) {
-        $rules = $ruleset->rules();
-        $this->assertInternalType("array", $rules);
-        $this->assertCount(self::AMOUNT_OF_RULES_IN_RULES_PHP, $rules);
-        foreach ($rules as $rule) {
-            $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rules\\Rule", $rule);
-        }
-
-        return $this->rules_to_dict($rules);
-    }
-
-    public function rules_to_dict($rules) {
-        $dict = array();
-        foreach ($rules as $rule) {
-            $dict[$this->rule_printer->pprint($rule)] = $rule;
-        }
-    }
+    // VARIABLES
 
     /**
      * @depends test_loads_ruleset
@@ -144,7 +125,28 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $this->assertEqual($ABFunctions_expected, $ABFunctions);
     }
 
+    // RULES
 
+    /**
+     * @depends test_loads_ruleset
+     */
+    public function test_loads_rules($ruleset) {
+        $rules = $ruleset->rules();
+        $this->assertInternalType("array", $rules);
+        $this->assertCount(self::AMOUNT_OF_RULES_IN_RULES_PHP, $rules);
+        foreach ($rules as $rule) {
+            $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rules\\Rule", $rule);
+        }
+
+        return $this->rules_to_dict($rules);
+    }
+
+    public function rules_to_dict($rules) {
+        $dict = array();
+        foreach ($rules as $rule) {
+            $dict[$this->rule_printer->pprint($rule)] = $rule;
+        }
+    }
 
     /**
      * @depends test_loads_rules
