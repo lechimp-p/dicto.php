@@ -35,9 +35,14 @@ class Result {
     }
 
     /**
+     * @throws  \InvalidArgumentExe
      * @return  Violation[]
      */
     public function violations_of(Def\Rules\Rule $rule) {
         return array();
     }
+
+    /**
+     * @return  Violations
+     */
 }
