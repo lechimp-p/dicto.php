@@ -52,10 +52,10 @@ class ResultTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $this->v1->lines_before());
         $this->assertEquals(array("line 2", "line 3", "line 4"), $this->v1->lines_after());
 
-        $this->assertEquals($this->r1, $this->v2->rule());
-        $this->assertEquals("r1.php", $this->v2->filename());
-        $this->assertEquals(1, $this->v2->line_no());
-        $this->assertEquals("line 1", $this->v2->line());
+        $this->assertEquals($this->r2, $this->v2->rule());
+        $this->assertEquals("r2.php", $this->v2->filename());
+        $this->assertEquals(4, $this->v2->line_no());
+        $this->assertEquals("line 4", $this->v2->line());
         $this->assertEquals(array("line 1", "line 2", "line 3"), $this->v2->lines_before());
         $this->assertEquals(array(), $this->v2->lines_after());
     }
