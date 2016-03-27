@@ -36,14 +36,6 @@ class ResultTest extends PHPUnit_Framework_TestCase {
         $this->result = new Result($this->ruleset, array($this->v1, $this->v2));
     }
 
-    public function test_violations_only_in_second_param() {
-        try {
-            new Result($this->ruleset, array($this->v1, $this));
-            $this->assertFalse("Should have raised before.");
-        }
-        catch (\InvalidArgumentException $e) {}
-    }
-
     public function test_violation_content() {
         $this->assertEquals($this->r1, $this->v1->rule());
         $this->assertEquals("r1.php", $this->v1->filename());
