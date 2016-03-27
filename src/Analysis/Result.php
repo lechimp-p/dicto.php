@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Analysis;
 use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Output\RulePrinter;
 
 class Result {
     /**
@@ -22,9 +23,28 @@ class Result {
      */
     protected $violations;
 
+    /**
+     * @var array
+     */
+    protected $by_rule_cache;
+
+    /**
+     * @var array
+     */
+    protected $by_filename_cache;
+
+    /**
+     * @param   Def\Ruleset     $ruleset
+     * @param   Violations[]    $violations
+     */
     public function __construct(Def\Ruleset $ruleset, array $violations) {
         $this->ruleset = $ruleset;
-        $this->violations = $violations;
+        $this->violations = array_map(function(Violation $v) {
+            return $v;
+        }, $violations);
+        $this->by_rule_cache = array();
+        $this->by_filename_cache = array();
+        $this->pprinter = new RulePrinter;
     }
 
     /**
@@ -35,14 +55,44 @@ class Result {
     }
 
     /**
-     * @throws  \InvalidArgumentExe
+     * @param   Def\Rules\Rule  $rule
      * @return  Violation[]
      */
     public function violations_of(Def\Rules\Rule $rule) {
-        return array();
+        $r = $this->pprinter->pprint($rule);
+        if (array_key_exists($r, $this->by_rule_cache)) {
+            return $this->by_rule_cache[$r];
+        }
+
+        $vs = array();
+        foreach ($this->violations as $v) {
+            if ($v->rule() == $rule) {
+                $vs[] = $v;
+            }
+        }
+
+        $this->by_rule_cache[$r] = $vs;
+        return $vs;
     }
 
     /**
-     * @return  Violations
+     * @param   string          $filename
+     * @return  Violation[]
      */
+    public function violations_in($filename) {
+        assert('is_string($filename)');
+        if (array_key_exists($filename, $this->by_filename_cache)) {
+            return $this->by_filename_cache[$filename];
+        }
+
+        $vs = array();
+        foreach ($this->violations as $v) {
+            if ($v->filename() == $filename) {
+                $vs[] = $v;
+            }
+        }
+
+        $this->by_filename_cache[$filename] = $vs;
+        return $vs;
+    }
 }
