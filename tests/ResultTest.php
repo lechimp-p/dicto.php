@@ -65,4 +65,11 @@ class ResultTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($of_r1, $this->result->violations_of($this->r1));
         $this->assertEquals($of_r2, $this->result->violations_of($this->r2));
     }
+
+    public function test_caches() {
+        $this->assertEquals( $this->result->violations_in("r1.php")
+                           , $this->result->violations_in("r1.php"));
+        $this->assertEquals( $this->result->violations_of($this->r1)
+                           , $this->result->violations_of($this->r1));
+    }
 }
