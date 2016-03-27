@@ -41,7 +41,7 @@ class ResultTest extends PHPUnit_Framework_TestCase {
             new Result($this->ruleset, array($this->v1, $this));
             $this->assertFalse("Should have raised before.");
         }
-        catch (\Exception $e) {}
+        catch (\InvalidArgumentException $e) {}
     }
 
     public function test_violation_content() {
