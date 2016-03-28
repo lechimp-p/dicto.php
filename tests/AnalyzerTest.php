@@ -59,18 +59,18 @@ abstract class AnalyzerTest extends PHPUnit_Framework_TestCase {
     public function test_AClasses_must_invoke_AFunctions($result) {
         $rule = $this->get_rule("AClasses must invoke AFunctions", $result->ruleset());
         $violations = $result->violations_of($rule);
-        $violations_A2 = $result->violations_in("A2.php");
-        $violations_B1 = $result->violations_in("B2.php");
+        $violations_A2 = $result->violations_in(__DIR__."/data/src/A2.php");
+        $violations_B1 = $result->violations_in(__DIR__."/data/src/B2.php");
 
         $this->assertCount(1, $violations);
         $violation = $violations[0];
 
-        $this->assertEquals("A1.php", $violation->filename());
+        $this->assertEquals(__DIR__."/data/src/A2.php", $violation->filename());
         $this->assertEquals($rule, $violation->rule());
-        $this->assertEquals("class A1 {", $violation->line());
+        $this->assertEquals("class A2 {", $violation->line());
         $this->assertEquals(11, $violation->line_no());
 
-        $this->assertContains($violation, $violations_A1);
-        $this->assertNotContains($violation, $violation_B1);
+        $this->assertContains($violation, $violations_A2);
+        $this->assertNotContains($violation, $violations_B1);
     } 
 }
