@@ -64,6 +64,14 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         return $this->vars_to_dict($vars);
     }
 
+    public function test_loads_variables_twice() {
+        $ruleset = $this->loader->load_rules_from(self::PATH_TO_RULES_PHP);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Ruleset", $ruleset);
+        $vars = $ruleset->variables();
+        $this->assertInternalType("array", $vars);
+        $this->assertCount(count(self::$VARIABLES_IN_RULES_PHP), $vars);
+    }
+
     public function vars_to_dict($vars) {
         $dict = array();
         foreach ($vars as $var) {
