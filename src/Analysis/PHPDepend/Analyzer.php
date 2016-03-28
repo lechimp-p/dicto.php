@@ -17,7 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 
 /**
- * Interface to a facility that analyses a codebase.
+ * Implementation of Analyzer using PDepend.
  */
 class Analyzer implements Ana\Analyzer {
     /**
@@ -44,13 +44,29 @@ class Analyzer implements Ana\Analyzer {
 
         $engine = $this->get_engine(); 
         $engine->addDirectory($src);
-        $res = $engine->analyze();
-        print_r($res);
-
-        $violations = array(); 
-
+        $violations = array();
+        $report = new ViolationsReport($violations);
+        foreach ($this->ruleset->rules() as $rule) {
+            $this->add_rule($report, $violations, $rule);
+        }
+        $engine->addReportGenerator($report);
+        $engine->analyze();
 
         return new Ana\Result($this->ruleset, $violations);
+    }
+
+    protected function add_rule(ViolationsReport $report, array &$violations, Def\Rules\Rule $rule) {
+        $cls = get_class($rule);
+        switch ($cls) {
+            case "Lechimp\\Dicto\\Definition\\Rules\\Invoke":
+                $analyzer = new InvokeAnalyzer();
+                $analyzer->setRule($rule);
+                $analyzer->setViolationsArray($violations);
+                break;
+            default:
+                throw new \UnexpectedValueException("Cannot add rule of type $cls");
+        }
+        $report->log($analyzer);
     }
 
     protected function get_engine() {
@@ -63,11 +79,16 @@ class Analyzer implements Ana\Analyzer {
 
     protected function get_engine_config() {
         $config = new \StdClass();
+
+        $config->parser = new \StdClass();
+        $config->parser->nesting = 65536; // maximum nesting level 
+        
         return new \PDepend\Util\Configuration($config);
     }
 
     protected function get_cache_factory() {
         $config = new \StdClass();
+
         $config->cache = new \StdClass();
         // TODO: replace this by a FileCacheDriver
         $config->cache->driver = "memory";
