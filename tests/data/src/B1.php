@@ -8,8 +8,5 @@
  * a copy of the along with the code.
  */
 
-class A1 {
-    public function invoke_a_function() {
-        return a_bogus_function();
-    }    
+class B1 {
 }
