@@ -22,6 +22,7 @@ class Invoke extends Rule {
         $this->invokes = $invokes;
     }
 
+    // TODO: This seems odd. Its part of a fluid interface, right?
     public function invoke(Functions $fun) {
         return InvokeRule($this, $fun);
     }
