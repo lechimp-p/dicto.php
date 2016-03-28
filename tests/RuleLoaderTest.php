@@ -171,6 +171,6 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      * @depends test_loads_rules
      */
     public function test_AClasses_must_depend_on_AFunctions($rules) {
-        $this->assertArrayHasKey("AClasses must depend on AFunctions", $rules);
+        $this->assertArrayHasKey("AClasses must invoke AFunctions", $rules);
     }
 }

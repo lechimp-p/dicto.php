@@ -21,4 +21,4 @@ Dicto::ANotBFunctions()->means()->AFunctions()->but_not()->BFunctions();
 Dicto::Suppressor()->means()->buildins()->with()->name("@");
 Dicto::FooFiles()->means()->files()->with()->name("foo");
 
-Dicto::AClasses()->must()->depend_on()->AFunctions();
+Dicto::AClasses()->must()->invoke()->AFunctions();
