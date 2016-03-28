@@ -16,7 +16,10 @@
         "issues": "https://github.com/lechimp-p/php-dicto/internal/issues",
         "source": "https://github.com/lechimp-p/php-dicto"
     },
-    "autoload" : {
+    "autoload": {
         "psr-4" : { "Lechimp\\Dicto\\" : "src" }
+    },
+    "require": {
+        "pdepend/pdepend" : "2.2.*"
     }
 }
