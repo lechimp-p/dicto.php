@@ -2,7 +2,7 @@
     "name": "lechimp-p/php-dicto",
     "version": "0.1.0",
     "description": "An implementation of the dicto-tool (scg.unibe.ch/dicto) in and for PHP.",
-    "keywords": ["form", "formlet"],
+    "keywords": [],
     "type": "script",
     "license": "MIT",
     "homepage": "https://github.com/lechimp-p/php-dicto",
