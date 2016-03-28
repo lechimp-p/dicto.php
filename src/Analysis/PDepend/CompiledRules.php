@@ -71,7 +71,6 @@ class CompiledRules extends AbstractASTVisitor {
            return $this->matches($var->variable(), $artifact)
                && $this->matches_name($var->regexp(), $artifact); 
         }
-        print_r($artifact);
         return false;
     }
 
