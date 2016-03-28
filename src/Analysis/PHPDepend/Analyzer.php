@@ -25,8 +25,14 @@ class Analyzer implements Ana\Analyzer {
      */
     protected $ruleset;
 
+    /**
+     * @var CompiledRules
+     */
+    protected $compiled_rules;
+
     public function __construct(Def\Ruleset $ruleset) {
         $this->ruleset = $ruleset;
+        $this->compiled_rules = new CompiledRules($this->ruleset);
     }
 
     /**
@@ -45,28 +51,11 @@ class Analyzer implements Ana\Analyzer {
         $engine = $this->get_engine(); 
         $engine->addDirectory($src);
         $violations = array();
-        $report = new ViolationsReport($violations);
-        foreach ($this->ruleset->rules() as $rule) {
-            $this->add_rule($report, $violations, $rule);
-        }
+        $report = new ViolationsReport($violations, $this->compiled_rules);
         $engine->addReportGenerator($report);
         $engine->analyze();
 
         return new Ana\Result($this->ruleset, $violations);
-    }
-
-    protected function add_rule(ViolationsReport $report, array &$violations, Def\Rules\Rule $rule) {
-        $cls = get_class($rule);
-        switch ($cls) {
-            case "Lechimp\\Dicto\\Definition\\Rules\\Invoke":
-                $analyzer = new InvokeAnalyzer();
-                $analyzer->setRule($rule);
-                $analyzer->setViolationsArray($violations);
-                break;
-            default:
-                throw new \UnexpectedValueException("Cannot add rule of type $cls");
-        }
-        $report->log($analyzer);
     }
 
     protected function get_engine() {
@@ -106,7 +95,7 @@ class Analyzer implements Ana\Analyzer {
         $extensions = array();
         $params = array();
 
-        $container= new ContainerBuilder(new ParameterBag($params));
+        $container = new ContainerBuilder(new ParameterBag($params));
 
         $container->compile();
         return $container; 

@@ -33,8 +33,14 @@ class ViolationsReport implements \PDepend\Report\ReportGenerator
      */
     protected $artifacts;
 
-    public function __construct(array &$violations) {
+    /**
+     * @var CompiledRules
+     */
+    protected $compiled_rules;
+
+    public function __construct(array &$violations, CompiledRules $compiled_rules) {
         $this->violations = &$violations;
+        $this->compiled_rules = $compiled_rules;
         $this->analyzers = array(); 
         $this->artifacts = null;
     }
@@ -43,7 +49,16 @@ class ViolationsReport implements \PDepend\Report\ReportGenerator
      * @inheritdoc
      */
     public function log(\PDepend\Metrics\Analyzer $analyzer) {
-        $this->analyzers[] = $analyzer;
+        throw new \RuntimeError("This report does not expect to log any analyzers.");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAcceptedAnalyzers() {
+        // We do not request any analyzers from the dependency injection nor do
+        // we accept any.
+        return array();
     }
 
     /**
@@ -52,20 +67,11 @@ class ViolationsReport implements \PDepend\Report\ReportGenerator
     public function close() {
         assert('!is_null($this->artifacts)');
 
-        // TODO: this is very inefficient, there is a loop hidden in analyze.
-        // i need to replace this with something smarter. Looks a little as
-        // if i would not need the analyzers at all.
-        foreach ($this->analyzers as $analyzer) {
-            $analyzer->analyze($this->artifacts);
+        $this->compiled_rules->setViolationsArray($this->violations);
+        foreach($this->artifacts as $artifact) {
+            $artifact->accept($this->compiled_rules);
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getAcceptedAnalyzers() {
-        // We do not request any analyzers from the dependency injection.
-        return array();
+        $this->compiled_rules->rmViolationsArray();
     }
 
     /**
