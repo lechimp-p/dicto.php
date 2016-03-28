@@ -15,7 +15,7 @@ require_once(__DIR__."/AnalyzerTest.php");
 
 class PHPDependAnalyzerTest extends AnalyzerTest {
     protected function get_analyzer(Def\Ruleset $ruleset) {
-        return Dicto\Analysis\PHPDepend\Analyzer::instantiate_for($ruleset);
+        return Dicto\Analysis\PDepend\Analyzer::instantiate_for($ruleset);
     }
 
 }

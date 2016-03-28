@@ -8,7 +8,7 @@
  * a copy of the along with the code.
  */
 
-namespace Lechimp\Dicto\Analysis\PHPDepend;
+namespace Lechimp\Dicto\Analysis\PDepend;
 
 use Lechimp\Dicto\Analysis as Ana;
 use Lechimp\Dicto\Definition as Def;
