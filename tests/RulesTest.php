@@ -35,7 +35,7 @@ class RulesTest extends PHPUnit_Framework_TestCase {
                 );
         $expected_checked_on =
             new Vars\ButNot
-                ( "CHECKED_ON"
+                ( "ONLY_CAN_INVERSION"
                 , new Vars\Everything("EVERYTHING")
                 , new Vars\Classes("CLASSES")
                 );
