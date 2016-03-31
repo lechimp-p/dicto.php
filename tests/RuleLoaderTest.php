@@ -10,6 +10,7 @@
 
 use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Definition\Variables as Vars;
+use Lechimp\Dicto\Definition\Rules as Rules;
 
 define("__RuleLoaderTest_PATH_TO_RULES_PHP", __DIR__."/data/rules.php");
 
@@ -32,6 +33,27 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->loader = $this->get_rule_loader();
         $this->rule_printer = new Dicto\Output\RulePrinter();
+
+        $this->AClasses =
+            new Vars\WithName( "A.*", new Vars\Classes("AClasses"));
+        $this->ABClasses =
+            new Vars\AsWellAs
+                ( "ABClasses"
+                , new Vars\WithName( "A.*", new Vars\Classes("AClasses"))
+                , new Vars\WithName( "B.*", new Vars\Classes("BClasses"))
+                );
+        $this->AFunctions =
+            new Vars\WithName( "a_.*", new Vars\Functions("AFunctions"));
+        $this->ANotBFunctions =
+            new Vars\ButNot
+                ( "ANotBFunctions"
+                , $this->AFunctions
+                , new Vars\WithName( "b_.*", new Vars\Functions("BFunctions"))
+                );
+        $this->Suppressor =
+            new Vars\WithName( "@", new Vars\Buildins("Suppressor"));
+        $this->FooFiles =
+            new Vars\WithName("foo", new Vars\Files("FooFiles"));
     }
 
     public function test_loads_ruleset() {
@@ -95,8 +117,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      */
     public function test_AClasses($vars) {
         $AClasses = $vars["AClasses"];
-        $AClasses_expected = new Vars\WithName( "A.*", new Vars\Classes("AClasses"));
-        $this->assertEquals($AClasses_expected, $AClasses);
+        $this->assertEquals($this->AClasses, $AClasses);
     }
 
     /**
@@ -104,12 +125,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      */
     public function test_ABClasses($vars) {
         $ABClasses = $vars["ABClasses"];
-        $ABClasses_expected = new Vars\AsWellAs
-                                    ( "ABClasses"
-                                    , new Vars\WithName( "A.*", new Vars\Classes("AClasses"))
-                                    , new Vars\WithName( "B.*", new Vars\Classes("BClasses"))
-                                    );
-        $this->assertEquals($ABClasses_expected, $ABClasses);
+        $this->assertEquals($this->ABClasses, $ABClasses);
     }
 
     /**
@@ -117,12 +133,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      */
     public function test_ANotBFunctions($vars) {
         $ANotBFunctions = $vars["ANotBFunctions"];
-        $ANotBFunctions_expected = new Vars\ButNot
-                                    ( "ANotBFunctions"
-                                    , new Vars\WithName( "a_.*", new Vars\Functions("AFunctions"))
-                                    , new Vars\WithName( "b_.*", new Vars\Functions("BFunctions"))
-                                    );
-        $this->assertEquals($ANotBFunctions_expected, $ANotBFunctions);
+        $this->assertEquals($this->ANotBFunctions, $ANotBFunctions);
     }
 
     /**
@@ -130,8 +141,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      */
     public function test_Suppressor($vars) {
         $Suppressor = $vars["Suppressor"];
-        $Suppressor_expected = new Vars\WithName( "@", new Vars\Buildins("Suppressor"));
-        $this->assertEquals($Suppressor_expected, $Suppressor);
+        $this->assertEquals($this->Suppressor, $Suppressor);
     }
 
     /**
@@ -139,8 +149,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      */
     public function test_FooFiles($vars) {
         $FooFiles = $vars["FooFiles"];
-        $FooFiles_expected = new Vars\WithName("foo", new Vars\Files("FooFiles"));
-        $this->assertEquals($FooFiles_expected, $FooFiles);
+        $this->assertEquals($this->FooFiles, $FooFiles);
     }
 
     // RULES
@@ -171,6 +180,14 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
      * @depends test_loads_rules
      */
     public function test_AClasses_must_depend_on_AFunctions($rules) {
-        $this->assertArrayHasKey("AClasses must invoke AFunctions", $rules);
+        $pp = "AClasses must invoke AFunctions";
+        $this->assertArrayHasKey($pp, $rules);
+
+        $expected = new Rules\Invoke
+            ( Rules\Rule::MODE_MUST
+            , $this->AClasses
+            , $this->AFunctions
+            );
+        $this->assertEquals($expected, $rules[$pp]);
     }
 }
