@@ -46,6 +46,8 @@ abstract class Rule extends Def\Definition {
     }
 
     /**
+     * Definition of the entities this rule needs to be checked on.
+     *
      * @return Variable
      */
     public function subject() {
