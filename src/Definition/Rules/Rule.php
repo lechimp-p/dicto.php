@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Definition\Rules;
 use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Definition\Variables as Vars;
 
 abstract class Rule extends Def\Definition {
     const MODE_CANNOT   = "CANNOT";
@@ -46,12 +47,32 @@ abstract class Rule extends Def\Definition {
     }
 
     /**
-     * Definition of the entities this rule needs to be checked on.
+     * Definition of the entities this rule was defined for.
      *
-     * @return Variable
+     * @return  Variable
      */
     public function subject() {
         return $this->subject;
+    }
+
+    /**
+     * Definition of the entities this rule needs to be checked on.
+     *
+     * In the default case the rule needs to be checked on every entity that
+     * is not subject() if the mode is MODE_ONLY_CAN, as this really says
+     * something about the other entities.
+     *
+     * @return  Variable
+     */
+    public function checked_on() {
+        if ($this->mode() == self::MODE_ONLY_CAN) {
+            return new Vars\ButNot
+                        ( "ONLY_CAN_INVERSION"
+                        , new Vars\Everything("EVERYTHING")
+                        , $this->subject()
+                        );
+        }
+        return $this->subject();
     }
 }
 
