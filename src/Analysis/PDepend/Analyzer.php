@@ -13,8 +13,8 @@ namespace Lechimp\Dicto\Analysis\PDepend;
 use Lechimp\Dicto\Analysis as Ana;
 use Lechimp\Dicto\Definition as Def;
 
-use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
+use PDepend\Source\AST as AST;
+
 
 /**
  * Implementation of Analyzer using PDepend.
@@ -25,14 +25,8 @@ class Analyzer implements Ana\Analyzer {
      */
     protected $ruleset;
 
-    /**
-     * @var CompiledRules
-     */
-    protected $compiled_rules;
-
     public function __construct(Def\Ruleset $ruleset) {
         $this->ruleset = $ruleset;
-        $this->compiled_rules = new CompiledRules($this->ruleset);
     }
 
     /**
@@ -50,10 +44,11 @@ class Analyzer implements Ana\Analyzer {
 
         $engine = $this->get_engine(); 
         $engine->addDirectory($src);
-        $violations = array();
-        $report = new ViolationsReport($violations, $this->compiled_rules);
-        $engine->addReportGenerator($report);
-        $engine->analyze();
+        $ast = $engine->analyze();
+
+        $di = $this->build_di_container();
+        $detector = $di["violation_detector"];
+        $violations = $detector->violations_in($ast);
 
         return new Ana\Result($this->ruleset, $violations);
     }
@@ -87,17 +82,21 @@ class Analyzer implements Ana\Analyzer {
     }
 
     protected function get_analyzer_factory() {
-        return new \PDepend\Metrics\AnalyzerFactory($this->get_di_container());
+        return new AnalyzerFactory();
     }
 
-    protected function get_di_container() {
-        // stripped down version of \PDepend\Application::createContainer
-        $extensions = array();
-        $params = array();
+    protected function get_violations_in(AST\ASTArtifactList $namespaces) {
+        $res = array();
+        return $res;
+    }
 
-        $container = new ContainerBuilder(new ParameterBag($params));
+    protected function build_di_container() {
+        $di = new \Pimple\Container(); 
 
-        $container->compile();
-        return $container; 
+        $di["violation_detector"] = function($c) {
+            return new ViolationDetector($this->ruleset);
+        };
+
+        return $di;
     }
 } 
