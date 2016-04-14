@@ -20,6 +20,7 @@
         "psr-4" : { "Lechimp\\Dicto\\" : "src" }
     },
     "require": {
-        "pdepend/pdepend" : "2.2.*"
+        "pdepend/pdepend" : "2.2.*",
+        "pimple/pimple" : "3.0.*"
     }
 }
