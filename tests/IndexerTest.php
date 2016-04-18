@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto;
+use Lechimp\Dicto\Analysis\Consts;
 use Lechimp\Dicto\Indexer\Insert;
 
 define("__IndexerTest_PATH_TO_SRC", __DIR__."/data/src");
@@ -64,12 +65,11 @@ PHP;
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
         foreach($this->insert_mock->entities as $e) {
-            if ($e["type"] == "class") {
+            if ($e["type"] == Consts::CLASS_ENTITY) {
                 $entity = $e;
             } 
         }
         $this->assertNotNull($entity);
-        $this->assertEquals("class", $entity["type"]);
         $this->assertEquals("A1", $entity["name"]);
         $this->assertEquals("A1.php", $entity["file"]);
         $this->assertEquals(11, $entity["start_line"]);
