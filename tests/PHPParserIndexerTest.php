@@ -10,10 +10,13 @@
 
 use Lechimp\Dicto as Dicto;
 
+use PhpParser\ParserFactory;
+
 require_once(__DIR__."/IndexerTest.php");
 
 class PHPParserIndexerTest extends IndexerTest {
     protected function get_indexer() {
-        return new Dicto\Indexer\PHPParser\Indexer();
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        return new Dicto\Indexer\PHPParser\Indexer($parser);
     }
 }
