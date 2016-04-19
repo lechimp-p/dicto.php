@@ -177,7 +177,7 @@ PHP;
         $expected_refs = array
             ( array
                 ( "id" => $a_bogus_function_id
-                , "possible_types" => array(Consts::FUNCTION_ENTITY, Consts::BUILDIN_ENTITY)
+                , "possible_types" => array(Consts::FUNCTION_ENTITY)
                 , "name" => "a_bogus_function"
                 , "file" => "A1.php"
                 , "line" => 13
