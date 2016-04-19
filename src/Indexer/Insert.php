@@ -20,7 +20,7 @@ interface Insert {
      * Record general info about an entity.
      *
      * @param   int             $type   one of Consts::ENTITY_TYPES;
-     * @param   string|null     $name
+     * @param   string          $name
      * @param   string          $file
      * @param   int             $start_line
      * @param   int             $end_line
