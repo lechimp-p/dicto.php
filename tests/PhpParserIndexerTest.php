@@ -14,9 +14,9 @@ use PhpParser\ParserFactory;
 
 require_once(__DIR__."/IndexerTest.php");
 
-class PHPParserIndexerTest extends IndexerTest {
+class PhpParserIndexerTest extends IndexerTest {
     protected function get_indexer() {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        return new Dicto\Indexer\PHPParser\Indexer($parser);
+        return new Dicto\Indexer\PhpParser\Indexer($parser);
     }
 }

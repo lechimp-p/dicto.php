@@ -8,12 +8,12 @@
  * a copy of the along with the code.
  */
 
-namespace Lechimp\Dicto\Indexer\PHPParser;
+namespace Lechimp\Dicto\Indexer\PhpParser;
 
 use Lechimp\Dicto\Indexer as I;
 
 /**
- * Implementation of Indexer with PHPParser.
+ * Implementation of Indexer with PhpParser.
  */
 class Indexer implements I\Indexer {
     /**
