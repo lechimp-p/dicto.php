@@ -17,7 +17,7 @@ interface Indexer {
     /**
      * Index a file by and insert it to some database defined via set_insert.
      *
-     * @param   string  $path
+     * @param   string  $path   relative to project_root
      * @return  null
      */
     public function index_file($path);
