@@ -57,6 +57,10 @@ interface Insert {
     /**
      * Record information about a dependency.
      *
+     * A class or function is considered do depend on something if its body
+     * of definition makes use of the thing. Buildins, files or globals can't
+     * depend on anything.
+     *
      * @param   int             $dependent_id
      * @param   int             $dependency_id
      * @param   string          $file       where the dependency was created
@@ -69,12 +73,15 @@ interface Insert {
     /**
      * Record information about an invocation.
      *
+     * Only executable code can make invocations, that is a function or method can
+     * invoke something, but a class can't.
+     *
      * @param   int             $invoker_id
      * @param   int             $invokee_id
-     * @param   string          $file       where the invokation was made
-     * @param   int             $line       where the invokation was made
+     * @param   string          $file       where the invocation was made
+     * @param   int             $line       where the invocation was made
      * @param   string          $source_line
      * @return  null
      */
-    public function invokation($invoker_id, $invokee_id, $source_line);
+    public function invocation($invoker_id, $invokee_id, $source_line);
 }
