@@ -16,24 +16,62 @@ define("__IndexerTest_PATH_TO_SRC", __DIR__."/data/src");
 
 class InsertMock implements Insert {
     public $entities = array();
+    public $references = array();
     public $dependencies = array();
     public $invocations = array();
 
     public function entity($type, $name, $file, $start_line, $end_line, $source) {
+        $id = count($this->entities) + count($this->references);
         $this->entities[] = array
-            ( "type" => $type
+            ( "id" => $id
+            , "type" => $type
             , "name" => $name
             , "file" => $file
             , "start_line" => $start_line
             , "end_line" => $end_line
             , "source" => $source
             );
+        return  $id;
     }
+
+    public function reference($possible_types, $name, $file, $line) {
+        $id = count($this->entities) + count($this->references);
+        $this->references[] = array
+            ( "id" => $id
+            , "possible_types" => $possible_types
+            , "name" => $name
+            , "file" => $file
+            , "line" => $line
+            );
+        return $id;
+    }
+
 
     public function dependency($dependent_id, $dependency_id, $source_line) {
+        $this->dependencies[] = array
+            ( "dependent_id" => $dependent_id
+            , "dependency_id" => $dependency_id
+            , "source_line" => $source_line
+            );
     }
 
-    public function invokation($invoker_id, $invokee_id, $source_line) {
+    public function invocation($invoker_id, $invokee_id, $source_line) {
+        $this->invocations[] = array
+            ( "invoker_id" => $invoker_id
+            , "invokee_id" => $invokee_id
+            , "source_line" => $source_line
+            );
+    }
+
+    public function get_id($name) {
+        $count = 0;
+        foreach ($this->entities as $entity) {
+            if ($entity["name"] == $name) {
+                return $count;
+            }
+            $count++;
+        }
+        assert(false, "Could not find entity $name");
     }
 } 
 
@@ -75,5 +113,119 @@ PHP;
         $this->assertEquals(11, $entity["start_line"]);
         $this->assertEquals(15, $entity["end_line"]);
         $this->assertEquals($source, $entity["source"]);
+    }
+
+    public function test_entity_A1_file() {
+        $this->indexer->index_file("A1.php");
+        $source = <<<PHP
+<?php
+/******************************************************************************
+ * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
+ * 
+ * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
+ *
+ * This software is licensed under The MIT License. You should have received 
+ * a copy of the along with the code.
+ */
+
+class A1 {
+    public function invoke_a_function() {
+        return a_bogus_function();
+    }    
+}
+PHP;
+        $this->assertCount(3, $this->insert_mock->entities);
+        $entity = null;
+        foreach($this->insert_mock->entities as $e) {
+            if ($e["type"] == Consts::FILE_ENTITY) {
+                $entity = $e;
+            }
+        }
+        $this->assertNotNull($entity);
+        $this->assertEquals("A1.php", $entity["name"]);
+        $this->assertEquals("A1.php", $entity["file"]);
+        $this->assertEquals(1, $entity["start_line"]);
+        $this->assertEquals(15, $entity["end_line"]);
+        $this->assertEquals($source, $entity["source"]);
+    }
+
+    public function test_entity_A1_method() {
+        $this->indexer->index_file("A1.php");
+        $source = <<<PHP
+    public function invoke_a_function() {
+        return a_bogus_function();
+    }    
+PHP;
+        $this->assertCount(3, $this->insert_mock->entities);
+        $entity = null;
+        foreach($this->insert_mock->entities as $e) {
+            if ($e["type"] == Consts::FUNCTION_ENTITY) {
+                $entity = $e;
+            }
+        }
+        $this->assertNotNull($entity);
+        $this->assertEquals("invoke_a_function", $entity["name"]);
+        $this->assertEquals("A1.php", $entity["file"]);
+        $this->assertEquals(12, $entity["start_line"]);
+        $this->assertEquals(14, $entity["end_line"]);
+        $this->assertEquals($source, $entity["source"]);
+    }
+
+    public function test_references_A1_a_bogus_function() {
+        $this->indexer->index_file("A1.php");
+        $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
+        $expected_refs = array
+            ( array
+                ( "id" => $a_bogus_function_id
+                , "possible_types" => array(Consts::FUNCTION_ENTITY, Consts::BUILDIN_ENTITY)
+                , "name" => "a_bogus_function"
+                , "file" => "A1.php"
+                , "line" => 13
+                )
+            );
+        $this->assertEquals($expected_refs, $this->insert_mock->references);
+    }
+
+    public function test_entity_A1_dependencies() {
+        $this->indexer->index_file("A1.php");
+        $A1_id = $this->insert_mock->get_id("A1");
+        $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
+        $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
+        $expected_deps_A1 = array
+            ( "dependent_id" => $A1_id
+            , "dependency_id" => $a_bogus_function_id
+            , "file" => "A1.php"
+            , "line" => 13
+            , "source_line" => "        return a_bogus_function();"
+            );
+
+        $expected_deps_A1 = array
+            ( "dependent_id" => $invoke_a_function_id
+            , "dependency_id" => $a_bogus_function_id
+            , "file" => "A1.php"
+            , "line" => 13
+            , "source_line" => "        return a_bogus_function();"
+            );
+
+        $this->assertCount(2, $this->insert_mock->dependencies);
+        $this->assertContains($expected_dep_A1, $this->insert_mock->dependencies);
+        $this->assertContains($expected_dep_invoke_a_function, $this->insert_mock->dependencies);
+    }
+
+    public function test_entity_A1_invocations() {
+        $this->indexer->index_file("A1.php");
+        $A1_id = $this->insert_mock->get_id("A1");
+        $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
+        $expected_invs = array
+            ( array
+                ( "dependent_id" => $A1_id
+                , "dependency_id" => $a_bogus_function_id
+                , "file" => "A1.php"
+                , "line" => 13
+                , "source_line" => "        return a_bogus_function();"
+                )
+            );
+
+        $this->assertEquals($expected_invs, $this->insert_mock->invocations);
     }
 }
