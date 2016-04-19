@@ -17,5 +17,5 @@ class Consts {
     const FUNCTION_ENTITY = "function";
     const BUILDIN_ENTITY = "buildin";
 
-    const ENTITY_TYPES = array("class","file","global","function", "buildin");
+    static $ENTITY_TYPES = array("class","file","global","function", "buildin");
 }
