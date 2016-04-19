@@ -54,7 +54,7 @@ abstract class IndexerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_entity_A1_class() {
-        $this->indexer->index_file(IndexerTest::PATH_TO_SRC."/A1.php");
+        $this->indexer->index_file("A1.php");
         $source = <<<PHP
 class A1 {
     public function invoke_a_function() {
