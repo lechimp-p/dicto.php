@@ -68,7 +68,7 @@ interface Insert {
      * @param   string          $source_line
      * @return  null
      */
-    public function dependency($dependent_id, $dependency_id, $source_line);
+    public function dependency($dependent_id, $dependency_id, $file, $line, $source_line);
 
     /**
      * Record information about an invocation.
@@ -83,5 +83,5 @@ interface Insert {
      * @param   string          $source_line
      * @return  null
      */
-    public function invocation($invoker_id, $invokee_id, $source_line);
+    public function invocation($invoker_id, $invokee_id, $file, $line, $source_line);
 }

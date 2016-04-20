@@ -47,18 +47,22 @@ class InsertMock implements Insert {
     }
 
 
-    public function dependency($dependent_id, $dependency_id, $source_line) {
+    public function dependency($dependent_id, $dependency_id, $file, $line, $source_line) {
         $this->dependencies[] = array
             ( "dependent_id" => $dependent_id
             , "dependency_id" => $dependency_id
+            , "file" => $file
+            , "line" => $line
             , "source_line" => $source_line
             );
     }
 
-    public function invocation($invoker_id, $invokee_id, $source_line) {
+    public function invocation($invoker_id, $invokee_id, $file, $line, $source_line) {
         $this->invocations[] = array
             ( "invoker_id" => $invoker_id
             , "invokee_id" => $invokee_id
+            , "file" => $file
+            , "line" => $line
             , "source_line" => $source_line
             );
     }
