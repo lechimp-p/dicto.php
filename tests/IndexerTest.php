@@ -201,7 +201,7 @@ PHP;
         $A1_id = $this->insert_mock->get_id("A1");
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
-        $expected_deps_A1 = array
+        $expected_dep_A1 = array
             ( "dependent_id" => $A1_id
             , "dependency_id" => $a_bogus_function_id
             , "file" => "A1.php"
@@ -209,7 +209,7 @@ PHP;
             , "source_line" => "        return a_bogus_function();"
             );
 
-        $expected_deps_A1 = array
+        $expected_dep_invoke_a_function = array
             ( "dependent_id" => $invoke_a_function_id
             , "dependency_id" => $a_bogus_function_id
             , "file" => "A1.php"
@@ -224,12 +224,12 @@ PHP;
 
     public function test_entity_A1_invocations() {
         $this->indexer->index_file("A1.php");
-        $A1_id = $this->insert_mock->get_id("A1");
+        $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
         $expected_invs = array
             ( array
-                ( "dependent_id" => $A1_id
-                , "dependency_id" => $a_bogus_function_id
+                ( "invoker_id" => $invoke_a_function_id
+                , "invokee_id" => $a_bogus_function_id
                 , "file" => "A1.php"
                 , "line" => 13
                 , "source_line" => "        return a_bogus_function();"
