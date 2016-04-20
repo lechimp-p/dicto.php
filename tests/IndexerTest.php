@@ -136,6 +136,7 @@ class A1 {
         return a_bogus_function();
     }    
 }
+
 PHP;
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
@@ -148,7 +149,9 @@ PHP;
         $this->assertEquals("A1.php", $entity["name"]);
         $this->assertEquals("A1.php", $entity["file"]);
         $this->assertEquals(1, $entity["start_line"]);
-        $this->assertEquals(15, $entity["end_line"]);
+        # The file will actually contain one more line then it seems,
+        # as the last line ends with a newline.
+        $this->assertEquals(16, $entity["end_line"]);
         $this->assertEquals($source, $entity["source"]);
     }
 
