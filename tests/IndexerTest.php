@@ -169,7 +169,7 @@ PHP;
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
         foreach($this->insert_mock->entities as $e) {
-            if ($e["type"] == Consts::FUNCTION_ENTITY) {
+            if ($e["type"] == Consts::METHOD_ENTITY) {
                 $entity = $e;
             }
         }
