@@ -34,11 +34,11 @@ class InsertMock implements Insert {
         return  $id;
     }
 
-    public function reference($possible_types, $name, $file, $line) {
+    public function reference($type, $name, $file, $line) {
         $id = count($this->entities) + count($this->references);
         $this->references[] = array
             ( "id" => $id
-            , "possible_types" => $possible_types
+            , "type" => $type
             , "name" => $name
             , "file" => $file
             , "line" => $line
@@ -187,7 +187,7 @@ PHP;
         $expected_refs = array
             ( array
                 ( "id" => $a_bogus_function_id
-                , "possible_types" => array(Consts::FUNCTION_ENTITY)
+                , "type" => Consts::FUNCTION_ENTITY
                 , "name" => "a_bogus_function"
                 , "file" => "A1.php"
                 , "line" => 13

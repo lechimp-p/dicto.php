@@ -46,13 +46,13 @@ interface Insert {
      * Uses the same range for ids than entity, that is, each id either referers to
      * a entity or a reference.
      *
-     * @param   int[]           $possible_types
+     * @param   int             $type
      * @param   string          $name
      * @param   string          $file       where the entity was referenced
      * @param   int             $line       where the entity was referenced
      * @return  int                         id of new reference
      */
-    public function reference($possible_types, $name, $file, $line);
+    public function reference($type, $name, $file, $line);
 
     /**
      * Record information about a dependency.

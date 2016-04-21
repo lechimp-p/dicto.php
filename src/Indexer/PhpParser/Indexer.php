@@ -230,7 +230,7 @@ class Indexer implements I\Indexer,  \PhpParser\NodeVisitor {
             $name = $node->name->parts[0];
 
             $ref_id = $this->insert->reference
-                ( array(Consts::FUNCTION_ENTITY)
+                ( Consts::FUNCTION_ENTITY
                 , $name
                 , $this->file_path
                 , $node->name->getAttribute("startLine")
