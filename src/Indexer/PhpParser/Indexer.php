@@ -197,6 +197,10 @@ class Indexer implements I\Indexer,  \PhpParser\NodeVisitor {
             // Every interesting reference we find will create a dependency
             // on this class.
             $this->dependent_entity_ids[] = $id;
+
+            // Every invocation of a reference we find will be a invocation
+            // in this class.
+            $this->invoker_entity_ids[] = $id;
         }
         // Method or Function
         elseif ($node instanceof N\Stmt\ClassMethod
@@ -277,6 +281,11 @@ class Indexer implements I\Indexer,  \PhpParser\NodeVisitor {
             assert('in_array($id, $this->dependent_entity_ids)');
             $key = array_search($id, $this->dependent_entity_ids);
             unset($this->dependent_entity_ids[$key]);
+
+            // Done with the invocations in this method or function.
+            assert('in_array($id, $this->invoker_entity_ids)');
+            $key = array_search($id, $this->invoker_entity_ids);
+            unset($this->invoker_entity_ids[$key]);
         }
         // Method or Function
         elseif ($node instanceof N\Stmt\ClassMethod

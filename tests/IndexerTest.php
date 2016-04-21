@@ -224,18 +224,26 @@ PHP;
 
     public function test_entity_A1_invocations() {
         $this->indexer->index_file("A1.php");
+        $A1_id = $this->insert_mock->get_id("A1");
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
-        $expected_invs = array
-            ( array
-                ( "invoker_id" => $invoke_a_function_id
-                , "invokee_id" => $a_bogus_function_id
-                , "file" => "A1.php"
-                , "line" => 13
-                , "source_line" => "        return a_bogus_function();"
-                )
+        $expected_inv_invoke_a_function = array
+            ( "invoker_id" => $invoke_a_function_id
+            , "invokee_id" => $a_bogus_function_id
+            , "file" => "A1.php"
+            , "line" => 13
+            , "source_line" => "        return a_bogus_function();"
+            );
+        $expected_inv_A1 = array
+            ( "invoker_id" => $A1_id
+            , "invokee_id" => $a_bogus_function_id
+            , "file" => "A1.php"
+            , "line" => 13
+            , "source_line" => "        return a_bogus_function();"
             );
 
-        $this->assertEquals($expected_invs, $this->insert_mock->invocations);
+        $this->assertCount(2, $this->insert_mock->invocations);
+        $this->assertContains($expected_inv_invoke_a_function, $this->insert_mock->invocations);
+        $this->assertContains($expected_inv_A1, $this->insert_mock->invocations);
     }
 }
