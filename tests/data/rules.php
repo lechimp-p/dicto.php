@@ -18,7 +18,7 @@ Dicto::ABClasses()->means()->AClasses()->as_well_as()->BClasses();
 Dicto::AFunctions()->means()->functions()->with()->name("a_.*");
 Dicto::BFunctions()->means()->functions()->with()->name("b_.*");
 Dicto::ANotBFunctions()->means()->AFunctions()->but_not()->BFunctions();
-Dicto::Suppressor()->means()->buildins()->with()->name("@");
+Dicto::Suppressor()->means()->language_construct("@");
 Dicto::FooFiles()->means()->files()->with()->name("foo");
 
 Dicto::AClasses()->must()->invoke()->AFunctions();

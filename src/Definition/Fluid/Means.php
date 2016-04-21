@@ -41,13 +41,25 @@ class Means extends Base {
     }
 
     /**
-     * Say that the variable means buildins.
+     * Say that the variable means methods.
      *
-     * @return  Buildins
+     * @return  Methods 
      */
-    public function buildins() {
+    public function methods() {
         // This is the first valid definition of a variable.
-        $this->rt->current_var_is(new Vars\Buildins($this->rt->get_current_var_name()));
+        $this->rt->current_var_is(new Vars\Methods($this->rt->get_current_var_name()));
+
+        return new ExistingVar($this->rt);
+    }
+
+    /**
+     * Say that the variable means a language construct.
+     *
+     * @return  LanguageConstruct 
+     */
+    public function language_construct($name) {
+        // This is the first valid definition of a variable.
+        $this->rt->current_var_is(new Vars\LanguageConstruct($this->rt->get_current_var_name(), $name));
 
         return new ExistingVar($this->rt);
     }

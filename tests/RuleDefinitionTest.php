@@ -147,7 +147,8 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         return array
             ( array("allClasses", function($n){return Dicto::$n()->means()->classes();})
             , array("allFunctions", function($n){return Dicto::$n()->means()->functions();})
-            , array("allBuildins", function($n){return Dicto::$n()->means()->buildins();})
+            , array("allMethods", function($n){return Dicto::$n()->means()->methods();})
+            , array("errorSuppressor", function($n){return Dicto::$n()->means()->language_construct("@");})
             , array("allGlobals", function($n){return Dicto::$n()->means()->globals();})
             , array("allFiles", function($n){return Dicto::$n()->means()->files();})
             );

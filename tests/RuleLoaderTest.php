@@ -51,7 +51,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
                 , new Vars\WithName( "b_.*", new Vars\Functions("BFunctions"))
                 );
         $this->Suppressor =
-            new Vars\WithName( "@", new Vars\Buildins("Suppressor"));
+            new Vars\LanguageConstruct("Suppressor", "@");
         $this->FooFiles =
             new Vars\WithName("foo", new Vars\Files("FooFiles"));
     }
