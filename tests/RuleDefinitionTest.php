@@ -53,7 +53,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider base_variable_2tuple_provider 
      */
-    public function test_variable_and($l, $r, $def) {
+    public function test_variable_as_well_as($l, $r, $def) {
         $this->check_var_definitions(array($l, $r, "both"), function() use ($l, $r, $def) {
             $def();
             Dicto::both()->means()->$l()->as_well_as()->$r();
@@ -63,7 +63,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     /**
      * @dataProvider base_variable_2tuple_provider 
      */
-    public function test_variable_except($l, $r, $def) {
+    public function test_variable_but_not($l, $r, $def) {
         $this->check_var_definitions(array($l, $r, "one"), function() use ($l, $r, $def) {
             $def();
             Dicto::one()->means()->$l()->but_not()->$r();
@@ -97,7 +97,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         });
     }
 
-    public function test_and_chaining() {
+    public function test_as_well_as_chaining() {
         $this->check_var_definitions(array("Bar", "Foo"), function() {
             Dicto::Foo()->means()->classes();
             Dicto::Bar()->means()->Foo()->as_well_as()->Foo()->as_well_as()->Foo();

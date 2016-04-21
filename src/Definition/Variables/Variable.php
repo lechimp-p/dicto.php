@@ -27,24 +27,6 @@ abstract class Variable extends Def\Definition {
         return $this->name;
     }
 
-    /**
-     * @param   Variable $other
-     * @throws  AssertionException when not ($other instanceof static::class)
-     * @return  Variable
-     */
-    public function _and(Variable $other) {
-        return new AsWellAs($this, $other);
-    } 
-
-    /**
-     * @param   Variable $other
-     * @throws  AssertionException when not ($other instanceof static::class)
-     * @return  Variable
-     */
-    public function _except(Variable $other) {
-        return new ButNot($this, $other);
-    } 
-
     public function _with() {
         return new WithFluid($this);
     } 
