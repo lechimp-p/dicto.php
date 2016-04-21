@@ -5,7 +5,7 @@
  * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
  *
  * This software is licensed under The MIT License. You should have received
- * a copy of the along with the code.
+ * a copy of the licence along with the code.
  */
 
 namespace Lechimp\Dicto\App;
