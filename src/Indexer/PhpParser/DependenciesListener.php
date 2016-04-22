@@ -99,6 +99,13 @@ class DependenciesListener extends Listener {
                     );
             }
         }
+        elseif ($node instanceof N\Expr\ErrorSuppress) {
+            $ref_ids[] = $this->indexer->get_reference
+                    ( Consts::LANGUAGE_CONSTRUCT_ENTITY
+                    , "@"
+                    , $node->getAttribute("startLine")
+                    );
+        }
         foreach ($ref_ids as $ref_id) {
             $start_line = $node->getAttribute("startLine");
             $source_line = $this->lines_from_to($start_line, $start_line);
