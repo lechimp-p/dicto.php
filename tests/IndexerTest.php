@@ -359,7 +359,7 @@ PHP;
             , "source_line" => '        global $glob;'
             );
         $expected_dep_A3_2 = array
-            ( "dependent_id" => $invoke_a_method_id
+            ( "dependent_id" => $A3_id
             , "dependency_id" => $glob_ids[1]
             , "file" => "A3.php"
             , "line" => 17
