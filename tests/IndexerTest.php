@@ -208,7 +208,6 @@ PHP;
             , "line" => 13
             , "source_line" => "        return a_bogus_function();"
             );
-
         $expected_dep_invoke_a_function = array
             ( "dependent_id" => $invoke_a_function_id
             , "dependency_id" => $a_bogus_function_id
