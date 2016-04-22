@@ -8,8 +8,8 @@
  * a copy of the licence along with the code.
  */
 
-class A2 {
-    public function invoke_a_method(A1 $obj) {
-        return $obj->invoke_a_function();
-    }
+class A4 {
+    public function use_stfu() {
+        return @stfu();
+    }    
 }

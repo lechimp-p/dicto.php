@@ -8,8 +8,12 @@
  * a copy of the licence along with the code.
  */
 
-class A2 {
-    public function invoke_a_method(A1 $obj) {
-        return $obj->invoke_a_function();
-    }
+class A3 {
+    public function use_global_by_keyword() {
+        global $glob;
+    }    
+
+    public function use_global_by_array() {
+        $glob = $GLOBALS["glob"];
+    }    
 }
