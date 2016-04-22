@@ -81,14 +81,15 @@ class InsertMock implements Insert {
         assert(false, "entity or reference named '$name' exists");
     }
 
-    public function get_ids($name, $ids) {
+    public function get_ids($name, $amount) {
         $ids = array();
         foreach ($this->references as $ref) {
             if ($ref["name"] == $name) {
                 $ids[] = $ref["id"];
             }
         }
-        assert('count($ids) ==  $ids');
+        assert('count($ids) ==  $amount');
+        return $ids;
     }
 } 
 
