@@ -64,17 +64,45 @@ class DependenciesListener extends Listener {
     }
 
     public function on_enter_misc(\PhpParser\Node $node) {
-        $ref_id = null;
+        $ref_ids = array();
         if ($node instanceof N\Expr\MethodCall) {
-            $ref_id = $this->indexer->get_reference(Consts::METHOD_ENTITY, $node->name);
+            $ref_ids[] = $this->indexer->get_reference
+                ( Consts::METHOD_ENTITY
+                , $node->name
+                , $node->getAttribute("startLine")
+                );
         }
         elseif($node instanceof N\Expr\FuncCall) {
-            $ref_id = $this->indexer->get_reference(Consts::FUNCTION_ENTITY, $node->name);
+            $ref_ids[] = $this->indexer->get_reference
+                ( Consts::FUNCTION_ENTITY
+                , $node->name->parts[0]
+                , $node->getAttribute("startLine")
+                );
         }
-        if ($ref_id !== null) {
+        elseif ($node instanceof N\Stmt\Global_) {
+            foreach ($node->vars as $var) {
+                assert('$var instanceof \\PhpParser\\Node\\Expr\\Variable');
+                assert('is_string($var->name)');
+                $ref_ids[] = $this->indexer->get_reference
+                    ( Consts::GLOBAL_ENTITY
+                    , $var->name
+                    , $node->getAttribute("startLine")
+                    );
+            }
+        }
+        elseif ($node instanceof N\Expr\ArrayDimFetch) {
+            if ($node->var->name == "GLOBALS") {
+                $ref_ids[] = $this->indexer->get_reference
+                    ( Consts::GLOBAL_ENTITY
+                    , $node->dim->value
+                    , $node->getAttribute("startLine")
+                    );
+            }
+        }
+        foreach ($ref_ids as $ref_id) {
             $start_line = $node->getAttribute("startLine");
             $source_line = $this->lines_from_to($start_line, $start_line);
-            // We are in a class a need to record the dependency now.
+            // Record a dependency for every entity we currently know as dependent.
             foreach ($this->dependent_entity_ids as $dependent_id) {
                 $this->insert->dependency
                     ( $dependent_id

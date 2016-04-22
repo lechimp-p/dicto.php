@@ -130,12 +130,10 @@ class Indexer implements I\Indexer,  \PhpParser\NodeVisitor {
         return implode("\n", array_slice($this->file_content, $start-1, $end-$start+1));
     }
 
-    public function get_reference($entity_type, N\Name $n) {
+    public function get_reference($entity_type, $name, $start_line) {
         assert('in_array($entity_type, \\Lechimp\\Dicto\\Analysis\\Consts::$ENTITY_TYPES)');
-        // TODO: we might need to implode parts if we know a thing about
-        // namespaces?
-        $name = $n->parts[0];
-        $start_line = $n->getAttribute("startLine");
+        assert('is_string($name)');
+        assert('is_int($start_line)');
 
         // caching
         $key = $entity_type.":".$name.":".$this->file_path.":".$start_line;

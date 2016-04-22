@@ -66,10 +66,18 @@ class InvocationsListener extends Listener {
     public function on_enter_misc(\PhpParser\Node $node) {
         $ref_id = null;
         if ($node instanceof N\Expr\MethodCall) {
-            $ref_id = $this->indexer->get_reference(Consts::METHOD_ENTITY, $node->name);
+            $ref_id = $this->indexer->get_reference
+                ( Consts::METHOD_ENTITY
+                , $node->name
+                , $node->getAttribute("startLine")
+                );
         }
         elseif($node instanceof N\Expr\FuncCall) {
-            $ref_id = $this->indexer->get_reference(Consts::FUNCTION_ENTITY, $node->name);
+            $ref_id = $this->indexer->get_reference
+                ( Consts::FUNCTION_ENTITY
+                , $node->name->parts[0]
+                , $node->getAttribute("startLine")
+                );
         }
         if ($ref_id !== null) {
             // We need to record a invocation in every invoking entity now.
