@@ -477,4 +477,21 @@ PHP;
         $this->assertContains($expected_inv_use_stfu, $this->insert_mock->invocations);
         $this->assertContains($expected_inv_A4, $this->insert_mock->invocations);
     }
+
+    public function test_entity_MD_file() {
+        $this->indexer->index_file("MD.md");
+        $source = <<<PHP
+Some random content.
+
+PHP;
+        $this->assertCount(1, $this->insert_mock->entities);
+        $entity = $this->insert_mock->entities[0];
+        $this->assertEquals("MD.md", $entity["name"]);
+        $this->assertEquals("MD.md", $entity["file"]);
+        $this->assertEquals(1, $entity["start_line"]);
+        $this->assertEquals(2, $entity["end_line"]);
+        $this->assertEquals($source, $entity["source"]);
+    }
+
+
 }
