@@ -90,7 +90,7 @@ class DB implements Insert {
     } 
 
     public function reference_table() {
-        return "references";
+        return "refs";
     }
 
     public function dependencies_table() {
@@ -137,6 +137,92 @@ class DB implements Insert {
             );
         $entity_table->setPrimaryKey(array("id"));
 
+        $reference_table = $schema->createTable($this->reference_table());
+        $reference_table->addColumn
+            ( "id", "integer"
+            , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
+            );
+        $reference_table->addColumn
+            ("type", "string"
+            , array("notnull" => true)
+            );
+        $reference_table->addColumn
+            ("name", "string"
+            , array("notnull" => true)
+            );
+        $reference_table->addColumn
+            ("file", "string"
+            , array("notnull" => true)
+            );
+        $reference_table->addColumn
+            ("line", "integer"
+            , array("notnull" => true, "unsigned" => true)
+            );
+        $reference_table->setPrimaryKey(array("id"));
+
+        $dependencies_table = $schema->createTable($this->dependencies_table());
+        $dependencies_table->addColumn
+            ( "dependent_id", "integer"
+            , array("notnull" => true, "unsigned" => true)
+            );
+        $dependencies_table->addColumn
+            ( "dependency_id", "integer"
+            , array("notnull" => true, "unsigned" => true)
+            );
+        $dependencies_table->addColumn
+            ("file", "string"
+            , array("notnull" => true)
+            );
+        $dependencies_table->addColumn
+            ("line", "integer"
+            , array("notnull" => true, "unsigned" => true)
+            );
+        $dependencies_table->addColumn
+            ("source_line", "text"
+            , array("notnull" => true)
+            );
+        $dependencies_table->addForeignKeyConstraint
+            ( $entity_table
+            , array("dependent_id")
+            , array("id")
+            );
+        $dependencies_table->addForeignKeyConstraint
+            ( $reference_table
+            , array("dependency_id")
+            , array("id")
+            );
+
+        $invocations_table = $schema->createTable($this->invocations_table());
+        $invocations_table->addColumn
+            ( "invoker_id", "integer"
+            , array("notnull" => true, "unsigned" => true)
+            );
+        $invocations_table->addColumn
+            ( "invokee_id", "integer"
+            , array("notnull" => true, "unsigned" => true)
+            );
+        $invocations_table->addColumn
+            ("file", "string"
+            , array("notnull" => true)
+            );
+        $invocations_table->addColumn
+            ("line", "integer"
+            , array("notnull" => true, "unsigned" => true)
+            );
+        $invocations_table->addColumn
+            ("source_line", "text"
+            , array("notnull" => true)
+            );
+        $invocations_table->addForeignKeyConstraint
+            ( $entity_table
+            , array("invoker_id")
+            , array("id")
+            );
+        $invocations_table->addForeignKeyConstraint
+            ( $reference_table
+            , array("invokee_id")
+            , array("id")
+            );
 
         $sync = new SingleDatabaseSynchronizer($this->connection);
         $sync->createSchema($schema);
