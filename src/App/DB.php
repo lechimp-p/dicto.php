@@ -89,6 +89,18 @@ class DB implements Insert {
         return "entities";
     } 
 
+    public function reference_table() {
+        return "references";
+    }
+
+    public function dependencies_table() {
+        return "dependencies";
+    }
+
+    public function invocations_table() {
+        return "invocations";
+    }
+
     // Creation of database.
 
     public function create_database() {
