@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\App;
 
+use Lechimp\Dicto\Analysis\Consts;
 use Lechimp\Dicto\Indexer\Insert;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema;
@@ -22,8 +23,14 @@ class DB implements Insert {
      */
     protected $connection;
 
+    /**
+     * @var \Doctrine\DBAL\Query\Builder
+     */
+    protected $builder;
+
     public function __construct(Connection $connection) {
         $this->connection = $connection;
+        $this->builder = $this->connection->createQueryBuilder();
     }
 
     // Implementation of Insert interface.
@@ -32,6 +39,30 @@ class DB implements Insert {
      * @inheritdoc
      */
     public function entity($type, $name, $file, $start_line, $end_line, $source) {
+        assert('in_array($type, \\Lechimp\\Dicto\\Analysis\\Consts::$ENTITY_TYPES)');
+        assert('is_string($name)');
+        assert('is_string($file)');
+        assert('is_int($start_line)');
+        assert('is_int($end_line)');
+        assert('is_string($source)');
+        $this->builder
+            ->insert($this->entity_table())
+            ->values(array
+                ( "type" => "?"
+                , "name" => "?"
+                , "file" => "?"
+                , "start_line" => "?"
+                , "end_line" => "?"
+                , "source" => "?"
+                ))
+            ->setParameter(0, $type)
+            ->setParameter(1, $name)
+            ->setParameter(2, $file)
+            ->setParameter(3, $start_line)
+            ->setParameter(4, $end_line)
+            ->setParameter(5, $source)
+            ->execute();
+        return $this->connection->lastInsertId();
     }
 
     /**
