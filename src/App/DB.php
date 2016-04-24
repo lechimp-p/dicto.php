@@ -23,14 +23,15 @@ class DB implements Insert {
      */
     protected $connection;
 
-    /**
-     * @var \Doctrine\DBAL\Query\Builder
-     */
-    protected $builder;
-
     public function __construct(Connection $connection) {
         $this->connection = $connection;
-        $this->builder = $this->connection->createQueryBuilder();
+    }
+
+    /**
+     * @return \Doctrine\DBAL\Query\Builder
+     */
+    protected function builder() {
+        return $this->connection->createQueryBuilder();
     }
 
     // Implementation of Insert interface.
@@ -45,7 +46,7 @@ class DB implements Insert {
         assert('is_int($start_line)');
         assert('is_int($end_line)');
         assert('is_string($source)');
-        $this->builder
+        $this->builder()
             ->insert($this->entity_table())
             ->values(array
                 ( "type" => "?"
@@ -62,25 +63,83 @@ class DB implements Insert {
             ->setParameter(4, $end_line)
             ->setParameter(5, $source)
             ->execute();
-        return $this->connection->lastInsertId();
+        return (int)$this->connection->lastInsertId();
     }
 
     /**
      * @inheritdoc
      */
     public function reference($type, $name, $file, $line) {
+        assert('in_array($type, \\Lechimp\\Dicto\\Analysis\\Consts::$ENTITY_TYPES)');
+        assert('is_string($name)');
+        assert('is_string($file)');
+        assert('is_int($line)');
+        $this->builder()
+            ->insert($this->reference_table())
+            ->values(array
+                ( "type" => "?"
+                , "name" => "?"
+                , "file" => "?"
+                , "line" => "?"
+                ))
+            ->setParameter(0, $type)
+            ->setParameter(1, $name)
+            ->setParameter(2, $file)
+            ->setParameter(3, $line)
+            ->execute();
+        return (int)$this->connection->lastInsertId();
     }
 
     /**
      * @inheritdoc
      */
     public function dependency($dependent_id, $dependency_id, $file, $line, $source_line) {
+        assert('is_int($dependent_id)');
+        assert('is_int($dependency_id)');
+        assert('is_string($file)');
+        assert('is_int($line)');
+        assert('is_string($source_line)');
+        $this->builder()
+            ->insert($this->dependencies_table())
+            ->values(array
+                ( "dependent_id" => "?"
+                , "dependency_id" => "?"
+                , "file" => "?"
+                , "line" => "?"
+                , "source_line" => "?"
+                ))
+            ->setParameter(0, $dependent_id)
+            ->setParameter(1, $dependency_id)
+            ->setParameter(2, $file)
+            ->setParameter(3, $line)
+            ->setParameter(4, $source_line)
+            ->execute();
     }
 
     /**
      * @inheritdoc
      */
     public function invocation($invoker_id, $invokee_id, $file, $line, $source_line) {
+        assert('is_int($invoker_id)');
+        assert('is_int($invokee_id)');
+        assert('is_string($file)');
+        assert('is_int($line)');
+        assert('is_string($source_line)');
+        $this->builder()
+            ->insert($this->invocations_table())
+            ->values(array
+                ( "invoker_id" => "?"
+                , "invokee_id" => "?"
+                , "file" => "?"
+                , "line" => "?"
+                , "source_line" => "?"
+                ))
+            ->setParameter(0, $invoker_id)
+            ->setParameter(1, $invokee_id)
+            ->setParameter(2, $file)
+            ->setParameter(3, $line)
+            ->setParameter(4, $source_line)
+            ->execute();
     }
 
     // Naming
