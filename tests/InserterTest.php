@@ -41,10 +41,11 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
 
         $expected = array
             ( "id" => $id
+            , "type" => Consts::CLASS_ENTITY
             , "name" => "AClass"
             , "file" => "AClass.php"
-            , "start_line" => 1
-            , "end_line" => 2
+            , "start_line" => "1"
+            , "end_line" => "2"
             , "source" => "the source"
             );
 
