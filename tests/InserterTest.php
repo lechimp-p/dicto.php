@@ -82,8 +82,8 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
             ->fetchAll();
 
         $expected = array
-            ( "dependent_id" => $id1
-            , "dependency_id" => $id2
+            ( "dependent_id" => "$id1"
+            , "dependency_id" => "$id2"
             , "file" => "BClass.php"
             , "line" => "1"
             , "source_line" => "new AClass();"
@@ -95,7 +95,7 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
     public function test_insert_invocation() {
         $id1 = $this->inserter->entity(Consts::CLASS_ENTITY, "AClass", "AClass.php", 1, 2, "the source");
         $id2 = $this->inserter->reference(Consts::FUNCTION_ENTITY, "my_fun", "AClass.php", 2);
-        $this->inserter->invocation($id1, $id2, "AClass.php", 2, "my_fun()"); 
+        $this->inserter->invocation($id1, $id2, "AClass.php", 2, "my_fun();");
         $res = $this->builder
             ->select("*")
             ->from($this->inserter->invocations_table())
@@ -103,8 +103,8 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
             ->fetchAll();
 
         $expected = array
-            ( "invoker_id" => $id1
-            , "invokee_id" => $id2
+            ( "invoker_id" => "$id1"
+            , "invokee_id" => "$id2"
             , "file" => "AClass.php"
             , "line" => "2"
             , "source_line" => "my_fun();"
