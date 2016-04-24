@@ -61,59 +61,39 @@ class DB implements Insert {
     // Creation of database.
 
     public function create_database() {
-        $entity_table = new Schema\Table
-            ( $this->entity_table()
-            , array // Columns
-                ( new Schema\Column
-                    ( "id"
-                    , Type::getType("integer")
-                    , array
-                        ( "notnull" => true
-                        , "autoincrement" => true
-                        , "unsigned" => true
-                        )
-                    ) 
-                , new Schema\Column
-                    ( "name"
-                    , Type::getType("string")
-                    , array
-                        ( "notnull" => true
-                        )
-                    )
-                , new Schema\Column
-                    ( "file"
-                    , Type::getType("string")
-                    , array
-                        ( "notnull" => true
-                        )
-                    )
-                , new Schema\Column
-                    ( "start_line"
-                    , Type::getType("integer")
-                    , array
-                        ( "notnull" => true
-                        , "unsigned" => true
-                        )
-                    )
-                , new Schema\Column
-                    ( "end_line"
-                    , Type::getType("integer")
-                    , array
-                        ( "notnull" => true
-                        , "unsigned" => true
-                        )
-                    )
-                )
-            , array() // Index
-            , array() // Foreign Key Constraints
-            );
+        $schema = new Schema\Schema();
 
-        $schema = new Schema\Schema
-            ( array // Tables
-                ( $entity_table
-                )
-            , array() // Sequences
+        $entity_table = $schema->createTable($this->entity_table());
+        $entity_table->addColumn
+            ("id", "integer"
+            , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
             );
+        $entity_table->addColumn
+            ("type", "string"
+            , array("notnull" => true)
+            );
+        $entity_table->addColumn
+            ("name", "string"
+            , array("notnull" => true)
+            );
+        $entity_table->addColumn
+            ("file", "string"
+            , array("notnull" => true)
+            );
+        $entity_table->addColumn
+            ("start_line", "integer"
+            , array("notnull" => true, "unsigned" => true)
+            );
+        $entity_table->addColumn
+            ("end_line", "integer"
+            , array("notnull" => true, "unsigned" => true)
+            );
+        $entity_table->addColumn
+            ("source", "text"
+            , array("notnull" => true)
+            );
+        $entity_table->setPrimaryKey(array("id"));
+
 
         $sync = new SingleDatabaseSynchronizer($this->connection);
         $sync->createSchema($schema);
