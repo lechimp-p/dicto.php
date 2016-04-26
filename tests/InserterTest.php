@@ -112,4 +112,12 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array($expected), $res);
     }
+
+    public function test_id_is_int() {
+        $id1 = $this->inserter->entity(Consts::CLASS_ENTITY, "AClass", "AClass.php", 1, 2, "the source");
+        $this->assertInternalType("integer", $id1);
+
+        $id2 = $this->inserter->reference(Consts::FUNCTION_ENTITY, "my_fun", "AClass.php", 2);
+        $this->assertInternalType("int", $id2);
+    }
 }
