@@ -45,7 +45,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function all_classes_cannot_depend_on_globals() {
-        return new R\DependsOn
+        return new R\DependOn
             ( R\Rule::MODE_CANNOT
             , new V\Classes("allClasses")
             , new V\Globals("allGlobals")
@@ -94,7 +94,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_depends_on_1() {
-        $rule = $this->all_classes_cannot_contain_text_foo();
+        $rule = $this->all_classes_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
         $this->db->dependency($id1, $id2, "file", 2, "a line");
@@ -116,7 +116,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_depends_on_2() {
-        $rule = $this->all_classes_cannot_contain_text_foo();
+        $rule = $this->all_classes_cannot_depend_on_globals();
         $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
         $stmt = $this->compiler->compile($this->db, $rule);
@@ -128,7 +128,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_invoke_1() {
-        $rule = $this->all_classes_cannot_contain_text_foo();
+        $rule = $this->all_classes_cannot_invoke_functions();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
         $this->db->invocation($id1, $id2, "file", 2, "a line");
@@ -150,7 +150,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_invoke_2() {
-        $rule = $this->all_classes_cannot_contain_text_foo();
+        $rule = $this->all_classes_cannot_invoke_functions();
         $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
         $stmt = $this->compiler->compile($this->db, $rule);
@@ -160,5 +160,4 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $this->assertEquals(array(), $res);
     }
-
 }
