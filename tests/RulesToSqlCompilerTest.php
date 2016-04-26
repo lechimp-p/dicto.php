@@ -127,10 +127,23 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $res);
     }
 
+    public function test_depends_on_3() {
+        $rule = $this->all_classes_cannot_depend_on_globals();
+        $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "a_function", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
     public function test_invoke_1() {
         $rule = $this->all_classes_cannot_invoke_functions();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
-        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
         $this->db->invocation($id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
@@ -152,11 +165,23 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_invoke_2() {
         $rule = $this->all_classes_cannot_invoke_functions();
         $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
-        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_invoke_3() {
+        $rule = $this->all_classes_cannot_invoke_functions();
+        $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "some_function", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
+        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
         $res = $stmt->fetchAll();
         $this->assertEquals(array(), $res);
     }
