@@ -11,13 +11,14 @@
 namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\Analysis\Consts;
+use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Indexer\Insert;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
-class DB implements Insert {
+class DB implements Insert, Query {
     /**
      * @var Connection
      */
@@ -30,7 +31,7 @@ class DB implements Insert {
     /**
      * @return \Doctrine\DBAL\Query\Builder
      */
-    protected function builder() {
+    public function builder() {
         return $this->connection->createQueryBuilder();
     }
 
