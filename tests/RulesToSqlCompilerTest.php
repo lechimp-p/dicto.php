@@ -31,6 +31,13 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
                 , "password" => ""
                 )
             ); 
+
+        // initialize regexp function for sqlite
+        $pdo = $this->connection->getWrappedConnection();
+        $pdo->sqliteCreateFunction("regexp", function($pattern, $data) {
+            return preg_match("%$pattern%", $data) > 0;
+        });
+
         $this->db = new DB($this->connection);
         $this->db->create_database();
         $this->compiler = new RulesToSqlCompiler();
