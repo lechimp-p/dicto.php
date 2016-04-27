@@ -43,10 +43,16 @@ class RulesToSqlCompiler {
         throw new \LogicException("Unknown rule class '".get_class($rule)."'");
     }
 
-    protected function compile_contains_text(Query $query, $mode, Vars\Variable $var) {
-        return $query->builder()
+    protected function compile_contains_text(Query $query, $mode, Vars\Variable $var, $regexp) {
+        assert('is_string($regexp)');
+        $builder = $query->builder();
+        return $builder
             ->select("id", "type", "name", "file", "start_line", "end_line", "source")
             ->from($query->entity_table())
+            ->where
+                ( "source REGEXP ?"
+                )
+            ->setParameter(0, $regexp)
             ->execute();
     }
 
