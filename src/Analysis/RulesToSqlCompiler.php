@@ -14,6 +14,7 @@ use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Definition\Variables as Vars;
 
 use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
 /**
  * This is a compiler that uses Doctrines QueryBuilder to transform rules to
@@ -44,7 +45,6 @@ class RulesToSqlCompiler {
     }
 
     protected function compile_contains_text(Query $query, $mode, Vars\Variable $var, $regexp) {
-        assert('is_string($regexp)');
         $builder = $query->builder();
         return $builder
             ->select("id", "type", "name", "file", "start_line", "end_line", "source")
@@ -57,16 +57,60 @@ class RulesToSqlCompiler {
     }
 
     protected function compile_depends_on(Query $query, $mode, Vars\Variable $subject, Vars\Variable $dependency) {
-        return $query->builder()
-            ->select("dependent_id", "dependency_id", "file", "line", "source_line")
-            ->from($query->dependencies_table())
+        $builder = $query->builder();
+        return $builder
+            ->select("d.dependent_id", "d.dependency_id", "d.file", "d.line", "d.source_line")
+            ->from($query->dependencies_table(), "d")
+            ->innerJoin("d", $query->entity_table(), "e", "d.dependent_id = e.id")
+            ->innerJoin("d", $query->reference_table(), "r", "d.dependency_id = r.id")
+            ->where
+                ( $this->compile_var($builder->expr(), "e", $subject)
+                , $this->compile_var($builder->expr(), "r", $dependency)
+                )
             ->execute();
     }
 
     protected function compile_invoke(Query $query, $mode, Vars\Variable $subject, Vars\Variable $invokee) {
-        return $query->builder()
-            ->select("invoker_id", "invokee_id", "file", "line", "source_line")
-            ->from($query->invocations_table())
+        $builder = $query->builder();
+        return $builder
+            ->select("i.invoker_id", "i.invokee_id", "i.file", "i.line", "i.source_line")
+            ->from($query->invocations_table(), "i")
+
+            ->innerJoin("i", $query->entity_table(), "e", "i.invoker_id = e.id")
+            ->innerJoin("i", $query->reference_table(), "r", "i.invokee_id = r.id")
+            ->where
+                ( $this->compile_var($builder->expr(), "e", $subject)
+                , $this->compile_var($builder->expr(), "r", $invokee)
+                )
             ->execute();
+    }
+
+    public function compile_var(ExpressionBuilder $builder, $table_name, Vars\Variable $var) {
+        if ($var instanceof Vars\AsWellAs) {
+        }
+        if ($var instanceof Vars\ButNot) {
+        }
+        if ($var instanceof Vars\Classes) {
+            return $builder->eq("$table_name.type", $builder->literal(Consts::CLASS_ENTITY));
+        }
+        if ($var instanceof Vars\Everything) {
+        }
+        if ($var instanceof Vars\Files) {
+            return $builder->eq("$table_name.type", $builder->literal(Consts::FILE_ENTITY));
+        }
+        if ($var instanceof Vars\Functions) {
+            return $builder->eq("$table_name.type", $builder->literal(Consts::FUNCTION_ENTITY));
+        }
+        if ($var instanceof Vars\Globals) {
+            return $builder->eq("$table_name.type", $builder->literal(Consts::GLOBAL_ENTITY));
+        }
+        if ($var instanceof Vars\LanguageConstruct) {
+        }
+        if ($var instanceof Vars\Methods) {
+            return $builder->eq("$table_name.type", $builder->literal(Consts::METHOD_ENTITY));
+        }
+        if ($var instanceof Vars\WithName) {
+        }
+        throw new \LogicException("Can't compile var-type '".get_class($var)."'");
     }
 } 
