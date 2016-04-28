@@ -85,29 +85,34 @@ class RulesToSqlCompiler {
             ->execute();
     }
 
-    public function compile_var(ExpressionBuilder $builder, $table_name, Vars\Variable $var) {
+    public function compile_var(ExpressionBuilder $b, $table_name, Vars\Variable $var) {
         if ($var instanceof Vars\AsWellAs) {
         }
         if ($var instanceof Vars\ButNot) {
         }
         if ($var instanceof Vars\Classes) {
-            return $builder->eq("$table_name.type", $builder->literal(Consts::CLASS_ENTITY));
+            return $b->eq("$table_name.type", $b->literal(Consts::CLASS_ENTITY));
         }
         if ($var instanceof Vars\Everything) {
+            return $b->eq($b->literal(1), $b->literal(1));
         }
         if ($var instanceof Vars\Files) {
-            return $builder->eq("$table_name.type", $builder->literal(Consts::FILE_ENTITY));
+            return $b->eq("$table_name.type", $b->literal(Consts::FILE_ENTITY));
         }
         if ($var instanceof Vars\Functions) {
-            return $builder->eq("$table_name.type", $builder->literal(Consts::FUNCTION_ENTITY));
+            return $b->eq("$table_name.type", $b->literal(Consts::FUNCTION_ENTITY));
         }
         if ($var instanceof Vars\Globals) {
-            return $builder->eq("$table_name.type", $builder->literal(Consts::GLOBAL_ENTITY));
+            return $b->eq("$table_name.type", $b->literal(Consts::GLOBAL_ENTITY));
         }
         if ($var instanceof Vars\LanguageConstruct) {
+            return $b->andX
+                ( $b->eq("$table_name.type", $b->literal(Consts::LANGUAGE_CONSTRUCT_ENTITY))
+                , $b->eq("$table_name.name", $b->literal($var->construct_name()))
+                );
         }
         if ($var instanceof Vars\Methods) {
-            return $builder->eq("$table_name.type", $builder->literal(Consts::METHOD_ENTITY));
+            return $b->eq("$table_name.type", $b->literal(Consts::METHOD_ENTITY));
         }
         if ($var instanceof Vars\WithName) {
         }

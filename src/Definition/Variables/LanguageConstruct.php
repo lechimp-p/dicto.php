@@ -31,5 +31,12 @@ class LanguageConstruct extends Variable {
         $v->setExplanation($text);
         return $v;
     }
+
+    /**
+     * @return  string
+     */
+    public function construct_name() {
+        return $this->construct_name;
+    }
 }
 

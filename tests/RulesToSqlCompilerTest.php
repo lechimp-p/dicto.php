@@ -67,6 +67,14 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             );
     }
 
+    public function everything_cannot_depend_on_error_suppressor() {
+        return new R\DependOn
+            ( R\Rule::MODE_CANNOT
+            , new V\Everything("everything")
+            , new V\LanguageConstruct("errorSuppressor", "@")
+            );
+    }
+
     public function test_all_classes_cannot_contain_text_foo_1() {
         $rule = $this->all_classes_cannot_contain_text_foo();
         $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
@@ -189,6 +197,53 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    /**
+     * @dataProvider entity_types_provider
+     */
+    public function test_everything_cannot_depend_on_error_suppressor_1($type) {
+        $rule = $this->everything_cannot_depend_on_error_suppressor();
+        $id1 = $this->db->entity($type, "entity", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::LANGUAGE_CONSTRUCT_ENTITY, "@", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "dependent_id"    => "$id1"
+                , "dependency_id"   => "$id2"
+                , "file"            => "file"
+                , "line"            => 2
+                , "source_line"     => "a line"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function entity_types_provider() {
+        return array
+            ( array(Consts::CLASS_ENTITY)
+            , array(Consts::FILE_ENTITY)
+            , array(Consts::FUNCTION_ENTITY)
+            , array(Consts::METHOD_ENTITY)
+            );
+    }
+
+    public function test_everything_cannot_depend_on_error_suppressor_2() {
+        $rule = $this->everything_cannot_depend_on_error_suppressor();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::LANGUAGE_CONSTRUCT_ENTITY, "unset", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
         $res = $stmt->fetchAll();
         $this->assertEquals(array(), $res);
     }
