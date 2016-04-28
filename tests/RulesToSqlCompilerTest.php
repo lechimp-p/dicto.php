@@ -67,7 +67,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             );
     }
 
-    public function test_contains_1() {
+    public function test_all_classes_cannot_contain_text_foo_1() {
         $rule = $this->all_classes_cannot_contain_text_foo();
         $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $stmt = $this->compiler->compile($this->db, $rule);
@@ -89,7 +89,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
-    public function test_contains_2() {
+    public function test_all_classes_cannot_contain_text_foo_2() {
         $rule = $this->all_classes_cannot_contain_text_foo();
         $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
         $stmt = $this->compiler->compile($this->db, $rule);
@@ -100,7 +100,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $res);
     }
 
-    public function test_depends_on_1() {
+    public function test_all_classes_cannot_depend_on_globals_1() {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
@@ -122,7 +122,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
-    public function test_depends_on_2() {
+    public function test_all_classes_cannot_depend_on_globals_2() {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
@@ -134,7 +134,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $res);
     }
 
-    public function test_depends_on_3() {
+    public function test_all_classes_cannot_depend_on_globals_3() {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "a_function", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
@@ -147,7 +147,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $res);
     }
 
-    public function test_invoke_1() {
+    public function test_all_classes_cannot_invoke_functions_1() {
         $rule = $this->all_classes_cannot_invoke_functions();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
@@ -169,7 +169,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
-    public function test_invoke_2() {
+    public function test_all_classes_cannot_invoke_functions_2() {
         $rule = $this->all_classes_cannot_invoke_functions();
         $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
@@ -181,7 +181,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $res);
     }
 
-    public function test_invoke_3() {
+    public function test_all_classes_cannot_invoke_functions_3() {
         $rule = $this->all_classes_cannot_invoke_functions();
         $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "some_function", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
