@@ -124,6 +124,21 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             );
     }
 
+    public function everything_but_a_classes_must_depend_on_globals() {
+        return new R\DependOn
+            ( R\Rule::MODE_MUST
+            , new V\ButNot
+                ( "but_AClasses"
+                , new V\Everything("everything")
+                , new V\WithName
+                    ( "AClass"
+                    , new V\Classes("AClasses")
+                    )
+                )
+            , new V\Globals("allGlobals")
+            );
+    }
+
     public function test_all_classes_cannot_contain_text_foo_1() {
         $rule = $this->all_classes_cannot_contain_text_foo();
         $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
@@ -449,6 +464,51 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_as_well_as_3() {
         $rule = $this->all_classes_as_well_as_all_functions_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::METHOD_ENTITY, "a_method", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_must_depend_on_1() {
+        $rule = $this->everything_but_a_classes_must_depend_on_globals();
+        $id1 = $this->db->entity(Consts::METHOD_ENTITY, "a_method", "file", 1, 2, "foo");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "id"    => "$id1"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_must_depend_on_2() {
+        $rule = $this->everything_but_a_classes_must_depend_on_globals();
+        $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "a_method", "file", 1, 2, "foo");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "id"    => "$id1"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_must_depend_on_3() {
+        $rule = $this->everything_but_a_classes_must_depend_on_globals();
+        $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
         $this->db->dependency($id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);

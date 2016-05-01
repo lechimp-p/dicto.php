@@ -58,16 +58,38 @@ class RulesToSqlCompiler {
 
     protected function compile_depends_on(Query $query, $mode, Vars\Variable $subject, Vars\Variable $dependency) {
         $builder = $query->builder();
-        return $builder
-            ->select("d.dependent_id", "d.dependency_id", "d.file", "d.line", "d.source_line")
-            ->from($query->dependencies_table(), "d")
-            ->innerJoin("d", $query->entity_table(), "e", "d.dependent_id = e.id")
-            ->innerJoin("d", $query->reference_table(), "r", "d.dependency_id = r.id")
-            ->where
-                ( $this->compile_var($builder->expr(), "e", $subject)
-                , $this->compile_var($builder->expr(), "r", $dependency)
-                )
-            ->execute();
+        if ($mode == Def\Rules\Rule::MODE_CANNOT) {
+            return $builder
+                ->select("d.dependent_id", "d.dependency_id", "d.file", "d.line", "d.source_line")
+                ->from($query->dependencies_table(), "d")
+                ->innerJoin("d", $query->entity_table(), "e", "d.dependent_id = e.id")
+                ->innerJoin("d", $query->reference_table(), "r", "d.dependency_id = r.id")
+                ->where
+                    ( $this->compile_var($builder->expr(), "e", $subject)
+                    , $this->compile_var($builder->expr(), "r", $dependency)
+                    )
+                ->execute();
+        }
+        if ($mode == Def\Rules\Rule::MODE_MUST) {
+            $b = $builder->expr();
+            return $builder
+                ->select("e.id")
+                ->from($query->entity_table(), "e")
+                ->leftJoin("e", $query->dependencies_table(), "d", "d.dependent_id = e.id")
+                ->leftJoin
+                    ("d", $query->reference_table(), "r"
+                    , $b->andX
+                        ( $b->eq("d.dependency_id", "r.id")
+                        , $this->compile_var($b, "r", $dependency)
+                        )
+                    )
+                ->where
+                    ( $this->compile_var($b, "e", $subject)
+                    , $b->isNull("r.id")
+                    )
+                ->execute();
+        }
+        throw new \LogicException("Unknown rule mode: '$mode'");
     }
 
     protected function compile_invoke(Query $query, $mode, Vars\Variable $subject, Vars\Variable $invokee) {
