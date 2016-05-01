@@ -85,40 +85,83 @@ class RulesToSqlCompiler {
             ->execute();
     }
 
-    public function compile_var(ExpressionBuilder $b, $table_name, Vars\Variable $var) {
+    protected function compile_var(ExpressionBuilder $b, $table_name, Vars\Variable $var, $negate = false) {
+        // Since SQL does not have a statement for negating while expressions,
+        // we need to negate the single conditions in the expression, which
+        // most often is the equality operator here.
+        if (!$negate) {
+            $eq_op = function($l, $r) use ($b) {
+                return $b->eq($l, $r);
+            };
+        }
+        else {
+            $eq_op = function($l, $r) use ($b) {
+                return $b->neq($l, $r);
+            };
+        }
+
+        // Pattern matching on variable type.
+
         if ($var instanceof Vars\AsWellAs) {
         }
         if ($var instanceof Vars\ButNot) {
+            return $b->andX
+                ( $this->compile_var($b, $table_name, $var->left())
+                , $this->compile_var($b, $table_name, $var->right(), true)
+                );
         }
         if ($var instanceof Vars\Classes) {
-            return $b->eq("$table_name.type", $b->literal(Consts::CLASS_ENTITY));
+            return $eq_op("$table_name.type", $b->literal(Consts::CLASS_ENTITY));
         }
         if ($var instanceof Vars\Everything) {
-            return $b->eq($b->literal(1), $b->literal(1));
+            return $eq_op($b->literal(1), $b->literal(1));
         }
         if ($var instanceof Vars\Files) {
-            return $b->eq("$table_name.type", $b->literal(Consts::FILE_ENTITY));
+            return $eq_op("$table_name.type", $b->literal(Consts::FILE_ENTITY));
         }
         if ($var instanceof Vars\Functions) {
-            return $b->eq("$table_name.type", $b->literal(Consts::FUNCTION_ENTITY));
+            return $eq_op("$table_name.type", $b->literal(Consts::FUNCTION_ENTITY));
         }
         if ($var instanceof Vars\Globals) {
-            return $b->eq("$table_name.type", $b->literal(Consts::GLOBAL_ENTITY));
+            return $eq_op("$table_name.type", $b->literal(Consts::GLOBAL_ENTITY));
         }
         if ($var instanceof Vars\LanguageConstruct) {
-            return $b->andX
-                ( $b->eq("$table_name.type", $b->literal(Consts::LANGUAGE_CONSTRUCT_ENTITY))
-                , $b->eq("$table_name.name", $b->literal($var->construct_name()))
-                );
+            // normal case : language construct and name matches
+            if (!$negate) {
+                return $b->andX
+                    ( $eq_op("$table_name.type", $b->literal(Consts::LANGUAGE_CONSTRUCT_ENTITY))
+                    , $eq_op("$table_name.name", $b->literal($var->construct_name()))
+                    );
+            }
+            // negated case: not (language construct and name matches)
+            //             = not language construct or not name matches
+            else {
+
+                return $b->orX
+                    ( $eq_op("$table_name.type", $b->literal(Consts::LANGUAGE_CONSTRUCT_ENTITY))
+                    , $eq_op("$table_name.name", $b->literal($var->construct_name()))
+                    );
+            }
         }
         if ($var instanceof Vars\Methods) {
-            return $b->eq("$table_name.type", $b->literal(Consts::METHOD_ENTITY));
+            return $eq_op("$table_name.type", $b->literal(Consts::METHOD_ENTITY));
         }
         if ($var instanceof Vars\WithName) {
-            return $b->andX
-                ( $this->compile_var($b, $table_name, $var->variable())
-                , "$table_name.name REGEXP ".$b->literal('^'.$var->regexp().'$')
-                );
+            // normal case : $condition_left AND regexp matches
+            if (!$negate) {
+                return $b->andX
+                    ( $this->compile_var($b, $table_name, $var->variable())
+                    , "$table_name.name REGEXP ".$b->literal('^'.$var->regexp().'$')
+                    );
+            }
+            // negated case: not ($condition_left AND regexp matches)
+            //             = not $condition_left OR not regexp matches
+            else {
+                return $b->orX
+                    ( $this->compile_var($b, $table_name, $var->variable(), true)
+                    , "$table_name.name NOT REGEXP ".$b->literal('^'.$var->regexp().'$')
+                    );
+            }
         }
         throw new \LogicException("Can't compile var-type '".get_class($var)."'");
     }
