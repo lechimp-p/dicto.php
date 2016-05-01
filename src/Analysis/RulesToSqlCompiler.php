@@ -115,6 +115,10 @@ class RulesToSqlCompiler {
             return $b->eq("$table_name.type", $b->literal(Consts::METHOD_ENTITY));
         }
         if ($var instanceof Vars\WithName) {
+            return $b->andX
+                ( $this->compile_var($b, $table_name, $var->variable())
+                , "$table_name.name REGEXP ".$b->literal('^'.$var->regexp().'$')
+                );
         }
         throw new \LogicException("Can't compile var-type '".get_class($var)."'");
     }

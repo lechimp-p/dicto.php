@@ -75,6 +75,28 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             );
     }
 
+    public function a_classes_cannot_depend_on_globals() {
+        return new R\DependOn
+            ( R\Rule::MODE_CANNOT
+            , new V\WithName
+                ( "AClass"
+                , new V\Classes("AClasses")
+                )
+            , new V\Globals("allGlobals")
+            );
+    }
+
+    public function all_classes_cannot_depend_on_glob() {
+        return new R\DependOn
+            ( R\Rule::MODE_CANNOT
+            , new V\Classes("allClasses")
+            , new V\WithName
+                ( "glob"
+                , new V\Globals("glob")
+                )
+            );
+    }
+
     public function test_all_classes_cannot_contain_text_foo_1() {
         $rule = $this->all_classes_cannot_contain_text_foo();
         $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
@@ -239,6 +261,76 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->everything_cannot_depend_on_error_suppressor();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::LANGUAGE_CONSTRUCT_ENTITY, "unset", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_a_classes_cannot_depend_on_globals_1() {
+        $rule = $this->a_classes_cannot_depend_on_globals();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "dependent_id"    => "$id1"
+                , "dependency_id"   => "$id2"
+                , "file"            => "file"
+                , "line"            => 2
+                , "source_line"     => "a line"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_a_classes_cannot_depend_on_globals_2() {
+        $rule = $this->a_classes_cannot_depend_on_globals();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "BClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_all_classes_cannot_depend_on_glob_1() {
+        $rule = $this->all_classes_cannot_depend_on_glob();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "dependent_id"    => "$id1"
+                , "dependency_id"   => "$id2"
+                , "file"            => "file"
+                , "line"            => 2
+                , "source_line"     => "a line"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_all_classes_cannot_depend_on_glob_2() {
+        $rule = $this->all_classes_cannot_depend_on_glob();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "another_glob", "file", 2);
         $this->db->dependency($id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
