@@ -20,3 +20,8 @@
 * Remove outdate _and, _except, ... on Variable. Looks also like Rules could need
   a general cleanup. What is DependOn::invoke? What is a better name for 
   Invoke::invokes?
+
+# Definition
+* Expose `everything` on fluid interface.
+* Make `language_construct` more pleasant to use.
+* Define known types of `language_construct`s.
