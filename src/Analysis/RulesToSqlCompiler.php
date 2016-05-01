@@ -103,6 +103,21 @@ class RulesToSqlCompiler {
         // Pattern matching on variable type.
 
         if ($var instanceof Vars\AsWellAs) {
+            // normal case: $left_condition or $right_condition
+            if (!$negate) {
+                return $b->orX
+                    ( $this->compile_var($b, $table_name, $var->left())
+                    , $this->compile_var($b, $table_name, $var->right())
+                    );
+            }
+            // negated case: not ($left_condition or $right_condition)
+            //             = not $left_condition and not $right_condition
+            if ($negate) {
+                return $b->andX
+                    ( $this->compile_var($b, $table_name, $var->left(), true)
+                    , $this->compile_var($b, $table_name, $var->right(), true)
+                    );
+            }
         }
         if ($var instanceof Vars\ButNot) {
             return $b->andX

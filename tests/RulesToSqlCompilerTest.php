@@ -110,7 +110,18 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
                 )
             , new V\LanguageConstruct("errorSuppressor", "@")
             );
+    }
 
+    public function all_classes_as_well_as_all_functions_cannot_depend_on_globals() {
+        return new R\DependOn
+            ( R\Rule::MODE_CANNOT
+            , new V\AsWellAs
+                ( "AllClassesAsWellAsAllFunctions"
+                , new V\Classes("allClasses")
+                , new V\Functions("allFunctions")
+                )
+            , new V\Globals("allGlobals")
+            );
     }
 
     public function test_all_classes_cannot_contain_text_foo_1() {
@@ -391,4 +402,60 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $res);
     }
 
+    public function test_as_well_as_1() {
+        $rule = $this->all_classes_as_well_as_all_functions_cannot_depend_on_globals();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "dependent_id"    => "$id1"
+                , "dependency_id"   => "$id2"
+                , "file"            => "file"
+                , "line"            => 2
+                , "source_line"     => "a line"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_as_well_as_2() {
+        $rule = $this->all_classes_as_well_as_all_functions_cannot_depend_on_globals();
+        $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "a_function", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "dependent_id"    => "$id1"
+                , "dependency_id"   => "$id2"
+                , "file"            => "file"
+                , "line"            => 2
+                , "source_line"     => "a line"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_as_well_as_3() {
+        $rule = $this->all_classes_as_well_as_all_functions_cannot_depend_on_globals();
+        $id1 = $this->db->entity(Consts::METHOD_ENTITY, "a_method", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
 }
