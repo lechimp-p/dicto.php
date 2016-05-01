@@ -43,99 +43,14 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->compiler = new RulesToSqlCompiler();
     }
 
+
+    // All classes cannot contain text "foo".
+
     public function all_classes_cannot_contain_text_foo() {
         return new R\ContainText
             ( R\Rule::MODE_CANNOT
             , new V\Classes("allClasses")
             , "foo"
-            );
-    }
-
-    public function all_classes_cannot_depend_on_globals() {
-        return new R\DependOn
-            ( R\Rule::MODE_CANNOT
-            , new V\Classes("allClasses")
-            , new V\Globals("allGlobals")
-            );
-    }
-
-    public function all_classes_cannot_invoke_functions() {
-        return new R\Invoke
-            ( R\Rule::MODE_CANNOT
-            , new V\Classes("allClasses")
-            , new V\Functions("allFunctions")
-            );
-    }
-
-    public function everything_cannot_depend_on_error_suppressor() {
-        return new R\DependOn
-            ( R\Rule::MODE_CANNOT
-            , new V\Everything("everything")
-            , new V\LanguageConstruct("errorSuppressor", "@")
-            );
-    }
-
-    public function a_classes_cannot_depend_on_globals() {
-        return new R\DependOn
-            ( R\Rule::MODE_CANNOT
-            , new V\WithName
-                ( "AClass"
-                , new V\Classes("AClasses")
-                )
-            , new V\Globals("allGlobals")
-            );
-    }
-
-    public function all_classes_cannot_depend_on_glob() {
-        return new R\DependOn
-            ( R\Rule::MODE_CANNOT
-            , new V\Classes("allClasses")
-            , new V\WithName
-                ( "glob"
-                , new V\Globals("glob")
-                )
-            );
-    }
-
-    public function everything_but_a_classes_cannot_depend_on_error_suppressor() {
-        return new R\DependOn
-            ( R\Rule::MODE_CANNOT
-            , new V\ButNot
-                ( "but_AClasses"
-                , new V\Everything("everything")
-                , new V\WithName
-                    ( "AClass"
-                    , new V\Classes("AClasses")
-                    )
-                )
-            , new V\LanguageConstruct("errorSuppressor", "@")
-            );
-    }
-
-    public function all_classes_as_well_as_all_functions_cannot_depend_on_globals() {
-        return new R\DependOn
-            ( R\Rule::MODE_CANNOT
-            , new V\AsWellAs
-                ( "AllClassesAsWellAsAllFunctions"
-                , new V\Classes("allClasses")
-                , new V\Functions("allFunctions")
-                )
-            , new V\Globals("allGlobals")
-            );
-    }
-
-    public function everything_but_a_classes_must_depend_on_globals() {
-        return new R\DependOn
-            ( R\Rule::MODE_MUST
-            , new V\ButNot
-                ( "but_AClasses"
-                , new V\Everything("everything")
-                , new V\WithName
-                    ( "AClass"
-                    , new V\Classes("AClasses")
-                    )
-                )
-            , new V\Globals("allGlobals")
             );
     }
 
@@ -170,6 +85,17 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
 
         $res = $stmt->fetchAll();
         $this->assertEquals(array(), $res);
+    }
+
+
+    // All classes cannot depend on globals.
+
+    public function all_classes_cannot_depend_on_globals() {
+        return new R\DependOn
+            ( R\Rule::MODE_CANNOT
+            , new V\Classes("allClasses")
+            , new V\Globals("allGlobals")
+            );
     }
 
     public function test_all_classes_cannot_depend_on_globals_1() {
@@ -219,6 +145,17 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $res);
     }
 
+
+    // All classes cannot invoke functions.
+
+    public function all_classes_cannot_invoke_functions() {
+        return new R\Invoke
+            ( R\Rule::MODE_CANNOT
+            , new V\Classes("allClasses")
+            , new V\Functions("allFunctions")
+            );
+    }
+
     public function test_all_classes_cannot_invoke_functions_1() {
         $rule = $this->all_classes_cannot_invoke_functions();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
@@ -263,6 +200,17 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
         $res = $stmt->fetchAll();
         $this->assertEquals(array(), $res);
+    }
+
+
+    // Everything cannot depend on error suppressor.
+
+    public function everything_cannot_depend_on_error_suppressor() {
+        return new R\DependOn
+            ( R\Rule::MODE_CANNOT
+            , new V\Everything("everything")
+            , new V\LanguageConstruct("errorSuppressor", "@")
+            );
     }
 
     /**
@@ -312,6 +260,20 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $res);
     }
 
+
+    // AClasses cannot depend on globals.
+
+    public function a_classes_cannot_depend_on_globals() {
+        return new R\DependOn
+            ( R\Rule::MODE_CANNOT
+            , new V\WithName
+                ( "AClass"
+                , new V\Classes("AClasses")
+                )
+            , new V\Globals("allGlobals")
+            );
+    }
+
     public function test_a_classes_cannot_depend_on_globals_1() {
         $rule = $this->a_classes_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
@@ -345,6 +307,20 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
 
         $res = $stmt->fetchAll();
         $this->assertEquals(array(), $res);
+    }
+
+
+    // All classes cannot depend on globals with name "glob".
+
+    public function all_classes_cannot_depend_on_glob() {
+        return new R\DependOn
+            ( R\Rule::MODE_CANNOT
+            , new V\Classes("allClasses")
+            , new V\WithName
+                ( "glob"
+                , new V\Globals("glob")
+                )
+            );
     }
 
     public function test_all_classes_cannot_depend_on_glob_1() {
@@ -382,6 +358,24 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $res);
     }
 
+
+    // Everything but a classes cannot deppend on error suppressor.
+
+    public function everything_but_a_classes_cannot_depend_on_error_suppressor() {
+        return new R\DependOn
+            ( R\Rule::MODE_CANNOT
+            , new V\ButNot
+                ( "but_AClasses"
+                , new V\Everything("everything")
+                , new V\WithName
+                    ( "AClass"
+                    , new V\Classes("AClasses")
+                    )
+                )
+            , new V\LanguageConstruct("errorSuppressor", "@")
+            );
+    }
+
     public function test_but_not_1() {
         $rule = $this->everything_but_a_classes_cannot_depend_on_error_suppressor();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "SomeClass", "file", 1, 2, "foo");
@@ -415,6 +409,21 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
 
         $res = $stmt->fetchAll();
         $this->assertEquals(array(), $res);
+    }
+
+
+    // All classes as well as all functions cannot depend on globals.
+
+    public function all_classes_as_well_as_all_functions_cannot_depend_on_globals() {
+        return new R\DependOn
+            ( R\Rule::MODE_CANNOT
+            , new V\AsWellAs
+                ( "AllClassesAsWellAsAllFunctions"
+                , new V\Classes("allClasses")
+                , new V\Functions("allFunctions")
+                )
+            , new V\Globals("allGlobals")
+            );
     }
 
     public function test_as_well_as_1() {
@@ -472,6 +481,24 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
 
         $res = $stmt->fetchAll();
         $this->assertEquals(array(), $res);
+    }
+
+
+    // Everything but AClasses must depend on globals.
+
+    public function everything_but_a_classes_must_depend_on_globals() {
+        return new R\DependOn
+            ( R\Rule::MODE_MUST
+            , new V\ButNot
+                ( "but_AClasses"
+                , new V\Everything("everything")
+                , new V\WithName
+                    ( "AClass"
+                    , new V\Classes("AClasses")
+                    )
+                )
+            , new V\Globals("allGlobals")
+            );
     }
 
     public function test_must_depend_on_1() {
