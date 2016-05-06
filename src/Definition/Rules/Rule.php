@@ -29,11 +29,11 @@ abstract class Rule extends Def\Definition {
     private $mode;
 
     /**
-     * @var Variable
+     * @var Vars\Variable
      */
     private $subject;
 
-    public function __construct($mode, Def\Variables\Variable $subject) {
+    public function __construct($mode, Vars\Variable $subject) {
         assert('in_array($mode, self::$modes)');
         $this->mode = $mode;
         $this->subject = $subject;

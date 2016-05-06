@@ -13,7 +13,7 @@ use Lechimp\Dicto\Definition\Variables as Vars;
 
 class Invoke extends Rule {
     /**
-     * @var Variable
+     * @var Vars\Variable
      */
     private $invokes;
 
