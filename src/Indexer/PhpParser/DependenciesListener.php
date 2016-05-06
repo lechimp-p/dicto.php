@@ -11,7 +11,6 @@
 namespace Lechimp\Dicto\Indexer\PhpParser;
 
 use Lechimp\Dicto\Analysis\Consts;
-use Lechimp\Dicto\Indexer as I;
 use PhpParser\Node as N;
 
 /**

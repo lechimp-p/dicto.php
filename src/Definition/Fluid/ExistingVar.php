@@ -9,7 +9,6 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
-use Lechimp\Dicto\Definition as Def;
 
 /**
  * Provides fluid interface to entities that were already defined before, at

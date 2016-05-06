@@ -17,6 +17,9 @@ class Invoke extends Rule {
      */
     private $invokes;
 
+    /**
+     * @param string $mode
+     */
     public function __construct($mode, Vars\Variable $left, Vars\Variable $invokes) {
         parent::__construct($mode, $left);
         $this->invokes = $invokes;
@@ -28,7 +31,7 @@ class Invoke extends Rule {
     }
 
     /**
-     * @return Variable
+     * @return Vars\Variable
      */
     public function invokes() {
         return $this->invokes;
