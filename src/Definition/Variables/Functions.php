@@ -15,7 +15,7 @@ class Functions extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new Functions();
+        $v = new Functions($this->name());
         $v->setExplanation($text);
         return $v;
     }

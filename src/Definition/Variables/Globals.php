@@ -15,7 +15,7 @@ class Globals extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new Globals();
+        $v = new Globals($this->name());
         $v->setExplanation($text);
         return $v;
     }

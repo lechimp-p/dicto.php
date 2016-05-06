@@ -15,7 +15,7 @@ class Methods extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new Functions();
+        $v = new Methods($this->name());
         $v->setExplanation($text);
         return $v;
     }

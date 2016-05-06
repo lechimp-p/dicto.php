@@ -51,7 +51,7 @@ class WithName extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new Classes();
+        $v = new WithName($this->name(), $this->other);
         $v->setExplanation($text);
         return $v;
     }

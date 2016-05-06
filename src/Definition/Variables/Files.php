@@ -15,7 +15,7 @@ class Files extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new Files();
+        $v = new Files($this->name());
         $v->setExplanation($text);
         return $v;
     }
