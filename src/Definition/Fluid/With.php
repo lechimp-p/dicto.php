@@ -18,7 +18,7 @@ class With extends Base {
     /**
      * Say to mean only artifacts whose name matches the provided regexp.
      *
-     * @param   string  $regex
+     * @param   string  $regexp
      * @return  ExistingVar
      */
     public function name($regexp) {

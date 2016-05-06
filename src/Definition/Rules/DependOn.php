@@ -17,6 +17,9 @@ class DependOn extends Rule {
      */
     private $dependency;
 
+    /**
+     * @param string $mode
+     */
     public function __construct($mode, Vars\Variable $left, Vars\Variable $dependency) {
         parent::__construct($mode, $left);
         $this->dependency = $dependency;

@@ -49,7 +49,7 @@ abstract class Rule extends Def\Definition {
     /**
      * Definition of the entities this rule was defined for.
      *
-     * @return  Variable
+     * @return  Vars\Variable
      */
     public function subject() {
         return $this->subject;
@@ -62,7 +62,7 @@ abstract class Rule extends Def\Definition {
      * is not subject() if the mode is MODE_ONLY_CAN, as this really says
      * something about the other entities.
      *
-     * @return  Variable
+     * @return  Vars\Variable
      */
     public function checked_on() {
         if ($this->mode() == self::MODE_ONLY_CAN) {
