@@ -46,15 +46,29 @@ class RulesToSqlCompiler {
 
     protected function compile_contains_text(Query $query, $mode, Vars\Variable $checked_on, $regexp) {
         $builder = $query->builder();
-        return $builder
-            ->select("id", "type", "name", "file", "start_line", "end_line", "source")
-            ->from($query->entity_table())
-            ->where
-                ( $this->compile_var($builder->expr(), $query->entity_table(), $checked_on)
-                , "source REGEXP ?"
-                )
-            ->setParameter(0, $regexp)
-            ->execute();
+        if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
+            return $builder
+                ->select("id", "type", "name", "file", "start_line", "end_line", "source")
+                ->from($query->entity_table())
+                ->where
+                    ( $this->compile_var($builder->expr(), $query->entity_table(), $checked_on)
+                    , "source REGEXP ?"
+                    )
+                ->setParameter(0, $regexp)
+                ->execute();
+        }
+        if ($mode == Def\Rules\Rule::MODE_MUST) {
+            return $builder
+                ->select("id", "type", "name", "file", "start_line", "end_line", "source")
+                ->from($query->entity_table())
+                ->where
+                    ( $this->compile_var($builder->expr(), $query->entity_table(), $checked_on)
+                    , "source NOT REGEXP ?"
+                    )
+                ->setParameter(0, $regexp)
+                ->execute();
+        }
+        throw new \LogicException("Unknown rule mode: '$mode'");
     }
 
     protected function compile_depends_on(Query $query, $mode, Vars\Variable $checked_on, Vars\Variable $dependency) {

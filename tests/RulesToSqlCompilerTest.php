@@ -678,4 +678,151 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $this->assertEquals(array(), $res);
     }
+
+    // AClasses must contain text "foo".
+
+    public function a_classes_must_contain_text_foo() {
+        return new R\ContainText
+            ( R\Rule::MODE_MUST
+            , new V\WithName
+                ( "AClass"
+                , new V\Classes("AClasses")
+                )
+            , "foo"
+            );
+    }
+
+    public function test_a_classes_must_contain_text_foo_1() {
+        $rule = $this->a_classes_must_contain_text_foo();
+        $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "id"          => "$id"
+                , "type"        => Consts::CLASS_ENTITY
+                , "name"        => "AClass"
+                , "file"        => "file"
+                , "start_line"  => "1"
+                , "end_line"    => "2"
+                , "source"      => "bar"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_a_classes_must_contain_text_foo_2() {
+        $rule = $this->a_classes_must_contain_text_foo();
+        $id = $this->db->entity(Consts::CLASS_ENTITY, "BClass", "file", 1, 2, "foo");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_a_classes_must_contain_text_foo_3() {
+        $rule = $this->a_classes_must_contain_text_foo();
+        $id = $this->db->entity(Consts::CLASS_ENTITY, "BClass", "file", 1, 2, "bar");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_a_classes_must_contain_text_foo_4() {
+        $rule = $this->a_classes_must_contain_text_foo();
+        $id = $this->db->entity(Consts::FUNCTION_ENTITY, "AClass", "file", 1, 2, "bar");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    // Only AClasses can contain text "foo".
+
+    public function only_a_classes_can_contain_text_foo() {
+        return new R\ContainText
+            ( R\Rule::MODE_ONLY_CAN
+            , new V\WithName
+                ( "AClass"
+                , new V\Classes("AClasses")
+                )
+            , "foo"
+            );
+    }
+
+    public function test_only_a_classes_can_contain_text_foo_1() {
+        $rule = $this->only_a_classes_can_contain_text_foo();
+        $id = $this->db->entity(Consts::CLASS_ENTITY, "BClass", "file", 1, 2, "foo");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "id"          => "$id"
+                , "type"        => Consts::CLASS_ENTITY
+                , "name"        => "BClass"
+                , "file"        => "file"
+                , "start_line"  => "1"
+                , "end_line"    => "2"
+                , "source"      => "foo"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_only_a_classes_can_contain_text_foo_2() {
+        $rule = $this->only_a_classes_can_contain_text_foo();
+        $id = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_only_a_classes_can_contain_text_foo_3() {
+        $rule = $this->only_a_classes_can_contain_text_foo();
+        $id = $this->db->entity(Consts::FUNCTION_ENTITY, "AClass", "file", 1, 2, "foo");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "id"          => "$id"
+                , "type"        => Consts::FUNCTION_ENTITY
+                , "name"        => "AClass"
+                , "file"        => "file"
+                , "start_line"  => "1"
+                , "end_line"    => "2"
+                , "source"      => "foo"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_only_a_classes_can_contain_text_foo_4() {
+        $rule = $this->only_a_classes_can_contain_text_foo();
+        $id = $this->db->entity(Consts::CLASS_ENTITY, "BClass", "file", 1, 2, "bar");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
 }
