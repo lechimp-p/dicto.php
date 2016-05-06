@@ -24,6 +24,7 @@ class ButNot extends Base {
 
         $left = $this->rt->get_current_var();
         $right = $this->rt->get_var($name);
+        assert('$left instanceof \\Lechimp\\Dicto\\Definition\\Variables\\Variable');
         $this->rt->current_var_is(
             new Vars\ButNot($this->rt->get_current_var_name(), $left, $right));
     }
