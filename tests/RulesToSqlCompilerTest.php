@@ -504,6 +504,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_must_depend_on_1() {
         $rule = $this->everything_but_a_classes_must_depend_on_globals();
         $id1 = $this->db->entity(Consts::METHOD_ENTITY, "a_method", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -519,7 +520,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
 
     public function test_must_depend_on_2() {
         $rule = $this->everything_but_a_classes_must_depend_on_globals();
-        $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "a_method", "file", 1, 2, "foo");
+        $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "AClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -536,6 +538,126 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_must_depend_on_3() {
         $rule = $this->everything_but_a_classes_must_depend_on_globals();
         $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "AClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_must_depend_on_4() {
+        $rule = $this->everything_but_a_classes_must_depend_on_globals();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_must_depend_on_5() {
+        $rule = $this->everything_but_a_classes_must_depend_on_globals();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "BClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "id"    => "$id1"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+    // Only AClasses can depend on globals.
+
+    public function only_a_classes_can_depend_on_globals() {
+        return new R\DependOn
+            ( R\Rule::MODE_ONLY_CAN
+            , new V\WithName
+                ( "AClass"
+                , new V\Classes("AClasses")
+                )
+            , new V\Globals("allGlobals")
+            );
+    }
+
+    public function test_only_can_depend_on_1() {
+        $rule = $this->only_a_classes_can_depend_on_globals();
+        $id1 = $this->db->entity(Consts::METHOD_ENTITY, "a_method", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "dependent_id"    => "$id1"
+                , "dependency_id"   => "$id2"
+                , "file"            => "file"
+                , "line"            => 2
+                , "source_line"     => "a line"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_only_can_depend_on_2() {
+        $rule = $this->only_a_classes_can_depend_on_globals();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "a_method", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "dependent_id"    => "$id1"
+                , "dependency_id"   => "$id2"
+                , "file"            => "file"
+                , "line"            => 2
+                , "source_line"     => "a line"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_only_can_depend_on_3() {
+        $rule = $this->only_a_classes_can_depend_on_globals();
+        $id1 = $this->db->entity(Consts::METHOD_ENTITY, "AClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
+        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "dependent_id"    => "$id1"
+                , "dependency_id"   => "$id2"
+                , "file"            => "file"
+                , "line"            => 2
+                , "source_line"     => "a line"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_only_can_depend_on_4() {
+        $rule = $this->only_a_classes_can_depend_on_globals();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
         $this->db->dependency($id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);

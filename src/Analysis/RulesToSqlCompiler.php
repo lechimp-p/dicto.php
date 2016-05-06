@@ -31,20 +31,20 @@ class RulesToSqlCompiler {
     public function compile(Query $query, Def\Rules\Rule $rule) {
         if ($rule instanceof Def\Rules\ContainText) {
             return $this->compile_contains_text
-                        ($query, $rule->mode(), $rule->subject(), $rule->regexp());
+                        ($query, $rule->mode(), $rule->checked_on(), $rule->regexp());
         }
         if ($rule instanceof Def\Rules\DependOn) {
             return $this->compile_depends_on
-                        ($query, $rule->mode(), $rule->subject(), $rule->dependency());
+                        ($query, $rule->mode(), $rule->checked_on(), $rule->dependency());
         }
         if ($rule instanceof Def\Rules\Invoke) {
             return $this->compile_invoke
-                        ($query, $rule->mode(), $rule->subject(), $rule->invokes());
+                        ($query, $rule->mode(), $rule->checked_on(), $rule->invokes());
         }
         throw new \LogicException("Unknown rule class '".get_class($rule)."'");
     }
 
-    protected function compile_contains_text(Query $query, $mode, Vars\Variable $var, $regexp) {
+    protected function compile_contains_text(Query $query, $mode, Vars\Variable $checked_on, $regexp) {
         $builder = $query->builder();
         return $builder
             ->select("id", "type", "name", "file", "start_line", "end_line", "source")
@@ -56,16 +56,16 @@ class RulesToSqlCompiler {
             ->execute();
     }
 
-    protected function compile_depends_on(Query $query, $mode, Vars\Variable $subject, Vars\Variable $dependency) {
+    protected function compile_depends_on(Query $query, $mode, Vars\Variable $checked_on, Vars\Variable $dependency) {
         $builder = $query->builder();
-        if ($mode == Def\Rules\Rule::MODE_CANNOT) {
+        if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select("d.dependent_id", "d.dependency_id", "d.file", "d.line", "d.source_line")
                 ->from($query->dependencies_table(), "d")
                 ->innerJoin("d", $query->entity_table(), "e", "d.dependent_id = e.id")
                 ->innerJoin("d", $query->reference_table(), "r", "d.dependency_id = r.id")
                 ->where
-                    ( $this->compile_var($builder->expr(), "e", $subject)
+                    ( $this->compile_var($builder->expr(), "e", $checked_on)
                     , $this->compile_var($builder->expr(), "r", $dependency)
                     )
                 ->execute();
@@ -84,7 +84,7 @@ class RulesToSqlCompiler {
                         )
                     )
                 ->where
-                    ( $this->compile_var($b, "e", $subject)
+                    ( $this->compile_var($b, "e", $checked_on)
                     , $b->isNull("r.id")
                     )
                 ->execute();
@@ -92,7 +92,7 @@ class RulesToSqlCompiler {
         throw new \LogicException("Unknown rule mode: '$mode'");
     }
 
-    protected function compile_invoke(Query $query, $mode, Vars\Variable $subject, Vars\Variable $invokee) {
+    protected function compile_invoke(Query $query, $mode, Vars\Variable $checked_on, Vars\Variable $invokee) {
         $builder = $query->builder();
         return $builder
             ->select("i.invoker_id", "i.invokee_id", "i.file", "i.line", "i.source_line")
@@ -101,7 +101,7 @@ class RulesToSqlCompiler {
             ->innerJoin("i", $query->entity_table(), "e", "i.invoker_id = e.id")
             ->innerJoin("i", $query->reference_table(), "r", "i.invokee_id = r.id")
             ->where
-                ( $this->compile_var($builder->expr(), "e", $subject)
+                ( $this->compile_var($builder->expr(), "e", $checked_on)
                 , $this->compile_var($builder->expr(), "r", $invokee)
                 )
             ->execute();
