@@ -65,11 +65,14 @@ class InvocationsListener extends Listener {
     public function on_enter_misc(\PhpParser\Node $node) {
         $ref_id = null;
         if ($node instanceof N\Expr\MethodCall) {
-            $ref_id = $this->indexer->get_reference
-                ( Consts::METHOD_ENTITY
-                , $node->name
-                , $node->getAttribute("startLine")
-                );
+            // The 'name' could also be a variable like in $this->$method();
+            if (is_string($node->name)) {
+                $ref_id = $this->indexer->get_reference
+                    ( Consts::METHOD_ENTITY
+                    , $node->name
+                    , $node->getAttribute("startLine")
+                    );
+            }
         }
         elseif($node instanceof N\Expr\FuncCall) {
             // Omit calls to closures, we would not be able to

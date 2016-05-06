@@ -525,4 +525,12 @@ PHP;
         $this->assertContains($expected_dep_IndexesTwice_1, $this->insert_mock->dependencies);
         $this->assertContains($expected_dep_indexes_GLOBAL_twice_1, $this->insert_mock->dependencies);
     }
+
+    public function test_omit_call_to_variable_method() {
+        $this->indexer->index_file("CallsVariableMethod.php");
+        $id = $this->insert_mock->get_id("CallsVariableMethod");
+
+        $this->assertCount(0, $this->insert_mock->invocations);
+        $this->assertCount(0, $this->insert_mock->dependencies);
+    }
 }
