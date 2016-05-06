@@ -72,11 +72,15 @@ class InvocationsListener extends Listener {
                 );
         }
         elseif($node instanceof N\Expr\FuncCall) {
-            $ref_id = $this->indexer->get_reference
-                ( Consts::FUNCTION_ENTITY
-                , $node->name->parts[0]
-                , $node->getAttribute("startLine")
-                );
+            // Omit calls to closures, we would not be able to
+            // analyze them anyway atm.
+            if (!($node->name instanceof N\Expr\Variable)) {
+                $ref_id = $this->indexer->get_reference
+                    ( Consts::FUNCTION_ENTITY
+                    , $node->name->parts[0]
+                    , $node->getAttribute("startLine")
+                    );
+            }
         }
         if ($ref_id !== null) {
             // We need to record a invocation in every invoking entity now.

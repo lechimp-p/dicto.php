@@ -72,11 +72,15 @@ class DependenciesListener extends Listener {
                 );
         }
         elseif($node instanceof N\Expr\FuncCall) {
-            $ref_ids[] = $this->indexer->get_reference
-                ( Consts::FUNCTION_ENTITY
-                , $node->name->parts[0]
-                , $node->getAttribute("startLine")
-                );
+            // Omit calls to closures, we would not be able to
+            // analyze them anyway atm.
+            if (!($node->name instanceof N\Expr\Variable)) {
+                $ref_ids[] = $this->indexer->get_reference
+                    ( Consts::FUNCTION_ENTITY
+                    , $node->name->parts[0]
+                    , $node->getAttribute("startLine")
+                    );
+            }
         }
         elseif ($node instanceof N\Stmt\Global_) {
             foreach ($node->vars as $var) {

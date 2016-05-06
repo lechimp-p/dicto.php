@@ -494,4 +494,11 @@ PHP;
     }
 
 
+    public function test_omits_closure_invocations() {
+        $this->indexer->index_file("CallsClosure.php");
+        $id = $this->insert_mock->get_id("CallsClosure");
+
+        $this->assertCount(0, $this->insert_mock->invocations);
+        $this->assertCount(0, $this->insert_mock->dependencies);
+    }
 }
