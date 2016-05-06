@@ -99,6 +99,9 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
         }
 
         $stmts = $this->parser->parse($content);
+        if ($stmts === null) {
+            throw new \RuntimeException("Can't parse file $path.");
+        }
 
         if ($stmts === null) {
             throw new \RuntimeException("Could not parse file '$path'.");

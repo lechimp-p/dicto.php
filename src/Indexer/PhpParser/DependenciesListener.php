@@ -94,7 +94,7 @@ class DependenciesListener extends Listener {
             }
         }
         elseif ($node instanceof N\Expr\ArrayDimFetch) {
-            if ($node->var->name == "GLOBALS") {
+            if ($node->var instanceof N\Expr\Variable && $node->var->name == "GLOBALS") {
                 $ref_ids[] = $this->indexer->get_reference
                     ( Consts::GLOBAL_ENTITY
                     , $node->dim->value

@@ -493,12 +493,36 @@ PHP;
         $this->assertEquals($source, $entity["source"]);
     }
 
-
     public function test_omits_closure_invocations() {
         $this->indexer->index_file("CallsClosure.php");
         $id = $this->insert_mock->get_id("CallsClosure");
 
         $this->assertCount(0, $this->insert_mock->invocations);
         $this->assertCount(0, $this->insert_mock->dependencies);
+    }
+
+    public function test_indexes_array_twice() {
+        $this->indexer->index_file("IndexesTwice.php");
+        $IndexesTwice_id = $this->insert_mock->get_id("IndexesTwice");
+        $indexes_GLOBAL_twice_id = $this->insert_mock->get_id("indexes_GLOBAL_twice");
+        $glob_ids = $this->insert_mock->get_ids("glob", 1); 
+        $expected_dep_IndexesTwice_1 = array
+            ( "dependent_id" => $IndexesTwice_id
+            , "dependency_id" => $glob_ids[0]
+            , "file" => "IndexesTwice.php"
+            , "line" => 17
+            , "source_line" => '        return $GLOBALS["glob"]["bar"];'
+            );
+        $expected_dep_indexes_GLOBAL_twice_1 = array
+            ( "dependent_id" => $indexes_GLOBAL_twice_id
+            , "dependency_id" => $glob_ids[0]
+            , "file" => "IndexesTwice.php"
+            , "line" => 17
+            , "source_line" => '        return $GLOBALS["glob"]["bar"];'
+            );
+
+        $this->assertCount(2, $this->insert_mock->dependencies);
+        $this->assertContains($expected_dep_IndexesTwice_1, $this->insert_mock->dependencies);
+        $this->assertContains($expected_dep_indexes_GLOBAL_twice_1, $this->insert_mock->dependencies);
     }
 }
