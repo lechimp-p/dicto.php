@@ -45,7 +45,7 @@ class ButNot extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new ButNot($this->left, $this->right);
+        $v = new ButNot($this->name(), $this->left, $this->right);
         $v->setExplanation($text);
         return $v;
     }

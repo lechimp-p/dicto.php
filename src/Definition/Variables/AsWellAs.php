@@ -45,7 +45,7 @@ class AsWellAs extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new AsWellAs($this->left, $this->right);
+        $v = new AsWellAs($this->name(), $this->left, $this->right);
         $v->setExplanation($text);
         return $v;
     }
