@@ -8,13 +8,13 @@
  * a copy of the licence along with the code.
  */
 
-namespace Lechimp\Dicto\App\Implementation;
+namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\Dicto as Dicto;
 use Lechimp\Dicto\App as App;
 use Lechimp\Dicto\Definition\Rules as Rules;
 
-class RuleLoader implements App\RuleLoader {
+class RuleFromFSLoader implements App\RuleLoader {
     /**
      * @inheritdocs
      */
@@ -25,6 +25,6 @@ class RuleLoader implements App\RuleLoader {
         // TODO: Some more checking on the file...
         Dicto::startDefinition();
         require($rule_file_path);
-        return Dicto::endDefinition()[0];
+        return Dicto::endDefinition();
     }
 }

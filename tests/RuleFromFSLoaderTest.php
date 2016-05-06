@@ -12,8 +12,8 @@ use Lechimp\Dicto as Dicto;
 
 require_once(__DIR__."/RuleLoaderTest.php");
 
-class RuleLoaderImplementationTest extends RuleLoaderTest {
+class RuleFromFSLoaderImplementationTest extends RuleLoaderTest {
     protected function get_rule_loader() {
-        return new Dicto\App\Implementation\RuleLoader();
+        return new Dicto\App\RuleFromFSLoader();
     }
 }
