@@ -87,6 +87,17 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $res);
     }
 
+    public function test_all_classes_cannot_contain_text_foo_3() {
+        $rule = $this->all_classes_cannot_contain_text_foo();
+        $id = $this->db->entity(Consts::FUNCTION_ENTITY, "AClass", "file", 1, 2, "foo");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
 
     // All classes cannot depend on globals.
 

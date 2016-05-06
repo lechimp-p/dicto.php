@@ -50,7 +50,8 @@ class RulesToSqlCompiler {
             ->select("id", "type", "name", "file", "start_line", "end_line", "source")
             ->from($query->entity_table())
             ->where
-                ( "source REGEXP ?"
+                ( $this->compile_var($builder->expr(), $query->entity_table(), $checked_on)
+                , "source REGEXP ?"
                 )
             ->setParameter(0, $regexp)
             ->execute();
