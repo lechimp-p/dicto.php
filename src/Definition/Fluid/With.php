@@ -23,6 +23,7 @@ class With extends Base {
      */
     public function name($regexp) {
         $subject = $this->rt->get_current_var();
+        assert('$subject instanceof \\Lechimp\\Dicto\\Definition\\Variables\\Variable');
         $this->rt->current_var_is(
             new Vars\WithName($regexp, $subject));
 
