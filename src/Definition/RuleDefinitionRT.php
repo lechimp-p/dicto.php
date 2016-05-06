@@ -39,11 +39,34 @@ class RuleDefinitionRT {
      */
     private $rules;
 
+    /**
+     * @var \Lechimp\Dicto\App\Config|null
+     */
+    private $config;
+
     public function __construct() {
         $this->vars = array();
         $this->current_var_name = null;
         $this->current_var = null;
         $this->rules = array();
+        $this->config = null;
+    }
+
+    /**
+     * Set a configuration to be used with the rules.
+     *
+     * @param   array|null  $config
+     * @return  null|\Lechimp\Dicto\App\Config
+     */
+    public function configuration(array $config = null) {
+        if ($config === null) {
+            return $this->config;
+        }
+
+        if ($this->config !== null) {
+            throw new \RuntimeException("Already set configuration.");
+        }
+        $this->config = new \Lechimp\Dicto\App\Config($config);
     }
 
     /**

@@ -38,14 +38,16 @@ class Dicto {
      * Discard the current definition if there is any.
      *
      * @throws  \RuntimeException   if definition was not started or already ended
+     * @return  array   containing Definition\RuleSet and App\Config
      */
     public static function endDefinition() {
         if (self::$rt === null) {
             throw new \RuntimeException("Already ended or not even started the rule definition");
         }
         $rule_set = self::$rt->ruleset();
+        $config = self::$rt->configuration();
         self::discardDefinition();
-        return $rule_set;
+        return array($rule_set, $config); 
     }
 
     /**
@@ -61,6 +63,16 @@ class Dicto {
                 "No variable definition allowed outside ruleset definition.");
         }
         return self::$rt->only();
+    }
+
+    /**
+     * Define the configuration for the project according to App\Config.
+     *
+     * @param   array
+     * @return  null
+     */
+    public function configuration(array $config) {
+        self::$rt->configuration($config);
     }
 
     /**

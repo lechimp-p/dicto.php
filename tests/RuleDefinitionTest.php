@@ -18,7 +18,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
 
     public function test_ruleset() {
         Dicto::startDefinition();
-        $defs = Dicto::endDefinition();
+        list($defs, $_) = Dicto::endDefinition();
         $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Ruleset", $defs);
         $this->assertEquals(array(), $defs->variables());
         $this->assertEquals(array(), $defs->rules());
@@ -27,7 +27,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     public function check_var_definitions($names, $definition) {
         Dicto::startDefinition();
         $definition();
-        $defs = Dicto::endDefinition();
+        list($defs, $_) = Dicto::endDefinition();
         $variables = $defs->variables();
 
         $this->assertEquals(count($names), count($variables));
@@ -107,7 +107,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     public function check_rule($definition) {
         Dicto::startDefinition();
         $definition();
-        $defs = Dicto::endDefinition();
+        list($defs, $_) = Dicto::endDefinition();
         $rules = $defs->rules();
 
         $this->assertCount(1, $rules);

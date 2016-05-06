@@ -10,6 +10,21 @@
 
 use Lechimp\Dicto\Dicto as Dicto;
 
+Dicto::configuration(array
+    ( "project" => array
+        ( "root" => __DIR__."/src"
+        )
+    , "sqlite" => array
+        ( "memory" => true
+        )
+    , "analysis" => array
+        ( "ignore" => array
+            ( ".*\\.omit_me"
+            )
+        )
+    )
+);
+
 // adjust RuleLoaderTest::VARIABLES_IN_RULES_PHP and tests
 // if you change these.
 Dicto::AClasses()->means()->classes()->with()->name("A.*");

@@ -69,4 +69,25 @@ class DictoClassTest extends PHPUnit_Framework_TestCase {
         }
         catch (\RuntimeException $e) {}
     }
+
+    public function test_configuration() {
+        Dicto::startDefinition();
+        Dicto::configuration(array
+            ( "project" => array
+                ( "root" => "/root/dir"
+                )
+            , "sqlite" => array
+                ( "memory" => true
+                , "path" => "/sqlite/path"
+                )
+            , "analysis" => array
+                ( "ignore" => array
+                    ( ".*\\.omit_me"
+                    )
+                )
+            )
+        );
+        list($_, $config) = Dicto::endDefinition();
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\App\\Config", $config);
+    } 
 }

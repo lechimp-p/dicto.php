@@ -25,6 +25,6 @@ class RuleLoader implements App\RuleLoader {
         // TODO: Some more checking on the file...
         Dicto::startDefinition();
         require($rule_file_path);
-        return Dicto::endDefinition();
+        return Dicto::endDefinition()[0];
     }
 }

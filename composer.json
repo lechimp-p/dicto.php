@@ -22,6 +22,7 @@
     "require": {
         "nikic/php-parser" : "2.0.*",
         "pimple/pimple" : "3.0.*",
-        "doctrine/dbal" : "2.5.*"
+        "doctrine/dbal" : "2.5.*",
+        "lechimp-p/flightcontrol" : "0.12.0"
     }
 }

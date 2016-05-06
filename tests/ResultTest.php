@@ -24,7 +24,7 @@ class ResultTest extends PHPUnit_Framework_TestCase {
         Dicto::MyFunctions()->means()->functions();
         Dicto::MyClasses()->cannot()->invoke()->MyFunctions();
         Dicto::MyFunctions()->cannot()->depend_on()->MyClasses();
-        $this->ruleset = Dicto::endDefinition(); 
+        list($this->ruleset, $_) = Dicto::endDefinition(); 
         $rules = $this->ruleset->rules();
         $this->r1 = $rules[0];
         $this->r2 = $rules[1];

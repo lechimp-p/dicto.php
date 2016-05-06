@@ -25,3 +25,8 @@
 * Expose `everything` on fluid interface.
 * Make `language_construct` more pleasant to use.
 * Define known types of `language_construct`s.
+
+# App
+* Make the App and Engine configurable with:
+    - project root
+    - files to be ommited

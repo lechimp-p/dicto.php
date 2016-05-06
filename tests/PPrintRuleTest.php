@@ -30,7 +30,7 @@ class PPrintRuleTest extends PHPUnit_Framework_TestCase {
         D::A()->cannot()->contain_text("foo");
         D::only()->A()->can()->contain_text("foo");
 
-        $ruleset = D::endDefinition();
+        list($ruleset, $_) = D::endDefinition();
 
         $pprinter = new Dicto\Output\RulePrinter;
 
