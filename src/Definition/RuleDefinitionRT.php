@@ -119,7 +119,7 @@ class RuleDefinitionRT {
     /**
      * Get the name of the current var.
      *
-     * @return  string
+     * @return  Variables\Variable
      */
     public function get_current_var() {
         assert('$this->current_var !== null');
