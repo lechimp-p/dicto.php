@@ -5,3 +5,4 @@
 # dicto checks architectural rules.
 
 **This is an implementation of [dicto](http://scg.unibe.ch/dicto) in and for PHP.**
+
