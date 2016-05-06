@@ -34,6 +34,11 @@ class Result {
     protected $by_filename_cache;
 
     /**
+     * @var RulePrinter
+     */
+    protected $pprinter;
+
+    /**
      * @param   Def\Ruleset     $ruleset
      * @param   Violations[]    $violations
      */
