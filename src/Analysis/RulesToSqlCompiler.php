@@ -73,6 +73,7 @@ class RulesToSqlCompiler {
 
     protected function compile_depends_on(Query $query, $mode, Vars\Variable $checked_on, Vars\Variable $dependency) {
         $builder = $query->builder();
+        $b = $builder->expr();
         if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select("d.dependent_id", "d.dependency_id", "d.file", "d.line", "d.source_line")
@@ -80,13 +81,12 @@ class RulesToSqlCompiler {
                 ->innerJoin("d", $query->entity_table(), "e", "d.dependent_id = e.id")
                 ->innerJoin("d", $query->reference_table(), "r", "d.dependency_id = r.id")
                 ->where
-                    ( $this->compile_var($builder->expr(), "e", $checked_on)
-                    , $this->compile_var($builder->expr(), "r", $dependency)
+                    ( $this->compile_var($b, "e", $checked_on)
+                    , $this->compile_var($b, "r", $dependency)
                     )
                 ->execute();
         }
         if ($mode == Def\Rules\Rule::MODE_MUST) {
-            $b = $builder->expr();
             return $builder
                 ->select("e.id")
                 ->from($query->entity_table(), "e")
@@ -109,17 +109,39 @@ class RulesToSqlCompiler {
 
     protected function compile_invoke(Query $query, $mode, Vars\Variable $checked_on, Vars\Variable $invokee) {
         $builder = $query->builder();
-        return $builder
-            ->select("i.invoker_id", "i.invokee_id", "i.file", "i.line", "i.source_line")
-            ->from($query->invocations_table(), "i")
+        $b = $builder->expr();
+        if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
+            return $builder
+                ->select("i.invoker_id", "i.invokee_id", "i.file", "i.line", "i.source_line")
+                ->from($query->invocations_table(), "i")
 
-            ->innerJoin("i", $query->entity_table(), "e", "i.invoker_id = e.id")
-            ->innerJoin("i", $query->reference_table(), "r", "i.invokee_id = r.id")
-            ->where
-                ( $this->compile_var($builder->expr(), "e", $checked_on)
-                , $this->compile_var($builder->expr(), "r", $invokee)
-                )
-            ->execute();
+                ->innerJoin("i", $query->entity_table(), "e", "i.invoker_id = e.id")
+                ->innerJoin("i", $query->reference_table(), "r", "i.invokee_id = r.id")
+                ->where
+                    ( $this->compile_var($b, "e", $checked_on)
+                    , $this->compile_var($b, "r", $invokee)
+                    )
+                ->execute();
+        }
+        if ($mode == Def\Rules\Rule::MODE_MUST) {
+            return $builder
+                ->select("e.id")
+                ->from($query->entity_table(), "e")
+                ->leftJoin("e", $query->invocations_table(), "i", "i.invoker_id = e.id")
+                ->leftJoin
+                    ( "i", $query->reference_table(), "r"
+                    , $b->andX
+                        ( $b->eq("i.invokee_id", "r.id")
+                        , $this->compile_var($b, "r", $invokee)
+                        )
+                    )
+                ->where
+                    ( $this->compile_var($b, "e", $checked_on)
+                    , $b->isNull("r.id")
+                    )
+                ->execute();
+        }
+        throw new \LogicException("Unknown rule mode: '$mode'");
     }
 
     protected function compile_var(ExpressionBuilder $b, $table_name, Vars\Variable $var, $negate = false) {

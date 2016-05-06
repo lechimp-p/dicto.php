@@ -825,4 +825,130 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $this->assertEquals(array(), $res);
     }
+
+    // AClasses must invoke functions.
+
+    public function a_classes_must_invoke_functions() {
+        return new R\Invoke
+            ( R\Rule::MODE_MUST
+            , new V\WithName
+                ( "AClass"
+                , new V\Classes("AClasses")
+                )
+            , new V\Functions("allFunctions")
+            );
+    }
+
+    public function test_a_classes_must_invoke_functions_1() {
+        $rule = $this->a_classes_must_invoke_functions();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "id"      => "$id1"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_a_classes_must_invoke_functions_2() {
+        $rule = $this->a_classes_must_invoke_functions();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
+        $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
+        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_a_classes_must_invoke_functions_3() {
+        $rule = $this->a_classes_must_invoke_functions();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "BClass", "file", 1, 2, "bar");
+        $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+
+    // Only AClasses can invoke functions.
+
+    public function only_a_classes_can_invoke_functions() {
+        return new R\Invoke
+            ( R\Rule::MODE_ONLY_CAN
+            , new V\WithName
+                ( "AClass"
+                , new V\Classes("AClasses")
+                )
+            , new V\Functions("allFunctions")
+            );
+    }
+
+    public function test_only_a_classes_can_invoke_function_1() {
+        $rule = $this->only_a_classes_can_invoke_functions();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "BClass", "file", 1, 2, "foo");
+        $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
+        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "invoker_id"      => "$id1"
+                , "invokee_id"      => "$id2"
+                , "file"            => "file"
+                , "line"            => 2
+                , "source_line"     => "a line"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_only_a_classes_can_invoke_function_2() {
+        $rule = $this->only_a_classes_can_invoke_functions();
+        $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
+        $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
+        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_only_a_classes_can_invoke_function_3() {
+        $rule = $this->only_a_classes_can_invoke_functions();
+        $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "AClass", "file", 1, 2, "bar");
+        $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
+        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $stmt = $this->compiler->compile($this->db, $rule);
+
+        $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
+
+        $res = $stmt->fetchAll();
+        $expected = array
+            ( array
+                ( "invoker_id"      => "$id1"
+                , "invokee_id"      => "$id2"
+                , "file"            => "file"
+                , "line"            => 2
+                , "source_line"     => "a line"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
 }
