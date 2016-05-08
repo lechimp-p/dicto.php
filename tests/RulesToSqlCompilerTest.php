@@ -24,22 +24,12 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->connection = DriverManager::getConnection
             ( array
                 ( "driver" => "pdo_sqlite"
-                , "dbname" => ":memory:"
-                , "host" => ""
-                , "port" => ""
-                , "user" => ""
-                , "password" => ""
+                , "memory" => true
                 )
             ); 
-
-        // initialize regexp function for sqlite
-        $pdo = $this->connection->getWrappedConnection();
-        $pdo->sqliteCreateFunction("regexp", function($pattern, $data) {
-            return preg_match("%$pattern%", $data) > 0;
-        });
-
         $this->db = new DB($this->connection);
-        $this->db->create_database();
+        $this->db->init_sqlite_regexp();
+        $this->db->init_database_schema();
         $this->compiler = new RulesToSqlCompiler();
     }
 

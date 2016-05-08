@@ -161,6 +161,16 @@ class DB implements Insert, Query {
         return "invocations";
     }
 
+    /**
+     * Initialize REGEXP for sqlite.
+     */
+    public function init_sqlite_regexp() {
+        $pdo = $this->connection->getWrappedConnection();
+        $pdo->sqliteCreateFunction("regexp", function($pattern, $data) {
+            return preg_match("%$pattern%", $data) > 0;
+        });
+    }
+
     // Creation of database.
 
     public function init_database_schema() {
