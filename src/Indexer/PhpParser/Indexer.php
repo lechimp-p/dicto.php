@@ -221,10 +221,6 @@ class Indexer implements I\Indexer,  \PhpParser\NodeVisitor {
             foreach ($this->listeners as $listener) {
                 $listener->on_enter_class($id, $node);
             }
-
-            // Every invocation of a reference we find will be a invocation
-            // in this class.
-            $this->invoker_entity_ids[] = $id;
         }
         // Method or Function
         elseif ($node instanceof N\Stmt\ClassMethod) {
