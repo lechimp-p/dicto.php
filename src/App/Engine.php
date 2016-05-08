@@ -29,9 +29,9 @@ class Engine {
     protected $project_root;
 
     /**
-     * @var string []
+     * @var string[]
      */
-    protected $omit_patterns;
+    protected $ignore_patterns;
 
     /**
      * @var I\Indexer
@@ -41,11 +41,11 @@ class Engine {
     /**
      * @param   string  $project_root
      */
-    public function __construct($project_root, array $omit_patterns, I\Indexer $indexer) {
+    public function __construct($project_root, array $ignore_patterns, I\Indexer $indexer) {
         assert('is_string($project_root)');
         $this->project_root = $project_root;
         // TODO: Check omit patterns.
-        $this->omit_patterns = $omit_patterns;
+        $this->ignore_patterns = $ignore_patterns;
         $this->indexer = $indexer;
     }
 
@@ -63,7 +63,7 @@ class Engine {
         $fc->directory("/")
             ->recurseOn()
             ->filter(function(FSObject $obj) {
-                foreach ($this->omit_patterns as $pattern) {
+                foreach ($this->ignore_patterns as $pattern) {
                     if (preg_match("%$pattern%", $obj->path()) !== 0) {
                         return false;
                     }
@@ -71,6 +71,7 @@ class Engine {
                 return true;
             })
             ->foldFiles(null, function($_, File $file) {
+                echo "indexing: ".$file->path()."\n";
                 $this->indexer->index_file($file->path());
             });
     }
@@ -84,7 +85,7 @@ class Engine {
         $connection = DriverManager::getConnection
             ( array
                 ( "driver" => "pdo_sqlite"
-                , "path" => "/home/lechimp/Code/php-dicto/foo.sqlite"
+                , "path" => "/home/lechimp/Code/ILIAS.dicto.sqlite"
                 )
             ); 
 
