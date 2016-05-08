@@ -34,7 +34,7 @@ class Indexer implements I\Indexer,  \PhpParser\NodeVisitor {
     protected $parser;
 
     /**
-     * @var Listener[]|null;
+     * @var Listener[];
      */
     protected $listeners;
 
@@ -69,7 +69,7 @@ class Indexer implements I\Indexer,  \PhpParser\NodeVisitor {
     public function __construct(\PhpParser\Parser $parser) {
         $this->project_root_path = "";
         $this->parser = $parser;
-        $this->listeners = null;
+        $this->listeners = array();
     }
 
     protected function build_listeners() {
