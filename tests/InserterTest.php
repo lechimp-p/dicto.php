@@ -19,15 +19,11 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
         $this->connection = DriverManager::getConnection
             ( array
                 ( "driver" => "pdo_sqlite"
-                , "dbname" => ":memory:"
-                , "host" => ""
-                , "port" => ""
-                , "user" => ""
-                , "password" => ""
+                , "memory" => true
                 )
             ); 
         $this->inserter = new DB($this->connection);
-        $this->inserter->create_database();
+        $this->inserter->init_database_schema();
         $this->builder = $this->connection->createQueryBuilder();
     }
 
