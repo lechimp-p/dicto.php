@@ -73,6 +73,11 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
     }
 
     protected function build_listeners() {
+        if ($this->insert === null) {
+            throw new \LogicException(
+                "Needs an inserter before Listeners can be created.");
+        }
+
         return array
             ( new DependenciesListener($this->insert, $this)
             , new InvocationsListener($this->insert, $this)
