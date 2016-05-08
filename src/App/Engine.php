@@ -24,14 +24,9 @@ use Doctrine\DBAL\DriverManager;
  */
 class Engine {
     /**
-     * @var string
+     * @var Config
      */
-    protected $project_root;
-
-    /**
-     * @var string[]
-     */
-    protected $ignore_patterns;
+    protected $config;
 
     /**
      * @var I\Indexer
@@ -41,11 +36,8 @@ class Engine {
     /**
      * @param   string  $project_root
      */
-    public function __construct($project_root, array $ignore_patterns, I\Indexer $indexer) {
-        assert('is_string($project_root)');
-        $this->project_root = $project_root;
-        // TODO: Check omit patterns.
-        $this->ignore_patterns = $ignore_patterns;
+    public function __construct(Config $config, I\Indexer $indexer) {
+        $this->config = $config;
         $this->indexer = $indexer;
     }
 
@@ -57,13 +49,13 @@ class Engine {
     public function run() {
         $db = $this->init_database();
         $this->indexer->use_insert($db);
-        $this->indexer->set_project_root_to($this->project_root);
+        $this->indexer->set_project_root_to($this->config->project_root());
 
         $fc = $this->init_flightcontrol();
         $fc->directory("/")
             ->recurseOn()
             ->filter(function(FSObject $obj) {
-                foreach ($this->ignore_patterns as $pattern) {
+                foreach ($this->config->analysis_ignore() as $pattern) {
                     if (preg_match("%$pattern%", $obj->path()) !== 0) {
                         return false;
                     }
@@ -71,7 +63,6 @@ class Engine {
                 return true;
             })
             ->foldFiles(null, function($_, File $file) {
-                echo "indexing: ".$file->path()."\n";
                 $this->indexer->index_file($file->path());
             });
     }
@@ -84,8 +75,9 @@ class Engine {
     protected function init_database() {
         $connection = DriverManager::getConnection
             ( array
-                ( "driver" => "pdo_sqlite"
-                , "path" => "/home/lechimp/Code/ILIAS.dicto.sqlite"
+                ( "driver"  => "pdo_sqlite"
+                , "memory"  => $this->config->sqlite_memory()
+                , "path"    => $this->config->sqlite_path()
                 )
             ); 
 
@@ -106,7 +98,7 @@ class Engine {
      * @return  Flightcontrol
      */
     public function init_flightcontrol() {
-        $adapter = new Local($this->project_root, LOCK_EX, Local::SKIP_LINKS);
+        $adapter = new Local($this->config->project_root(), LOCK_EX, Local::SKIP_LINKS);
         $flysystem = new Filesystem($adapter);
         return new Flightcontrol($flysystem);
     }
