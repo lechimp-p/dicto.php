@@ -24,6 +24,7 @@
         "pimple/pimple" : "3.0.*",
         "doctrine/dbal" : "2.5.*",
         "lechimp-p/flightcontrol" : "0.12.0",
-        "symfony/config" : "3.0.*"
+        "symfony/config" : "3.0.*",
+        "symfony/yaml" : "3.0.*"
     }
 }
