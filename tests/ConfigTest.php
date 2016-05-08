@@ -36,4 +36,31 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("/sqlite/path", $config->sqlite_path());
         $this->assertEquals(array(".*\\.omit_me"), $config->analysis_ignore());
     }
+
+    public function test_merge() {
+        $config = new Config($this->processor, array
+            ( array
+                ( "sqlite" => array
+                    ( "memory" => true
+                    , "path" => "/sqlite/path"
+                    )
+                )
+            , array
+                ( "project" => array
+                    ( "root" => "/root/dir"
+                    )
+                , "analysis" => array
+                    ( "ignore" => array
+                        ( ".*\\.omit_me"
+                        )
+                    )
+                )
+            )
+        );
+        $this->assertEquals("/root/dir", $config->project_root());
+        $this->assertEquals(true, $config->sqlite_memory());
+        $this->assertEquals("/sqlite/path", $config->sqlite_path());
+        $this->assertEquals(array(".*\\.omit_me"), $config->analysis_ignore());
+    }
+
 }
