@@ -34,11 +34,17 @@ class Engine {
     protected $indexer;
 
     /**
+     * @var DB
+     */
+    protected $db;
+
+    /**
      * @param   string  $project_root
      */
-    public function __construct(Config $config, I\Indexer $indexer) {
+    public function __construct(Config $config, I\Indexer $indexer, DB $db) {
         $this->config = $config;
         $this->indexer = $indexer;
+        $this->db = $db;
     }
 
     /**
@@ -47,8 +53,7 @@ class Engine {
      * @return null
      */
     public function run() {
-        $db = $this->init_database();
-        $this->indexer->use_insert($db);
+        $this->indexer->use_insert($this->db);
         $this->indexer->set_project_root_to($this->config->project_root());
 
         $fc = $this->init_flightcontrol();
@@ -65,31 +70,6 @@ class Engine {
             ->foldFiles(null, function($_, File $file) {
                 $this->indexer->index_file($file->path());
             });
-    }
-
-    /**
-     * Initialize the database.
-     * 
-     * @return DB
-     */
-    protected function init_database() {
-        $connection = DriverManager::getConnection
-            ( array
-                ( "driver"  => "pdo_sqlite"
-                , "memory"  => $this->config->sqlite_memory()
-                , "path"    => $this->config->sqlite_path()
-                )
-            ); 
-
-        // initialize regexp function for sqlite
-        $pdo = $connection->getWrappedConnection();
-        $pdo->sqliteCreateFunction("regexp", function($pattern, $data) {
-            return preg_match("%$pattern%", $data) > 0;
-        });
-
-        $db = new DB($connection);
-        $db->create_database();
-        return $db;
     }
 
     /**
