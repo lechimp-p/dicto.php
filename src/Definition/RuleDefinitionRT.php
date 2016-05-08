@@ -66,7 +66,7 @@ class RuleDefinitionRT {
         if ($this->config !== null) {
             throw new \RuntimeException("Already set configuration.");
         }
-        $this->config = new \Lechimp\Dicto\App\Config($config);
+        $this->config = $config;
     }
 
     /**

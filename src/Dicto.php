@@ -38,7 +38,7 @@ class Dicto {
      * Discard the current definition if there is any.
      *
      * @throws  \RuntimeException   if definition was not started or already ended
-     * @return  array   containing Definition\RuleSet and App\Config
+     * @return  array   containing Definition\RuleSet and config-array
      */
     public static function endDefinition() {
         if (self::$rt === null) {

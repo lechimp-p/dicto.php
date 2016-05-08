@@ -16,7 +16,7 @@ interface RuleLoader {
     /**
      * @param   string  $rule_file_path
      * @throws  InvalidArgumentException    if rule_file_path is no valid file
-     * @return  array   Def\Ruleset and App\Config
+     * @return  array   Def\Ruleset and array containing config. 
      */
     public function load_rules_from($rule_file_path);
 }

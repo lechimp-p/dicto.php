@@ -71,8 +71,7 @@ class DictoClassTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_configuration() {
-        Dicto::startDefinition();
-        Dicto::configuration(array
+        $config = array
             ( "project" => array
                 ( "root" => "/root/dir"
                 )
@@ -85,9 +84,10 @@ class DictoClassTest extends PHPUnit_Framework_TestCase {
                     ( ".*\\.omit_me"
                     )
                 )
-            )
-        );
-        list($_, $config) = Dicto::endDefinition();
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\App\\Config", $config);
+            );
+        Dicto::startDefinition();
+        Dicto::configuration($config);
+        list($_, $config2) = Dicto::endDefinition();
+        $this->assertEquals($config, $config2);
     } 
 }
