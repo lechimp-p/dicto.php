@@ -493,7 +493,7 @@ PHP;
         $this->assertEquals($source, $entity["source"]);
     }
 
-    public function test_omits_closure_invocations() {
+    public function test_ignores_closure_invocations() {
         $this->indexer->index_file("CallsClosure.php");
         $id = $this->insert_mock->get_id("CallsClosure");
 
