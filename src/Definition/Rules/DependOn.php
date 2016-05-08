@@ -13,7 +13,7 @@ use Lechimp\Dicto\Definition\Variables as Vars;
 
 class DependOn extends Rule {
     /**
-     * @var Variable
+     * @var Vars\Variable
      */
     private $dependency;
 
