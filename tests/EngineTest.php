@@ -31,8 +31,8 @@ class EngineTest extends PHPUnit_Framework_TestCase {
             );
 
         $this->db = new Lechimp\Dicto\App\DB($connection);
-        $this->db->init_database_schema();
-        $this->db->init_sqlite_regexp();
+        $this->db->maybe_init_database_schema();
+        $this->db->maybe_init_sqlite_regexp();
         $this->engine = new Engine($this->config, $this->indexer, $this->db);
     }
 

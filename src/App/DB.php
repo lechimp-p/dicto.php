@@ -173,6 +173,18 @@ class DB implements Insert, Query {
 
     // Creation of database.
 
+    public function maybe_init_database_schema() {
+        $res = $this->builder()
+            ->select("COUNT(*)")
+            ->from("sqlite_master")
+            ->where("type = 'table'")
+            ->execute()
+            ->fetchColumn();
+        if ($res == 0) {
+            $this->init_database_schema();
+        }
+    }
+
     public function init_database_schema() {
         $schema = new Schema\Schema();
 

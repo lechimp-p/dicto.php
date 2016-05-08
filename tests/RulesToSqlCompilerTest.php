@@ -29,7 +29,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             ); 
         $this->db = new DB($this->connection);
         $this->db->init_sqlite_regexp();
-        $this->db->init_database_schema();
+        $this->db->maybe_init_database_schema();
         $this->compiler = new RulesToSqlCompiler();
     }
 
