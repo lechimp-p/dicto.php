@@ -38,17 +38,16 @@ class RulePrinter {
     }
 
     protected function print_tail(Def\Rules\Rule $rule) {
-        $cls = get_class($rule);
-
-        switch ($cls) {
-            case "Lechimp\\Dicto\\Definition\\Rules\\Invoke":
-                return "invoke ".$rule->invokes()->name();
-            case "Lechimp\\Dicto\\Definition\\Rules\\DependOn":
-                return "depend on ".$rule->dependency()->name();
-            case "Lechimp\\Dicto\\Definition\\Rules\\ContainText":
-                return "contain text \"".$rule->regexp()."\"";
-            default:
-                throw new \Exception("Unknown rule '".$cls."'");
+        if ($rule instanceof Def\Rules\Invoke) {
+            return "invoke ".$rule->invokes()->name();
         }
+        if($rule instanceof Def\Rules\DependOn) {
+            return "depend on ".$rule->dependency()->name();
+        }
+        if ($rule instanceof Def\Rules\ContainText) {
+            return "contain text \"".$rule->regexp()."\"";
+        }
+
+        throw new \Exception("Unknown rule '".$cls."'");
     }
 }
