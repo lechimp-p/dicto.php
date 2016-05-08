@@ -47,7 +47,7 @@ class Dicto {
         $rule_set = self::$rt->ruleset();
         $config = self::$rt->configuration();
         self::discardDefinition();
-        return array($rule_set, $config); 
+        return array($rule_set, $config ? $config : array());
     }
 
     /**
