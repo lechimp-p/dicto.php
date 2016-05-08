@@ -10,94 +10,89 @@
 
 namespace Lechimp\Dicto\App;
 
+use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+
 /**
  * Configuration for the app and engine.
  */
-class Config {
+class Config implements ConfigurationInterface {
     /**
-     * @var string|null
+     * @var array
      */
-    protected $project_root = null;
-
-    /**
-     * @var bool|null
-     */
-    protected $sqlite_memory = null;
+    protected $values;
 
     /**
-     * @var string|null
+     * Build the configuration from nested arrays using a processor.
      */
-    protected $sqlite_path = null;
+    public function __construct(Processor $processor, array $values) {
+        $this->values = $processor->processConfiguration($this,$values);
+    }
 
     /**
-     * @var string[]
+     * Definition of configuration for symfony.
+     *
+     * @inheritdocs
      */
-    protected $analysis_ignore = array();
+    public function getConfigTreeBuilder() {
+        $tree_builder = new TreeBuilder();
+        $root = $tree_builder->root("dicto");
+        $root
+            ->children()
+                ->arrayNode("project")
+                    ->children()
+                        ->scalarNode("root")
+                            ->isRequired()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode("sqlite")
+                    ->children()
+                        ->booleanNode("memory")
+                            ->defaultValue(true)
+                        ->end()
+                        ->scalarNode("path")
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode("analysis")
+                    ->children()
+                        ->arrayNode("ignore")
+                            ->prototype("scalar")
+                        ->end()
+                    ->end()
+            ->end()
+        ->end();
 
-    /**
-     * Build the configuration from a nested array.
-     */
-    public function __construct(array $params) {
-        if (isset($params["project"])) {
-            $project = $params["project"];
-            assert('is_array($project)');
-            if (isset($project["root"])) {
-                $this->project_root = $params["project"]["root"];
-                assert('is_string($this->project_root)');
-            }
-        }
-
-        if (isset($params["sqlite"])) {
-            $sqlite = $params["sqlite"];
-            assert('is_array($sqlite)');
-            if (isset($sqlite["memory"])) {
-                $this->sqlite_memory = $sqlite["memory"];
-                assert('is_bool($this->sqlite_memory)');
-            }
-            if (isset($sqlite["path"])) {
-                $this->sqlite_path = $sqlite["path"];
-                assert('is_string($this->sqlite_path)');
-            }
-        }
-
-        if (isset($params["analysis"])) {
-            $analysis = $params["analysis"];
-            assert('is_array($analysis)');
-            if (isset($analysis["ignore"])) {
-                assert('is_array($analysis["ignore"])');
-                $this->analysis_ignore = array_map(function($s) {
-                    assert('is_string($s)');
-                    return $s;
-                }, $analysis["ignore"]);
-            }
-        }
+        return $tree_builder;
     }
 
     /**
      * @return  string
      */
     public function project_root() {
-        return $this->project_root;
+        return $this->values["project"]["root"];
     }
 
     /**
      * @return  bool 
      */
     public function sqlite_memory() {
-        return $this->sqlite_memory;
+        return $this->values["sqlite"]["memory"];
     }
 
     /**
      * @return  string|null
      */
     public function sqlite_path() {
-        return $this->sqlite_path;
+        return $this->values["sqlite"]["path"];
     }
 
     /**
      * @return  string[]
      */
     public function analysis_ignore() {
-        return $this->analysis_ignore;
+        return $this->values["analysis"]["ignore"];
     }
 }

@@ -11,8 +11,12 @@
 use Lechimp\Dicto\App\Config;
 
 class ConfigClassTest extends PHPUnit_Framework_TestCase {
+    public function setUp() {
+        $this->processor = new \Symfony\Component\Config\Definition\Processor();
+    }
+
     public function test_smoke() {
-        $config = new Config(array
+        $config = new Config($this->processor, array(array
             ( "project" => array
                 ( "root" => "/root/dir"
                 )
@@ -26,7 +30,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
                     )
                 )
             )
-        );
+        ));
         $this->assertEquals("/root/dir", $config->project_root());
         $this->assertEquals(true, $config->sqlite_memory());
         $this->assertEquals("/sqlite/path", $config->sqlite_path());
