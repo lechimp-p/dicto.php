@@ -18,7 +18,7 @@ use PhpParser\Node as N;
  */
 class InvocationsListener extends Listener {
     /**
-     * @var int[]|null
+     * @var int[]
      */
     protected $invoker_entity_ids = array();
 
