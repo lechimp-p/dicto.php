@@ -18,7 +18,7 @@ use PhpParser\Node as N;
  */
 class DependenciesListener extends Listener {
     /**
-     * @var int[]|null
+     * @var int[]
      */
     protected $dependent_entity_ids = array();
 
