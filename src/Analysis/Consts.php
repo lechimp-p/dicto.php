@@ -18,7 +18,7 @@ class Consts {
     const METHOD_ENTITY = "method";
     const LANGUAGE_CONSTRUCT_ENTITY = "language_construct";
 
-    static $ENTITY_TYPES = array
+    public static $ENTITY_TYPES = array
                             ( "class"
                             , "file"
                             , "global"
