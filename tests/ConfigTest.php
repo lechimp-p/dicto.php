@@ -11,12 +11,8 @@
 use Lechimp\Dicto\App\Config;
 
 class ConfigClassTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
-        $this->processor = new \Symfony\Component\Config\Definition\Processor();
-    }
-
     public function test_smoke() {
-        $config = new Config($this->processor, array(array
+        $config = new Config(array(array
             ( "project" => array
                 ( "root" => "/root/dir"
                 )
@@ -38,7 +34,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_merge() {
-        $config = new Config($this->processor, array
+        $config = new Config(array
             ( array
                 ( "sqlite" => array
                     ( "memory" => true

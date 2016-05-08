@@ -26,8 +26,9 @@ class Config implements ConfigurationInterface {
     /**
      * Build the configuration from nested arrays using a processor.
      */
-    public function __construct(Processor $processor, array $values) {
-        $this->values = $processor->processConfiguration($this,$values);
+    public function __construct(array $values) {
+        $processor = new \Symfony\Component\Config\Definition\Processor();
+        $this->values = $processor->processConfiguration($this, $values);
     }
 
     /**
