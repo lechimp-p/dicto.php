@@ -11,10 +11,8 @@
 namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\Dicto as Dicto;
-use Lechimp\Dicto\App as App;
-use Lechimp\Dicto\Definition\Rules as Rules;
 
-class RuleFromFSLoader implements App\RuleLoader {
+class RuleFromFSLoader implements RuleLoader {
     /**
      * @inheritdocs
      */
