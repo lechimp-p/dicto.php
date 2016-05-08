@@ -77,7 +77,10 @@ class InvocationsListener extends Listener {
         elseif($node instanceof N\Expr\FuncCall) {
             // Omit calls to closures, we would not be able to
             // analyze them anyway atm.
-            if (!($node->name instanceof N\Expr\Variable)) {
+            // Omit functions in arrays, we would not be able to
+            // analyze them anyway atm.
+            if (!($node->name instanceof N\Expr\Variable ||
+                  $node->name instanceof N\Expr\ArrayDimFetch)) {
                 $ref_id = $this->indexer->get_reference
                     ( Consts::FUNCTION_ENTITY
                     , $node->name->parts[0]
