@@ -17,7 +17,7 @@ use PhpParser\Node as N;
 /**
  * Implementation of Indexer with PhpParser.
  */
-class Indexer implements I\Indexer,  \PhpParser\NodeVisitor {
+class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
     /**
      * @var string
      */
