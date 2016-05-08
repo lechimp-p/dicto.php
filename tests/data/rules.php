@@ -14,9 +14,6 @@ Dicto::configuration(array
     ( "project" => array
         ( "root" => __DIR__."/src"
         )
-    , "sqlite" => array
-        ( "memory" => true
-        )
     , "analysis" => array
         ( "ignore" => array
             ( ".*\\.omit_me"
