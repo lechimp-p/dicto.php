@@ -27,7 +27,9 @@ class AsWellAs extends Base {
 
         $left = $this->rt->get_current_var();
         $right = $this->rt->get_var($name);
-        assert('$left instanceof \\Lechimp\\Dicto\\Definition\\Variables\\Variable');
+        if (!($left instanceof Vars\Variable)) {
+            throw new \RuntimeException("Could not get current var from runtime.");
+        }
         $this->rt->current_var_is(
             new Vars\AsWellAs($this->rt->get_current_var_name(), $left, $right));
 

@@ -23,7 +23,9 @@ class With extends Base {
      */
     public function name($regexp) {
         $subject = $this->rt->get_current_var();
-        assert('$subject instanceof \\Lechimp\\Dicto\\Definition\\Variables\\Variable');
+        if (!($subject instanceof Vars\Variable)) {
+            throw new \RuntimeException("Could not get current var from runtime.");
+        }
         $this->rt->current_var_is(
             new Vars\WithName($regexp, $subject));
 
