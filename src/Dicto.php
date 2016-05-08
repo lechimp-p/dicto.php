@@ -71,7 +71,7 @@ class Dicto {
      * @param   array
      * @return  null
      */
-    public function configuration(array $config) {
+    public static function configuration(array $config) {
         self::$rt->configuration($config);
     }
 
