@@ -14,7 +14,7 @@ use Lechimp\Dicto\Dicto as Dicto;
 use Lechimp\Dicto\App as App;
 use Lechimp\Dicto\Definition\Rules as Rules;
 
-class  RuleLoader implements App\RuleLoader {
+class RuleLoader implements App\RuleLoader {
     /**
      * @inheritdocs
      */
