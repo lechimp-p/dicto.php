@@ -83,7 +83,10 @@ class Indexer implements I\Indexer,  \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function index_file($path) {
-        assert('$this->insert !== null');
+        if ($this->insert === null) {
+            throw new \RuntimeException(
+                "Set an inserter to be used before starting to index files.");
+        }
 
         $content = file_get_contents($this->project_root_path."/$path");
         if ($content === false) {
