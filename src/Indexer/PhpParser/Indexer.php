@@ -61,7 +61,7 @@ class Indexer implements I\Indexer,  \PhpParser\NodeVisitor {
     /**
      * This contains cached reference ids.
      *
-     * @var array   string => int 
+     * @var array|null   string => int 
      */
     protected $reference_cache = null; 
     
