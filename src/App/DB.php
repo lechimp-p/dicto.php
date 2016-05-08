@@ -163,7 +163,7 @@ class DB implements Insert, Query {
 
     // Creation of database.
 
-    public function create_database() {
+    public function init_database_schema() {
         $schema = new Schema\Schema();
 
         $entity_table = $schema->createTable($this->entity_table());
