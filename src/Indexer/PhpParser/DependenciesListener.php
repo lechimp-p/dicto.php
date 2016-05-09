@@ -101,11 +101,14 @@ class DependenciesListener extends Listener {
         }
         elseif ($node instanceof N\Expr\ArrayDimFetch) {
             if ($node->var instanceof N\Expr\Variable && $node->var->name == "GLOBALS") {
-                $ref_ids[] = $this->indexer->get_reference
-                    ( Consts::GLOBAL_ENTITY
-                    , $node->dim->value
-                    , $node->getAttribute("startLine")
-                    );
+                // Ignore usage of $GLOBALS with variable index.
+                if (!($node->dim instanceof N\Expr\Variable)) {
+                    $ref_ids[] = $this->indexer->get_reference
+                        ( Consts::GLOBAL_ENTITY
+                        , $node->dim->value
+                        , $node->getAttribute("startLine")
+                        );
+                }
             }
         }
         elseif ($node instanceof N\Expr\ErrorSuppress) {

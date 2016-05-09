@@ -541,4 +541,13 @@ PHP;
         $this->assertCount(0, $this->insert_mock->invocations);
         $this->assertCount(0, $this->insert_mock->dependencies);
     }
+
+
+    public function test_ignores_use_of_globals_with_var_index() {
+        $this->indexer->index_file("UsesGlobalsWithVarIndex.php");
+        $id = $this->insert_mock->get_id("UsesGlobalsWithVarIndex");
+
+        $this->assertCount(0, $this->insert_mock->invocations);
+        $this->assertCount(0, $this->insert_mock->dependencies);
+    }
 }
