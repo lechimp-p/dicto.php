@@ -44,5 +44,11 @@ class ContainText extends Rule {
         $r->setExplanation($text);
         return $r;
     }
-}
 
+    /**
+     * @inheritdoc
+     */
+    public function variables() {
+        return array($this->subject());
+    }
+}

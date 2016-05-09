@@ -74,5 +74,12 @@ abstract class Rule extends Def\Definition {
         }
         return $this->subject();
     }
+
+    /**
+     * Get all variables referenced by the rule.
+     *
+     * @return  Vars\Variable[]
+     */
+    abstract public function variables();
 }
 

@@ -41,4 +41,37 @@ class RulesTest extends PHPUnit_Framework_TestCase {
                 );
         $this->assertEquals($expected_checked_on, $rule->checked_on());
     }
+
+    public function test_variables_of_depend_on() {
+        $rule =
+            new Rules\DependOn
+                ( Rules\Rule::MODE_MUST
+                , new Vars\Classes("CLASSES")
+                , new Vars\Functions("FUNCTIONS")
+                );
+        $expected = array(new Vars\Classes("CLASSES"), new Vars\Functions("FUNCTIONS"));
+        $this->assertEquals($expected, $rule->variables());
+    }
+
+    public function test_variables_of_contain_text() {
+        $rule =
+            new Rules\ContainText
+                ( Rules\Rule::MODE_MUST
+                , new Vars\Classes("CLASSES")
+                , "foo"
+                );
+        $expected = array(new Vars\Classes("CLASSES"));
+        $this->assertEquals($expected, $rule->variables());
+    }
+
+    public function test_variables_of_invoke() {
+        $rule =
+            new Rules\Invoke
+                ( Rules\Rule::MODE_MUST
+                , new Vars\Classes("CLASSES")
+                , new Vars\Functions("FUNCTIONS")
+                );
+        $expected = array(new Vars\Classes("CLASSES"), new Vars\Functions("FUNCTIONS"));
+        $this->assertEquals($expected, $rule->variables());
+    }
 }
