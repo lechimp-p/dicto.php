@@ -48,7 +48,12 @@ class RulesToSqlCompiler {
         $builder = $query->builder();
         if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
             return $builder
-                ->select("id", "type", "name", "file", "start_line", "end_line", "source")
+                ->select
+                    ( "id as entity_id"
+                    , "file"
+                    , "start_line as line"
+                    , "source"
+                    )
                 ->from($query->entity_table())
                 ->where
                     ( $this->compile_var($builder->expr(), $query->entity_table(), $checked_on)
@@ -59,7 +64,12 @@ class RulesToSqlCompiler {
         }
         if ($mode == Def\Rules\Rule::MODE_MUST) {
             return $builder
-                ->select("id", "type", "name", "file", "start_line", "end_line", "source")
+                ->select
+                    ( "id as entity_id"
+                    , "file"
+                    , "start_line as line"
+                    , "source"
+                    )
                 ->from($query->entity_table())
                 ->where
                     ( $this->compile_var($builder->expr(), $query->entity_table(), $checked_on)
@@ -76,7 +86,13 @@ class RulesToSqlCompiler {
         $b = $builder->expr();
         if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
             return $builder
-                ->select("d.dependent_id", "d.dependency_id", "d.file", "d.line", "d.source_line")
+                ->select
+                    ( "d.dependent_id as entity_id"
+                    , "d.dependency_id as reference_id"
+                    , "d.file as file"
+                    , "d.line as line"
+                    , "d.source_line as source"
+                    )
                 ->from($query->dependencies_table(), "d")
                 ->innerJoin("d", $query->entity_table(), "e", "d.dependent_id = e.id")
                 ->innerJoin("d", $query->reference_table(), "r", "d.dependency_id = r.id")
@@ -88,7 +104,12 @@ class RulesToSqlCompiler {
         }
         if ($mode == Def\Rules\Rule::MODE_MUST) {
             return $builder
-                ->select("e.id")
+                ->select
+                    ( "e.id as entity_id"
+                    , "e.file as file"
+                    , "e.start_line as line"
+                    , "e.source as source"
+                    )
                 ->from($query->entity_table(), "e")
                 ->leftJoin("e", $query->dependencies_table(), "d", "d.dependent_id = e.id")
                 ->leftJoin
@@ -112,7 +133,13 @@ class RulesToSqlCompiler {
         $b = $builder->expr();
         if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
             return $builder
-                ->select("i.invoker_id", "i.invokee_id", "i.file", "i.line", "i.source_line")
+                ->select
+                    ( "i.invoker_id as entity_id"
+                    , "i.invokee_id as reference_id"
+                    , "i.file as file"
+                    , "i.line as line"
+                    , "i.source_line as source"
+                    )
                 ->from($query->invocations_table(), "i")
 
                 ->innerJoin("i", $query->entity_table(), "e", "i.invoker_id = e.id")
@@ -125,7 +152,12 @@ class RulesToSqlCompiler {
         }
         if ($mode == Def\Rules\Rule::MODE_MUST) {
             return $builder
-                ->select("e.id")
+                ->select
+                    ( "e.id as entity_id"
+                    , "e.file as file"
+                    , "e.start_line as line"
+                    , "e.source as source"
+                    )
                 ->from($query->entity_table(), "e")
                 ->leftJoin("e", $query->invocations_table(), "i", "i.invoker_id = e.id")
                 ->leftJoin

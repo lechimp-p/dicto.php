@@ -54,12 +54,9 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "id"          => "$id"
-                , "type"        => Consts::CLASS_ENTITY
-                , "name"        => "AClass"
+                ( "entity_id"   => "$id"
                 , "file"        => "file"
-                , "start_line"  => "1"
-                , "end_line"    => "2"
+                , "line"        => "1"
                 , "source"      => "foo"
                 )
             );
@@ -111,11 +108,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "dependent_id"    => "$id1"
-                , "dependency_id"   => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -169,11 +166,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "invoker_id"      => "$id1"
-                , "invokee_id"      => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -229,11 +226,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "dependent_id"    => "$id1"
-                , "dependency_id"   => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -287,11 +284,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "dependent_id"    => "$id1"
-                , "dependency_id"   => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -336,11 +333,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "dependent_id"    => "$id1"
-                , "dependency_id"   => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -389,11 +386,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "dependent_id"    => "$id1"
-                , "dependency_id"   => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -439,11 +436,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "dependent_id"    => "$id1"
-                , "dependency_id"   => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -461,11 +458,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "dependent_id"    => "$id1"
-                , "dependency_id"   => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -513,7 +510,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "id"    => "$id1"
+                ( "entity_id"   => "$id1"
+                , "file"        => "file"
+                , "line"        => "1"
+                , "source"      => "foo"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -530,7 +530,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "id"    => "$id1"
+                ( "entity_id"   => "$id1"
+                , "file"        => "file"
+                , "line"        => "1"
+                , "source"      => "foo"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -572,7 +575,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "id"    => "$id1"
+                ( "entity_id"   => "$id1"
+                , "file"        => "file"
+                , "line"        => "1"
+                , "source"      => "foo"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -602,11 +608,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "dependent_id"    => "$id1"
-                , "dependency_id"   => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -624,11 +630,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "dependent_id"    => "$id1"
-                , "dependency_id"   => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -646,11 +652,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "dependent_id"    => "$id1"
-                , "dependency_id"   => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -692,12 +698,9 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "id"          => "$id"
-                , "type"        => Consts::CLASS_ENTITY
-                , "name"        => "AClass"
+                ( "entity_id"   => "$id"
                 , "file"        => "file"
-                , "start_line"  => "1"
-                , "end_line"    => "2"
+                , "line"        => "1"
                 , "source"      => "bar"
                 )
             );
@@ -760,12 +763,9 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "id"          => "$id"
-                , "type"        => Consts::CLASS_ENTITY
-                , "name"        => "BClass"
+                ( "entity_id"   => "$id"
                 , "file"        => "file"
-                , "start_line"  => "1"
-                , "end_line"    => "2"
+                , "line"        => "1"
                 , "source"      => "foo"
                 )
             );
@@ -793,12 +793,9 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "id"          => "$id"
-                , "type"        => Consts::FUNCTION_ENTITY
-                , "name"        => "AClass"
+                ( "entity_id"   => "$id"
                 , "file"        => "file"
-                , "start_line"  => "1"
-                , "end_line"    => "2"
+                , "line"        => "1"
                 , "source"      => "foo"
                 )
             );
@@ -840,7 +837,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "id"      => "$id1"
+                ( "entity_id"   => "$id1"
+                , "file"        => "file"
+                , "line"        => "1"
+                , "source"      => "foo"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -897,11 +897,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "invoker_id"      => "$id1"
-                , "invokee_id"      => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
@@ -932,11 +932,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "invoker_id"      => "$id1"
-                , "invokee_id"      => "$id2"
+                ( "entity_id"       => "$id1"
+                , "reference_id"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
-                , "source_line"     => "a line"
+                , "source"          => "a line"
                 )
             );
         $this->assertEquals($expected, $res);
