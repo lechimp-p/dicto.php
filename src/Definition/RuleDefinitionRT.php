@@ -40,7 +40,7 @@ class RuleDefinitionRT {
     private $rules;
 
     /**
-     * @var \Lechimp\Dicto\App\Config|null
+     * @var array|null
      */
     private $config;
 
@@ -56,7 +56,7 @@ class RuleDefinitionRT {
      * Set a configuration to be used with the rules.
      *
      * @param   array|null  $config
-     * @return  null|\Lechimp\Dicto\App\Config
+     * @return  null|array
      */
     public function configuration(array $config = null) {
         if ($config === null) {
