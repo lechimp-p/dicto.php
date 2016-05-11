@@ -116,21 +116,21 @@ class App {
 
         $container["engine"] = function($c) {
             return new Engine($c["config"], $c["indexer"], $c["database"]);
-        }
+        };
 
         $container["indexer"] = function($c) {
             return new \Lechimp\Dicto\Indexer\PhpParser\Indexer($c["php_parser"]);
-        }
+        };
 
         $container["php_parser"] = function($c) {
             return (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        }
+        };
 
         $container["database"] = function($c) {
             $db = new DB($c["connection"];
             $db->init_sqlite_regexp();
             $db->maybe_init_database_schema();
-        }
+        };
 
         $container["connection"] = function($c) {
             return new DriverManager::getConnection
@@ -140,7 +140,7 @@ class App {
                     , "path" => $c["config"]->sqlite_path()
                     )
                 );
-        }
+        };
 
         $container = $postprocess_dic($container);
         if (!($container instanceof Container)) {
