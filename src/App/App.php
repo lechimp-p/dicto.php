@@ -127,13 +127,13 @@ class App {
         };
 
         $container["database"] = function($c) {
-            $db = new DB($c["connection"];
+            $db = new DB($c["connection"]);
             $db->init_sqlite_regexp();
             $db->maybe_init_database_schema();
         };
 
         $container["connection"] = function($c) {
-            return new DriverManager::getConnection
+            return DriverManager::getConnection
                 ( array
                     ( "driver" => "pdo_sqlite"
                     , "memory" => $c["config"]->sqlite_memory()
