@@ -166,9 +166,9 @@ class DB implements Insert, Query {
      */
     public function init_sqlite_regexp() {
         $pdo = $this->connection->getWrappedConnection();
-        if (!($pdo instanceof \Doctrine\DBAL\Driver\PDOConnection)) {
+        if (!($pdo instanceof \PDO)) {
             throw new \RuntimeException(
-                "Expected wrapped connection to be PDOConnection.");
+                "Expected wrapped connection to be PDO-object.");
         }
         $pdo->sqliteCreateFunction("regexp", function($pattern, $data) {
             return preg_match("%$pattern%", $data) > 0;
