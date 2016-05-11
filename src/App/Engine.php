@@ -38,9 +38,6 @@ class Engine {
      */
     protected $db;
 
-    /**
-     * @param   string  $project_root
-     */
     public function __construct(Config $config, I\Indexer $indexer, DB $db) {
         $this->config = $config;
         $this->indexer = $indexer;
