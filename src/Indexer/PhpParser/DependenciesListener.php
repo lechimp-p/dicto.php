@@ -90,8 +90,10 @@ class DependenciesListener extends Listener {
         }
         elseif ($node instanceof N\Stmt\Global_) {
             foreach ($node->vars as $var) {
-                assert('$var instanceof \\PhpParser\\Node\\Expr\\Variable');
-                assert('is_string($var->name)');
+                if (!($var instanceof N\Expr\Variable) || !is_string("$var->name")) {
+                    throw new \RuntimeException(
+                        "Expected Variable with string name, found: ".print_r($var, true));
+                }
                 $ref_ids[] = $this->indexer->get_reference
                     ( Consts::GLOBAL_ENTITY
                     , $var->name
