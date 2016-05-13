@@ -9,6 +9,7 @@
  */
 
 namespace Lechimp\Dicto\Definition\Rules;
+use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Definition\Variables as Vars;
 
@@ -81,5 +82,14 @@ abstract class Rule extends Def\Definition {
      * @return  Vars\Variable[]
      */
     abstract public function variables();
+
+    /**
+     * Get the schema that was used for the rule.
+     *
+     * // TODO: This could be implemented here...
+     *
+     * @return R\Schema
+     */
+    abstract public function schema();
 }
 

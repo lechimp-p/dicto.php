@@ -21,12 +21,24 @@ class RuleMode extends BaseWithNameAndMode  {
             new Def\Rules\ContainText($this->mode, $var, $regexp));
    }
 
-    public function invoke() {
-        return new Invoke($this->rt, $this->name, $this->mode);
+    /**
+     * Tell which schema to use.
+     *
+     * @throws  \InvalidArgumentException when schema is unknown
+     * @throws  \InvalidArgumentException when there are arguments
+     * // TODO: What does this return?
+     * @return  ?
+     */
+    public function __call($name, $arguments) {
+        # ToDo: This is used in Definition\Fluid\Means as well.
+        if (count($arguments) != 0) {
+            throw new \InvalidArgumentException(
+                "No arguments are allowed when using a rule schema.");
+        }
+        $schema = $this->rt->get_schema($name);
+        if ($schema === null) {
+            throw new \InvalidArgumentException("Unknown rule '$name'.");
+        }
+        return $schema->fluid_interface($this->rt, $this->name, $this->mode);
     }
-
-    public function depend_on() {
-        return new DependOn($this->rt, $this->name, $this->mode);
-    }
-
 }

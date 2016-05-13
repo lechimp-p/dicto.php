@@ -51,4 +51,8 @@ class ContainText extends Rule {
     public function variables() {
         return array($this->subject());
     }
+
+    public function schema() {
+        throw new \Exception("no..");
+    }
 }

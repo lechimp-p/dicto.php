@@ -13,6 +13,8 @@ use Lechimp\Dicto\Definition as Def;
 
 /**
  * Prints rules.
+ *
+ * TODO: This should go away completely.
  */
 class RulePrinter {
     /**
@@ -38,16 +40,15 @@ class RulePrinter {
     }
 
     protected function print_tail(Def\Rules\Rule $rule) {
-        if ($rule instanceof Def\Rules\Invoke) {
-            return "invoke ".$rule->invokes()->name();
-        }
-        if($rule instanceof Def\Rules\DependOn) {
-            return "depend on ".$rule->dependency()->name();
-        }
         if ($rule instanceof Def\Rules\ContainText) {
             return "contain text \"".$rule->regexp()."\"";
         }
+        else {
+            $schema = $rule->schema();
+            assert('$schema !== null');
+            return $schema->pprint($rule);
+        }
 
-        throw new \Exception("Unknown rule '".$cls."'");
+        throw new \Exception("Unknown rule '".get_class($rule)."'");
     }
 }

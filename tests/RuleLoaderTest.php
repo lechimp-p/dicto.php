@@ -11,6 +11,7 @@
 use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Definition\Variables as Vars;
 use Lechimp\Dicto\Definition\Rules as Rules;
+use Lechimp\Dicto\Rules as R;
 
 define("__RuleLoaderTest_PATH_TO_RULES_PHP", __DIR__."/data/rules.php");
 
@@ -183,10 +184,11 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $pp = "AClasses must invoke AFunctions";
         $this->assertArrayHasKey($pp, $rules);
 
-        $expected = new Rules\Invoke
+        $expected = new Rules\Relation
             ( Rules\Rule::MODE_MUST
             , $this->AClasses
             , $this->AFunctions
+            , new R\Invoke()
             );
         $this->assertEquals($expected, $rules[$pp]);
     }

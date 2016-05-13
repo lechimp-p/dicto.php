@@ -52,5 +52,9 @@ class Invoke extends Rule {
     public function variables() {
         return array($this->subject(), $this->invokes);
     }
+
+    public function schema() {
+        throw new \Exception("no..");
+    }
 }
 

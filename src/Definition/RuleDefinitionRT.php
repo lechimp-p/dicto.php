@@ -10,6 +10,10 @@
 
 namespace Lechimp\Dicto\Definition;
 
+use Lechimp\Dicto\Rules\Schema;
+use Lechimp\Dicto\Rules\Invoke;
+use Lechimp\Dicto\Rules\DependOn;
+
 /**
  * Runtime for one rule definition. A rule definition starts with
  * Dicto::startDefinition() and ends with Dicto::endDefinition().
@@ -44,12 +48,25 @@ class RuleDefinitionRT {
      */
     private $config;
 
+    /**
+     * @var Schema[]
+     */
+    private $known_schemas;
+
     public function __construct() {
         $this->vars = array();
         $this->current_var_name = null;
         $this->current_var = null;
         $this->rules = array();
         $this->config = null;
+        // TODO: This needs to go somewhere else and must be more dynamic.
+        $d = new DependOn();
+        $i = new Invoke();
+        // TODO: There need to be checks on the name then as well.
+        $this->known_schemas = array
+            ( $d->name() => $d
+            , $i->name() => $i
+            );
     }
 
     /**
@@ -184,5 +201,19 @@ class RuleDefinitionRT {
      */
     public function add_rule(Rules\Rule $rule) {
         $this->rules[] = $rule;
+    }
+
+    /**
+     * Try to get a rule schema by name.
+     *
+     * @param   string  $name
+     * @return  Schema|null
+     */
+    public function get_schema($name) {
+        assert('is_string($name)');
+        if (array_key_exists($name, $this->known_schemas)) {
+            return $this->known_schemas[$name];
+        }
+        return null;
     }
 }

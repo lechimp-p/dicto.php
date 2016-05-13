@@ -9,38 +9,46 @@
  */
 
 namespace Lechimp\Dicto\Definition\Rules;
-use Lechimp\Dicto\Definition\Variables as Vars;
+use \Lechimp\Dicto\Definition\Variables as Vars;
+use \Lechimp\Dicto\Rules as R;
 
-class DependOn extends Rule {
+class Relation extends Rule {
     /**
      * @var Vars\Variable
      */
-    private $dependency;
+    private $right;
+
+    /**
+     * @var R\Relation
+     */
+    private $relation;
 
     /**
      * @param string $mode
      */
-    public function __construct($mode, Vars\Variable $left, Vars\Variable $dependency) {
+    public function __construct($mode, Vars\Variable $left, Vars\Variable $right, R\Relation $relation) {
         parent::__construct($mode, $left);
-        $this->dependency = $dependency;
+        $this->right = $right;
+        $this->relation = $relation;
+    }
+
+    // TODO: This seems odd. Its part of a fluid interface, right?
+    public function invoke(Functions $fun) {
+        return InvokeRule($this, $fun);
     }
 
     /**
-     * @var Variable
+     * @return Vars\Variable
      */
-    public function dependency() {
-        return $this->dependency;
-    }
-
-    public function invoke(Functions $fun) {
-        return InvokeRule($this, $fun);
+    public function right() {
+        return $this->right;
     }
 
     /**
      * @inheritdoc
      */
     public function explain($text) {
-        $r = new DependOnRule($this->mode(), $this->subject(), $this->dependency);
+        $r = new Relation($this->mode(), $this->subject(), $this->right, $this->relation);
         $r->setExplanation($text);
         return $r;
     }
@@ -49,10 +57,14 @@ class DependOn extends Rule {
      * @inheritdoc
      */
     public function variables() {
-        return array($this->subject(), $this->dependency);
+        return array($this->subject(), $this->right);
     }
 
+    /**
+     * @inheritdoc
+     */
     public function schema() {
-        throw new \Exception("no..");
+        return  $this->relation;
     }
 }
+
