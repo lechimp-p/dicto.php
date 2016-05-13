@@ -94,6 +94,22 @@ class DB implements Insert, Query {
     /**
      * @inheritdoc
      */
+    public function relation($name, $entity_id, $reference_id, $file, $line, $source_line) {
+        // TODO: Make this go away
+        if ($name == "depend_on") {
+            return $this->dependency($entity_id, $reference_id, $file, $line, $source_line);
+        } 
+        elseif ($name == "invoke") {
+            return $this->invocation($entity_id, $reference_id, $file, $line, $source_line);
+        }
+        else {
+            throw new \Exception("noez: $name!");
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function dependency($dependent_id, $dependency_id, $file, $line, $source_line) {
         assert('is_int($dependent_id)');
         assert('is_int($dependency_id)');

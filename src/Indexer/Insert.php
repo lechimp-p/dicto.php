@@ -55,33 +55,15 @@ interface Insert {
     public function reference($type, $name, $file, $line);
 
     /**
-     * Record information about a dependency.
+     * Record information about a relation.
      *
-     * A class or function is considered do depend on something if its body
-     * of definition makes use of the thing. Language constructs, files or globals
-     * can't depend on anything.
-     *
-     * @param   int             $dependent_id
-     * @param   int             $dependency_id
+     * @param   string          $name   of the relation
+     * @param   int             $entity_id
+     * @param   int             $reference_id
      * @param   string          $file       where the dependency was created
      * @param   int             $line       where the dependency was created
      * @param   string          $source_line
      * @return  null
      */
-    public function dependency($dependent_id, $dependency_id, $file, $line, $source_line);
-
-    /**
-     * Record information about an invocation.
-     *
-     * A class of function is considered to invoke something, it that thing is invoked
-     * in its body.
-     *
-     * @param   int             $invoker_id
-     * @param   int             $invokee_id
-     * @param   string          $file       where the invocation was made
-     * @param   int             $line       where the invocation was made
-     * @param   string          $source_line
-     * @return  null
-     */
-    public function invocation($invoker_id, $invokee_id, $file, $line, $source_line);
+    public function relation($name, $entity_id, $reference_id, $file, $line, $source_line);
 }

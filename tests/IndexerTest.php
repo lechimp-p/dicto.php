@@ -17,8 +17,14 @@ define("__IndexerTest_PATH_TO_SRC", __DIR__."/data/src");
 class InsertMock implements Insert {
     public $entities = array();
     public $references = array();
-    public $dependencies = array();
-    public $invocations = array();
+    public $relations = array();
+
+    public function __construct() {
+        $this->relations = array
+            ( "depend_on" => array()
+            , "invoke" => array()
+            );
+    }
 
     public function entity($type, $name, $file, $start_line, $end_line, $source) {
         $id = count($this->entities) + count($this->references);
@@ -47,20 +53,10 @@ class InsertMock implements Insert {
     }
 
 
-    public function dependency($dependent_id, $dependency_id, $file, $line, $source_line) {
-        $this->dependencies[] = array
-            ( "dependent_id" => $dependent_id
-            , "dependency_id" => $dependency_id
-            , "file" => $file
-            , "line" => $line
-            , "source_line" => $source_line
-            );
-    }
-
-    public function invocation($invoker_id, $invokee_id, $file, $line, $source_line) {
-        $this->invocations[] = array
-            ( "invoker_id" => $invoker_id
-            , "invokee_id" => $invokee_id
+    public function relation($name, $entity_id, $reference_id, $file, $line, $source_line) {
+        $this->relations[$name][] = array
+            ( "entity_id" => $entity_id
+            , "reference_id" => $reference_id
             , "file" => $file
             , "line" => $line
             , "source_line" => $source_line
@@ -213,23 +209,23 @@ PHP;
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
         $expected_dep_A1 = array
-            ( "dependent_id" => $A1_id
-            , "dependency_id" => $a_bogus_function_id
+            ( "entity_id" => $A1_id
+            , "reference_id" => $a_bogus_function_id
             , "file" => "A1.php"
             , "line" => 13
             , "source_line" => "        return a_bogus_function();"
             );
         $expected_dep_invoke_a_function = array
-            ( "dependent_id" => $invoke_a_function_id
-            , "dependency_id" => $a_bogus_function_id
+            ( "entity_id" => $invoke_a_function_id
+            , "reference_id" => $a_bogus_function_id
             , "file" => "A1.php"
             , "line" => 13
             , "source_line" => "        return a_bogus_function();"
             );
 
-        $this->assertCount(2, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_A1, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_invoke_a_function, $this->insert_mock->dependencies);
+        $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_A1, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_invoke_a_function, $this->insert_mock->relations["depend_on"]);
     }
 
     public function test_entity_A1_invocations() {
@@ -238,23 +234,23 @@ PHP;
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
         $expected_inv_invoke_a_function = array
-            ( "invoker_id" => $invoke_a_function_id
-            , "invokee_id" => $a_bogus_function_id
+            ( "entity_id" => $invoke_a_function_id
+            , "reference_id" => $a_bogus_function_id
             , "file" => "A1.php"
             , "line" => 13
             , "source_line" => "        return a_bogus_function();"
             );
         $expected_inv_A1 = array
-            ( "invoker_id" => $A1_id
-            , "invokee_id" => $a_bogus_function_id
+            ( "entity_id" => $A1_id
+            , "reference_id" => $a_bogus_function_id
             , "file" => "A1.php"
             , "line" => 13
             , "source_line" => "        return a_bogus_function();"
             );
 
-        $this->assertCount(2, $this->insert_mock->invocations);
-        $this->assertContains($expected_inv_invoke_a_function, $this->insert_mock->invocations);
-        $this->assertContains($expected_inv_A1, $this->insert_mock->invocations);
+        $this->assertCount(2, $this->insert_mock->relations["invoke"]);
+        $this->assertContains($expected_inv_invoke_a_function, $this->insert_mock->relations["invoke"]);
+        $this->assertContains($expected_inv_A1, $this->insert_mock->relations["invoke"]);
     }
 
     public function test_references_A2_invoke_a_function() {
@@ -278,23 +274,23 @@ PHP;
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $invoke_a_method_id = $this->insert_mock->get_id("invoke_a_method");
         $expected_dep_A2 = array
-            ( "dependent_id" => $A2_id
-            , "dependency_id" => $invoke_a_function_id
+            ( "entity_id" => $A2_id
+            , "reference_id" => $invoke_a_function_id
             , "file" => "A2.php"
             , "line" => 13
             , "source_line" => '        return $obj->invoke_a_function();'
             );
         $expected_dep_invoke_a_method= array
-            ( "dependent_id" => $invoke_a_method_id
-            , "dependency_id" => $invoke_a_function_id
+            ( "entity_id" => $invoke_a_method_id
+            , "reference_id" => $invoke_a_function_id
             , "file" => "A2.php"
             , "line" => 13
             , "source_line" => '        return $obj->invoke_a_function();'
             );
 
-        $this->assertCount(2, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_A2, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_invoke_a_method, $this->insert_mock->dependencies);
+        $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_A2, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_invoke_a_method, $this->insert_mock->relations["depend_on"]);
     }
 
     public function test_entity_A2_invocations() {
@@ -303,23 +299,23 @@ PHP;
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $invoke_a_method_id = $this->insert_mock->get_id("invoke_a_method");
         $expected_inv_invoke_a_method = array
-            ( "invoker_id" => $invoke_a_method_id
-            , "invokee_id" => $invoke_a_function_id
+            ( "entity_id" => $invoke_a_method_id
+            , "reference_id" => $invoke_a_function_id
             , "file" => "A2.php"
             , "line" => 13
             , "source_line" => '        return $obj->invoke_a_function();'
             );
         $expected_inv_A2 = array
-            ( "invoker_id" => $A2_id
-            , "invokee_id" => $invoke_a_function_id
+            ( "entity_id" => $A2_id
+            , "reference_id" => $invoke_a_function_id
             , "file" => "A2.php"
             , "line" => 13
             , "source_line" => '        return $obj->invoke_a_function();'
             );
 
-        $this->assertCount(2, $this->insert_mock->invocations);
-        $this->assertContains($expected_inv_invoke_a_method, $this->insert_mock->invocations);
-        $this->assertContains($expected_inv_A2, $this->insert_mock->invocations);
+        $this->assertCount(2, $this->insert_mock->relations["invoke"]);
+        $this->assertContains($expected_inv_invoke_a_method, $this->insert_mock->relations["invoke"]);
+        $this->assertContains($expected_inv_A2, $this->insert_mock->relations["invoke"]);
     }
 
     public function test_references_A3_glob() {
@@ -352,39 +348,39 @@ PHP;
         $use_global_by_array_id = $this->insert_mock->get_id("use_global_by_array");
         $glob_ids = $this->insert_mock->get_ids("glob", 2); 
         $expected_dep_A3_1 = array
-            ( "dependent_id" => $A3_id
-            , "dependency_id" => $glob_ids[0]
+            ( "entity_id" => $A3_id
+            , "reference_id" => $glob_ids[0]
             , "file" => "A3.php"
             , "line" => 13
             , "source_line" => '        global $glob;'
             );
         $expected_dep_A3_2 = array
-            ( "dependent_id" => $A3_id
-            , "dependency_id" => $glob_ids[1]
+            ( "entity_id" => $A3_id
+            , "reference_id" => $glob_ids[1]
             , "file" => "A3.php"
             , "line" => 17
             , "source_line" => '        $glob = $GLOBALS["glob"];'
             );
         $expected_dep_use_global_by_keyword = array
-            ( "dependent_id" => $use_global_by_keyword_id
-            , "dependency_id" => $glob_ids[0]
+            ( "entity_id" => $use_global_by_keyword_id
+            , "reference_id" => $glob_ids[0]
             , "file" => "A3.php"
             , "line" => 13
             , "source_line" => '        global $glob;'
             );
         $expected_dep_use_global_by_array = array
-            ( "dependent_id" => $use_global_by_array_id
-            , "dependency_id" => $glob_ids[1]
+            ( "entity_id" => $use_global_by_array_id
+            , "reference_id" => $glob_ids[1]
             , "file" => "A3.php"
             , "line" => 17
             , "source_line" => '        $glob = $GLOBALS["glob"];'
             );
 
-        $this->assertCount(4, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_A3_1, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_A3_2, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_use_global_by_keyword, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_use_global_by_array, $this->insert_mock->dependencies);
+        $this->assertCount(4, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_A3_1, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_A3_2, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_use_global_by_keyword, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_use_global_by_array, $this->insert_mock->relations["depend_on"]);
     }
 
     public function test_references_A4_use_stfu() {
@@ -418,39 +414,39 @@ PHP;
         $stfu_op_id = $this->insert_mock->get_id("@");
         $stfu_fun_id = $this->insert_mock->get_id("stfu");
         $expected_dep_A4_1 = array
-            ( "dependent_id" => $A4_id
-            , "dependency_id" => $stfu_op_id
+            ( "entity_id" => $A4_id
+            , "reference_id" => $stfu_op_id
             , "file" => "A4.php"
             , "line" => 13
             , "source_line" => '        return @stfu();'
             );
         $expected_dep_A4_2 = array
-            ( "dependent_id" => $A4_id
-            , "dependency_id" => $stfu_fun_id
+            ( "entity_id" => $A4_id
+            , "reference_id" => $stfu_fun_id
             , "file" => "A4.php"
             , "line" => 13
             , "source_line" => '        return @stfu();'
             );
         $expected_dep_use_stfu_1 = array
-            ( "dependent_id" => $use_stfu_id
-            , "dependency_id" => $stfu_op_id
+            ( "entity_id" => $use_stfu_id
+            , "reference_id" => $stfu_op_id
             , "file" => "A4.php"
             , "line" => 13
             , "source_line" => '        return @stfu();'
             );
         $expected_dep_use_stfu_2 = array
-            ( "dependent_id" => $use_stfu_id
-            , "dependency_id" => $stfu_fun_id
+            ( "entity_id" => $use_stfu_id
+            , "reference_id" => $stfu_fun_id
             , "file" => "A4.php"
             , "line" => 13
             , "source_line" => '        return @stfu();'
             );
 
-        $this->assertCount(4, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_A4_1, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_A4_2, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_use_stfu_1, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_use_stfu_2, $this->insert_mock->dependencies);
+        $this->assertCount(4, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_A4_1, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_A4_2, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_use_stfu_1, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_use_stfu_2, $this->insert_mock->relations["depend_on"]);
     }
 
     public function test_entity_A4_invocations() {
@@ -459,23 +455,23 @@ PHP;
         $use_stfu_id = $this->insert_mock->get_id("use_stfu");
         $stfu_fun_id = $this->insert_mock->get_id("stfu");
         $expected_inv_use_stfu = array
-            ( "invoker_id" => $use_stfu_id
-            , "invokee_id" => $stfu_fun_id
+            ( "entity_id" => $use_stfu_id
+            , "reference_id" => $stfu_fun_id
             , "file" => "A4.php"
             , "line" => 13
             , "source_line" => '        return @stfu();'
             );
         $expected_inv_A4 = array
-            ( "invoker_id" => $A4_id
-            , "invokee_id" => $stfu_fun_id
+            ( "entity_id" => $A4_id
+            , "reference_id" => $stfu_fun_id
             , "file" => "A4.php"
             , "line" => 13
             , "source_line" => '        return @stfu();'
             );
 
-        $this->assertCount(2, $this->insert_mock->invocations);
-        $this->assertContains($expected_inv_use_stfu, $this->insert_mock->invocations);
-        $this->assertContains($expected_inv_A4, $this->insert_mock->invocations);
+        $this->assertCount(2, $this->insert_mock->relations["invoke"]);
+        $this->assertContains($expected_inv_use_stfu, $this->insert_mock->relations["invoke"]);
+        $this->assertContains($expected_inv_A4, $this->insert_mock->relations["invoke"]);
     }
 
     public function test_entity_MD_file() {
@@ -497,8 +493,8 @@ PHP;
         $this->indexer->index_file("CallsClosure.php");
         $id = $this->insert_mock->get_id("CallsClosure");
 
-        $this->assertCount(0, $this->insert_mock->invocations);
-        $this->assertCount(0, $this->insert_mock->dependencies);
+        $this->assertCount(0, $this->insert_mock->relations["invoke"]);
+        $this->assertCount(0, $this->insert_mock->relations["depend_on"]);
     }
 
     public function test_indexes_array_twice() {
@@ -507,39 +503,39 @@ PHP;
         $indexes_GLOBAL_twice_id = $this->insert_mock->get_id("indexes_GLOBAL_twice");
         $glob_ids = $this->insert_mock->get_ids("glob", 1); 
         $expected_dep_IndexesTwice_1 = array
-            ( "dependent_id" => $IndexesTwice_id
-            , "dependency_id" => $glob_ids[0]
+            ( "entity_id" => $IndexesTwice_id
+            , "reference_id" => $glob_ids[0]
             , "file" => "IndexesTwice.php"
             , "line" => 17
             , "source_line" => '        return $GLOBALS["glob"]["bar"];'
             );
         $expected_dep_indexes_GLOBAL_twice_1 = array
-            ( "dependent_id" => $indexes_GLOBAL_twice_id
-            , "dependency_id" => $glob_ids[0]
+            ( "entity_id" => $indexes_GLOBAL_twice_id
+            , "reference_id" => $glob_ids[0]
             , "file" => "IndexesTwice.php"
             , "line" => 17
             , "source_line" => '        return $GLOBALS["glob"]["bar"];'
             );
 
-        $this->assertCount(2, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_IndexesTwice_1, $this->insert_mock->dependencies);
-        $this->assertContains($expected_dep_indexes_GLOBAL_twice_1, $this->insert_mock->dependencies);
+        $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_IndexesTwice_1, $this->insert_mock->relations["depend_on"]);
+        $this->assertContains($expected_dep_indexes_GLOBAL_twice_1, $this->insert_mock->relations["depend_on"]);
     }
 
     public function test_ignores_call_to_variable_method() {
         $this->indexer->index_file("CallsVariableMethod.php");
         $id = $this->insert_mock->get_id("CallsVariableMethod");
 
-        $this->assertCount(0, $this->insert_mock->invocations);
-        $this->assertCount(0, $this->insert_mock->dependencies);
+        $this->assertCount(0, $this->insert_mock->relations["invoke"]);
+        $this->assertCount(0, $this->insert_mock->relations["depend_on"]);
     }
 
     public function test_ignores_call_to_function_in_array() {
         $this->indexer->index_file("CallsFunctionInArray.php");
         $id = $this->insert_mock->get_id("CallsFunctionInArray");
 
-        $this->assertCount(0, $this->insert_mock->invocations);
-        $this->assertCount(0, $this->insert_mock->dependencies);
+        $this->assertCount(0, $this->insert_mock->relations["invoke"]);
+        $this->assertCount(0, $this->insert_mock->relations["depend_on"]);
     }
 
 
@@ -547,7 +543,7 @@ PHP;
         $this->indexer->index_file("UsesGlobalsWithVarIndex.php");
         $id = $this->insert_mock->get_id("UsesGlobalsWithVarIndex");
 
-        $this->assertCount(0, $this->insert_mock->invocations);
-        $this->assertCount(0, $this->insert_mock->dependencies);
+        $this->assertCount(0, $this->insert_mock->relations["invoke"]);
+        $this->assertCount(0, $this->insert_mock->relations["depend_on"]);
     }
 }

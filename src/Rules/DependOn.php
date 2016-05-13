@@ -13,6 +13,11 @@ namespace Lechimp\Dicto\Rules;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Analysis\Query;
 
+/**
+ * A class or function is considered do depend on something if its body
+ * of definition makes use of the thing. Language constructs, files or globals
+ * can't depend on anything.
+ */
 class DependOn extends Relation {
     /**
      * @inheritdoc

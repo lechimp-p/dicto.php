@@ -93,8 +93,9 @@ class InvocationsListener extends Listener {
             $start_line = $node->getAttribute("startLine");
             $source_line = $this->lines_from_to($start_line, $start_line);
             foreach ($this->invoker_entity_ids as $invoker_id) {
-                $this->insert->invocation
-                    ( $invoker_id
+                $this->insert->relation
+                    ( "invoke"
+                    , $invoker_id
                     , $ref_id
                     , $this->file_path
                     , $start_line

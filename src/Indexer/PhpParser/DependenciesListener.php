@@ -125,8 +125,9 @@ class DependenciesListener extends Listener {
             $source_line = $this->lines_from_to($start_line, $start_line);
             // Record a dependency for every entity we currently know as dependent.
             foreach ($this->dependent_entity_ids as $dependent_id) {
-                $this->insert->dependency
-                    ( $dependent_id
+                $this->insert->relation
+                    ( "depend_on"
+                    , $dependent_id
                     , $ref_id
                     , $this->file_path
                     , $start_line

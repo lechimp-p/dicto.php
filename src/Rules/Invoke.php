@@ -13,6 +13,10 @@ namespace Lechimp\Dicto\Rules;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Analysis\Query;
 
+/**
+ * A class of function is considered to invoke something, it that thing is invoked
+ * in its body.
+ */
 class Invoke extends Relation {
     /**
      * @inheritdoc
