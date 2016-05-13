@@ -21,8 +21,7 @@ interface Query{
     // Get the names of the different tables used by database.
     public function entity_table();
     public function reference_table();
-    public function dependencies_table();
-    public function invocations_table();
+    public function relations_table();
 
     /**
      * Get a builder to create queries.

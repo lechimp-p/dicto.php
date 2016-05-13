@@ -95,67 +95,28 @@ class DB implements Insert, Query {
      * @inheritdoc
      */
     public function relation($name, $entity_id, $reference_id, $file, $line, $source_line) {
-        // TODO: Make this go away
-        if ($name == "depend_on") {
-            return $this->dependency($entity_id, $reference_id, $file, $line, $source_line);
-        } 
-        elseif ($name == "invoke") {
-            return $this->invocation($entity_id, $reference_id, $file, $line, $source_line);
-        }
-        else {
-            throw new \Exception("noez: $name!");
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function dependency($dependent_id, $dependency_id, $file, $line, $source_line) {
-        assert('is_int($dependent_id)');
-        assert('is_int($dependency_id)');
+        assert('is_string($name)');
+        assert('is_int($entity_id)');
+        assert('is_int($reference_id)');
         assert('is_string($file)');
         assert('is_int($line)');
         assert('is_string($source_line)');
         $this->builder()
-            ->insert($this->dependencies_table())
+            ->insert($this->relations_table())
             ->values(array
-                ( "dependent_id" => "?"
-                , "dependency_id" => "?"
+                ( "name" => "?"
+                , "entity_id" => "?"
+                , "reference_id" => "?"
                 , "file" => "?"
                 , "line" => "?"
                 , "source_line" => "?"
                 ))
-            ->setParameter(0, $dependent_id)
-            ->setParameter(1, $dependency_id)
-            ->setParameter(2, $file)
-            ->setParameter(3, $line)
-            ->setParameter(4, $source_line)
-            ->execute();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function invocation($invoker_id, $invokee_id, $file, $line, $source_line) {
-        assert('is_int($invoker_id)');
-        assert('is_int($invokee_id)');
-        assert('is_string($file)');
-        assert('is_int($line)');
-        assert('is_string($source_line)');
-        $this->builder()
-            ->insert($this->invocations_table())
-            ->values(array
-                ( "invoker_id" => "?"
-                , "invokee_id" => "?"
-                , "file" => "?"
-                , "line" => "?"
-                , "source_line" => "?"
-                ))
-            ->setParameter(0, $invoker_id)
-            ->setParameter(1, $invokee_id)
-            ->setParameter(2, $file)
-            ->setParameter(3, $line)
-            ->setParameter(4, $source_line)
+            ->setParameter(0, $name)
+            ->setParameter(1, $entity_id)
+            ->setParameter(2, $reference_id)
+            ->setParameter(3, $file)
+            ->setParameter(4, $line)
+            ->setParameter(5, $source_line)
             ->execute();
     }
 
@@ -169,12 +130,8 @@ class DB implements Insert, Query {
         return "refs";
     }
 
-    public function dependencies_table() {
-        return "dependencies";
-    }
-
-    public function invocations_table() {
-        return "invocations";
+    public function relations_table() {
+        return "relations";
     }
 
     /**
@@ -262,67 +219,39 @@ class DB implements Insert, Query {
             );
         $reference_table->setPrimaryKey(array("id"));
 
-        $dependencies_table = $schema->createTable($this->dependencies_table());
-        $dependencies_table->addColumn
-            ( "dependent_id", "integer"
+        $relations_table = $schema->createTable($this->relations_table());
+        $relations_table->addColumn
+            ("name", "string"
+            , array("notnull" => true)
+            );
+        $relations_table->addColumn
+            ( "entity_id", "integer"
             , array("notnull" => true, "unsigned" => true)
             );
-        $dependencies_table->addColumn
-            ( "dependency_id", "integer"
+        $relations_table->addColumn
+            ( "reference_id", "integer"
             , array("notnull" => true, "unsigned" => true)
             );
-        $dependencies_table->addColumn
+        $relations_table->addColumn
             ("file", "string"
             , array("notnull" => true)
             );
-        $dependencies_table->addColumn
+        $relations_table->addColumn
             ("line", "integer"
             , array("notnull" => true, "unsigned" => true)
             );
-        $dependencies_table->addColumn
+        $relations_table->addColumn
             ("source_line", "text"
             , array("notnull" => true)
             );
-        $dependencies_table->addForeignKeyConstraint
+        $relations_table->addForeignKeyConstraint
             ( $entity_table
-            , array("dependent_id")
+            , array("entity_id")
             , array("id")
             );
-        $dependencies_table->addForeignKeyConstraint
+        $relations_table->addForeignKeyConstraint
             ( $reference_table
-            , array("dependency_id")
-            , array("id")
-            );
-
-        $invocations_table = $schema->createTable($this->invocations_table());
-        $invocations_table->addColumn
-            ( "invoker_id", "integer"
-            , array("notnull" => true, "unsigned" => true)
-            );
-        $invocations_table->addColumn
-            ( "invokee_id", "integer"
-            , array("notnull" => true, "unsigned" => true)
-            );
-        $invocations_table->addColumn
-            ("file", "string"
-            , array("notnull" => true)
-            );
-        $invocations_table->addColumn
-            ("line", "integer"
-            , array("notnull" => true, "unsigned" => true)
-            );
-        $invocations_table->addColumn
-            ("source_line", "text"
-            , array("notnull" => true)
-            );
-        $invocations_table->addForeignKeyConstraint
-            ( $entity_table
-            , array("invoker_id")
-            , array("id")
-            );
-        $invocations_table->addForeignKeyConstraint
-            ( $reference_table
-            , array("invokee_id")
+            , array("reference_id")
             , array("id")
             );
 

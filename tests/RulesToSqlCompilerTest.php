@@ -102,7 +102,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -136,7 +136,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "a_function", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -161,7 +161,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_invoke_functions();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
-        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -195,7 +195,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_invoke_functions();
         $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "some_function", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
-        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -222,7 +222,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->everything_cannot_depend_on_error_suppressor();
         $id1 = $this->db->entity($type, "entity", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::LANGUAGE_CONSTRUCT_ENTITY, "@", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -253,7 +253,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->everything_cannot_depend_on_error_suppressor();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::LANGUAGE_CONSTRUCT_ENTITY, "unset", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -281,7 +281,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->a_classes_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -303,7 +303,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->a_classes_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "BClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -331,7 +331,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_depend_on_glob();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -353,7 +353,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_depend_on_glob();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "another_glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -385,7 +385,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->everything_but_a_classes_cannot_depend_on_error_suppressor();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "SomeClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::LANGUAGE_CONSTRUCT_ENTITY, "@", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -407,7 +407,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->everything_but_a_classes_cannot_depend_on_error_suppressor();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::LANGUAGE_CONSTRUCT_ENTITY, "@", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -436,7 +436,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_as_well_as_all_functions_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -458,7 +458,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_as_well_as_all_functions_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "a_function", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -480,7 +480,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_as_well_as_all_functions_cannot_depend_on_globals();
         $id1 = $this->db->entity(Consts::METHOD_ENTITY, "a_method", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -552,7 +552,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->everything_but_a_classes_must_depend_on_globals();
         $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -610,7 +610,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->only_a_classes_can_depend_on_globals();
         $id1 = $this->db->entity(Consts::METHOD_ENTITY, "a_method", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -632,7 +632,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->only_a_classes_can_depend_on_globals();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "a_method", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -654,7 +654,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->only_a_classes_can_depend_on_globals();
         $id1 = $this->db->entity(Consts::METHOD_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -676,7 +676,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->only_a_classes_can_depend_on_globals();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::GLOBAL_ENTITY, "glob", "file", 2);
-        $this->db->dependency($id1, $id2, "file", 2, "a line");
+        $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -861,7 +861,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->a_classes_must_invoke_functions();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
-        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -901,7 +901,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->only_a_classes_can_invoke_functions();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "BClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
-        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -923,7 +923,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->only_a_classes_can_invoke_functions();
         $id1 = $this->db->entity(Consts::CLASS_ENTITY, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
-        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -936,7 +936,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->only_a_classes_can_invoke_functions();
         $id1 = $this->db->entity(Consts::FUNCTION_ENTITY, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Consts::FUNCTION_ENTITY, "a_function", "file", 2);
-        $this->db->invocation($id1, $id2, "file", 2, "a line");
+        $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
         $stmt = $this->compiler->compile($this->db, $rule);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
