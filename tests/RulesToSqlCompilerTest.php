@@ -13,6 +13,7 @@ use Lechimp\Dicto\Analysis\RulesToSqlCompiler;
 use Lechimp\Dicto\Analysis\Consts;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Definition\Rules as R;
+use Lechimp\Dicto\Rules as Rules;
 use Lechimp\Dicto\Definition\Variables as V;
 use Lechimp\Dicto\App\DB;
 
@@ -89,10 +90,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // All classes cannot depend on globals.
 
     public function all_classes_cannot_depend_on_globals() {
-        return new R\DependOn
+        return new R\Relation
             ( R\Rule::MODE_CANNOT
             , new V\Classes("allClasses")
             , new V\Globals("allGlobals")
+            , new Rules\DependOn
             );
     }
 
@@ -147,10 +149,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // All classes cannot invoke functions.
 
     public function all_classes_cannot_invoke_functions() {
-        return new R\Invoke
+        return new R\Relation
             ( R\Rule::MODE_CANNOT
             , new V\Classes("allClasses")
             , new V\Functions("allFunctions")
+            , new Rules\Invoke
             );
     }
 
@@ -204,10 +207,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // Everything cannot depend on error suppressor.
 
     public function everything_cannot_depend_on_error_suppressor() {
-        return new R\DependOn
+        return new R\Relation
             ( R\Rule::MODE_CANNOT
             , new V\Everything("everything")
             , new V\LanguageConstruct("errorSuppressor", "@")
+            , new Rules\DependOn
             );
     }
 
@@ -262,13 +266,14 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // AClasses cannot depend on globals.
 
     public function a_classes_cannot_depend_on_globals() {
-        return new R\DependOn
+        return new R\Relation
             ( R\Rule::MODE_CANNOT
             , new V\WithName
                 ( "AClass"
                 , new V\Classes("AClasses")
                 )
             , new V\Globals("allGlobals")
+            , new Rules\DependOn
             );
     }
 
@@ -311,13 +316,14 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // All classes cannot depend on globals with name "glob".
 
     public function all_classes_cannot_depend_on_glob() {
-        return new R\DependOn
+        return new R\Relation
             ( R\Rule::MODE_CANNOT
             , new V\Classes("allClasses")
             , new V\WithName
                 ( "glob"
                 , new V\Globals("glob")
                 )
+            , new Rules\DependOn
             );
     }
 
@@ -360,7 +366,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // Everything but a classes cannot deppend on error suppressor.
 
     public function everything_but_a_classes_cannot_depend_on_error_suppressor() {
-        return new R\DependOn
+        return new R\Relation
             ( R\Rule::MODE_CANNOT
             , new V\ButNot
                 ( "but_AClasses"
@@ -371,6 +377,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
                     )
                 )
             , new V\LanguageConstruct("errorSuppressor", "@")
+            , new Rules\DependOn
             );
     }
 
@@ -413,7 +420,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // All classes as well as all functions cannot depend on globals.
 
     public function all_classes_as_well_as_all_functions_cannot_depend_on_globals() {
-        return new R\DependOn
+        return new R\Relation
             ( R\Rule::MODE_CANNOT
             , new V\AsWellAs
                 ( "AllClassesAsWellAsAllFunctions"
@@ -421,6 +428,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
                 , new V\Functions("allFunctions")
                 )
             , new V\Globals("allGlobals")
+            , new Rules\DependOn
             );
     }
 
@@ -485,7 +493,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // Everything but AClasses must depend on globals.
 
     public function everything_but_a_classes_must_depend_on_globals() {
-        return new R\DependOn
+        return new R\Relation
             ( R\Rule::MODE_MUST
             , new V\ButNot
                 ( "but_AClasses"
@@ -496,6 +504,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
                     )
                 )
             , new V\Globals("allGlobals")
+            , new Rules\DependOn
             );
     }
 
@@ -586,13 +595,14 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // Only AClasses can depend on globals.
 
     public function only_a_classes_can_depend_on_globals() {
-        return new R\DependOn
+        return new R\Relation
             ( R\Rule::MODE_ONLY_CAN
             , new V\WithName
                 ( "AClass"
                 , new V\Classes("AClasses")
                 )
             , new V\Globals("allGlobals")
+            , new Rules\DependOn
             );
     }
 
@@ -816,13 +826,14 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // AClasses must invoke functions.
 
     public function a_classes_must_invoke_functions() {
-        return new R\Invoke
+        return new R\Relation
             ( R\Rule::MODE_MUST
             , new V\WithName
                 ( "AClass"
                 , new V\Classes("AClasses")
                 )
             , new V\Functions("allFunctions")
+            , new Rules\Invoke
             );
     }
 
@@ -875,13 +886,14 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // Only AClasses can invoke functions.
 
     public function only_a_classes_can_invoke_functions() {
-        return new R\Invoke
+        return new R\Relation
             ( R\Rule::MODE_ONLY_CAN
             , new V\WithName
                 ( "AClass"
                 , new V\Classes("AClasses")
                 )
             , new V\Functions("allFunctions")
+            , new Rules\Invoke
             );
     }
 

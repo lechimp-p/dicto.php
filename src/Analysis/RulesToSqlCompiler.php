@@ -19,6 +19,8 @@ use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 /**
  * This is a compiler that uses Doctrines QueryBuilder to transform rules to
  * SQL statements.
+ *
+ * TODO: This should go away completely.
  */
 class RulesToSqlCompiler {
     /**
@@ -33,15 +35,11 @@ class RulesToSqlCompiler {
             return $this->compile_contains_text
                         ($query, $rule->mode(), $rule->checked_on(), $rule->regexp());
         }
-        if ($rule instanceof Def\Rules\DependOn) {
-            return $this->compile_depends_on
-                        ($query, $rule->mode(), $rule->checked_on(), $rule->dependency());
+        else {
+            $schema = $rule->schema();
+            assert('$schema !== null');
+            return $schema->compile($query, $rule);
         }
-        if ($rule instanceof Def\Rules\Invoke) {
-            return $this->compile_invoke
-                        ($query, $rule->mode(), $rule->checked_on(), $rule->invokes());
-        }
-        throw new \LogicException("Unknown rule class '".get_class($rule)."'");
     }
 
     protected function compile_contains_text(Query $query, $mode, Vars\Variable $checked_on, $regexp) {
@@ -76,101 +74,6 @@ class RulesToSqlCompiler {
                     , "source NOT REGEXP ?"
                     )
                 ->setParameter(0, $regexp)
-                ->execute();
-        }
-        throw new \LogicException("Unknown rule mode: '$mode'");
-    }
-
-    protected function compile_depends_on(Query $query, $mode, Vars\Variable $checked_on, Vars\Variable $dependency) {
-        $builder = $query->builder();
-        $b = $builder->expr();
-        if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
-            return $builder
-                ->select
-                    ( "d.dependent_id as entity_id"
-                    , "d.dependency_id as reference_id"
-                    , "d.file as file"
-                    , "d.line as line"
-                    , "d.source_line as source"
-                    )
-                ->from($query->dependencies_table(), "d")
-                ->innerJoin("d", $query->entity_table(), "e", "d.dependent_id = e.id")
-                ->innerJoin("d", $query->reference_table(), "r", "d.dependency_id = r.id")
-                ->where
-                    ( $this->compile_var($b, "e", $checked_on)
-                    , $this->compile_var($b, "r", $dependency)
-                    )
-                ->execute();
-        }
-        if ($mode == Def\Rules\Rule::MODE_MUST) {
-            return $builder
-                ->select
-                    ( "e.id as entity_id"
-                    , "e.file as file"
-                    , "e.start_line as line"
-                    , "e.source as source"
-                    )
-                ->from($query->entity_table(), "e")
-                ->leftJoin("e", $query->dependencies_table(), "d", "d.dependent_id = e.id")
-                ->leftJoin
-                    ("d", $query->reference_table(), "r"
-                    , $b->andX
-                        ( $b->eq("d.dependency_id", "r.id")
-                        , $this->compile_var($b, "r", $dependency)
-                        )
-                    )
-                ->where
-                    ( $this->compile_var($b, "e", $checked_on)
-                    , $b->isNull("r.id")
-                    )
-                ->execute();
-        }
-        throw new \LogicException("Unknown rule mode: '$mode'");
-    }
-
-    protected function compile_invoke(Query $query, $mode, Vars\Variable $checked_on, Vars\Variable $invokee) {
-        $builder = $query->builder();
-        $b = $builder->expr();
-        if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
-            return $builder
-                ->select
-                    ( "i.invoker_id as entity_id"
-                    , "i.invokee_id as reference_id"
-                    , "i.file as file"
-                    , "i.line as line"
-                    , "i.source_line as source"
-                    )
-                ->from($query->invocations_table(), "i")
-
-                ->innerJoin("i", $query->entity_table(), "e", "i.invoker_id = e.id")
-                ->innerJoin("i", $query->reference_table(), "r", "i.invokee_id = r.id")
-                ->where
-                    ( $this->compile_var($b, "e", $checked_on)
-                    , $this->compile_var($b, "r", $invokee)
-                    )
-                ->execute();
-        }
-        if ($mode == Def\Rules\Rule::MODE_MUST) {
-            return $builder
-                ->select
-                    ( "e.id as entity_id"
-                    , "e.file as file"
-                    , "e.start_line as line"
-                    , "e.source as source"
-                    )
-                ->from($query->entity_table(), "e")
-                ->leftJoin("e", $query->invocations_table(), "i", "i.invoker_id = e.id")
-                ->leftJoin
-                    ( "i", $query->reference_table(), "r"
-                    , $b->andX
-                        ( $b->eq("i.invokee_id", "r.id")
-                        , $this->compile_var($b, "r", $invokee)
-                        )
-                    )
-                ->where
-                    ( $this->compile_var($b, "e", $checked_on)
-                    , $b->isNull("r.id")
-                    )
                 ->execute();
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
