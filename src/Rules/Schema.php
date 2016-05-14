@@ -12,6 +12,7 @@ namespace Lechimp\Dicto\Rules;
 
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Definition\Variables as Vars;
+use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Consts;
 use Doctrine\DBAL\Driver\Statement;
@@ -53,12 +54,21 @@ abstract class Schema {
     /**
      * Compile a given rule into an sql statement using a query interface.
      *
-     * // TODO: What is this, seriously.
      * @param   Query           $query
+     * // TODO: What is this, seriously.
      * @param   ?   $rule
      * @return  Statement
      */
     abstract public function compile(Query $query, $rule);
+
+    /**
+     * Register listeners to the indexer that are required to detect information
+     * for the rule.
+     *
+     * @param   ListenerRegistry $registry
+     * @return  null
+     */
+    abstract public function register_listeners(ListenerRegistry $registry);
 
 
     // TODO: This most propably could go to Query.

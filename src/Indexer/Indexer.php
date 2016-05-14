@@ -17,7 +17,7 @@ use PhpParser\Node as N;
 /**
  * Implementation of Indexer with PhpParser.
  */
-class Indexer implements Location, \PhpParser\NodeVisitor {
+class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     /**
      * @var string
      */
@@ -34,7 +34,7 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
     protected $parser;
 
     /**
-     * @var Listener[];
+     * @var array   string => array()
      */
     protected $listeners;
 
@@ -63,19 +63,17 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
         assert('is_string($project_root_path)');
         $this->project_root_path = $project_root_path;
         $this->insert = $insert;
-        $this->listeners = $this->build_listeners();
+        // TODO: This could contain class names from PhpParser as optimisation.
+        $this->listeners = array("misc" => array());
+        // TODO: This should be more dynamic.
+        $this->register_listeners();
     }
 
-    protected function build_listeners() {
-        if ($this->insert === null) {
-            throw new \LogicException(
-                "Needs an inserter before Listeners can be created.");
-        }
-
-        return array
-            ( new DependenciesListener($this->insert, $this)
-            , new InvocationsListener($this->insert, $this)
-            );
+    protected function register_listeners() {
+        $d = new \Lechimp\Dicto\Rules\DependOn();
+        $d->register_listeners($this);
+        $i = new \Lechimp\Dicto\Rules\Invoke();
+        $i->register_listeners($this);
     }
 
     /**
@@ -115,12 +113,6 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
         $this->reference_cache = null;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function set_project_root_to($path) {
-    }
-
     // helper
 
     private function lines_from_to($start, $end) {
@@ -128,6 +120,13 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
         assert('is_int($end)');
         return implode("\n", array_slice($this->file_content, $start-1, $end-$start+1));
     }
+
+   // from ListenerRegistry 
+
+    public function on_enter_misc(\Closure $listener) {
+        $this->listeners["misc"][] = $listener;
+    }
+
 
    // from Location
 
@@ -271,8 +270,8 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
             */
         }
         else {
-            foreach ($this->listeners as $listener) {
-                $listener->on_enter_misc($this->insert, $this, $node);
+            foreach ($this->listeners["misc"] as $listener) {
+                $listener($this->insert, $this, $node);
             }
         }
 
@@ -323,9 +322,12 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
             */
         }
         else {
+            // TODO: reimplement this in some other way.
+            /*
             foreach ($this->listeners as $listener) {
                 $listener->on_leave_misc($this->insert, $this, $node);
             }
+            */
         }
     }
 }
