@@ -20,75 +20,9 @@ use PhpParser\Node as N;
  *       PhpParser. 
  */
 class Listener {
-    /**
-     * @var I\Insert
-     */
-    protected $insert;
-
-    /**
-     * @var string|null
-     */
-    protected $file_path = null;
-
-    /**
-     * @var string[]|null
-     */
-    protected $file_content = null;
-
-    public function __construct(Insert $insert) {
-        $this->insert = $insert;
-    }
-
-
-    public function on_enter_file($id, $path, $content) {
-        assert('is_int($id)');
-        assert('is_string($path)');
-        assert('is_string($content)');
-        $this->file_path = $path;
-        $this->file_content = explode("\n", $content);
-    }
-
-    public function on_leave_file($id) {
-        assert('is_int($id)');
-        $this->file_path = null;
-        $this->file_content = null;
-    }
-
-    public function on_enter_class($id, N\Stmt\Class_ $class) {
-        assert('is_int($id)');
-    }
-
-    public function on_leave_class($id) {
-        assert('is_int($id)');
-    }
-
-    public function on_enter_method($id, N\Stmt\ClassMethod $method) {
-        assert('is_int($id)');
-    }
-
-    public function on_leave_method($id) {
-        assert('is_int($id)');
-    }
-
-    public function on_enter_function($id, N\Stmt\Function_ $function) {
-        assert('is_int($id)');
-    }
-
-    public function on_leave_function($id) {
-        assert('is_int($id)');
-    }
-
     public function on_enter_misc(Insert $insert, Location $location, \PhpParser\Node $node) {
     }
 
     public function on_leave_misc(Insert $insert, Location $location, \PhpParser\Node $node) {
-    }
-
-    // helpers
-
-    protected function lines_from_to($start, $end) {
-        assert('is_int($start)');
-        assert('is_int($end)');
-        return implode("\n", array_slice($this->file_content, $start-1, $end-$start+1));
     }
 }

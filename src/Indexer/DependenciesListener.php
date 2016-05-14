@@ -25,7 +25,7 @@ class DependenciesListener extends Listener {
                 $ref_ids[] = $insert->get_reference
                     ( Consts::METHOD_ENTITY
                     , $node->name
-                    , $this->file_path
+                    , $location->file_path()
                     , $node->getAttribute("startLine")
                     );
             }
@@ -40,7 +40,7 @@ class DependenciesListener extends Listener {
                 $ref_ids[] = $insert->get_reference
                     ( Consts::FUNCTION_ENTITY
                     , $node->name->parts[0]
-                    , $this->file_path
+                    , $location->file_path()
                     , $node->getAttribute("startLine")
                     );
             }
@@ -54,7 +54,7 @@ class DependenciesListener extends Listener {
                 $ref_ids[] = $insert->get_reference
                     ( Consts::GLOBAL_ENTITY
                     , $var->name
-                    , $this->file_path
+                    , $location->file_path()
                     , $node->getAttribute("startLine")
                     );
             }
@@ -66,7 +66,7 @@ class DependenciesListener extends Listener {
                     $ref_ids[] = $insert->get_reference
                         ( Consts::GLOBAL_ENTITY
                         , $node->dim->value
-                        , $this->file_path
+                        , $location->file_path()
                         , $node->getAttribute("startLine")
                         );
                 }
@@ -76,7 +76,7 @@ class DependenciesListener extends Listener {
             $ref_ids[] = $insert->get_reference
                     ( Consts::LANGUAGE_CONSTRUCT_ENTITY
                     , "@"
-                    , $this->file_path
+                    , $location->file_path()
                     , $node->getAttribute("startLine")
                     );
         }
@@ -92,7 +92,7 @@ class DependenciesListener extends Listener {
                     ( "depend_on"
                     , $entity[1]
                     , $ref_id
-                    , $this->file_path
+                    , $location->file_path()
                     , $start_line
                     , $source_line
                     );

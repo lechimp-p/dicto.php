@@ -48,7 +48,7 @@ class InvocationsListener extends Listener {
         if ($ref_id !== null) {
             // We need to record a invocation in every invoking entity now.
             $start_line = $node->getAttribute("startLine");
-            $source_line = $this->lines_from_to($start_line, $start_line);
+            $source_line = $location->file_content($start_line, $start_line);
 
             foreach ($location->in_entities() as $entity) {
                 if ($entity[0] == Consts::FILE_ENTITY) {

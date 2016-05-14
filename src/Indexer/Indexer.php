@@ -177,9 +177,12 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
 
         $this->entity_stack[] = array(Consts::FILE_ENTITY, $id);
 
+        // TODO: reimplement this in some other way.
+        /*
         foreach ($this->listeners as $listener) {
             $listener->on_enter_file($id, $this->file_path, implode("\n", $this->file_content));
         }
+        */
 
         return null;
     }
@@ -190,9 +193,12 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
     public function afterTraverse(array $nodes) {
         $type_and_id = array_pop($this->entity_stack);
 
+        // TODO: reimplement this in some other way.
+        /*
         foreach ($this->listeners as $listener) {
             $listener->on_leave_file($type_and_id[1]);
         }
+        */
 
         return null;
     }
@@ -220,9 +226,12 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
                 , $source
                 );
 
+            // TODO: reimplement this in some other way.
+            /*
             foreach ($this->listeners as $listener) {
                 $listener->on_enter_class($id, $node);
             }
+            */
         }
         // Method or Function
         elseif ($node instanceof N\Stmt\ClassMethod) {
@@ -236,9 +245,12 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
                 , $source
                 );
 
+            // TODO: reimplement this in some other way.
+            /*
             foreach ($this->listeners as $listener) {
                 $listener->on_enter_method($id, $node);
             }
+            */
         }
         elseif ($node instanceof N\Stmt\Function_) {
             $type = Consts::FUNCTION_ENTITY;
@@ -251,9 +263,12 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
                 , $source
                 );
 
+            // TODO: reimplement this in some other way.
+            /*
             foreach ($this->listeners as $listener) {
                 $listener->on_enter_function($id, $node);
             }
+            */
         }
         else {
             foreach ($this->listeners as $listener) {
@@ -275,9 +290,12 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
             // We pushed it, we need to pop it now, as we are leaving the class.
             $type_and_id = array_pop($this->entity_stack);
 
+            // TODO: reimplement this in some other way.
+            /*
             foreach ($this->listeners as $listener) {
                 $listener->on_leave_class($type_and_id[1]);
             }
+            */
         }
         // Method or Function
         elseif ($node instanceof N\Stmt\ClassMethod) {
@@ -285,18 +303,24 @@ class Indexer implements Location, \PhpParser\NodeVisitor {
             // or function.
             $type_and_id = array_pop($this->entity_stack);
 
+            // TODO: reimplement this in some other way.
+            /*
             foreach ($this->listeners as $listener) {
                 $listener->on_leave_method($type_and_id[1]);
             }
+            */
         }
         elseif ($node instanceof N\Stmt\Function_) {
             // We pushed it, we need to pop it now, as we are leaving the method
             // or function.
             $type_and_id = array_pop($this->entity_stack);
 
+            // TODO: reimplement this in some other way.
+            /*
             foreach ($this->listeners as $listener) {
                 $listener->on_leave_function($type_and_id[1]);
             }
+            */
         }
         else {
             foreach ($this->listeners as $listener) {
