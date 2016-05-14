@@ -11,7 +11,7 @@
 namespace Lechimp\Dicto\Rules;
 
 use Lechimp\Dicto\Definition as Def;
-use Lechimp\Dicto\Definition\Variables as Vars;
+use Lechimp\Dicto\Variables as Vars;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Consts;

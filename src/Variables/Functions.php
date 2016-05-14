@@ -8,14 +8,14 @@
  * a copy of the licence along with the code.
  */
 
-namespace Lechimp\Dicto\Definition\Variables;
+namespace Lechimp\Dicto\Variables;
 
-class Everything extends Variable {
+class Functions extends Variable {
     /**
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new Everything($this->name());
+        $v = new Functions($this->name());
         $v->setExplanation($text);
         return $v;
     }

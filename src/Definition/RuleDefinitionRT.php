@@ -15,6 +15,7 @@ use Lechimp\Dicto\Rules\Invoke;
 use Lechimp\Dicto\Rules\DependOn;
 use Lechimp\Dicto\Rules\ContainText;
 use Lechimp\Dicto\Rules\Rule;
+use Lechimp\Dicto\Variables\Variable;
 
 /**
  * Runtime for one rule definition. A rule definition starts with
@@ -186,7 +187,7 @@ class RuleDefinitionRT {
      *
      * @param   Variables\Variable  $var
      */
-    public function current_var_is(Variables\Variable $var) {
+    public function current_var_is(Variable $var) {
         assert('$this->current_var_name !== null');
         $this->current_var = $var;
     }

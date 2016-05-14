@@ -9,7 +9,7 @@
  */
 
 use Lechimp\Dicto as Dicto;
-use Lechimp\Dicto\Definition\Variables as Vars;
+use Lechimp\Dicto\Variables as Vars;
 use Lechimp\Dicto\Rules as Rules;
 
 define("__RuleLoaderTest_PATH_TO_RULES_PHP", __DIR__."/data/rules.php");
@@ -79,7 +79,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $this->assertInternalType("array", $vars);
         $this->assertCount(count(self::$VARIABLES_IN_RULES_PHP), $vars);
         foreach ($vars as $var) {
-            $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variables\\Variable", $var);
+            $this->assertInstanceOf("\\Lechimp\\Dicto\\Variables\\Variable", $var);
         }
 
         return $this->vars_to_dict($vars);

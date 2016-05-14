@@ -12,7 +12,7 @@ namespace Lechimp\Dicto\Rules;
 
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Analysis\Query;
-use \Lechimp\Dicto\Definition\Variables as Vars;
+use \Lechimp\Dicto\Variables\Variable;
 
 /**
  * This is a rule that checks a relation between two entities
@@ -35,7 +35,7 @@ abstract class Relation extends Schema {
             throw new \InvalidArgumentException(
                 "One argument is required when using a relational rule schema.");
         }
-       if (!($arguments[0] instanceof Vars\Variable)) {
+       if (!($arguments[0] instanceof Variable)) {
             throw new \InvalidArgumentException(
                 "Expected variable, got '".get_class($arguments[0])."' when using a relational schema.");
         }

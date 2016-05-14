@@ -11,7 +11,7 @@
 use Lechimp\Dicto\Dicto as Dicto;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Rules as Rules;
-use Lechimp\Dicto\Definition\Variables as Vars;
+use Lechimp\Dicto\Variables as Vars;
 
 class RulesTest extends PHPUnit_Framework_TestCase {
     public function test_checked_on() {

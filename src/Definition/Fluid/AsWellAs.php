@@ -9,7 +9,7 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
-use Lechimp\Dicto\Definition\Variables as Vars;
+use Lechimp\Dicto\Variables as Vars;
 
 /**
  * Provides fluid interface to as_well_as().

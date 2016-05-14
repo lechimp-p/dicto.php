@@ -34,7 +34,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         foreach ($names as $name) {
             $this->assertArrayHasKey($name, $variables);
             $var = $variables[$name];
-            $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Variables\\Variable", $var);
+            $this->assertInstanceOf("\\Lechimp\\Dicto\\Variables\\Variable", $var);
         }
     }
 

@@ -8,7 +8,7 @@
  * a copy of the licence along with the code.
  */
 
-namespace Lechimp\Dicto\Definition\Variables;
+namespace Lechimp\Dicto\Variables;
 
 /**
  * Provides fluid interface to _with.

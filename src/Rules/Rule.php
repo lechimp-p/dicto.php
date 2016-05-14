@@ -10,10 +10,12 @@
 
 namespace Lechimp\Dicto\Rules;
 
-use Lechimp\Dicto\Definition as Def;
-use Lechimp\Dicto\Definition\Variables as Vars;
+use Lechimp\Dicto\Definition\Definition;
+use Lechimp\Dicto\Variables\Variable;
+use Lechimp\Dicto\Variables\ButNot;
+use Lechimp\Dicto\Variables\Everything;
 
-class Rule extends Def\Definition {
+class Rule extends Definition {
     const MODE_CANNOT   = "CANNOT";
     const MODE_MUST     = "MUST";
     const MODE_ONLY_CAN = "ONLY_CAN";
@@ -44,7 +46,7 @@ class Rule extends Def\Definition {
      */
     private $arguments;
 
-    public function __construct($mode, Vars\Variable $subject, Schema $schema, array $arguments) {
+    public function __construct($mode, Variable $subject, Schema $schema, array $arguments) {
         assert('in_array($mode, self::$modes)');
         $schema->check_arguments($arguments);
         $this->mode = $mode;
@@ -86,9 +88,9 @@ class Rule extends Def\Definition {
      */
     public function checked_on() {
         if ($this->mode() == self::MODE_ONLY_CAN) {
-            return new Vars\ButNot
+            return new ButNot
                 ( "ONLY_CAN_INVERSION"
-                , new Vars\Everything("EVERYTHING")
+                , new Everything("EVERYTHING")
                 , $this->subject()
                 );
         }
@@ -103,7 +105,7 @@ class Rule extends Def\Definition {
     public function variables() {
         $vars = array($this->subject());
         foreach ($this->arguments as $argument) {
-            if ($argument instanceof Vars\Variable) {
+            if ($argument instanceof Variable) {
                 $vars[] = $argument;
             }
         }

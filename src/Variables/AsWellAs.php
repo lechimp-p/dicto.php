@@ -8,9 +8,9 @@
  * a copy of the licence along with the code.
  */
 
-namespace Lechimp\Dicto\Definition\Variables;
+namespace Lechimp\Dicto\Variables;
 
-class ButNot extends Variable {
+class AsWellAs extends Variable {
     /**
      * @var Variable
      */
@@ -45,7 +45,7 @@ class ButNot extends Variable {
      * @inheritdoc
      */
     public function explain($text) {
-        $v = new ButNot($this->name(), $this->left, $this->right);
+        $v = new AsWellAs($this->name(), $this->left, $this->right);
         $v->setExplanation($text);
         return $v;
     }

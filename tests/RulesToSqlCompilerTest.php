@@ -13,7 +13,7 @@ use Lechimp\Dicto\Analysis\RulesToSqlCompiler;
 use Lechimp\Dicto\Analysis\Consts;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Rules as Rules;
-use Lechimp\Dicto\Definition\Variables as V;
+use Lechimp\Dicto\Variables as Vars;
 use Lechimp\Dicto\App\DB;
 
 use Doctrine\DBAL\Connection;
@@ -39,7 +39,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function all_classes_cannot_contain_text_foo() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new V\Classes("allClasses")
+            , new Vars\Classes("allClasses")
             , new Rules\ContainText()
             , array("foo")
             );
@@ -92,9 +92,9 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function all_classes_cannot_depend_on_globals() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new V\Classes("allClasses")
+            , new Vars\Classes("allClasses")
             , new Rules\DependOn()
-            , array(new V\Globals("allGlobals"))
+            , array(new Vars\Globals("allGlobals"))
             );
     }
 
@@ -151,9 +151,9 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function all_classes_cannot_invoke_functions() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new V\Classes("allClasses")
+            , new Vars\Classes("allClasses")
             , new Rules\Invoke()
-            , array(new V\Functions("allFunctions"))
+            , array(new Vars\Functions("allFunctions"))
             );
     }
 
@@ -209,9 +209,9 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function everything_cannot_depend_on_error_suppressor() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new V\Everything("everything")
+            , new Vars\Everything("everything")
             , new Rules\DependOn()
-            , array(new V\LanguageConstruct("errorSuppressor", "@"))
+            , array(new Vars\LanguageConstruct("errorSuppressor", "@"))
             );
     }
 
@@ -268,12 +268,12 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function a_classes_cannot_depend_on_globals() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new V\WithName
+            , new Vars\WithName
                 ( "AClass"
-                , new V\Classes("AClasses")
+                , new Vars\Classes("AClasses")
                 )
             , new Rules\DependOn()
-            , array(new V\Globals("allGlobals"))
+            , array(new Vars\Globals("allGlobals"))
             );
     }
 
@@ -318,11 +318,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function all_classes_cannot_depend_on_glob() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new V\Classes("allClasses")
+            , new Vars\Classes("allClasses")
             , new Rules\DependOn()
-            , array(new V\WithName
+            , array(new Vars\WithName
                 ( "glob"
-                , new V\Globals("glob")
+                , new Vars\Globals("glob")
                 ))
             );
     }
@@ -368,16 +368,16 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function everything_but_a_classes_cannot_depend_on_error_suppressor() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new V\ButNot
+            , new Vars\ButNot
                 ( "but_AClasses"
-                , new V\Everything("everything")
-                , new V\WithName
+                , new Vars\Everything("everything")
+                , new Vars\WithName
                     ( "AClass"
-                    , new V\Classes("AClasses")
+                    , new Vars\Classes("AClasses")
                     )
                 )
             , new Rules\DependOn
-            , array(new V\LanguageConstruct("errorSuppressor", "@"))
+            , array(new Vars\LanguageConstruct("errorSuppressor", "@"))
             );
     }
 
@@ -422,13 +422,13 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function all_classes_as_well_as_all_functions_cannot_depend_on_globals() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new V\AsWellAs
+            , new Vars\AsWellAs
                 ( "AllClassesAsWellAsAllFunctions"
-                , new V\Classes("allClasses")
-                , new V\Functions("allFunctions")
+                , new Vars\Classes("allClasses")
+                , new Vars\Functions("allFunctions")
                 )
             , new Rules\DependOn()
-            , array(new V\Globals("allGlobals"))
+            , array(new Vars\Globals("allGlobals"))
             );
     }
 
@@ -495,16 +495,16 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function everything_but_a_classes_must_depend_on_globals() {
         return new Rules\Rule
             ( Rules\Rule::MODE_MUST
-            , new V\ButNot
+            , new Vars\ButNot
                 ( "but_AClasses"
-                , new V\Everything("everything")
-                , new V\WithName
+                , new Vars\Everything("everything")
+                , new Vars\WithName
                     ( "AClass"
-                    , new V\Classes("AClasses")
+                    , new Vars\Classes("AClasses")
                     )
                 )
             , new Rules\DependOn()
-            , array(new V\Globals("allGlobals"))
+            , array(new Vars\Globals("allGlobals"))
             );
     }
 
@@ -597,12 +597,12 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function only_a_classes_can_depend_on_globals() {
         return new Rules\Rule
             ( Rules\Rule::MODE_ONLY_CAN
-            , new V\WithName
+            , new Vars\WithName
                 ( "AClass"
-                , new V\Classes("AClasses")
+                , new Vars\Classes("AClasses")
                 )
             , new Rules\DependOn()
-            , array(new V\Globals("allGlobals"))
+            , array(new Vars\Globals("allGlobals"))
             );
     }
 
@@ -690,9 +690,9 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function a_classes_must_contain_text_foo() {
         return new Rules\Rule
             ( Rules\Rule::MODE_MUST
-            , new V\WithName
+            , new Vars\WithName
                 ( "AClass"
-                , new V\Classes("AClasses")
+                , new Vars\Classes("AClasses")
                 )
             , new Rules\ContainText()
             , array("foo")
@@ -756,9 +756,9 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function only_a_classes_can_contain_text_foo() {
         return new Rules\Rule
             ( Rules\Rule::MODE_ONLY_CAN
-            , new V\WithName
+            , new Vars\WithName
                 ( "AClass"
-                , new V\Classes("AClasses")
+                , new Vars\Classes("AClasses")
                 )
             , new Rules\ContainText()
             , array("foo")
@@ -830,12 +830,12 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function a_classes_must_invoke_functions() {
         return new Rules\Rule
             ( Rules\Rule::MODE_MUST
-            , new V\WithName
+            , new Vars\WithName
                 ( "AClass"
-                , new V\Classes("AClasses")
+                , new Vars\Classes("AClasses")
                 )
             , new Rules\Invoke()
-            , array(new V\Functions("allFunctions"))
+            , array(new Vars\Functions("allFunctions"))
             );
     }
 
@@ -890,12 +890,12 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function only_a_classes_can_invoke_functions() {
         return new Rules\Rule
             ( Rules\Rule::MODE_ONLY_CAN
-            , new V\WithName
+            , new Vars\WithName
                 ( "AClass"
-                , new V\Classes("AClasses")
+                , new Vars\Classes("AClasses")
                 )
             , new Rules\Invoke()
-            , array(new V\Functions("allFunctions"))
+            , array(new Vars\Functions("allFunctions"))
             );
     }
 
