@@ -117,8 +117,6 @@ class Rule extends Definition {
     /**
      * Get the schema that was used for the rule.
      *
-     * // TODO: This could be implemented here...
-     *
      * @return R\Schema
      */
     public function schema() {
