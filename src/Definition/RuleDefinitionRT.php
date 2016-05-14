@@ -14,6 +14,7 @@ use Lechimp\Dicto\Rules\Schema;
 use Lechimp\Dicto\Rules\Invoke;
 use Lechimp\Dicto\Rules\DependOn;
 use Lechimp\Dicto\Rules\ContainText;
+use Lechimp\Dicto\Rules\Rule;
 
 /**
  * Runtime for one rule definition. A rule definition starts with
@@ -202,7 +203,7 @@ class RuleDefinitionRT {
     /**
      * Add a rule to the set.
      */
-    public function add_rule(Rules\Rule $rule) {
+    public function add_rule(Rule $rule) {
         $this->rules[] = $rule;
     }
 

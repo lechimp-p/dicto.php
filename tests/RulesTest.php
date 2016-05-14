@@ -10,8 +10,7 @@
 
 use Lechimp\Dicto\Dicto as Dicto;
 use Lechimp\Dicto\Definition as Def;
-use Lechimp\Dicto\Definition\Rules as Rules;
-use Lechimp\Dicto\Rules as R;
+use Lechimp\Dicto\Rules as Rules;
 use Lechimp\Dicto\Definition\Variables as Vars;
 
 class RulesTest extends PHPUnit_Framework_TestCase {
@@ -20,7 +19,7 @@ class RulesTest extends PHPUnit_Framework_TestCase {
             new Rules\Rule
                 ( Rules\Rule::MODE_MUST
                 , new Vars\Classes("CLASSES")
-                , new R\DependOn()
+                , new Rules\DependOn()
                 , array(new Vars\Functions("FUNCTIONS"))
                 );
         $expected_checked_on =
@@ -33,7 +32,7 @@ class RulesTest extends PHPUnit_Framework_TestCase {
             new Rules\Rule
                 ( Rules\Rule::MODE_ONLY_CAN
                 , new Vars\Classes("CLASSES")
-                , new R\Invoke()
+                , new Rules\Invoke()
                 , array(new Vars\Functions("FUNCTIONS"))
                 );
         $expected_checked_on =
@@ -50,7 +49,7 @@ class RulesTest extends PHPUnit_Framework_TestCase {
             new Rules\Rule
                 ( Rules\Rule::MODE_MUST
                 , new Vars\Classes("CLASSES")
-                , new R\DependOn()
+                , new Rules\DependOn()
                 , array(new Vars\Functions("FUNCTIONS"))
                 );
         $expected = array(new Vars\Classes("CLASSES"), new Vars\Functions("FUNCTIONS"));
@@ -62,7 +61,7 @@ class RulesTest extends PHPUnit_Framework_TestCase {
             new Rules\Rule
                 ( Rules\Rule::MODE_MUST
                 , new Vars\Classes("CLASSES")
-                , new R\ContainText()
+                , new Rules\ContainText()
                 , array("foo")
                 );
         $expected = array(new Vars\Classes("CLASSES"));
@@ -74,7 +73,7 @@ class RulesTest extends PHPUnit_Framework_TestCase {
             new Rules\Rule
                 ( Rules\Rule::MODE_MUST
                 , new Vars\Classes("CLASSES")
-                , new R\Invoke()
+                , new Rules\Invoke()
                 , array(new Vars\Functions("FUNCTIONS"))
                 );
         $expected = array(new Vars\Classes("CLASSES"), new Vars\Functions("FUNCTIONS"));

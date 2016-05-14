@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Analysis;
 use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Rules\Rule;
 
 class Result {
     /**
@@ -56,7 +57,7 @@ class Result {
      * @param   Def\Rules\Rule  $rule
      * @return  Violation[]
      */
-    public function violations_of(Def\Rules\Rule $rule) {
+    public function violations_of(Rule $rule) {
         $r = $rule->pprint();
         if (array_key_exists($r, $this->by_rule_cache)) {
             return $this->by_rule_cache[$r];

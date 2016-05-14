@@ -9,7 +9,8 @@
  */
 
 namespace Lechimp\Dicto\Analysis;
-use Lechimp\Dicto\Definition as Def;
+
+use Lechimp\Dicto\Rules\Rule;
 
 class Violation {
     /**
@@ -42,7 +43,7 @@ class Violation {
      */
     protected $lines_after;
 
-    public function __construct(Def\Rules\Rule $rule, $filename, $line_no, 
+    public function __construct(Rule $rule, $filename, $line_no, 
                                 $line, array $lines_before, array $lines_after) {
         $this->rule = $rule;
         assert('is_string($filename)');

@@ -8,8 +8,8 @@
  * a copy of the licence along with the code.
  */
 
-namespace Lechimp\Dicto\Definition\Rules;
-use Lechimp\Dicto\Rules as R;
+namespace Lechimp\Dicto\Rules;
+
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Definition\Variables as Vars;
 
@@ -44,7 +44,7 @@ class Rule extends Def\Definition {
      */
     private $arguments;
 
-    public function __construct($mode, Vars\Variable $subject, R\Schema $schema, array $arguments) {
+    public function __construct($mode, Vars\Variable $subject, Schema $schema, array $arguments) {
         assert('in_array($mode, self::$modes)');
         $schema->check_arguments($arguments);
         $this->mode = $mode;
@@ -87,10 +87,10 @@ class Rule extends Def\Definition {
     public function checked_on() {
         if ($this->mode() == self::MODE_ONLY_CAN) {
             return new Vars\ButNot
-                        ( "ONLY_CAN_INVERSION"
-                        , new Vars\Everything("EVERYTHING")
-                        , $this->subject()
-                        );
+                ( "ONLY_CAN_INVERSION"
+                , new Vars\Everything("EVERYTHING")
+                , $this->subject()
+                );
         }
         return $this->subject();
     }
@@ -129,11 +129,11 @@ class Rule extends Def\Definition {
     public function pprint() {
         $name = $this->subject()->name();
         switch ($this->mode()) {
-            case Def\Rules\Rule::MODE_CANNOT:
+            case self::MODE_CANNOT:
                 return "$name cannot ".$this->schema()->pprint($this);
-            case Def\Rules\Rule::MODE_MUST:
+            case self::MODE_MUST:
                 return "$name must ".$this->schema()->pprint($this);
-            case Def\Rules\Rule::MODE_ONLY_CAN:
+            case self::MODE_ONLY_CAN:
                 return "only $name can ".$this->schema()->pprint($this);
             default:
                 throw new \Exception("Unknown rule mode '".$this->mode()."'");

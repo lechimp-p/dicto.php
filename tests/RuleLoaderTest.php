@@ -10,8 +10,7 @@
 
 use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Definition\Variables as Vars;
-use Lechimp\Dicto\Definition\Rules as Rules;
-use Lechimp\Dicto\Rules as R;
+use Lechimp\Dicto\Rules as Rules;
 
 define("__RuleLoaderTest_PATH_TO_RULES_PHP", __DIR__."/data/rules.php");
 
@@ -162,7 +161,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $this->assertInternalType("array", $rules);
         $this->assertCount(self::AMOUNT_OF_RULES_IN_RULES_PHP, $rules);
         foreach ($rules as $rule) {
-            $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rules\\Rule", $rule);
+            $this->assertInstanceOf("\\Lechimp\\Dicto\\Rules\\Rule", $rule);
         }
 
         return $this->rules_to_dict($rules);
@@ -186,7 +185,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $expected = new Rules\Rule
             ( Rules\Rule::MODE_MUST
             , $this->AClasses
-            , new R\Invoke()
+            , new Rules\Invoke()
             , array($this->AFunctions)
             );
         $this->assertEquals($expected, $rules[$pp]);

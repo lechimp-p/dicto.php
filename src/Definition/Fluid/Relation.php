@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Definition\Fluid;
 use \Lechimp\Dicto\Definition as Def;
-use \Lechimp\Dicto\Rules as R;
+use \Lechimp\Dicto\Rules as Rules;
 
 class Relation extends BaseWithNameAndMode {
     /**
@@ -18,7 +18,7 @@ class Relation extends BaseWithNameAndMode {
      */
     protected $relation;
 
-    public function __construct(Def\RuleDefinitionRT $rt, $name, $mode, R\Relation $relation) {
+    public function __construct(Def\RuleDefinitionRT $rt, $name, $mode, Rules\Relation $relation) {
         parent::__construct($rt, $name, $mode);
         $this->relation = $relation;
     } 
@@ -33,6 +33,6 @@ class Relation extends BaseWithNameAndMode {
         $left = $this->rt->get_var($this->name);
         $right = $this->rt->get_var($name);
         $this->rt->add_rule(
-            new Def\Rules\Rule($this->mode, $left, $this->relation, array($right)));
+            new Rules\Rule($this->mode, $left, $this->relation, array($right)));
     }
 }

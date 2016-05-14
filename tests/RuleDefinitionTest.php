@@ -111,7 +111,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
         $rules = $defs->rules();
 
         $this->assertCount(1, $rules);
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Rules\\Rule", $rules[0]);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Rules\\Rule", $rules[0]);
         return $rules[0]; 
     }
 

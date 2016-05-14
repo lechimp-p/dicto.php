@@ -9,7 +9,7 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
-use Lechimp\Dicto\Definition\Rules as Rules;
+use Lechimp\Dicto\Rules;
 
 class RuleVar extends BaseWithName {
     public function cannot() {

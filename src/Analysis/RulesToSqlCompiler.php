@@ -11,6 +11,7 @@
 namespace Lechimp\Dicto\Analysis;
 
 use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Rules\Rule;
 use Lechimp\Dicto\Definition\Variables as Vars;
 
 use Doctrine\DBAL\Driver\Statement;
@@ -30,7 +31,7 @@ class RulesToSqlCompiler {
      * @param   Def\Rules\Rule  $rule
      * @return  Statement 
      */
-    public function compile(Query $query, Def\Rules\Rule $rule) {
+    public function compile(Query $query, Rule $rule) {
         if ($rule instanceof Def\Rules\ContainText) {
             return $this->compile_contains_text
                         ($query, $rule->mode(), $rule->checked_on(), $rule->regexp());

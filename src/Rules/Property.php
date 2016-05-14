@@ -23,7 +23,7 @@ abstract class Property extends Schema {
     public function fluid_interface(Def\RuleDefinitionRT $rt, $name, $mode, array $arguments) {
         $rt->throw_on_missing_var($name);
         $left = $rt->get_var($name);
-        $rt->add_rule(new Def\Rules\Rule($mode, $left, $this, $arguments));
+        $rt->add_rule(new Rule($mode, $left, $this, $arguments));
     }
 
     /**

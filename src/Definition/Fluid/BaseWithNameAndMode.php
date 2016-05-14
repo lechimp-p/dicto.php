@@ -22,7 +22,7 @@ class BaseWithNameAndMode extends BaseWithName {
 
     public function __construct(Def\RuleDefinitionRT $rt, $name, $mode) {
         parent::__construct($rt, $name);
-        assert('in_array($mode, \\Lechimp\\Dicto\\Definition\\Rules\\Rule::$modes)');
+        assert('in_array($mode, \\Lechimp\\Dicto\\Rules\\Rule::$modes)');
         $this->mode = $mode;
     }
 }

@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\Definition;
 
+use Lechimp\Dicto\Rules\Rule;
+
 /**
  * A set of rules and variable definitions.
  */
@@ -28,7 +30,7 @@ class Ruleset {
         $this->variables = array_map(function (Variables\Variable $v)
                                         { return $v; }, $variables);
 
-        $this->rules = array_map(function (Rules\Rule $r)
+        $this->rules = array_map(function (Rule $r)
                                         { return $r; }, $rules);
     }
 

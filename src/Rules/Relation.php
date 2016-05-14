@@ -58,7 +58,7 @@ abstract class Relation extends Schema {
         $mode = $rule->mode();
         $entity = $rule->checked_on();
         $reference = $rule->argument(0);
-        if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
+        if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select
                     ( "rel.entity_id as entity_id"
@@ -77,7 +77,7 @@ abstract class Relation extends Schema {
                     )
                 ->execute();
         }
-        if ($mode == Def\Rules\Rule::MODE_MUST) {
+        if ($mode == Rule::MODE_MUST) {
             return $builder
                 ->select
                     ( "e.id as entity_id"

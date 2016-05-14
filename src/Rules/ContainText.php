@@ -47,7 +47,7 @@ class ContainText extends Property {
         $mode = $rule->mode();
         $checked_on = $rule->checked_on();
         $regexp = $rule->argument(0);
-        if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
+        if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select
                     ( "id as entity_id"
@@ -63,7 +63,7 @@ class ContainText extends Property {
                 ->setParameter(0, $regexp)
                 ->execute();
         }
-        if ($mode == Def\Rules\Rule::MODE_MUST) {
+        if ($mode == Rule::MODE_MUST) {
             return $builder
                 ->select
                     ( "id as entity_id"
