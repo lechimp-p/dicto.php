@@ -11,6 +11,7 @@
 use Lechimp\Dicto;
 use Lechimp\Dicto\Analysis\Consts;
 use Lechimp\Dicto\Indexer\Insert;
+use Lechimp\Dicto\Indexer\Indexer;
 use PhpParser\ParserFactory;
 
 define("__IndexerTest_PATH_TO_SRC", __DIR__."/data/src");
@@ -93,16 +94,10 @@ class InsertMock implements Insert {
 class IndexerTest extends PHPUnit_Framework_TestCase {
     const PATH_TO_SRC = __IndexerTest_PATH_TO_SRC;
 
-    protected function get_indexer() {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        return new Dicto\Indexer\Indexer($parser);
-    }
-
     public function setUp() {
-        $this->indexer = $this->get_indexer();
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $this->insert_mock = new InsertMock();
-        $this->indexer->use_insert($this->insert_mock);
-        $this->indexer->set_project_root_to(IndexerTest::PATH_TO_SRC);
+        $this->indexer = new Indexer($parser, IndexerTest::PATH_TO_SRC, $this->insert_mock);
     }
 
     public function test_is_indexer() {

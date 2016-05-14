@@ -50,9 +50,6 @@ class Engine {
      * @return null
      */
     public function run() {
-        $this->indexer->use_insert($this->db);
-        $this->indexer->set_project_root_to($this->config->project_root());
-
         $fc = $this->init_flightcontrol();
         $fc->directory("/")
             ->recurseOn()

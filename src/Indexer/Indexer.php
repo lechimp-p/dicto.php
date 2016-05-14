@@ -66,10 +66,12 @@ class Indexer implements \PhpParser\NodeVisitor {
     protected $reference_cache = null; 
     
 
-    public function __construct(\PhpParser\Parser $parser) {
-        $this->project_root_path = "";
+    public function __construct(\PhpParser\Parser $parser, $project_root_path, Insert $insert) {
         $this->parser = $parser;
-        $this->listeners = array();
+        assert('is_string($project_root_path)');
+        $this->project_root_path = $project_root_path;
+        $this->insert = $insert;
+        $this->listeners = $this->build_listeners();
     }
 
     protected function build_listeners() {
@@ -124,17 +126,7 @@ class Indexer implements \PhpParser\NodeVisitor {
     /**
      * @inheritdoc
      */
-    public function use_insert(I\Insert $insert) {
-        $this->insert = $insert;
-        $this->listeners = $this->build_listeners();
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function set_project_root_to($path) {
-        assert('is_string($path)');
-        $this->project_root_path = $path;
     }
 
     // helper

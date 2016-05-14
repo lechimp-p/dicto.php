@@ -10,7 +10,6 @@
 
 namespace Lechimp\Dicto\Indexer;
 
-use Lechimp\Dicto\Indexer as I;
 use PhpParser\Node as N;
 
 /**
@@ -41,7 +40,7 @@ class Listener {
      */
     protected $file_content = null;
 
-    public function __construct(I\Insert $insert, Indexer $indexer) {
+    public function __construct(Insert $insert, Indexer $indexer) {
         $this->insert = $insert;
         $this->indexer = $indexer;
     }

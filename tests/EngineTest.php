@@ -10,6 +10,7 @@
 
 use Lechimp\Dicto\Dicto as Dicto;
 use Lechimp\Dicto\App\Engine;
+use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\App\Config;
 use PhpParser\ParserFactory;
 use Doctrine\DBAL\DriverManager;
@@ -22,7 +23,6 @@ class EngineTest extends PHPUnit_Framework_TestCase {
                 )
             )));
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        $this->indexer = new Lechimp\Dicto\Indexer\Indexer($parser);
         $connection = DriverManager::getConnection
             ( array
                 ( "driver"  => "pdo_sqlite"
@@ -33,6 +33,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->db = new Lechimp\Dicto\App\DB($connection);
         $this->db->maybe_init_database_schema();
         $this->db->init_sqlite_regexp();
+        $this->indexer = new Indexer($parser, $this->config->project_root(), $this->db);
         $this->engine = new Engine($this->config, $this->indexer, $this->db);
     }
 
