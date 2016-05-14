@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Indexer;
 
-use Lechimp\Dicto\Analysis\Consts;
+use Lechimp\Dicto\Analysis\Variable;
 
 /**
  * This is how to insert new entries in the index. 
@@ -25,7 +25,7 @@ interface Insert {
      * Uses the same range for ids than reference, that is, each id either referers to
      * a entity or a reference.
      *
-     * @param   int             $type       one of Consts::ENTITY_TYPES;
+     * @param   int             $type       one of Variable::ENTITY_TYPES;
      * @param   string          $name
      * @param   string          $file
      * @param   int             $start_line

@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Rules;
 
-use Lechimp\Dicto\Analysis\Consts;
+use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Indexer\Location;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
@@ -38,7 +38,7 @@ class Invoke extends Relation {
                 // The 'name' could also be a variable like in $this->$method();
                 if (is_string($node->name)) {
                     $ref_id = $insert->get_reference
-                        ( Consts::METHOD_ENTITY
+                        ( Variable::METHOD_ENTITY
                         , $node->name
                         , $location->file_path()
                         , $node->getAttribute("startLine")
@@ -53,7 +53,7 @@ class Invoke extends Relation {
                 if (!($node->name instanceof N\Expr\Variable ||
                       $node->name instanceof N\Expr\ArrayDimFetch)) {
                     $ref_id = $insert->get_reference
-                        ( Consts::FUNCTION_ENTITY
+                        ( Variable::FUNCTION_ENTITY
                         , $node->name->parts[0]
                         , $location->file_path()
                         , $node->getAttribute("startLine")
@@ -66,7 +66,7 @@ class Invoke extends Relation {
                 $source_line = $location->file_content($start_line, $start_line);
 
                 foreach ($location->in_entities() as $entity) {
-                    if ($entity[0] == Consts::FILE_ENTITY) {
+                    if ($entity[0] == Variable::FILE_ENTITY) {
                         continue;
                     }
                     $insert->relation

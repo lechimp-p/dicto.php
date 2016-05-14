@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\App;
 
-use Lechimp\Dicto\Analysis\Consts;
+use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\CachesReferences;
@@ -44,7 +44,7 @@ class DB implements Insert, Query {
      * @inheritdoc
      */
     public function entity($type, $name, $file, $start_line, $end_line, $source) {
-        assert('in_array($type, \\Lechimp\\Dicto\\Analysis\\Consts::$ENTITY_TYPES)');
+        assert('\\Lechimp\\Dicto\\Variables\\Variable::is_type($type)');
         assert('is_string($name)');
         assert('is_string($file)');
         assert('is_int($start_line)');
@@ -74,7 +74,7 @@ class DB implements Insert, Query {
      * @inheritdoc
      */
     public function reference($type, $name, $file, $line) {
-        assert('in_array($type, \\Lechimp\\Dicto\\Analysis\\Consts::$ENTITY_TYPES)');
+        assert('\\Lechimp\\Dicto\\Variables\\Variable::is_type($type)');
         assert('is_string($name)');
         assert('is_string($file)');
         assert('is_int($line)');

@@ -11,7 +11,7 @@
 namespace Lechimp\Dicto\Indexer;
 
 use Lechimp\Dicto\Indexer as I;
-use Lechimp\Dicto\Analysis\Consts;
+use Lechimp\Dicto\Variables\Variable;
 use PhpParser\Node as N;
 
 /**
@@ -166,7 +166,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     public function beforeTraverse(array $nodes) {
         // for sure found a file
         $id = $this->insert->entity
-            ( Consts::FILE_ENTITY
+            ( Variable::FILE_ENTITY
             , $this->file_path
             , $this->file_path
             , 1
@@ -174,7 +174,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
             , implode("\n", $this->file_content)
             );
 
-        $this->entity_stack[] = array(Consts::FILE_ENTITY, $id);
+        $this->entity_stack[] = array(Variable::FILE_ENTITY, $id);
 
         // TODO: reimplement this in some other way.
         /*
@@ -215,7 +215,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
 
         // Class
         if ($node instanceof N\Stmt\Class_) {
-            $type = Consts::CLASS_ENTITY;
+            $type = Variable::CLASS_ENTITY;
             $id = $this->insert->entity
                 ( $type
                 , $node->name
@@ -234,7 +234,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         }
         // Method or Function
         elseif ($node instanceof N\Stmt\ClassMethod) {
-            $type = Consts::METHOD_ENTITY;
+            $type = Variable::METHOD_ENTITY;
             $id = $this->insert->entity
                 ( $type
                 , $node->name
@@ -252,7 +252,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
             */
         }
         elseif ($node instanceof N\Stmt\Function_) {
-            $type = Consts::FUNCTION_ENTITY;
+            $type = Variable::FUNCTION_ENTITY;
             $id = $this->insert->entity
                 ( $type 
                 , $node->name

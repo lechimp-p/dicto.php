@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Indexer;
 
-use Lechimp\Dicto\Analysis\Consts;
+use Lechimp\Dicto\Variables\Variable;
 
 /**
  * Provides implementation for Insert::get_reference.
@@ -37,7 +37,7 @@ trait CachesReferences {
      * @return  int                         id of new reference
      */
     public function get_reference($type, $name, $file, $line) {
-        assert('in_array($type, \\Lechimp\\Dicto\\Analysis\\Consts::$ENTITY_TYPES)');
+        assert('\\Lechimp\\Dicto\\Variables\\Variable::is_type($type)');
         assert('is_string($name)');
         assert('is_string($file)');
         assert('is_int($line)');
