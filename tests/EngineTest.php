@@ -22,7 +22,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
                 )
             )));
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        $this->indexer = new Lechimp\Dicto\Indexer\PhpParser\Indexer($parser);
+        $this->indexer = new Lechimp\Dicto\Indexer\Indexer($parser);
         $connection = DriverManager::getConnection
             ( array
                 ( "driver"  => "pdo_sqlite"

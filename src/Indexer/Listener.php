@@ -8,7 +8,7 @@
  * a copy of the licence along with the code.
  */
 
-namespace Lechimp\Dicto\Indexer\PhpParser;
+namespace Lechimp\Dicto\Indexer;
 
 use Lechimp\Dicto\Indexer as I;
 use PhpParser\Node as N;
