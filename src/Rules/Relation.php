@@ -14,7 +14,7 @@ use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Analysis\Query;
 
 /**
- * This is a rule that defines a relation between two entities
+ * This is a rule that checks a relation between two entities
  * in the code.
  */
 abstract class Relation extends Schema {
