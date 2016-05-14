@@ -26,11 +26,6 @@ class Listener {
     protected $insert;
 
     /**
-     * @var Indexer
-     */
-    protected $indexer;
-
-    /**
      * @var string|null
      */
     protected $file_path = null;
@@ -40,9 +35,8 @@ class Listener {
      */
     protected $file_content = null;
 
-    public function __construct(Insert $insert, Indexer $indexer) {
+    public function __construct(Insert $insert) {
         $this->insert = $insert;
-        $this->indexer = $indexer;
     }
 
 

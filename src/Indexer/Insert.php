@@ -55,6 +55,21 @@ interface Insert {
     public function reference($type, $name, $file, $line);
 
     /**
+     * Get the id of a reference by either inserting a new reference or reading
+     * it from the cache.
+     *
+     * The implementation should assure that each combination of $type, $name,
+     * $file and $line is only inserted once.
+     *
+     * @param   int             $type
+     * @param   string          $name
+     * @param   string          $file       where the entity was referenced
+     * @param   int             $line       where the entity was referenced
+     * @return  int                         id of new reference
+     */
+    public function get_reference($type, $name, $file, $line);
+
+    /**
      * Record information about a relation.
      *
      * @param   string          $name   of the relation

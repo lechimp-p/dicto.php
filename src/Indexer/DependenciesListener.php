@@ -22,9 +22,10 @@ class DependenciesListener extends Listener {
         if ($node instanceof N\Expr\MethodCall) {
             // The 'name' could also be a variable like in $this->$method();
             if (is_string($node->name)) {
-                $ref_ids[] = $this->indexer->get_reference
+                $ref_ids[] = $this->insert->get_reference
                     ( Consts::METHOD_ENTITY
                     , $node->name
+                    , $this->file_path
                     , $node->getAttribute("startLine")
                     );
             }
@@ -36,9 +37,10 @@ class DependenciesListener extends Listener {
             // analyze them anyway atm.
             if (!($node->name instanceof N\Expr\Variable ||
                   $node->name instanceof N\Expr\ArrayDimFetch)) {
-                $ref_ids[] = $this->indexer->get_reference
+                $ref_ids[] = $this->insert->get_reference
                     ( Consts::FUNCTION_ENTITY
                     , $node->name->parts[0]
+                    , $this->file_path
                     , $node->getAttribute("startLine")
                     );
             }
@@ -49,9 +51,10 @@ class DependenciesListener extends Listener {
                     throw new \RuntimeException(
                         "Expected Variable with string name, found: ".print_r($var, true));
                 }
-                $ref_ids[] = $this->indexer->get_reference
+                $ref_ids[] = $this->insert->get_reference
                     ( Consts::GLOBAL_ENTITY
                     , $var->name
+                    , $this->file_path
                     , $node->getAttribute("startLine")
                     );
             }
@@ -60,18 +63,20 @@ class DependenciesListener extends Listener {
             if ($node->var instanceof N\Expr\Variable && $node->var->name == "GLOBALS") {
                 // Ignore usage of $GLOBALS with variable index.
                 if (!($node->dim instanceof N\Expr\Variable)) {
-                    $ref_ids[] = $this->indexer->get_reference
+                    $ref_ids[] = $this->insert->get_reference
                         ( Consts::GLOBAL_ENTITY
                         , $node->dim->value
+                        , $this->file_path
                         , $node->getAttribute("startLine")
                         );
                 }
             }
         }
         elseif ($node instanceof N\Expr\ErrorSuppress) {
-            $ref_ids[] = $this->indexer->get_reference
+            $ref_ids[] = $this->insert->get_reference
                     ( Consts::LANGUAGE_CONSTRUCT_ENTITY
                     , "@"
+                    , $this->file_path
                     , $node->getAttribute("startLine")
                     );
         }

@@ -13,12 +13,15 @@ namespace Lechimp\Dicto\App;
 use Lechimp\Dicto\Analysis\Consts;
 use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Indexer\Insert;
+use Lechimp\Dicto\Indexer\CachesReferences;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
 class DB implements Insert, Query {
+    use CachesReferences;
+
     /**
      * @var Connection
      */

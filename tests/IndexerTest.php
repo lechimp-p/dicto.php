@@ -12,11 +12,14 @@ use Lechimp\Dicto;
 use Lechimp\Dicto\Analysis\Consts;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\Indexer;
+use Lechimp\Dicto\Indexer\CachesReferences;
 use PhpParser\ParserFactory;
 
 define("__IndexerTest_PATH_TO_SRC", __DIR__."/data/src");
 
 class InsertMock implements Insert {
+    use CachesReferences;
+
     public $entities = array();
     public $references = array();
     public $relations = array();

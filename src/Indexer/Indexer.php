@@ -58,14 +58,6 @@ class Indexer implements \PhpParser\NodeVisitor {
      */
     protected $entity_stack = null;
 
-    /**
-     * This contains cached reference ids.
-     *
-     * @var array|null   string => int 
-     */
-    protected $reference_cache = null; 
-    
-
     public function __construct(\PhpParser\Parser $parser, $project_root_path, Insert $insert) {
         $this->parser = $parser;
         assert('is_string($project_root_path)');
@@ -135,29 +127,6 @@ class Indexer implements \PhpParser\NodeVisitor {
         assert('is_int($start)');
         assert('is_int($end)');
         return implode("\n", array_slice($this->file_content, $start-1, $end-$start+1));
-    }
-
-    // TODO: This most propably should go to Insert.
-    public function get_reference($entity_type, $name, $start_line) {
-        assert('in_array($entity_type, \\Lechimp\\Dicto\\Analysis\\Consts::$ENTITY_TYPES)');
-        assert('is_string($name)');
-        assert('is_int($start_line)');
-
-        // caching
-        $key = $entity_type.":".$name.":".$this->file_path.":".$start_line;
-        if (array_key_exists($key, $this->reference_cache)) {
-            return $this->reference_cache[$key];
-        }
-
-        $ref_id = $this->insert->reference
-            ( $entity_type 
-            , $name 
-            , $this->file_path
-            , $start_line
-            );
-
-        $this->reference_cache[$key] = $ref_id;
-        return $ref_id;
     }
 
     // from \PhpParser\NodeVisitor

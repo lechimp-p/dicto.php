@@ -22,9 +22,10 @@ class InvocationsListener extends Listener {
         if ($node instanceof N\Expr\MethodCall) {
             // The 'name' could also be a variable like in $this->$method();
             if (is_string($node->name)) {
-                $ref_id = $this->indexer->get_reference
+                $ref_id = $this->insert->get_reference
                     ( Consts::METHOD_ENTITY
                     , $node->name
+                    , $this->file_path
                     , $node->getAttribute("startLine")
                     );
             }
@@ -36,9 +37,10 @@ class InvocationsListener extends Listener {
             // analyze them anyway atm.
             if (!($node->name instanceof N\Expr\Variable ||
                   $node->name instanceof N\Expr\ArrayDimFetch)) {
-                $ref_id = $this->indexer->get_reference
+                $ref_id = $this->insert->get_reference
                     ( Consts::FUNCTION_ENTITY
                     , $node->name->parts[0]
+                    , $this->file_path
                     , $node->getAttribute("startLine")
                     );
             }
