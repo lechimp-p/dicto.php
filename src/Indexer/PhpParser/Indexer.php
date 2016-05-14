@@ -54,9 +54,9 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
      * This contains the stack of ids were currently in, i.e. the nesting of
      * known code blocks we are in.
      *
-     * @var int[]|null
+     * @var array|null  contain ($entity_type, $entity_id)
      */
-    protected $entity_id_stack = null;
+    protected $entity_stack = null;
 
     /**
      * This contains cached reference ids.
@@ -110,12 +110,12 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
         $traverser = new \PhpParser\NodeTraverser;
         $traverser->addVisitor($this);
 
-        $this->entity_id_stack = array();
+        $this->entity_stack = array();
         $this->file_path = $path;
         $this->file_content = explode("\n", $content);
         $this->reference_cache = array();
         $traverser->traverse($stmts);
-        $this->entity_id_stack = null; 
+        $this->entity_stack = null; 
         $this->file_path = null;
         $this->file_content = null;
         $this->reference_cache = null;
@@ -183,7 +183,7 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
             , implode("\n", $this->file_content)
             );
 
-        $this->entity_id_stack[] = $id;
+        $this->entity_stack[] = array(Consts::FILE_ENTITY, $id);
 
         foreach ($this->listeners as $listener) {
             $listener->on_enter_file($id, $this->file_path, implode("\n", $this->file_content));
@@ -196,10 +196,10 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function afterTraverse(array $nodes) {
-        $id = array_pop($this->entity_id_stack);
+        $type_and_id = array_pop($this->entity_stack);
 
         foreach ($this->listeners as $listener) {
-            $listener->on_leave_file($id);
+            $listener->on_leave_file($type_and_id[1]);
         }
 
         return null;
@@ -214,11 +214,13 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
         $source = $this->lines_from_to($start_line, $end_line);
 
         $id = null;
+        $type = null;
 
         // Class
         if ($node instanceof N\Stmt\Class_) {
+            $type = Consts::CLASS_ENTITY;
             $id = $this->insert->entity
-                ( Consts::CLASS_ENTITY
+                ( $type
                 , $node->name
                 , $this->file_path
                 , $start_line
@@ -232,8 +234,9 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
         }
         // Method or Function
         elseif ($node instanceof N\Stmt\ClassMethod) {
+            $type = Consts::METHOD_ENTITY;
             $id = $this->insert->entity
-                ( Consts::METHOD_ENTITY
+                ( $type
                 , $node->name
                 , $this->file_path
                 , $start_line
@@ -246,8 +249,9 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
             }
         }
         elseif ($node instanceof N\Stmt\Function_) {
+            $type = Consts::FUNCTION_ENTITY;
             $id = $this->insert->entity
-                ( Consts::FUNCTION_ENTITY
+                ( $type 
                 , $node->name
                 , $this->file_path
                 , $start_line
@@ -261,13 +265,12 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
         }
         else {
             foreach ($this->listeners as $listener) {
-                $listener->on_enter_misc($node);
+                $listener->on_enter_misc($this->entity_stack, $node);
             }
         }
 
-        // Call to method or function
         if ($id !== null) {
-            $this->entity_id_stack[] = $id;
+            $this->entity_stack[] = array($type, $id);
         }
     }
 
@@ -278,29 +281,34 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
         // Class
         if ($node instanceof N\Stmt\Class_) {
             // We pushed it, we need to pop it now, as we are leaving the class.
-            $id = array_pop($this->entity_id_stack);
+            $type_and_id = array_pop($this->entity_stack);
 
             foreach ($this->listeners as $listener) {
-                $listener->on_leave_class($id);
+                $listener->on_leave_class($type_and_id[1]);
             }
         }
         // Method or Function
         elseif ($node instanceof N\Stmt\ClassMethod) {
             // We pushed it, we need to pop it now, as we are leaving the method
             // or function.
-            $id = array_pop($this->entity_id_stack);
+            $type_and_id = array_pop($this->entity_stack);
 
             foreach ($this->listeners as $listener) {
-                $listener->on_leave_method($id);
+                $listener->on_leave_method($type_and_id[1]);
             }
         }
         elseif ($node instanceof N\Stmt\Function_) {
             // We pushed it, we need to pop it now, as we are leaving the method
             // or function.
-            $id = array_pop($this->entity_id_stack);
+            $type_and_id = array_pop($this->entity_stack);
 
             foreach ($this->listeners as $listener) {
-                $listener->on_leave_function($id);
+                $listener->on_leave_function($type_and_id[1]);
+            }
+        }
+        else {
+            foreach ($this->listeners as $listener) {
+                $listener->on_leave_misc($this->entity_stack, $node);
             }
         }
     }

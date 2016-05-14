@@ -17,52 +17,7 @@ use PhpParser\Node as N;
  * Detects invocations.
  */
 class InvocationsListener extends Listener {
-    /**
-     * @var int[]
-     */
-    protected $invoker_entity_ids = array();
-
-
-    public function on_enter_class($id, N\Stmt\Class_ $class) {
-        assert('is_int($id)');
-        // Every interesting reference we find will create a dependency
-        // on this class.
-        $this->invoker_entity_ids[] = $id;
-    }
-
-    public function on_leave_class($id) {
-        assert('is_int($id)');
-        // Done with the dependencies of this class.
-        $this->remove_from($id, $this->invoker_entity_ids);
-    }
-
-    public function on_enter_method($id, N\Stmt\ClassMethod $method) {
-        assert('is_int($id)');
-        // Every interesting reference we find will create a dependency
-        // on this method.
-        $this->invoker_entity_ids[] = $id;
-    }
-
-    public function on_leave_method($id) {
-        assert('is_int($id)');
-        // Done with the dependencies of this method.
-        $this->remove_from($id, $this->invoker_entity_ids);
-    }
-
-    public function on_enter_function($id, N\Stmt\Function_ $function) {
-        assert('is_int($id)');
-        // Every interesting reference we find will create a dependency
-        // on this function.
-        $this->invoker_entity_ids[] = $id;
-    }
-
-    public function on_leave_function($id) {
-        assert('is_int($id)');
-        // Done with the dependencies of this function.
-        $this->remove_from($id, $this->invoker_entity_ids);
-    }
-
-    public function on_enter_misc(\PhpParser\Node $node) {
+    public function on_enter_misc(array $entities, \PhpParser\Node $node) {
         $ref_id = null;
         if ($node instanceof N\Expr\MethodCall) {
             // The 'name' could also be a variable like in $this->$method();
@@ -92,10 +47,14 @@ class InvocationsListener extends Listener {
             // We need to record a invocation in every invoking entity now.
             $start_line = $node->getAttribute("startLine");
             $source_line = $this->lines_from_to($start_line, $start_line);
-            foreach ($this->invoker_entity_ids as $invoker_id) {
+
+            foreach ($entities as $entity) {
+                if ($entity[0] == Consts::FILE_ENTITY) {
+                    continue;
+                }
                 $this->insert->relation
                     ( "invoke"
-                    , $invoker_id
+                    , $entity[1]
                     , $ref_id
                     , $this->file_path
                     , $start_line
@@ -103,8 +62,5 @@ class InvocationsListener extends Listener {
                     );
             }
         }
-    }
-
-    public function on_leave_misc(\PhpParser\Node $node) {
     }
 }

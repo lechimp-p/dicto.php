@@ -17,52 +17,7 @@ use PhpParser\Node as N;
  * Detects dependencies.
  */
 class DependenciesListener extends Listener {
-    /**
-     * @var int[]
-     */
-    protected $dependent_entity_ids = array();
-
-
-    public function on_enter_class($id, N\Stmt\Class_ $class) {
-        assert('is_int($id)');
-        // Every interesting reference we find will create a dependency
-        // on this class.
-        $this->dependent_entity_ids[] = $id;
-    }
-
-    public function on_leave_class($id) {
-        assert('is_int($id)');
-        // Done with the dependencies of this class.
-        $this->remove_from($id, $this->dependent_entity_ids);
-    }
-
-    public function on_enter_method($id, N\Stmt\ClassMethod $method) {
-        assert('is_int($id)');
-        // Every interesting reference we find will create a dependency
-        // on this method.
-        $this->dependent_entity_ids[] = $id;
-    }
-
-    public function on_leave_method($id) {
-        assert('is_int($id)');
-        // Done with the dependencies of this method.
-        $this->remove_from($id, $this->dependent_entity_ids);
-    }
-
-    public function on_enter_function($id, N\Stmt\Function_ $function) {
-        assert('is_int($id)');
-        // Every interesting reference we find will create a dependency
-        // on this function.
-        $this->dependent_entity_ids[] = $id;
-    }
-
-    public function on_leave_function($id) {
-        assert('is_int($id)');
-        // Done with the dependencies of this function.
-        $this->remove_from($id, $this->dependent_entity_ids);
-    }
-
-    public function on_enter_misc(\PhpParser\Node $node) {
+    public function on_enter_misc(array $entities, \PhpParser\Node $node) {
         $ref_ids = array();
         if ($node instanceof N\Expr\MethodCall) {
             // The 'name' could also be a variable like in $this->$method();
@@ -124,10 +79,13 @@ class DependenciesListener extends Listener {
             $start_line = $node->getAttribute("startLine");
             $source_line = $this->lines_from_to($start_line, $start_line);
             // Record a dependency for every entity we currently know as dependent.
-            foreach ($this->dependent_entity_ids as $dependent_id) {
+            foreach ($entities as $entity) {
+                if ($entity[0] == Consts::FILE_ENTITY) {
+                    continue;
+                }
                 $this->insert->relation
                     ( "depend_on"
-                    , $dependent_id
+                    , $entity[1]
                     , $ref_id
                     , $this->file_path
                     , $start_line
@@ -135,8 +93,5 @@ class DependenciesListener extends Listener {
                     );
             }
         }
-    }
-
-    public function on_leave_misc(\PhpParser\Node $node) {
     }
 }
