@@ -32,6 +32,15 @@ abstract class Schema {
     abstract public function name(); 
 
     /**
+     * Get the name where _ is replace by space.
+     *
+     * @return string
+     */
+    public function printable_name() {
+        return str_replace("_", " ", $this->name());
+    }
+
+    /**
      * Get the Fluid interface that should be returned on using the
      * schema.
      *
@@ -167,6 +176,4 @@ abstract class Schema {
         }
         throw new \LogicException("Can't compile var-type '".get_class($var)."'");
     }
-
-
 }

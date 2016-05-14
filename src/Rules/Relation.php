@@ -30,7 +30,7 @@ abstract class Relation extends Schema {
      */
     public function pprint($rule) {
         assert('$rule instanceof \\Lechimp\\Dicto\\Definition\\Rules\\Relation');
-        return str_replace("_", " ", $this->name())." ".$rule->right()->name();
+        return $this->printable_name()." ".$rule->right()->name();
     }
 
     /**
