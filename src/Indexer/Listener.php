@@ -91,10 +91,4 @@ class Listener {
         assert('is_int($end)');
         return implode("\n", array_slice($this->file_content, $start-1, $end-$start+1));
     }
-
-    protected function remove_from($id, array &$arr) {
-        assert('in_array($id, $arr)');
-        $key = array_search($id, $arr);
-        unset($arr[$key]);
-    }
 }
