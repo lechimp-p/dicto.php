@@ -64,21 +64,19 @@ abstract class Schema {
     /**
      * Get a pretty printed version of the rules.
      *
-     * // TODO: What is this, seriously.
-     * @param   ?   $rule
+     * @param   Rule    $rule
      * @return  string
      */
-    abstract public function pprint($rule);
+    abstract public function pprint(Rule $rule);
 
     /**
      * Compile a given rule into an sql statement using a query interface.
      *
-     * @param   Query           $query
-     * // TODO: What is this, seriously.
-     * @param   ?   $rule
+     * @param   Query       $query
+     * @param   Rule        $rule
      * @return  Statement
      */
-    abstract public function compile(Query $query, $rule);
+    abstract public function compile(Query $query, Rule $rule);
 
     /**
      * Register listeners to the indexer that are required to detect information

@@ -45,14 +45,14 @@ abstract class Relation extends Schema {
     /**
      * @inheritdoc
      */
-    public function pprint($rule) {
+    public function pprint(Rule $rule) {
         return $this->printable_name()." ".$rule->argument(0)->name();
     }
 
     /**
      * @inheritdoc
      */
-    public function compile(Query $query, $rule) {
+    public function compile(Query $query, Rule $rule) {
         $builder = $query->builder();
         $b = $builder->expr();
         $mode = $rule->mode();

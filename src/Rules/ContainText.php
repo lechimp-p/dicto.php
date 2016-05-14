@@ -42,7 +42,7 @@ class ContainText extends Property {
     /**
      * @inheritdoc
      */
-    public function compile(Query $query, $rule) {
+    public function compile(Query $query, Rule $rule) {
         $builder = $query->builder();
         $mode = $rule->mode();
         $checked_on = $rule->checked_on();
@@ -85,7 +85,7 @@ class ContainText extends Property {
     /**
      * @inheritdoc
      */
-    public function pprint($rule) {
+    public function pprint(Rule $rule) {
         return $this->printable_name().' "'.$rule->argument(0).'"';
     }
 }
