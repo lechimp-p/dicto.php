@@ -20,8 +20,7 @@ class RuleMode extends BaseWithNameAndMode  {
      *
      * @throws  \InvalidArgumentException when schema is unknown
      * @throws  \InvalidArgumentException when there are arguments
-     * // TODO: What does this return?
-     * @return  ?
+     * @return  Base|null
      */
     public function __call($name, $arguments) {
         # ToDo: This is used in Definition\Fluid\Means as well.
