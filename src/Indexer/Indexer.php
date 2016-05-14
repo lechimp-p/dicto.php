@@ -17,7 +17,7 @@ use PhpParser\Node as N;
 /**
  * Implementation of Indexer with PhpParser.
  */
-class Indexer implements \PhpParser\NodeVisitor {
+class Indexer implements Location, \PhpParser\NodeVisitor {
     /**
      * @var string
      */
@@ -129,6 +129,36 @@ class Indexer implements \PhpParser\NodeVisitor {
         return implode("\n", array_slice($this->file_content, $start-1, $end-$start+1));
     }
 
+   // from Location
+
+    /**
+     * @inheritdoc
+     */
+    public function file_path() {
+        return $this->file_path;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function file_content($from_line = null, $to_line = null) {
+        if ($from_line !== null) {
+            assert('$to_line !== null');
+            return $this->lines_from_to($from_line, $to_line);
+        }
+        else {
+            assert('$to_line === null');
+            return $this->implode("\n", $this->file_content);
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function in_entities() {
+        return $this->entity_stack;
+    }
+
     // from \PhpParser\NodeVisitor
 
     /**
@@ -227,7 +257,7 @@ class Indexer implements \PhpParser\NodeVisitor {
         }
         else {
             foreach ($this->listeners as $listener) {
-                $listener->on_enter_misc($this->entity_stack, $node);
+                $listener->on_enter_misc($this->insert, $this, $node);
             }
         }
 
@@ -270,7 +300,7 @@ class Indexer implements \PhpParser\NodeVisitor {
         }
         else {
             foreach ($this->listeners as $listener) {
-                $listener->on_leave_misc($this->entity_stack, $node);
+                $listener->on_leave_misc($this->insert, $this, $node);
             }
         }
     }

@@ -17,15 +17,15 @@ use PhpParser\Node as N;
  * Detects invocations.
  */
 class InvocationsListener extends Listener {
-    public function on_enter_misc(array $entities, \PhpParser\Node $node) {
+    public function on_enter_misc(Insert $insert, Location $location, \PhpParser\Node $node) {
         $ref_id = null;
         if ($node instanceof N\Expr\MethodCall) {
             // The 'name' could also be a variable like in $this->$method();
             if (is_string($node->name)) {
-                $ref_id = $this->insert->get_reference
+                $ref_id = $insert->get_reference
                     ( Consts::METHOD_ENTITY
                     , $node->name
-                    , $this->file_path
+                    , $location->file_path()
                     , $node->getAttribute("startLine")
                     );
             }
@@ -37,10 +37,10 @@ class InvocationsListener extends Listener {
             // analyze them anyway atm.
             if (!($node->name instanceof N\Expr\Variable ||
                   $node->name instanceof N\Expr\ArrayDimFetch)) {
-                $ref_id = $this->insert->get_reference
+                $ref_id = $insert->get_reference
                     ( Consts::FUNCTION_ENTITY
                     , $node->name->parts[0]
-                    , $this->file_path
+                    , $location->file_path()
                     , $node->getAttribute("startLine")
                     );
             }
@@ -50,15 +50,15 @@ class InvocationsListener extends Listener {
             $start_line = $node->getAttribute("startLine");
             $source_line = $this->lines_from_to($start_line, $start_line);
 
-            foreach ($entities as $entity) {
+            foreach ($location->in_entities() as $entity) {
                 if ($entity[0] == Consts::FILE_ENTITY) {
                     continue;
                 }
-                $this->insert->relation
+                $insert->relation
                     ( "invoke"
                     , $entity[1]
                     , $ref_id
-                    , $this->file_path
+                    , $location->file_path()
                     , $start_line
                     , $source_line
                     );

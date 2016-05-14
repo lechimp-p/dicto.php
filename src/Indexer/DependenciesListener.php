@@ -17,12 +17,12 @@ use PhpParser\Node as N;
  * Detects dependencies.
  */
 class DependenciesListener extends Listener {
-    public function on_enter_misc(array $entities, \PhpParser\Node $node) {
+    public function on_enter_misc(Insert $insert, Location $location, \PhpParser\Node $node) {
         $ref_ids = array();
         if ($node instanceof N\Expr\MethodCall) {
             // The 'name' could also be a variable like in $this->$method();
             if (is_string($node->name)) {
-                $ref_ids[] = $this->insert->get_reference
+                $ref_ids[] = $insert->get_reference
                     ( Consts::METHOD_ENTITY
                     , $node->name
                     , $this->file_path
@@ -37,7 +37,7 @@ class DependenciesListener extends Listener {
             // analyze them anyway atm.
             if (!($node->name instanceof N\Expr\Variable ||
                   $node->name instanceof N\Expr\ArrayDimFetch)) {
-                $ref_ids[] = $this->insert->get_reference
+                $ref_ids[] = $insert->get_reference
                     ( Consts::FUNCTION_ENTITY
                     , $node->name->parts[0]
                     , $this->file_path
@@ -51,7 +51,7 @@ class DependenciesListener extends Listener {
                     throw new \RuntimeException(
                         "Expected Variable with string name, found: ".print_r($var, true));
                 }
-                $ref_ids[] = $this->insert->get_reference
+                $ref_ids[] = $insert->get_reference
                     ( Consts::GLOBAL_ENTITY
                     , $var->name
                     , $this->file_path
@@ -63,7 +63,7 @@ class DependenciesListener extends Listener {
             if ($node->var instanceof N\Expr\Variable && $node->var->name == "GLOBALS") {
                 // Ignore usage of $GLOBALS with variable index.
                 if (!($node->dim instanceof N\Expr\Variable)) {
-                    $ref_ids[] = $this->insert->get_reference
+                    $ref_ids[] = $insert->get_reference
                         ( Consts::GLOBAL_ENTITY
                         , $node->dim->value
                         , $this->file_path
@@ -73,7 +73,7 @@ class DependenciesListener extends Listener {
             }
         }
         elseif ($node instanceof N\Expr\ErrorSuppress) {
-            $ref_ids[] = $this->insert->get_reference
+            $ref_ids[] = $insert->get_reference
                     ( Consts::LANGUAGE_CONSTRUCT_ENTITY
                     , "@"
                     , $this->file_path
@@ -82,13 +82,13 @@ class DependenciesListener extends Listener {
         }
         foreach ($ref_ids as $ref_id) {
             $start_line = $node->getAttribute("startLine");
-            $source_line = $this->lines_from_to($start_line, $start_line);
+            $source_line = $location->file_content($start_line, $start_line);
             // Record a dependency for every entity we currently know as dependent.
-            foreach ($entities as $entity) {
+            foreach ($location->in_entities() as $entity) {
                 if ($entity[0] == Consts::FILE_ENTITY) {
                     continue;
                 }
-                $this->insert->relation
+                $insert->relation
                     ( "depend_on"
                     , $entity[1]
                     , $ref_id

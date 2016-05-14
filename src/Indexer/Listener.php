@@ -78,10 +78,10 @@ class Listener {
         assert('is_int($id)');
     }
 
-    public function on_enter_misc(array $entities, \PhpParser\Node $node) {
+    public function on_enter_misc(Insert $insert, Location $location, \PhpParser\Node $node) {
     }
 
-    public function on_leave_misc(array $entities, \PhpParser\Node $node) {
+    public function on_leave_misc(Insert $insert, Location $location, \PhpParser\Node $node) {
     }
 
     // helpers
