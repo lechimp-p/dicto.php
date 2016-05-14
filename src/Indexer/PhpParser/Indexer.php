@@ -145,6 +145,7 @@ class Indexer implements I\Indexer, \PhpParser\NodeVisitor {
         return implode("\n", array_slice($this->file_content, $start-1, $end-$start+1));
     }
 
+    // TODO: This most propably should go to Insert.
     public function get_reference($entity_type, $name, $start_line) {
         assert('in_array($entity_type, \\Lechimp\\Dicto\\Analysis\\Consts::$ENTITY_TYPES)');
         assert('is_string($name)');
