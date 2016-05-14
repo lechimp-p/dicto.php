@@ -57,7 +57,7 @@ class Property extends Rule {
      * @inheritdoc
      */
     public function variables() {
-        return array($this->subject(), $this->right);
+        return array($this->subject());
     }
 
     /**

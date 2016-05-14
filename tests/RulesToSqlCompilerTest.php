@@ -38,10 +38,11 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // All classes cannot contain text "foo".
 
     public function all_classes_cannot_contain_text_foo() {
-        return new R\ContainText
+        return new R\Property
             ( R\Rule::MODE_CANNOT
             , new V\Classes("allClasses")
-            , "foo"
+            , new Rules\ContainText()
+            , array("foo")
             );
     }
 
@@ -688,13 +689,14 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // AClasses must contain text "foo".
 
     public function a_classes_must_contain_text_foo() {
-        return new R\ContainText
+        return new R\Property
             ( R\Rule::MODE_MUST
             , new V\WithName
                 ( "AClass"
                 , new V\Classes("AClasses")
                 )
-            , "foo"
+            , new Rules\ContainText()
+            , array("foo")
             );
     }
 
@@ -753,13 +755,14 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     // Only AClasses can contain text "foo".
 
     public function only_a_classes_can_contain_text_foo() {
-        return new R\ContainText
+        return new R\Property
             ( R\Rule::MODE_ONLY_CAN
             , new V\WithName
                 ( "AClass"
                 , new V\Classes("AClasses")
                 )
-            , "foo"
+            , new Rules\ContainText()
+            , array("foo")
             );
     }
 

@@ -59,10 +59,11 @@ class RulesTest extends PHPUnit_Framework_TestCase {
 
     public function test_variables_of_contain_text() {
         $rule =
-            new Rules\ContainText
+            new Rules\Property
                 ( Rules\Rule::MODE_MUST
                 , new Vars\Classes("CLASSES")
-                , "foo"
+                , new R\ContainText()
+                , array("foo")
                 );
         $expected = array(new Vars\Classes("CLASSES"));
         $this->assertEquals($expected, $rule->variables());

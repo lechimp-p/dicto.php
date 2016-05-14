@@ -44,6 +44,9 @@ class ContainText extends Property {
      */
     public function compile(Query $query, $rule) {
         $builder = $query->builder();
+        $mode = $rule->mode();
+        $checked_on = $rule->checked_on();
+        $regexp = $rule->argument(0);
         if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select
@@ -57,7 +60,7 @@ class ContainText extends Property {
                     ( $this->compile_var($builder->expr(), $query->entity_table(), $checked_on)
                     , "source REGEXP ?"
                     )
-                ->setParameter(0, $rule->argument(0))
+                ->setParameter(0, $regexp)
                 ->execute();
         }
         if ($mode == Def\Rules\Rule::MODE_MUST) {
@@ -73,7 +76,7 @@ class ContainText extends Property {
                     ( $this->compile_var($builder->expr(), $query->entity_table(), $checked_on)
                     , "source NOT REGEXP ?"
                     )
-                ->setParameter(0, $rule->argument(0))
+                ->setParameter(0, $regexp)
                 ->execute();
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
