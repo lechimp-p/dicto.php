@@ -33,6 +33,6 @@ class Relation extends BaseWithNameAndMode {
         $left = $this->rt->get_var($this->name);
         $right = $this->rt->get_var($name);
         $this->rt->add_rule(
-            new Def\Rules\Relation($this->mode, $left, $right, $this->relation));
+            new Def\Rules\Rule($this->mode, $left, $this->relation, array($right)));
     }
 }

@@ -27,7 +27,7 @@ class ContainText extends Property {
     /**
      * @inheritdoc
      */
-    public function fluid_check_arguments(array $arguments) {
+    public function check_arguments(array $arguments) {
         if (count($arguments) != 1) {
             throw new \InvalidArgumentException(
                 "One argument is required when using a contain text.");

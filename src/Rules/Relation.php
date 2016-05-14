@@ -12,6 +12,7 @@ namespace Lechimp\Dicto\Rules;
 
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Analysis\Query;
+use \Lechimp\Dicto\Definition\Variables as Vars;
 
 /**
  * This is a rule that checks a relation between two entities
@@ -22,22 +23,30 @@ abstract class Relation extends Schema {
      * @inheritdoc
      */
     public function fluid_interface(Def\RuleDefinitionRT $rt, $name, $mode, array $arguments) {
-        return new Def\Fluid\Relation($rt, $name, $mode, $this);
-    }
-
-    public function fluid_check_arguments(array $arguments) {
         if (count($arguments) != 0) {
             throw new \InvalidArgumentException(
                 "No arguments are allowed when using a relational rule schema.");
         }
+        return new Def\Fluid\Relation($rt, $name, $mode, $this);
+    }
+
+    public function check_arguments(array $arguments) {
+         if (count($arguments) != 1) {
+            throw new \InvalidArgumentException(
+                "One argument is required when using a relational rule schema.");
+        }
+       if (!($arguments[0] instanceof Vars\Variable)) {
+            throw new \InvalidArgumentException(
+                "Expected variable, got '".get_class($arguments[0])."' when using a relational schema.");
+        }
+
     }
 
     /**
      * @inheritdoc
      */
     public function pprint($rule) {
-        assert('$rule instanceof \\Lechimp\\Dicto\\Definition\\Rules\\Relation');
-        return $this->printable_name()." ".$rule->right()->name();
+        return $this->printable_name()." ".$rule->argument(0)->name();
     }
 
     /**
@@ -48,7 +57,7 @@ abstract class Relation extends Schema {
         $b = $builder->expr();
         $mode = $rule->mode();
         $entity = $rule->checked_on();
-        $reference = $rule->right();
+        $reference = $rule->argument(0);
         if ($mode == Def\Rules\Rule::MODE_CANNOT || $mode == Def\Rules\Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select

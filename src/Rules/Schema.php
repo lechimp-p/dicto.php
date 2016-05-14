@@ -59,7 +59,7 @@ abstract class Schema {
      * @throws  \InvalidArgumentException   if $arguments are not ok
      * @return  null
      */
-    abstract public function fluid_check_arguments(array $arguments);
+    abstract public function check_arguments(array $arguments);
 
     /**
      * Get a pretty printed version of the rules.

@@ -29,7 +29,6 @@ class RuleMode extends BaseWithNameAndMode  {
         if ($schema === null) {
             throw new \InvalidArgumentException("Unknown rule '$name'.");
         }
-        $schema->fluid_check_arguments($arguments);
         return $schema->fluid_interface($this->rt, $this->name, $this->mode, $arguments);
     }
 }

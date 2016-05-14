@@ -17,11 +17,11 @@ use Lechimp\Dicto\Definition\Variables as Vars;
 class RulesTest extends PHPUnit_Framework_TestCase {
     public function test_checked_on() {
         $rule =
-            new Rules\Relation
+            new Rules\Rule
                 ( Rules\Rule::MODE_MUST
                 , new Vars\Classes("CLASSES")
-                , new Vars\Functions("FUNCTIONS")
-                , new R\DependOn
+                , new R\DependOn()
+                , array(new Vars\Functions("FUNCTIONS"))
                 );
         $expected_checked_on =
             new Vars\Classes("CLASSES");
@@ -30,11 +30,11 @@ class RulesTest extends PHPUnit_Framework_TestCase {
 
     public function test_checked_on_inversion_on_only_can() {
         $rule =
-            new Rules\Relation
+            new Rules\Rule
                 ( Rules\Rule::MODE_ONLY_CAN
                 , new Vars\Classes("CLASSES")
-                , new Vars\Functions("FUNCTIONS")
-                , new R\Invoke
+                , new R\Invoke()
+                , array(new Vars\Functions("FUNCTIONS"))
                 );
         $expected_checked_on =
             new Vars\ButNot
@@ -47,11 +47,11 @@ class RulesTest extends PHPUnit_Framework_TestCase {
 
     public function test_variables_of_depend_on() {
         $rule =
-            new Rules\Relation
+            new Rules\Rule
                 ( Rules\Rule::MODE_MUST
                 , new Vars\Classes("CLASSES")
-                , new Vars\Functions("FUNCTIONS")
-                , new R\DependOn
+                , new R\DependOn()
+                , array(new Vars\Functions("FUNCTIONS"))
                 );
         $expected = array(new Vars\Classes("CLASSES"), new Vars\Functions("FUNCTIONS"));
         $this->assertEquals($expected, $rule->variables());
@@ -59,7 +59,7 @@ class RulesTest extends PHPUnit_Framework_TestCase {
 
     public function test_variables_of_contain_text() {
         $rule =
-            new Rules\Property
+            new Rules\Rule
                 ( Rules\Rule::MODE_MUST
                 , new Vars\Classes("CLASSES")
                 , new R\ContainText()
@@ -71,11 +71,11 @@ class RulesTest extends PHPUnit_Framework_TestCase {
 
     public function test_variables_of_invoke() {
         $rule =
-            new Rules\Relation
+            new Rules\Rule
                 ( Rules\Rule::MODE_MUST
                 , new Vars\Classes("CLASSES")
-                , new Vars\Functions("FUNCTIONS")
-                , new R\Invoke
+                , new R\Invoke()
+                , array(new Vars\Functions("FUNCTIONS"))
                 );
         $expected = array(new Vars\Classes("CLASSES"), new Vars\Functions("FUNCTIONS"));
         $this->assertEquals($expected, $rule->variables());

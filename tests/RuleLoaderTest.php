@@ -183,11 +183,11 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $pp = "AClasses must invoke AFunctions";
         $this->assertArrayHasKey($pp, $rules);
 
-        $expected = new Rules\Relation
+        $expected = new Rules\Rule
             ( Rules\Rule::MODE_MUST
             , $this->AClasses
-            , $this->AFunctions
             , new R\Invoke()
+            , array($this->AFunctions)
             );
         $this->assertEquals($expected, $rules[$pp]);
     }

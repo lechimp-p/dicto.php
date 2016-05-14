@@ -13,7 +13,7 @@ use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Definition\Variables as Vars;
 
-abstract class Rule extends Def\Definition {
+class Rule extends Def\Definition {
     const MODE_CANNOT   = "CANNOT";
     const MODE_MUST     = "MUST";
     const MODE_ONLY_CAN = "ONLY_CAN";
@@ -39,11 +39,24 @@ abstract class Rule extends Def\Definition {
      */
     private $schema;
 
-    public function __construct($mode, Vars\Variable $subject, R\Schema $schema) {
+    /**
+     * @var array
+     */
+    private $arguments;
+
+    public function __construct($mode, Vars\Variable $subject, R\Schema $schema, array $arguments) {
         assert('in_array($mode, self::$modes)');
+        $schema->check_arguments($arguments);
         $this->mode = $mode;
         $this->subject = $subject;
         $this->schema = $schema;
+        $this->arguments = $arguments;
+    }
+
+    public function explain($explanation) {
+        $r = new Rule($this->mode, $this->subject, $this->schema, $this->arguments);
+        $r->setExplanation($r);
+        return $r;
     }
 
     /**
@@ -87,7 +100,15 @@ abstract class Rule extends Def\Definition {
      *
      * @return  Vars\Variable[]
      */
-    abstract public function variables();
+    public function variables() {
+        $vars = array($this->subject());
+        foreach ($this->arguments as $argument) {
+            if ($argument instanceof Vars\Variable) {
+                $vars[] = $argument;
+            }
+        }
+        return $vars;
+    }
 
     /**
      * Get the schema that was used for the rule.
@@ -117,6 +138,20 @@ abstract class Rule extends Def\Definition {
             default:
                 throw new \Exception("Unknown rule mode '".$this->mode()."'");
         }
+    }
+
+    /**
+     * Get the argument at the index.
+     *
+     * @throws  \OutOfRangeException
+     * @param   int     $index
+     * @return  mixed 
+     */
+    public function argument($index) {
+        if ($index < 0 || $index >= count($this->arguments)) {
+            throw new \OutOfRangeException("'$index' out of range.");
+        }
+        return $this->arguments[$index];
     }
 }
 
