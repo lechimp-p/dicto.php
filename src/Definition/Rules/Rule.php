@@ -34,10 +34,16 @@ abstract class Rule extends Def\Definition {
      */
     private $subject;
 
-    public function __construct($mode, Vars\Variable $subject) {
+    /**
+     * @var R\Schema
+     */
+    private $schema;
+
+    public function __construct($mode, Vars\Variable $subject, R\Schema $schema) {
         assert('in_array($mode, self::$modes)');
         $this->mode = $mode;
         $this->subject = $subject;
+        $this->schema = $schema;
     }
 
     /**
@@ -90,7 +96,9 @@ abstract class Rule extends Def\Definition {
      *
      * @return R\Schema
      */
-    abstract public function schema();
+    public function schema() {
+        return $this->schema;
+    }
 
     /**
      * Pretty print the rule.

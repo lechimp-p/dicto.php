@@ -19,17 +19,11 @@ class Relation extends Rule {
     private $right;
 
     /**
-     * @var R\Relation
-     */
-    private $relation;
-
-    /**
      * @param string $mode
      */
     public function __construct($mode, Vars\Variable $left, Vars\Variable $right, R\Relation $relation) {
-        parent::__construct($mode, $left);
+        parent::__construct($mode, $left, $relation);
         $this->right = $right;
-        $this->relation = $relation;
     }
 
     // TODO: This seems odd. Its part of a fluid interface, right?
@@ -48,7 +42,7 @@ class Relation extends Rule {
      * @inheritdoc
      */
     public function explain($text) {
-        $r = new Relation($this->mode(), $this->subject(), $this->right, $this->relation);
+        $r = new Relation($this->mode(), $this->subject(), $this->right, $this->schema());
         $r->setExplanation($text);
         return $r;
     }
@@ -58,13 +52,6 @@ class Relation extends Rule {
      */
     public function variables() {
         return array($this->subject(), $this->right);
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function schema() {
-        return  $this->relation;
     }
 }
 

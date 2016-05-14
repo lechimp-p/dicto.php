@@ -19,17 +19,11 @@ class Property extends Rule {
     private $arguments;
 
     /**
-     * @var R\Property
-     */
-    private $property;
-
-    /**
      * @param string $mode
      */
     public function __construct($mode, Vars\Variable $left, R\Property $property, array $arguments) {
-        parent::__construct($mode, $left);
+        parent::__construct($mode, $left, $property);
         $this->arguments = $arguments;
-        $this->property = $property;
     }
 
     // TODO: This seems odd. Its part of a fluid interface, right?
@@ -48,7 +42,7 @@ class Property extends Rule {
      * @inheritdoc
      */
     public function explain($text) {
-        $r = new Relation($this->mode(), $this->subject(), $this->right, $this->relation);
+        $r = new Property($this->mode(), $this->subject(), $this->right, $this->schema());
         $r->setExplanation($text);
         return $r;
     }
@@ -58,13 +52,6 @@ class Property extends Rule {
      */
     public function variables() {
         return array($this->subject());
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function schema() {
-        return  $this->property;
     }
 
     // TODO: This should go to Rule.
