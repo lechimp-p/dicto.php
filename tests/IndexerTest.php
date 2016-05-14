@@ -119,7 +119,7 @@ PHP;
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
         foreach($this->insert_mock->entities as $e) {
-            if ($e["type"] == Variable::CLASS_ENTITY) {
+            if ($e["type"] == Variable::CLASS_TYPE) {
                 $entity = $e;
             } 
         }
@@ -154,7 +154,7 @@ PHP;
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
         foreach($this->insert_mock->entities as $e) {
-            if ($e["type"] == Variable::FILE_ENTITY) {
+            if ($e["type"] == Variable::FILE_TYPE) {
                 $entity = $e;
             }
         }
@@ -178,7 +178,7 @@ PHP;
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
         foreach($this->insert_mock->entities as $e) {
-            if ($e["type"] == Variable::METHOD_ENTITY) {
+            if ($e["type"] == Variable::METHOD_TYPE) {
                 $entity = $e;
             }
         }
@@ -196,7 +196,7 @@ PHP;
         $expected_refs = array
             ( array
                 ( "id" => $a_bogus_function_id
-                , "type" => Variable::FUNCTION_ENTITY
+                , "type" => Variable::FUNCTION_TYPE
                 , "name" => "a_bogus_function"
                 , "file" => "A1.php"
                 , "line" => 13
@@ -261,7 +261,7 @@ PHP;
         $expected_refs = array
             ( array
                 ( "id" => $invoke_a_function_id
-                , "type" => Variable::METHOD_ENTITY
+                , "type" => Variable::METHOD_TYPE
                 , "name" => "invoke_a_function"
                 , "file" => "A2.php"
                 , "line" => 13
@@ -325,14 +325,14 @@ PHP;
         $glob_ids = $this->insert_mock->get_ids("glob", 2);
         $expected_ref_1 = array
             ( "id" => $glob_ids[0]
-            , "type" => Variable::GLOBAL_ENTITY
+            , "type" => Variable::GLOBAL_TYPE
             , "name" => "glob"
             , "file" => "A3.php"
             , "line" => 13
             );
         $expected_ref_2 = array
             ( "id" => $glob_ids[1]
-            , "type" => Variable::GLOBAL_ENTITY
+            , "type" => Variable::GLOBAL_TYPE
             , "name" => "glob"
             , "file" => "A3.php"
             , "line" => 17
@@ -391,14 +391,14 @@ PHP;
         $stfu_fun_id = $this->insert_mock->get_id("stfu");
         $expected_ref_1 = array
             ( "id" => $stfu_op_id
-            , "type" => Variable::LANGUAGE_CONSTRUCT_ENTITY
+            , "type" => Variable::LANGUAGE_CONSTRUCT_TYPE
             , "name" => "@"
             , "file" => "A4.php"
             , "line" => 13
             );
         $expected_ref_2 = array
             ( "id" => $stfu_fun_id
-            , "type" => Variable::FUNCTION_ENTITY
+            , "type" => Variable::FUNCTION_TYPE
             , "name" => "stfu"
             , "file" => "A4.php"
             , "line" => 13

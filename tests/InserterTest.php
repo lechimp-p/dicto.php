@@ -28,7 +28,7 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_insert_entity() {
-        $id = $this->inserter->entity(Variable::CLASS_ENTITY, "AClass", "AClass.php", 1, 2, "the source");
+        $id = $this->inserter->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
         $res = $this->builder
             ->select("*")
             ->from($this->inserter->entity_table())
@@ -37,7 +37,7 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
 
         $expected = array
             ( "id" => $id
-            , "type" => Variable::CLASS_ENTITY
+            , "type" => Variable::CLASS_TYPE
             , "name" => "AClass"
             , "file" => "AClass.php"
             , "start_line" => "1"
@@ -49,7 +49,7 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_insert_reference() {
-        $id = $this->inserter->reference(Variable::CLASS_ENTITY, "AClass", "AClass.php", 1);
+        $id = $this->inserter->reference(Variable::CLASS_TYPE, "AClass", "AClass.php", 1);
         $res = $this->builder
             ->select("*")
             ->from($this->inserter->reference_table())
@@ -58,7 +58,7 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
 
         $expected = array
             ( "id" => $id
-            , "type" => Variable::CLASS_ENTITY
+            , "type" => Variable::CLASS_TYPE
             , "name" => "AClass"
             , "file" => "AClass.php"
             , "line" => "1"
@@ -68,8 +68,8 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_insert_dependency() {
-        $id1 = $this->inserter->entity(Variable::CLASS_ENTITY, "AClass", "AClass.php", 1, 2, "the source");
-        $id2 = $this->inserter->reference(Variable::CLASS_ENTITY, "AClass", "BClass.php", 1);
+        $id1 = $this->inserter->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
+        $id2 = $this->inserter->reference(Variable::CLASS_TYPE, "AClass", "BClass.php", 1);
         $this->inserter->relation("depend_on", $id1, $id2, "BClass.php", 1, "new AClass();");
         $res = $this->builder
             ->select("*")
@@ -90,8 +90,8 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_insert_invocation() {
-        $id1 = $this->inserter->entity(Variable::CLASS_ENTITY, "AClass", "AClass.php", 1, 2, "the source");
-        $id2 = $this->inserter->reference(Variable::FUNCTION_ENTITY, "my_fun", "AClass.php", 2);
+        $id1 = $this->inserter->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
+        $id2 = $this->inserter->reference(Variable::FUNCTION_TYPE, "my_fun", "AClass.php", 2);
         $this->inserter->relation("invoke", $id1, $id2, "AClass.php", 2, "my_fun();");
         $res = $this->builder
             ->select("*")
@@ -112,10 +112,10 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_id_is_int() {
-        $id1 = $this->inserter->entity(Variable::CLASS_ENTITY, "AClass", "AClass.php", 1, 2, "the source");
+        $id1 = $this->inserter->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
         $this->assertInternalType("integer", $id1);
 
-        $id2 = $this->inserter->reference(Variable::FUNCTION_ENTITY, "my_fun", "AClass.php", 2);
+        $id2 = $this->inserter->reference(Variable::FUNCTION_TYPE, "my_fun", "AClass.php", 2);
         $this->assertInternalType("int", $id2);
     }
 }

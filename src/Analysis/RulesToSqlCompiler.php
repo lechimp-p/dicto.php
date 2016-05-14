@@ -121,25 +121,25 @@ class RulesToSqlCompiler {
                 );
         }
         if ($var instanceof Vars\Classes) {
-            return $eq_op("$table_name.type", $b->literal(Variable::CLASS_ENTITY));
+            return $eq_op("$table_name.type", $b->literal(Variable::CLASS_TYPE));
         }
         if ($var instanceof Vars\Everything) {
             return $eq_op($b->literal(1), $b->literal(1));
         }
         if ($var instanceof Vars\Files) {
-            return $eq_op("$table_name.type", $b->literal(Variable::FILE_ENTITY));
+            return $eq_op("$table_name.type", $b->literal(Variable::FILE_TYPE));
         }
         if ($var instanceof Vars\Functions) {
-            return $eq_op("$table_name.type", $b->literal(Variable::FUNCTION_ENTITY));
+            return $eq_op("$table_name.type", $b->literal(Variable::FUNCTION_TYPE));
         }
         if ($var instanceof Vars\Globals) {
-            return $eq_op("$table_name.type", $b->literal(Variable::GLOBAL_ENTITY));
+            return $eq_op("$table_name.type", $b->literal(Variable::GLOBAL_TYPE));
         }
         if ($var instanceof Vars\LanguageConstruct) {
             // normal case : language construct and name matches
             if (!$negate) {
                 return $b->andX
-                    ( $eq_op("$table_name.type", $b->literal(Variable::LANGUAGE_CONSTRUCT_ENTITY))
+                    ( $eq_op("$table_name.type", $b->literal(Variable::LANGUAGE_CONSTRUCT_TYPE))
                     , $eq_op("$table_name.name", $b->literal($var->construct_name()))
                     );
             }
@@ -148,13 +148,13 @@ class RulesToSqlCompiler {
             else {
 
                 return $b->orX
-                    ( $eq_op("$table_name.type", $b->literal(Variable::LANGUAGE_CONSTRUCT_ENTITY))
+                    ( $eq_op("$table_name.type", $b->literal(Variable::LANGUAGE_CONSTRUCT_TYPE))
                     , $eq_op("$table_name.name", $b->literal($var->construct_name()))
                     );
             }
         }
         if ($var instanceof Vars\Methods) {
-            return $eq_op("$table_name.type", $b->literal(Variable::METHOD_ENTITY));
+            return $eq_op("$table_name.type", $b->literal(Variable::METHOD_TYPE));
         }
         if ($var instanceof Vars\WithName) {
             // normal case : $condition_left AND regexp matches

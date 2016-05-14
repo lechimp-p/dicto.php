@@ -39,7 +39,7 @@ class DependOn extends Relation {
                 // The 'name' could also be a variable like in $this->$method();
                 if (is_string($node->name)) {
                     $ref_ids[] = $insert->get_reference
-                        ( Variable::METHOD_ENTITY
+                        ( Variable::METHOD_TYPE
                         , $node->name
                         , $location->file_path()
                         , $node->getAttribute("startLine")
@@ -54,7 +54,7 @@ class DependOn extends Relation {
                 if (!($node->name instanceof N\Expr\Variable ||
                       $node->name instanceof N\Expr\ArrayDimFetch)) {
                     $ref_ids[] = $insert->get_reference
-                        ( Variable::FUNCTION_ENTITY
+                        ( Variable::FUNCTION_TYPE
                         , $node->name->parts[0]
                         , $location->file_path()
                         , $node->getAttribute("startLine")
@@ -68,7 +68,7 @@ class DependOn extends Relation {
                             "Expected Variable with string name, found: ".print_r($var, true));
                     }
                     $ref_ids[] = $insert->get_reference
-                        ( Variable::GLOBAL_ENTITY
+                        ( Variable::GLOBAL_TYPE
                         , $var->name
                         , $location->file_path()
                         , $node->getAttribute("startLine")
@@ -80,7 +80,7 @@ class DependOn extends Relation {
                     // Ignore usage of $GLOBALS with variable index.
                     if (!($node->dim instanceof N\Expr\Variable)) {
                         $ref_ids[] = $insert->get_reference
-                            ( Variable::GLOBAL_ENTITY
+                            ( Variable::GLOBAL_TYPE
                             , $node->dim->value
                             , $location->file_path()
                             , $node->getAttribute("startLine")
@@ -90,7 +90,7 @@ class DependOn extends Relation {
             }
             elseif ($node instanceof N\Expr\ErrorSuppress) {
                 $ref_ids[] = $insert->get_reference
-                        ( Variable::LANGUAGE_CONSTRUCT_ENTITY
+                        ( Variable::LANGUAGE_CONSTRUCT_TYPE
                         , "@"
                         , $location->file_path()
                         , $node->getAttribute("startLine")
@@ -101,7 +101,7 @@ class DependOn extends Relation {
                 $source_line = $location->file_content($start_line, $start_line);
                 // Record a dependency for every entity we currently know as dependent.
                 foreach ($location->in_entities() as $entity) {
-                    if ($entity[0] == Variable::FILE_ENTITY) {
+                    if ($entity[0] == Variable::FILE_TYPE) {
                         continue;
                     }
                     $insert->relation

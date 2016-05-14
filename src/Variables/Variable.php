@@ -13,12 +13,12 @@ use Lechimp\Dicto\Definition as Def;
 
 
 abstract class Variable extends Def\Definition {
-    const CLASS_ENTITY = "class";
-    const FILE_ENTITY = "file";
-    const GLOBAL_ENTITY = "global";
-    const FUNCTION_ENTITY = "function";
-    const METHOD_ENTITY = "method";
-    const LANGUAGE_CONSTRUCT_ENTITY = "language_construct";
+    const CLASS_TYPE = "class";
+    const FILE_TYPE = "file";
+    const GLOBAL_TYPE = "global";
+    const FUNCTION_TYPE = "function";
+    const METHOD_TYPE = "method";
+    const LANGUAGE_CONSTRUCT_TYPE = "language_construct";
 
     static public function is_type($t) {
         static $types = array
