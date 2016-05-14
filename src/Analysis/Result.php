@@ -10,7 +10,6 @@
 
 namespace Lechimp\Dicto\Analysis;
 use Lechimp\Dicto\Definition as Def;
-use Lechimp\Dicto\Output\RulePrinter;
 
 class Result {
     /**
@@ -34,11 +33,6 @@ class Result {
     protected $by_filename_cache;
 
     /**
-     * @var RulePrinter
-     */
-    protected $pprinter;
-
-    /**
      * @param   Def\Ruleset     $ruleset
      * @param   Violations[]    $violations
      */
@@ -49,7 +43,6 @@ class Result {
         }, $violations);
         $this->by_rule_cache = array();
         $this->by_filename_cache = array();
-        $this->pprinter = new RulePrinter;
     }
 
     /**
@@ -64,7 +57,7 @@ class Result {
      * @return  Violation[]
      */
     public function violations_of(Def\Rules\Rule $rule) {
-        $r = $this->pprinter->pprint($rule);
+        $r = $rule->pprint();
         if (array_key_exists($r, $this->by_rule_cache)) {
             return $this->by_rule_cache[$r];
         }

@@ -33,7 +33,6 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $this->loader = $this->get_rule_loader();
-        $this->rule_printer = new Dicto\Output\RulePrinter();
 
         $this->AClasses =
             new Vars\WithName( "A.*", new Vars\Classes("AClasses"));
@@ -172,7 +171,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
     public function rules_to_dict($rules) {
         $dict = array();
         foreach ($rules as $rule) {
-            $dict[$this->rule_printer->pprint($rule)] = $rule;
+            $dict[$rule->pprint()] = $rule;
         }
         return $dict;
     }
