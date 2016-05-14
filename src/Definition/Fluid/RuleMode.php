@@ -15,12 +15,6 @@ use Lechimp\Dicto\Definition as Def;
  * Provides fluid interface to only()..can(), must() and cannot().
  */
 class RuleMode extends BaseWithNameAndMode  {
-    public function contain_text($regexp) {
-        $var = $this->rt->get_var($this->name);
-        $this->rt->add_rule(
-            new Def\Rules\ContainText($this->mode, $var, $regexp));
-   }
-
     /**
      * Tell which schema to use.
      *
@@ -31,14 +25,11 @@ class RuleMode extends BaseWithNameAndMode  {
      */
     public function __call($name, $arguments) {
         # ToDo: This is used in Definition\Fluid\Means as well.
-        if (count($arguments) != 0) {
-            throw new \InvalidArgumentException(
-                "No arguments are allowed when using a rule schema.");
-        }
         $schema = $this->rt->get_schema($name);
         if ($schema === null) {
             throw new \InvalidArgumentException("Unknown rule '$name'.");
         }
-        return $schema->fluid_interface($this->rt, $this->name, $this->mode);
+        $schema->fluid_check_arguments($arguments);
+        return $schema->fluid_interface($this->rt, $this->name, $this->mode, $arguments);
     }
 }

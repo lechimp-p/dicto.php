@@ -21,8 +21,15 @@ abstract class Relation extends Schema {
     /**
      * @inheritdoc
      */
-    public function fluid_interface(Def\RuleDefinitionRT $rt, $name, $mode) {
+    public function fluid_interface(Def\RuleDefinitionRT $rt, $name, $mode, array $arguments) {
         return new Def\Fluid\Relation($rt, $name, $mode, $this);
+    }
+
+    public function fluid_check_arguments(array $arguments) {
+        if (count($arguments) != 0) {
+            throw new \InvalidArgumentException(
+                "No arguments are allowed when using a relational rule schema.");
+        }
     }
 
     /**

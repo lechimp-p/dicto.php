@@ -13,6 +13,7 @@ namespace Lechimp\Dicto\Definition;
 use Lechimp\Dicto\Rules\Schema;
 use Lechimp\Dicto\Rules\Invoke;
 use Lechimp\Dicto\Rules\DependOn;
+use Lechimp\Dicto\Rules\ContainText;
 
 /**
  * Runtime for one rule definition. A rule definition starts with
@@ -62,10 +63,12 @@ class RuleDefinitionRT {
         // TODO: This needs to go somewhere else and must be more dynamic.
         $d = new DependOn();
         $i = new Invoke();
+        $c = new ContainText();
         // TODO: There need to be checks on the name then as well.
         $this->known_schemas = array
             ( $d->name() => $d
             , $i->name() => $i
+            , $c->name() => $c
             );
     }
 

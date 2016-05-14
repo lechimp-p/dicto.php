@@ -47,9 +47,19 @@ abstract class Schema {
      * @param   Def\RuleDefinitionRT    $rt
      * @param   string                  $name
      * @param   string                  $mode
-     * @return  Def\Fluid\Base
+     * @param   array                   $arguments
+     * @return  Def\Fluid\Base|null
      */
-    abstract public function fluid_interface(Def\RuleDefinitionRT $rt, $name, $mode);
+    abstract public function fluid_interface(Def\RuleDefinitionRT $rt, $name, $mode, array $arguments);
+
+    /**
+     * Check the arguments given in the fluid interface on using the schema.
+     *
+     * @param   array   $arguments
+     * @throws  \InvalidArgumentException   if $arguments are not ok
+     * @return  null
+     */
+    abstract public function fluid_check_arguments(array $arguments);
 
     /**
      * Get a pretty printed version of the rules.

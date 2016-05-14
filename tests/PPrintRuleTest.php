@@ -32,10 +32,8 @@ class PPrintRuleTest extends PHPUnit_Framework_TestCase {
 
         list($ruleset, $_) = D::endDefinition();
 
-        $pprinter = new Dicto\Output\RulePrinter;
-
-        self::$printed_rules = array_map(function($rule) use ($pprinter) {
-            return $pprinter->pprint($rule);
+        self::$printed_rules = array_map(function($rule) {
+            return $rule->pprint();
         }, $ruleset->rules());
     }
 

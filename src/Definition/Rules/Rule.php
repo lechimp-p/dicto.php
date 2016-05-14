@@ -91,5 +91,24 @@ abstract class Rule extends Def\Definition {
      * @return R\Schema
      */
     abstract public function schema();
+
+    /**
+     * Pretty print the rule.
+     *
+     * @return string
+     */
+    public function pprint() {
+        $name = $this->subject()->name();
+        switch ($this->mode()) {
+            case Def\Rules\Rule::MODE_CANNOT:
+                return "$name cannot ".$this->schema()->pprint($this);
+            case Def\Rules\Rule::MODE_MUST:
+                return "$name must ".$this->schema()->pprint($this);
+            case Def\Rules\Rule::MODE_ONLY_CAN:
+                return "only $name can ".$this->schema()->pprint($this);
+            default:
+                throw new \Exception("Unknown rule mode '".$this->mode()."'");
+        }
+    }
 }
 
