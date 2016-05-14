@@ -14,6 +14,8 @@ use Lechimp\Dicto\Definition\Definition;
 use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Variables\ButNot;
 use Lechimp\Dicto\Variables\Everything;
+use Lechimp\Dicto\Analysis\Query;
+use Doctrine\DBAL\Driver\Statement;
 
 class Rule extends Definition {
     const MODE_CANNOT   = "CANNOT";
@@ -140,6 +142,16 @@ class Rule extends Definition {
             default:
                 throw new \Exception("Unknown rule mode '".$this->mode()."'");
         }
+    }
+
+    /**
+     * Compile the rule to SQL.
+     *
+     * @param   Query       $query
+     * @return Statement
+     */
+    public function compile(Query $query) {
+        return $this->schema->compile($query, $this);
     }
 
     /**

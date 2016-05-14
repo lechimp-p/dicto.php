@@ -30,7 +30,6 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db = new DB($this->connection);
         $this->db->init_sqlite_regexp();
         $this->db->maybe_init_database_schema();
-        $this->compiler = new RulesToSqlCompiler();
     }
 
 
@@ -48,7 +47,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_all_classes_cannot_contain_text_foo_1() {
         $rule = $this->all_classes_cannot_contain_text_foo();
         $id = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -67,7 +66,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_all_classes_cannot_contain_text_foo_2() {
         $rule = $this->all_classes_cannot_contain_text_foo();
         $id = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "bar");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -78,7 +77,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_all_classes_cannot_contain_text_foo_3() {
         $rule = $this->all_classes_cannot_contain_text_foo();
         $id = $this->db->entity(Variable::FUNCTION_TYPE, "AClass", "file", 1, 2, "foo");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -103,7 +102,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -124,7 +123,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $id = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -137,7 +136,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "a_function", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -162,7 +161,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "a_function", "file", 2);
         $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -183,7 +182,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_invoke_functions();
         $id = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "a_function", "file", 2);
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -196,7 +195,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "some_function", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "a_function", "file", 2);
         $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
         $res = $stmt->fetchAll();
@@ -223,7 +222,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity($type, "entity", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::LANGUAGE_CONSTRUCT_TYPE, "@", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -254,7 +253,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::LANGUAGE_CONSTRUCT_TYPE, "unset", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -282,7 +281,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -304,7 +303,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "BClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -332,7 +331,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -354,7 +353,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "another_glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -386,7 +385,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "SomeClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::LANGUAGE_CONSTRUCT_TYPE, "@", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -408,7 +407,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::LANGUAGE_CONSTRUCT_TYPE, "@", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -437,7 +436,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -459,7 +458,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "a_function", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -481,7 +480,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::METHOD_TYPE, "a_method", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -512,7 +511,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->everything_but_a_classes_must_depend_on_globals();
         $id1 = $this->db->entity(Variable::METHOD_TYPE, "a_method", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -532,7 +531,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->everything_but_a_classes_must_depend_on_globals();
         $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -553,7 +552,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -565,7 +564,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->everything_but_a_classes_must_depend_on_globals();
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -577,7 +576,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->everything_but_a_classes_must_depend_on_globals();
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "BClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -611,7 +610,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::METHOD_TYPE, "a_method", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -633,7 +632,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "a_method", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -655,7 +654,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::METHOD_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -677,7 +676,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
         $this->db->relation("depend_on", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -702,7 +701,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_a_classes_must_contain_text_foo_1() {
         $rule = $this->a_classes_must_contain_text_foo();
         $id = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "bar");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -721,7 +720,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_a_classes_must_contain_text_foo_2() {
         $rule = $this->a_classes_must_contain_text_foo();
         $id = $this->db->entity(Variable::CLASS_TYPE, "BClass", "file", 1, 2, "foo");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -732,7 +731,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_a_classes_must_contain_text_foo_3() {
         $rule = $this->a_classes_must_contain_text_foo();
         $id = $this->db->entity(Variable::CLASS_TYPE, "BClass", "file", 1, 2, "bar");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -743,7 +742,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_a_classes_must_contain_text_foo_4() {
         $rule = $this->a_classes_must_contain_text_foo();
         $id = $this->db->entity(Variable::FUNCTION_TYPE, "AClass", "file", 1, 2, "bar");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -768,7 +767,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_only_a_classes_can_contain_text_foo_1() {
         $rule = $this->only_a_classes_can_contain_text_foo();
         $id = $this->db->entity(Variable::CLASS_TYPE, "BClass", "file", 1, 2, "foo");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -787,7 +786,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_only_a_classes_can_contain_text_foo_2() {
         $rule = $this->only_a_classes_can_contain_text_foo();
         $id = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -798,7 +797,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_only_a_classes_can_contain_text_foo_3() {
         $rule = $this->only_a_classes_can_contain_text_foo();
         $id = $this->db->entity(Variable::FUNCTION_TYPE, "AClass", "file", 1, 2, "foo");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -817,7 +816,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function test_only_a_classes_can_contain_text_foo_4() {
         $rule = $this->only_a_classes_can_contain_text_foo();
         $id = $this->db->entity(Variable::CLASS_TYPE, "BClass", "file", 1, 2, "bar");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -843,7 +842,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->a_classes_must_invoke_functions();
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "a_function", "file", 2);
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -864,7 +863,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "a_function", "file", 2);
         $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -876,7 +875,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $rule = $this->a_classes_must_invoke_functions();
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "BClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "a_function", "file", 2);
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -904,7 +903,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "BClass", "file", 1, 2, "foo");
         $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "a_function", "file", 2);
         $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -926,7 +925,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "a_function", "file", 2);
         $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
@@ -939,7 +938,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "AClass", "file", 1, 2, "bar");
         $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "a_function", "file", 2);
         $this->db->relation("invoke", $id1, $id2, "file", 2, "a line");
-        $stmt = $this->compiler->compile($this->db, $rule);
+        $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
 
