@@ -34,9 +34,15 @@ class IndexerMock extends Indexer {
 
 class EngineTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
+        $this->root = __DIR__."/data/src";
         $this->config = new Config(array(array
             ( "project" => array
-                ( "root" => __DIR__."/data/src"
+                ( "root" => $this->root
+                )
+            , "analysis" => array
+                ( "ignore" => array
+                    ( ".*\.omit_me"
+                    )
                 )
             )));
         $this->indexer = new IndexerMock();
@@ -49,4 +55,20 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue(true, "Engine ran successfully.");
     }
 
+    public function test_calls_analyzer() {
+        $this->engine->run();
+        $this->assertTrue($this->analyzer->run_called);
+    }
+
+    public function test_indexes_files() {
+        $this->engine->run();
+        $expected = array_filter(scandir($this->root), function($n) {
+            return $n != "." && $n != ".." && $n != "A1.omit_me";
+        });
+
+        $this->assertEquals(count($expected), count($this->indexer->indexed_files));
+        foreach ($expected as $e) {
+            $this->assertContains($e, $this->indexer->indexed_files);
+        }
+    }
 }
