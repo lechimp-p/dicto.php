@@ -24,3 +24,6 @@
 * Use another schema for the database. There could be a file table, where each
   file is stored in separate lines. That would make the database smaller and
   also ContainText easier.
+
+# Cleanup
+* Reorder tests to match the different rules better.
