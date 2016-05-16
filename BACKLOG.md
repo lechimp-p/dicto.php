@@ -24,8 +24,11 @@
 * Use another schema for the database. There could be a file table, where each
   file is stored in separate lines. That would make the database smaller and
   also ContainText easier.
+* Make rules (and maybe vars) able to initialize their own tables.
 
 # Cleanup
 * Reorder tests to match the different rules better.
 * Make Engine (and propably Indexer and Analyzer) depend on a logger. Make them
   log.
+* Vars could be cleaned up; Classes, Methods, etc. are only required for pattern
+  matching in Query::compile_var.
