@@ -29,4 +29,12 @@ interface Query{
      * @return  QueryBuilder
      */
     public function builder();
+
+    /**
+     * Compile a variable to an SQL statement over a named table.
+     *
+     * @param   string          $name
+     * @param   Vars\Variable   $var
+     * @param   bool            $negate
+     */ 
 }
