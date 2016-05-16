@@ -10,67 +10,72 @@
 
 use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Rules;
+use Lechimp\Dicto\Variables as Vars;
+use Lechimp\Dicto\Variables\Variable;
+use Lechimp\Dicto\App\DB;
+use Lechimp\Dicto\Analysis\RulesToSqlCompiler;
+use Lechimp\Dicto\Analysis\Consts;
+use Lechimp\Dicto\Analysis\Violation;
+use Doctrine\DBAL\DriverManager;
 
-define("__AnalyzerTest_PATH_TO_RULES_PHP", __DIR__."/data/rules.php");
-define("__AnalyzerTest_PATH_TO_SRC", __DIR__."/data/src");
-
-abstract class AnalyzerTest extends PHPUnit_Framework_TestCase {
-    const PATH_TO_RULES_PHP = __AnalyzerTest_PATH_TO_RULES_PHP;
-    const PATH_TO_SRC = __AnalyzerTest_PATH_TO_SRC;
-
-    abstract protected function get_analyzer(Def\Ruleset $ruleset);
-
+class AnalyzerTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
-        $this->pprinter = new Dicto\Output\RulePrinter;
-        $loader = new Dicto\App\Implementation\RuleLoader();
-        $this->ruleset = $loader->load_rules_from(self::PATH_TO_RULES_PHP);
-        $this->analyzer = $this->get_analyzer($this->ruleset);
+        $this->connection = DriverManager::getConnection
+            ( array
+                ( "driver" => "pdo_sqlite"
+                , "memory" => true
+                )
+            );
+        $this->db = new DB($this->connection);
+        $this->db->init_sqlite_regexp();
+        $this->db->maybe_init_database_schema();
+   }
+
+
+    public function analyzer(Rules\Rule $rule) {
+        $ruleset = new Def\Ruleset($rule->variables(), array($rule));
+        return new Dicto\Analysis\Analyzer($ruleset, $this->db);
     }
 
-    public function test_is_analyzer() {
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Analysis\\Analyzer", $this->analyzer);
-        return $this->analyzer;
+    // All classes cannot contain text "foo".
+
+    public function all_classes_cannot_contain_text_foo() {
+        return new Rules\Rule
+            ( Rules\Rule::MODE_CANNOT
+            , new Vars\Classes("allClasses")
+            , new Rules\ContainText()
+            , array("foo")
+            );
     }
 
-    /**
-     * @depends test_is_analyzer
-     */   
-    public function test_has_results($analyzer) {
-        $result = $analyzer->run_analysis_on(self::PATH_TO_SRC);
+    public function test_all_classes_cannot_contain_text_foo_1() {
+        $rule = $this->all_classes_cannot_contain_text_foo();
+        $analyzer = $this->analyzer($rule);
 
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Analysis\\Result", $result);
+        $code = <<<CODE
+1
+2
+3
+foo
+4
+5
+6
+CODE;
 
-        return $result;
-    } 
+        $this->db->entity(Variable::FILE_TYPE, "file", "file", 1, 2, $code);
+        $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, $code);
 
-    protected function get_rule($pretty_rule, Def\Ruleset $ruleset) {
-        $rules = $ruleset->rules();
-        foreach ($rules as $rule) {
-            if ($this->pprinter->pprint($rule) == $pretty_rule) {
-                return $rule;
-            }
-        }
-        $this->assertFalse("Could not get rule $pretty_rule");
+        $result = array();
+        $violations = $analyzer->run(function (Violation $v) use (&$result) {
+            $result[] = $v;
+        });
+        $expected = array(new Violation
+            ( $rule
+            , "file"
+            , 4
+            , "foo"
+            ));
+        $this->assertEquals($expected, $result);
     }
-
-    /**
-     * @depends test_has_results
-     */
-    public function test_AClasses_must_invoke_AFunctions($result) {
-        $rule = $this->get_rule("AClasses must invoke AFunctions", $result->ruleset());
-        $violations = $result->violations_of($rule);
-        $violations_A2 = $result->violations_in(__DIR__."/data/src/A2.php");
-        $violations_B1 = $result->violations_in(__DIR__."/data/src/B2.php");
-
-        $this->assertCount(1, $violations);
-        $violation = $violations[0];
-
-        $this->assertEquals(__DIR__."/data/src/A2.php", $violation->filename());
-        $this->assertEquals($rule, $violation->rule());
-        $this->assertEquals("class A2 {", $violation->line());
-        $this->assertEquals(11, $violation->line_no());
-
-        $this->assertContains($violation, $violations_A2);
-        $this->assertNotContains($violation, $violations_B1);
-    } 
 }
