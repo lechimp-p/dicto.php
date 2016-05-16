@@ -160,7 +160,7 @@ class Rule extends Definition {
      *
      * @param   array   $row
      * @param   string  $file_source
-     * @return  Violation
+     * @return  \Lechimp\Dicto\Analysis\Violation
      */
     public function to_violation(array $row, array $file_source) {
         return $this->schema->to_violation($this, $row, $file_source);
