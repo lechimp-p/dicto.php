@@ -48,29 +48,37 @@ trait CompilesVars {
             };
         }
 
+        // sugar:
+        $compile_left = function($negate = false) use ($table_name, $var) {
+            return $this->compile_var($table_name, $var->left(), $negate);
+        };
+        $compile_right = function($negate = false) use ($table_name, $var) {
+            return $this->compile_var($table_name, $var->right(), $negate);
+        };
+
         // Pattern matching on variable type.
 
         if ($var instanceof Vars\AsWellAs) {
             // normal case: left_condition or right_condition
             if (!$negate) {
                 return $b->orX
-                    ( $this->compile_var($table_name, $var->left())
-                    , $this->compile_var($table_name, $var->right())
+                    ( $compile_left()
+                    , $compile_right()
                     );
             }
             // negated case: not (left_condition or right_condition)
             //             = not left_condition and not right_condition
             if ($negate) {
                 return $b->andX
-                    ( $this->compile_var($table_name, $var->left(), true)
-                    , $this->compile_var($table_name, $var->right(), true)
+                    ( $compile_left(true)
+                    , $compile_right(true)
                     );
             }
         }
         if ($var instanceof Vars\ButNot) {
             return $b->andX
-                ( $this->compile_var($table_name, $var->left())
-                , $this->compile_var($table_name, $var->right(), true)
+                ( $compile_left()
+                , $compile_right(true)
                 );
         }
         if ($var instanceof Vars\Classes) {
