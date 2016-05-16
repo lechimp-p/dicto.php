@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\App;
 
-use Lechimp\Dicto\App\RuleFromFSLoader;
+use Lechimp\Dicto\App\RuleLoader;
 
 use Symfony\Component\Yaml\Yaml;
 use Pimple\Container;
@@ -27,6 +27,8 @@ class App {
     protected $dic;
 
     public function __construct(\Closure $postprocess_dic = null) {
+        ini_set('xdebug.max_nesting_level', 200);
+
         if ($postprocess_dic === null) {
             $postprocess_dic = function($c) { return $c; };
         }
@@ -111,7 +113,7 @@ class App {
         $container = new Container();
 
         $container["rule_loader"] = function($c) {
-            return new RuleFromFSLoader(); 
+            return new RuleLoader();
         };
 
         $container["engine"] = function($c) {
@@ -119,7 +121,11 @@ class App {
         };
 
         $container["indexer"] = function($c) {
-            return new \Lechimp\Dicto\Indexer\PhpParser\Indexer($c["php_parser"]);
+            return new \Lechimp\Dicto\Indexer\Indexer
+                ( $c["php_parser"]
+                , $c["config"]->project_root()
+                , $c["database"]
+                );
         };
 
         $container["php_parser"] = function($c) {
@@ -130,6 +136,7 @@ class App {
             $db = new DB($c["connection"]);
             $db->init_sqlite_regexp();
             $db->maybe_init_database_schema();
+            return $db;
         };
 
         $container["connection"] = function($c) {
