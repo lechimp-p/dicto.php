@@ -48,6 +48,9 @@ class Rule extends Definition {
      */
     private $arguments;
 
+    /**
+     * @param string $mode
+     */
     public function __construct($mode, Variable $subject, Schema $schema, array $arguments) {
         assert('in_array($mode, self::$modes)');
         $schema->check_arguments($arguments);
@@ -73,7 +76,7 @@ class Rule extends Definition {
     /**
      * Definition of the entities this rule was defined for.
      *
-     * @return  Vars\Variable
+     * @return  Variable
      */
     public function subject() {
         return $this->subject;

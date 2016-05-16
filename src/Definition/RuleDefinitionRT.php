@@ -185,7 +185,7 @@ class RuleDefinitionRT {
     /**
      * Announce what the current variable is atm.
      *
-     * @param   Variables\Variable  $var
+     * @param   Variable  $var
      */
     public function current_var_is(Variable $var) {
         assert('$this->current_var_name !== null');
