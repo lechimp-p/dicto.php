@@ -57,6 +57,7 @@ class App {
         $this->load_extra_configs($params, $configs);
 
         $this->dic["config"] = $this->create_config($configs);
+        $this->dic["ruleset"] = $ruleset;
         $this->dic["engine"]->run();
     }
 
@@ -117,7 +118,11 @@ class App {
         };
 
         $container["engine"] = function($c) {
-            return new Engine($c["config"], $c["indexer"], $c["database"]);
+            return new Engine
+                ( $c["config"]
+                , $c["indexer"]
+                , $c["analyzer"]
+                );
         };
 
         $container["indexer"] = function($c) {
@@ -147,6 +152,18 @@ class App {
                     , "path" => $c["config"]->sqlite_path()
                     )
                 );
+        };
+
+        $container["analyzer"] = function($c) {
+            return new \Lechimp\Dicto\Analysis\Analyzer
+                ( $c["ruleset"]
+                , $c["database"]
+                , $c["report_generator"]
+                );
+        };
+
+        $container["report_generator"] = function($c) {
+            return new CLIReportGenerator();
         };
 
         $container = $postprocess_dic($container);
