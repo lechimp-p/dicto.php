@@ -27,7 +27,7 @@ class WithName extends Variable {
     public function __construct($regexp, Variable $other) {
         parent::__construct($other->name());
         if (!is_string($regexp) || @preg_match("%$regexp%", "") === false) {
-            throw new \InvalidArgumentException("Invalid regexp: '%regexp'");
+            throw new \InvalidArgumentException("Invalid regexp: '%$regexp%'");
         }
         $this->regexp = $regexp;
         $this->other = $other;
