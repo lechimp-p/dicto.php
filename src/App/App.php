@@ -90,7 +90,7 @@ class App {
             if (!file_exists($config_file)) {
                 throw new \RuntimeException("Unknown config-file '$config_file'");
             }
-            $configs[] = Yaml::parse(file_get_contents($config_file));
+            $configs_array[] = Yaml::parse(file_get_contents($config_file));
         }
     }
 
