@@ -109,4 +109,7 @@ abstract class Relation extends Schema {
         throw new \LogicException("Unknown rule mode: '$mode'");
     }
 
+    public function to_violation(Rule $rule, array $row) {
+        throw new \Exception("NYI!");
+    }
 }

@@ -14,6 +14,7 @@ use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Variables as Vars;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Analysis\Query;
+use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Variables\Variable;
 use Doctrine\DBAL\Driver\Statement;
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
@@ -77,6 +78,15 @@ abstract class Schema {
      * @return  Statement
      */
     abstract public function compile(Query $query, Rule $rule);
+
+    /**
+     * Turn a query result into a violation.
+     *
+     * @param   Rule    $rule
+     * @param   array   $row
+     * @return  Violation
+     */
+    abstract public function to_violation(Rule $rule, array $row);
 
     /**
      * Register listeners to the indexer that are required to detect information

@@ -153,6 +153,17 @@ class Rule extends Definition {
     }
 
     /**
+     * Turn a query result into a violation.
+     *
+     * @param   array   $row
+     * @param   string  $file_source
+     * @return  Violation
+     */
+    public function to_violation(array $row, array $file_source) {
+        return $this->schema->to_violation($this, $row, $file_source);
+    }
+
+    /**
      * Get the argument at the index.
      *
      * @throws  \OutOfRangeException

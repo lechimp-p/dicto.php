@@ -12,6 +12,7 @@ namespace Lechimp\Dicto\Rules;
 
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Analysis\Query;
+use Lechimp\Dicto\Analysis\Violation;
 
 /**
  * This checks wheather there is some text in the definition of an entity.
@@ -78,6 +79,33 @@ class ContainText extends Property {
                 ->execute();
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function to_violation(Rule $rule, array $row) {
+        $line_no = 0;
+        $line = null;
+        $lines = explode("\n", $row["source"]);
+        $pattern = $rule->argument(0);
+        foreach ($lines as $l) {
+            $line_no++;
+            if (preg_match("%$pattern%", $l) > 0) {
+                $line = $l;
+                break;
+            }
+        }
+        if ($line === null) {
+            throw new \LogicException(
+                "Found '$pattern' with SQL query but not in postprocessing...");
+        }
+        return new Violation
+            ( $rule
+            , $row["file"]
+            , $line_no
+            , $line
+            );
     }
 
     /**
