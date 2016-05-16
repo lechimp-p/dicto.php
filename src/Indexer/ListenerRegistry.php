@@ -14,7 +14,62 @@ namespace Lechimp\Dicto\Indexer;
  * Register listeners to an indexer.
  */
 interface ListenerRegistry {
-    // TODO: This should be removed in favour of more specific registries.
-    public function on_enter_misc(\Closure $listener);
+    /**
+     * Add a listener for entities that get entered.
+     * 
+     * The provided closure gets the following arguments:
+     *      * $insert   - Insert interface
+     *      * $location - Location interface
+     *      * $type     - of the entity according to the types in Variable
+     *      * $id       - of the entity
+     *      * $node     - PhpParser\Node
+     *
+     * By using an array of types, one may announce to be only interested in
+     * certain types of entities.
+     *
+     * @param   array|null  $types
+     * @param   \Closure    $listener
+     * @return  self
+     */
+    public function on_enter_entity($types, \Closure $listener);
+
+    /**
+     * Add a listener for entities that are left.
+     *
+     * Works like on_enter_entity.
+     *
+     * @param   array|null  $types
+     * @param   \Closure    $listener
+     * @return  self
+     */
+    public function on_leave_entity($types, \Closure $listener);
+
+    /**
+     * Add a listener for nodes in the AST that get entered.
+     *
+     * The provided closure gets the following arguments:
+     *      * $insert   - Insert interface
+     *      * $location - Location interface
+     *      * $node     - PhpParser\Node
+     *
+     * By using an array of classes, one may announce to be only interested in
+     * certain types of PhpParser-nodes.
+     *
+     * @param   array|null  $classes
+     * @param   \Closure    $listener
+     * @return  self
+     */
+    public function on_enter_misc($classes, \Closure $listener);
+
+    /**
+     * Add a listener for nodes that are left.
+     *
+     * Works like on_enter_misc.
+     *
+     * @param   array|null  $classes
+     * @param   \Closure    $listener
+     * @return  self
+     */
+    public function on_leave_misc($classes, \Closure $listener);
 }
 

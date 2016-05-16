@@ -116,8 +116,29 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
 
    // from ListenerRegistry 
 
-    public function on_enter_misc(\Closure $listener) {
+    /**
+     * @inheritdoc
+     */
+    public function on_enter_entity($types, \Closure $listener) {
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function on_leave_entity($types, \Closure $listener) {
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function on_enter_misc($classes, \Closure $listener) {
         $this->listeners["misc"][] = $listener;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function on_leave_misc($classes, \Closure $listener) {
     }
 
 
