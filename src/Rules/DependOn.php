@@ -63,7 +63,7 @@ class DependOn extends Relation {
             }
             elseif ($node instanceof N\Stmt\Global_) {
                 foreach ($node->vars as $var) {
-                    if (!($var instanceof N\Expr\Variable) || !is_string("$var->name")) {
+                    if (!($var instanceof N\Expr\Variable) || !is_string($var->name)) {
                         throw new \RuntimeException(
                             "Expected Variable with string name, found: ".print_r($var, true));
                     }
