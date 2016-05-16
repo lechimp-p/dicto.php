@@ -21,8 +21,20 @@ interface Query {
     // Naming
     //
     // Get the names of the different tables used by database.
+
+    /**
+     * @return string
+     */
     public function entity_table();
+
+    /**
+     * @return string
+     */
     public function reference_table();
+
+    /**
+     * @return string
+     */
     public function relations_table();
 
     /**
