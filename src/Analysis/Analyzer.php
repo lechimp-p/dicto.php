@@ -18,8 +18,6 @@ use Lechimp\Dicto\Variables\Variable;
  * using a specific rules to sql compiler.
  */
 class Analyzer {
-    CONST LINES_BEFORE_AND_AFTER = 5;
-
     /**
      * @var Def\Ruleset
      */
