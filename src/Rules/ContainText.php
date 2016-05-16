@@ -57,7 +57,7 @@ class ContainText extends Property {
                     )
                 ->from($query->entity_table())
                 ->where
-                    ( $this->compile_var($builder->expr(), $query->entity_table(), $checked_on)
+                    ( $query->compile_var($query->entity_table(), $checked_on)
                     , "source REGEXP ?"
                     )
                 ->setParameter(0, $regexp)
@@ -73,7 +73,7 @@ class ContainText extends Property {
                     )
                 ->from($query->entity_table())
                 ->where
-                    ( $this->compile_var($builder->expr(), $query->entity_table(), $checked_on)
+                    ( $query->compile_var($query->entity_table(), $checked_on)
                     , "source NOT REGEXP ?"
                     )
                 ->setParameter(0, $regexp)

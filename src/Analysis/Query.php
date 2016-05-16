@@ -10,12 +10,14 @@
 
 namespace Lechimp\Dicto\Analysis;
 
+use Lechimp\Dicto\Variables\Variable;
 use Doctrine\DBAL\Query\QueryBuilder;
+use Doctrine\DBAL\Query\Expression\CompositeExpression;
 
 /**
  * Interface that defines what a query from the database needs to know.
  */
-interface Query{
+interface Query {
     // Naming
     //
     // Get the names of the different tables used by database.
@@ -36,5 +38,7 @@ interface Query{
      * @param   string          $name
      * @param   Vars\Variable   $var
      * @param   bool            $negate
+     * @return  string|CompositeExpression
      */ 
+    public function compile_var($table_name, Variable $var, $negate = false);
 }
