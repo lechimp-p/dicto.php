@@ -14,7 +14,7 @@ use \Lechimp\Dicto\Rules as Rules;
 
 class Relation extends BaseWithNameAndMode {
     /**
-     * @var R\Relation
+     * @var Rules\Relation
      */
     protected $relation;
 
