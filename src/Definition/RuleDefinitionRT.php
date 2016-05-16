@@ -37,12 +37,12 @@ class RuleDefinitionRT {
     private $current_var_name;
 
     /**
-     * @var Variables\Variable|null
+     * @var Variable|null
      */
     private $current_var;
 
     /**
-     * @var Rules\Rule[]
+     * @var Rule[]
      */
     private $rules;
 
@@ -52,7 +52,7 @@ class RuleDefinitionRT {
     private $config;
 
     /**
-     * @var Schema[]
+     * @var array<string,Schema>
      */
     private $known_schemas;
 
