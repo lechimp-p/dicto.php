@@ -11,7 +11,7 @@
 namespace Lechimp\Dicto\Variables;
 
 /**
- * Provides fluid interface to _with.
+ * Another variable that has a certain name.
  */
 class WithName extends Variable {
     /**
@@ -46,14 +46,4 @@ class WithName extends Variable {
     public function variable() {
         return $this->other;
     }
-
-    /**
-     * @inheritdoc
-     */
-    public function explain($text) {
-        $v = new WithName($this->name(), $this->other);
-        $v->setExplanation($text);
-        return $v;
-    }
-
 }

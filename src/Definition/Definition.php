@@ -21,8 +21,20 @@ abstract class Definition {
 
     /**
      * @param   string
+     * return   self
      */
-    abstract public function explain($explanation);
+    public function explain($explanation) {
+        $clone = clone $this;
+        $clone->explanation = $explanation;
+        return $clone;
+    }
+
+    /**
+     * @return  string
+     */
+    public function explanation() {
+        return $this->explanation;
+    }
 
     protected function setExplanation($explanation) {
         assert('is_string($explanation)');

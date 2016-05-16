@@ -24,15 +24,6 @@ class LanguageConstruct extends Variable {
     }
 
     /**
-     * @inheritdoc
-     */
-    public function explain($text) {
-        $v = new Buildins();
-        $v->setExplanation($text);
-        return $v;
-    }
-
-    /**
      * @return  string
      */
     public function construct_name() {

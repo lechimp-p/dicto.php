@@ -11,13 +11,5 @@
 namespace Lechimp\Dicto\Variables;
 
 class Classes extends Variable {
-    /**
-     * @inheritdoc
-     */
-    public function explain($text) {
-        $v = new Classes($this->name());
-        $v->setExplanation($text);
-        return $v;
-    }
 }
 

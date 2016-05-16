@@ -11,12 +11,4 @@
 namespace Lechimp\Dicto\Variables;
 
 class ButNot extends Compound {
-    /**
-     * @inheritdoc
-     */
-    public function explain($text) {
-        $v = new ButNot($this->name(), $this->left, $this->right);
-        $v->setExplanation($text);
-        return $v;
-    }
 }

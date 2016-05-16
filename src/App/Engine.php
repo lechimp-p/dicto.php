@@ -62,10 +62,10 @@ class Engine {
                 return true;
             })
             ->foldFiles(null, function($_, File $file) {
-                echo "indexing: ".$file->path()."\n";
+                //echo "indexing: ".$file->path()."\n";
                 $this->indexer->index_file($file->path());
             });
-        echo "\n\n\n";
+        //echo "\n\n\n";
         $this->analyzer->run();
     }
 
