@@ -117,7 +117,7 @@ class Rule extends Definition {
     /**
      * Get the schema that was used for the rule.
      *
-     * @return R\Schema
+     * @return Schema
      */
     public function schema() {
         return $this->schema;
