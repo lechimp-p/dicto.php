@@ -12,10 +12,8 @@ use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Variables as Vars;
 use Lechimp\Dicto\Rules as Rules;
 
-define("__RuleLoaderTest_PATH_TO_RULES_PHP", __DIR__."/data/rules.php");
-
-abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
-    const PATH_TO_RULES_PHP = __RuleLoaderTest_PATH_TO_RULES_PHP;
+class RuleLoaderTest extends PHPUnit_Framework_TestCase {
+    static $PATH_TO_RULES_PHP = null;
     const AMOUNT_OF_RULES_IN_RULES_PHP = 1;
     static $VARIABLES_IN_RULES_PHP = array
             ( "AClasses"
@@ -28,10 +26,9 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
             , "FooFiles"
             );
 
-    abstract protected function get_rule_loader();
-
     public function setUp() {
-        $this->loader = $this->get_rule_loader();
+        self::$PATH_TO_RULES_PHP = __DIR__."/data/rules.php";
+        $this->loader = new Dicto\App\RuleLoader();
 
         $this->AClasses =
             new Vars\WithName( "A.*", new Vars\Classes("AClasses"));
@@ -56,7 +53,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_loads_ruleset() {
-        list($ruleset, $_) = $this->loader->load_rules_from(self::PATH_TO_RULES_PHP);
+        list($ruleset, $_) = $this->loader->load_rules_from(self::$PATH_TO_RULES_PHP);
         $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Ruleset", $ruleset);
         return $ruleset;
     }
@@ -86,7 +83,7 @@ abstract class RuleLoaderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_loads_variables_twice() {
-        list($ruleset, $_) = $this->loader->load_rules_from(self::PATH_TO_RULES_PHP);
+        list($ruleset, $_) = $this->loader->load_rules_from(self::$PATH_TO_RULES_PHP);
         $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Ruleset", $ruleset);
         $vars = $ruleset->variables();
         $this->assertInternalType("array", $vars);

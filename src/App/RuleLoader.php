@@ -10,13 +10,19 @@
 
 namespace Lechimp\Dicto\App;
 
-use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Dicto as Dicto;
 
-interface RuleLoader {
+class RuleLoader {
     /**
-     * @param   string  $rule_file_path
-     * @throws  InvalidArgumentException    if rule_file_path is no valid file
-     * @return  array   Def\Ruleset and array containing config. 
+     * @inheritdocs
      */
-    public function load_rules_from($rule_file_path);
+    public function load_rules_from($rule_file_path) {
+        if (!file_exists($rule_file_path)) {
+            throw new \InvalidArgumentException("$rule_file_path does not exist.");
+        }
+        // TODO: Some more checking on the file...
+        Dicto::startDefinition();
+        require($rule_file_path);
+        return Dicto::endDefinition();
+    }
 }
