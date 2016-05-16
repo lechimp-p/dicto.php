@@ -11,17 +11,16 @@
 # Things to write tests for
 * What happens if i use namespaces?
 * What happens if i use closures and call them like `$closure()`?
-* "Buildins" after i know what the name means at least it means error suppressor.
 * What happens if a relevant statement spans several lines? is that even possible
   with the relations i defined so far?
 * What happens if i use a 'multi global' statement: global $a1, $a2;
-
-# Cleanup
-* Remove outdate _and, _except, ... on Variable. Looks also like Rules could need
-  a general cleanup. What is DependOn::invoke? What is a better name for 
-  Invoke::invokes?
 
 # Definition
 * Expose `everything` on fluid interface.
 * Make `language_construct` more pleasant to use.
 * Define known types of `language_construct`s.
+
+# DB
+* Use another schema for the database. There could be a file table, where each
+  file is stored in separate lines. That would make the database smaller and
+  also ContainText easier.
