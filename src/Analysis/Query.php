@@ -35,7 +35,7 @@ interface Query {
     /**
      * Compile a variable to an SQL statement over a named table.
      *
-     * @param   string          $name
+     * @param   string          $table_name
      * @param   Vars\Variable   $var
      * @param   bool            $negate
      * @return  string|CompositeExpression
