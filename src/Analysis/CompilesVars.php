@@ -27,7 +27,7 @@ trait CompilesVars {
     /**
      * Compile a variable to an SQL statement over a named table.
      *
-     * @param   string          $name
+     * @param   string          $table_name
      * @param   Vars\Variable   $var
      * @param   bool            $negate
      * @return  string|CompositeExpression
@@ -51,15 +51,15 @@ trait CompilesVars {
         // Pattern matching on variable type.
 
         if ($var instanceof Vars\AsWellAs) {
-            // normal case: $left_condition or $right_condition
+            // normal case: left_condition or right_condition
             if (!$negate) {
                 return $b->orX
                     ( $this->compile_var($table_name, $var->left())
                     , $this->compile_var($table_name, $var->right())
                     );
             }
-            // negated case: not ($left_condition or $right_condition)
-            //             = not $left_condition and not $right_condition
+            // negated case: not (left_condition or right_condition)
+            //             = not left_condition and not right_condition
             if ($negate) {
                 return $b->andX
                     ( $this->compile_var($table_name, $var->left(), true)
@@ -110,15 +110,15 @@ trait CompilesVars {
             return $eq_op("$table_name.type", $b->literal(Variable::METHOD_TYPE));
         }
         if ($var instanceof Vars\WithName) {
-            // normal case : $condition_left AND regexp matches
+            // normal case : left_condition AND regexp matches
             if (!$negate) {
                 return $b->andX
                     ( $this->compile_var($table_name, $var->variable())
                     , "$table_name.name REGEXP ".$b->literal('^'.$var->regexp().'$')
                     );
             }
-            // negated case: not ($condition_left AND regexp matches)
-            //             = not $condition_left OR not regexp matches
+            // negated case: not (left_condition_left and regexp matches)
+            //             = not left_condition and not regexp matches
             else {
                 return $b->orX
                     ( $this->compile_var($table_name, $var->variable(), true)
