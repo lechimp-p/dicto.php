@@ -18,6 +18,10 @@ class Relation extends BaseWithNameAndMode {
      */
     protected $relation;
 
+    /**
+     * @param string $name
+     * @param string $mode
+     */
     public function __construct(Def\RuleDefinitionRT $rt, $name, $mode, Rules\Relation $relation) {
         parent::__construct($rt, $name, $mode);
         $this->relation = $relation;
