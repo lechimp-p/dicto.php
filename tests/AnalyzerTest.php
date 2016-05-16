@@ -11,13 +11,24 @@
 use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Rules;
+use Lechimp\Dicto\Rules\Rule;
+use Lechimp\Dicto\Definition\Ruleset;
 use Lechimp\Dicto\Variables as Vars;
 use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\App\DB;
 use Lechimp\Dicto\Analysis\RulesToSqlCompiler;
-use Lechimp\Dicto\Analysis\Consts;
 use Lechimp\Dicto\Analysis\Violation;
+use Lechimp\Dicto\Analysis\ReportGenerator;
 use Doctrine\DBAL\DriverManager;
+
+class ReportGeneratorMock implements ReportGenerator {
+    public $violations = array();
+    public function report_violation(Violation $violation) {
+        $this->violations[] = $violation;
+    }
+    public function start_ruleset(Ruleset $rule) {}
+    public function start_rule(Rule $rule) {}
+}
 
 class AnalyzerTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
@@ -30,11 +41,13 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
         $this->db = new DB($this->connection);
         $this->db->init_sqlite_regexp();
         $this->db->maybe_init_database_schema();
+
+        $this->rp = new ReportGeneratorMock();
    }
 
     public function analyzer(Rules\Rule $rule) {
         $ruleset = new Def\Ruleset($rule->variables(), array($rule));
-        return new Dicto\Analysis\Analyzer($ruleset, $this->db);
+        return new Dicto\Analysis\Analyzer($ruleset, $this->db, $this->rp);
     }
 
 
@@ -66,17 +79,14 @@ CODE;
         $this->db->entity(Variable::FILE_TYPE, "file", "file", 1, 2, $code);
         $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2, $code);
 
-        $result = array();
-        $violations = $analyzer->run(function (Violation $v) use (&$result) {
-            $result[] = $v;
-        });
+        $analyzer->run();
         $expected = array(new Violation
             ( $rule
             , "file"
             , 4
             , "foo"
             ));
-        $this->assertEquals($expected, $result);
+        $this->assertEquals($expected, $this->rp->violations);
     }
 
 
@@ -110,16 +120,13 @@ CODE;
         $id2 = $this->db->reference(Variable::METHOD_TYPE, "a_method", "file", 4, "foo");
         $this->db->relation("depend_on", $id1, $id2, "file", 4, "foo");
 
-        $result = array();
-        $violations = $analyzer->run(function (Violation $v) use (&$result) {
-            $result[] = $v;
-        });
+        $analyzer->run();
         $expected = array(new Violation
             ( $rule
             , "file"
             , 4
             , "foo"
             ));
-        $this->assertEquals($expected, $result);
+        $this->assertEquals($expected, $this->rp->violations);
     }
 }

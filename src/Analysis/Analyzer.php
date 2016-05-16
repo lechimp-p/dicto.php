@@ -28,22 +28,30 @@ class Analyzer {
      */
     protected $query;
 
+    /**
+     * @var ReportGenerator
+     */
+    protected $generator;
+
     public function __construct
                         ( Def\Ruleset $ruleset
                         , Query $query
+                        , ReportGenerator $generator
                         ) {
         $this->ruleset = $ruleset;
         $this->query = $query;
+        $this->generator = $generator;
     }
 
     /**
      * Run the analysis.
      *
-     * @param   \Closure    $process_violation  Expected to take violations and do whatever
      * @return  null
      */
-    public function run(\Closure $process_violation) {
+    public function run() {
+        $this->generator->start_ruleset($this->ruleset);
         foreach ($this->ruleset->rules() as $rule) {
+            $this->generator->start_rule($rule);
             $stmt = $rule->compile($this->query);
             while ($row = $stmt->fetch()) {
                 $builder = $this->query->builder();
@@ -61,7 +69,7 @@ class Analyzer {
                     throw new \RuntimeException(
                         "Could not find ".$row["file"]." in database.");
                 }
-                $process_violation($rule->to_violation($row, $file));
+                $this->generator->report_violation($rule->to_violation($row, $file));
             }
         }
     }
