@@ -49,11 +49,8 @@ trait CompilesVars {
         }
 
         // sugar:
-        $compile_left = function($negate = false) use ($table_name, $var) {
-            return $this->compile_var($table_name, $var->left(), $negate);
-        };
-        $compile_right = function($negate = false) use ($table_name, $var) {
-            return $this->compile_var($table_name, $var->right(), $negate);
+        $compile = function($dir, Vars\Compound $var, $negate = false) use ($table_name) {
+            return $this->compile_var($table_name, $var->$dir(), $negate);
         };
 
         // Pattern matching on variable type.
@@ -62,23 +59,23 @@ trait CompilesVars {
             // normal case: left_condition or right_condition
             if (!$negate) {
                 return $b->orX
-                    ( $compile_left()
-                    , $compile_right()
+                    ( $compile("left", $var)
+                    , $compile("right", $var)
                     );
             }
             // negated case: not (left_condition or right_condition)
             //             = not left_condition and not right_condition
             if ($negate) {
                 return $b->andX
-                    ( $compile_left(true)
-                    , $compile_right(true)
+                    ( $compile("left", $var, true)
+                    , $compile("right", $var, true)
                     );
             }
         }
         if ($var instanceof Vars\ButNot) {
             return $b->andX
-                ( $compile_left()
-                , $compile_right(true)
+                ( $compile("left", $var)
+                , $compile("right", $var, true)
                 );
         }
         if ($var instanceof Vars\Classes) {
