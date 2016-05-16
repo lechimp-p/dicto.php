@@ -34,6 +34,6 @@ class CLIReportGenerator implements ReportGenerator {
      * @inheritdoc
      */
     public function report_violation(Violation $violation) {
-        echo $violation->filename." (".$violation->line_no().")\n";
+        echo $violation->filename()." (".$violation->line_no().")\n";
     }
 }
