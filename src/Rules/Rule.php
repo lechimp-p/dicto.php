@@ -60,12 +60,6 @@ class Rule extends Definition {
         $this->arguments = $arguments;
     }
 
-    public function explain($explanation) {
-        $r = new Rule($this->mode, $this->subject, $this->schema, $this->arguments);
-        $r->setExplanation($r);
-        return $r;
-    }
-
     /**
      * @return string
      */
@@ -178,6 +172,15 @@ class Rule extends Definition {
             throw new \OutOfRangeException("'$index' out of range.");
         }
         return $this->arguments[$index];
+    }
+
+    /**
+     * Get all arguments.
+     *
+     * @return array
+     */
+    public function arguments() {
+        return $this->arguments;
     }
 }
 

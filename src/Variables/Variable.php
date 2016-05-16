@@ -45,17 +45,5 @@ abstract class Variable extends Def\Definition {
     public function name() {
         return $this->name;
     }
-
-    public function _with() {
-        return new WithFluid($this);
-    } 
-
-    public function cannot() {
-        return new CannotFluid($this);
-    }
-
-    public function must() {
-        return new MustFluid($this);
-    }
 }
 

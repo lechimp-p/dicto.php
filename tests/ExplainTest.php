@@ -21,6 +21,25 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
         $explained = $explainable->explain("EXPLANATION");
         $this->assertEquals(get_class($explainable), get_class($explained));
         $this->assertEquals("EXPLANATION", $explained->explanation());
+        $methods = get_class_methods(get_class($explainable));
+        if ($explainable instanceof Vars\Variable) {
+            foreach ($methods as $m) {
+                if ($m == "__construct"
+                ||  $m == "explanation"
+                || $m == "is_type"
+                || $m == "explain") {
+                    continue;
+                }
+                $this->assertEquals($explainable->$m(), $explained->$m(),
+                                    "property '$m' should match");
+            }
+        }
+        if ($explained instanceof Rules\Rule) {
+            $this->assertEquals($explainable->mode(), $explained->mode());
+            $this->assertEquals($explainable->subject(), $explained->subject());
+            $this->assertEquals($explainable->schema(), $explained->schema());
+            $this->assertEquals($explainable->arguments(), $explained->arguments());
+        }
     }
 
     public function explainable_provider() {
