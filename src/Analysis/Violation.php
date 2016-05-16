@@ -33,18 +33,7 @@ class Violation {
      */
     protected $line;
 
-    /**
-     * @var string[]
-     */
-    protected $lines_before;
-
-    /**
-     * @var string[]
-     */
-    protected $lines_after;
-
-    public function __construct(Rule $rule, $filename, $line_no, 
-                                $line, array $lines_before, array $lines_after) {
+    public function __construct(Rule $rule, $filename, $line_no, $line) {
         $this->rule = $rule;
         assert('is_string($filename)');
         $this->filename = $filename;
@@ -52,19 +41,6 @@ class Violation {
         $this->line_no = $line_no;
         assert('is_string($line)');
         $this->line = $line;
-        assert('$this->is_string_list($lines_before)');
-        $this->lines_before = $lines_before;
-        assert('$this->is_string_list($lines_after)');
-        $this->lines_after = $lines_after;
-    }
-
-    protected function is_string_list(array $as) {
-        foreach ($as as $a) {
-            if (!is_string($a)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
@@ -93,19 +69,5 @@ class Violation {
      */
     public function line() {
         return $this->line;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function lines_before() {
-        return $this->lines_before;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function lines_after() {
-        return $this->lines_after;
     }
 }

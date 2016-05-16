@@ -29,10 +29,8 @@ class ResultTest extends PHPUnit_Framework_TestCase {
         $this->r1 = $rules[0];
         $this->r2 = $rules[1];
 
-        $this->v1 = new Violation( $this->r1, "r1.php", 1, "line 1", array()
-                                 , array("line 2", "line 3", "line 4"));
-        $this->v2 = new Violation( $this->r2, "r2.php", 4, "line 4"
-                                 , array("line 1", "line 2", "line 3"), array());
+        $this->v1 = new Violation( $this->r1, "r1.php", 1, "line 1");
+        $this->v2 = new Violation( $this->r2, "r2.php", 4, "line 4");
         $this->result = new Result($this->ruleset, array($this->v1, $this->v2));
     }
 
@@ -41,15 +39,11 @@ class ResultTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("r1.php", $this->v1->filename());
         $this->assertEquals(1, $this->v1->line_no());
         $this->assertEquals("line 1", $this->v1->line());
-        $this->assertEquals(array(), $this->v1->lines_before());
-        $this->assertEquals(array("line 2", "line 3", "line 4"), $this->v1->lines_after());
 
         $this->assertEquals($this->r2, $this->v2->rule());
         $this->assertEquals("r2.php", $this->v2->filename());
         $this->assertEquals(4, $this->v2->line_no());
         $this->assertEquals("line 4", $this->v2->line());
-        $this->assertEquals(array("line 1", "line 2", "line 3"), $this->v2->lines_before());
-        $this->assertEquals(array(), $this->v2->lines_after());
     }
 
     public function test_violations_in() {
