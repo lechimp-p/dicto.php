@@ -10,37 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-class AsWellAs extends Variable {
-    /**
-     * @var Variable
-     */
-    private $left;
-
-    /**
-     * @var Variable
-     */
-    private $right;
-
-    public function __construct($name, Variable $left, Variable $right) {
-        parent::__construct($name);
-        $this->left = $left;
-        $this->right = $right;
-    }
-
-    /**
-     * @return  Variable
-     */
-    public function left() {
-        return $this->left;
-    }
-
-    /**
-     * @return  Variable
-     */
-    public function right() {
-        return $this->right;
-    }
-
+class AsWellAs extends Compound {
     /**
      * @inheritdoc
      */
