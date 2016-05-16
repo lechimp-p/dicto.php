@@ -105,12 +105,10 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $this->entity_stack = array();
         $this->file_path = $path;
         $this->file_content = explode("\n", $content);
-        $this->reference_cache = array();
         $traverser->traverse($stmts);
         $this->entity_stack = null; 
         $this->file_path = null;
         $this->file_content = null;
-        $this->reference_cache = null;
     }
 
     // helper
@@ -147,7 +145,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         }
         else {
             assert('$to_line === null');
-            return $this->implode("\n", $this->file_content);
+            return implode("\n", $this->file_content);
         }
     }
 
