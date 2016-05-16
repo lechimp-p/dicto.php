@@ -56,7 +56,6 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             ( array
                 ( "entity_id"   => "$id"
                 , "file"        => "file"
-                , "line"        => "1"
                 , "source"      => "foo"
                 )
             );
@@ -710,7 +709,6 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             ( array
                 ( "entity_id"   => "$id"
                 , "file"        => "file"
-                , "line"        => "1"
                 , "source"      => "bar"
                 )
             );
@@ -776,7 +774,6 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             ( array
                 ( "entity_id"   => "$id"
                 , "file"        => "file"
-                , "line"        => "1"
                 , "source"      => "foo"
                 )
             );
@@ -806,7 +803,6 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             ( array
                 ( "entity_id"   => "$id"
                 , "file"        => "file"
-                , "line"        => "1"
                 , "source"      => "foo"
                 )
             );

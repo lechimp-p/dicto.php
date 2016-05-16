@@ -52,7 +52,6 @@ class ContainText extends Property {
                 ->select
                     ( "id as entity_id"
                     , "file"
-                    , "start_line as line"
                     , "source"
                     )
                 ->from($query->entity_table())
@@ -68,7 +67,6 @@ class ContainText extends Property {
                 ->select
                     ( "id as entity_id"
                     , "file"
-                    , "start_line as line"
                     , "source"
                     )
                 ->from($query->entity_table())
