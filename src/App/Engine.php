@@ -10,8 +10,8 @@
 
 namespace Lechimp\Dicto\App;
 
-use Lechimp\Dicto\Indexer as I;
-
+use Lechimp\Dicto\Indexer\Indexer;
+use Lechimp\Dicto\Analysis\Analyzer;
 use League\Flysystem\Adapter\Local;
 use League\Flysystem\Filesystem;
 use Lechimp\Flightcontrol\Flightcontrol;
@@ -29,19 +29,19 @@ class Engine {
     protected $config;
 
     /**
-     * @var I\Indexer
+     * @var Indexer
      */
     protected $indexer;
 
     /**
-     * @var DB
+     * @var Analyzer
      */
-    protected $db;
+    protected $analyzer;
 
-    public function __construct(Config $config, I\Indexer $indexer, DB $db) {
+    public function __construct(Config $config, Indexer $indexer, Analyzer $analyzer) {
         $this->config = $config;
         $this->indexer = $indexer;
-        $this->db = $db;
+        $this->analyzer = $analyzer;
     }
 
     /**
@@ -62,9 +62,11 @@ class Engine {
                 return true;
             })
             ->foldFiles(null, function($_, File $file) {
-                //echo "indexing: ".$file->path()."\n";
+                echo "indexing: ".$file->path()."\n";
                 $this->indexer->index_file($file->path());
             });
+        echo "\n\n\n";
+        $this->analyzer->run();
     }
 
     /**

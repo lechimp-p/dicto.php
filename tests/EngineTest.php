@@ -10,10 +10,27 @@
 
 use Lechimp\Dicto\Dicto as Dicto;
 use Lechimp\Dicto\App\Engine;
+use Lechimp\Dicto\Analysis\Analyzer;
 use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\App\Config;
 use PhpParser\ParserFactory;
 use Doctrine\DBAL\DriverManager;
+
+class AnalyzerMock extends Analyzer {
+    public $run_called = false;
+    public function __construct() {}
+    public function run() {
+        $this->run_called = true;
+    }
+}
+
+class IndexerMock extends Indexer {
+    public $indexed_files = array();
+    public function __construct() {}
+    public function index_file($path) {
+        $this->indexed_files[] = $path;
+    }
+}
 
 class EngineTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
@@ -22,19 +39,9 @@ class EngineTest extends PHPUnit_Framework_TestCase {
                 ( "root" => __DIR__."/data/src"
                 )
             )));
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        $connection = DriverManager::getConnection
-            ( array
-                ( "driver"  => "pdo_sqlite"
-                , "memory"  => true
-                )
-            );
-
-        $this->db = new Lechimp\Dicto\App\DB($connection);
-        $this->db->maybe_init_database_schema();
-        $this->db->init_sqlite_regexp();
-        $this->indexer = new Indexer($parser, $this->config->project_root(), $this->db);
-        $this->engine = new Engine($this->config, $this->indexer, $this->db);
+        $this->indexer = new IndexerMock();
+        $this->analyzer = new AnalyzerMock();
+        $this->engine = new Engine($this->config, $this->indexer, $this->analyzer);
     }
 
     public function test_smoke() {
