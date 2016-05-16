@@ -31,7 +31,7 @@ class Dicto {
         if (self::$rt !== null) {
             throw new \RuntimeException("Already started a rule definition");
         }
-        self::$rt = new Definition\RuleDefinitionRT();
+        self::$rt = new Definition\RT();
     }
 
     /**

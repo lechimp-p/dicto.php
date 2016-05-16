@@ -20,7 +20,7 @@ class BaseWithName extends Base {
      */
     protected $name;
 
-    public function __construct(Def\RuleDefinitionRT $rt, $name) {
+    public function __construct(Def\RT $rt, $name) {
         parent::__construct($rt);
         assert('is_string($name)');
         $this->name = $name;

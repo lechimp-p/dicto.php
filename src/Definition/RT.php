@@ -23,7 +23,7 @@ use Lechimp\Dicto\Variables\Variable;
  * This class provides the functionality that is accessed via the
  * Dicto class during the definition.
  */
-class RuleDefinitionRT {
+class RT {
     /**
      * @var array   $name => $definition
      */

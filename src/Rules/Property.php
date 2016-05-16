@@ -20,7 +20,7 @@ abstract class Property extends Schema {
     /**
      * @inheritdoc
      */
-    public function fluid_interface(Def\RuleDefinitionRT $rt, $name, $mode, array $arguments) {
+    public function fluid_interface(Def\RT $rt, $name, $mode, array $arguments) {
         $rt->throw_on_missing_var($name);
         $left = $rt->get_var($name);
         $rt->add_rule(new Rule($mode, $left, $this, $arguments));

@@ -16,11 +16,11 @@ use Lechimp\Dicto\Definition as Def;
  */
 class Base {
     /**
-     * @var Def\RuleDefinitionRT
+     * @var Def\RT
      */ 
     protected $rt;
 
-    public function __construct(Def\RuleDefinitionRT $rt) {
+    public function __construct(Def\RT $rt) {
         $this->rt = $rt;
     }
 }
