@@ -14,7 +14,7 @@ use Lechimp\Dicto\Rules\Rule;
 
 class Violation {
     /**
-     * @var Def\Rules\Rule
+     * @var Rule
      */
     protected $rule;
 
