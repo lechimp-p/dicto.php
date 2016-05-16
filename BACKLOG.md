@@ -27,3 +27,5 @@
 
 # Cleanup
 * Reorder tests to match the different rules better.
+* Make Engine (and propably Indexer and Analyzer) depend on a logger. Make them
+  log.
