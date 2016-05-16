@@ -8,9 +8,8 @@
  * a copy of the licence along with the code.
  */
 
-namespace Lechimp\Dicto\Definition;
+namespace Lechimp\Dicto\Rules;
 
-use Lechimp\Dicto\Rules\Rule;
 use Lechimp\Dicto\Variables\Variable;
 
 /**

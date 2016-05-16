@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Analysis;
 
-use Lechimp\Dicto\Definition\Ruleset;
+use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
 
 /**

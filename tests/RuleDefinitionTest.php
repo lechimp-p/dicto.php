@@ -9,8 +9,6 @@
  */
 
 use Lechimp\Dicto\Dicto as Dicto;
-use Lechimp\Dicto\Definition as Def;
-
 class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     public function tearDown() {
         Dicto::discardDefinition();
@@ -19,7 +17,7 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
     public function test_ruleset() {
         Dicto::startDefinition();
         list($defs, $_) = Dicto::endDefinition();
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Ruleset", $defs);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Rules\\Ruleset", $defs);
         $this->assertEquals(array(), $defs->variables());
         $this->assertEquals(array(), $defs->rules());
     }

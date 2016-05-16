@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Analysis;
 
-use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables\Variable;
 
 /**
@@ -19,7 +19,7 @@ use Lechimp\Dicto\Variables\Variable;
  */
 class Analyzer {
     /**
-     * @var Def\Ruleset
+     * @var Ruleset
      */
     protected $ruleset;
 
@@ -34,7 +34,7 @@ class Analyzer {
     protected $generator;
 
     public function __construct
-                        ( Def\Ruleset $ruleset
+                        ( Ruleset $ruleset
                         , Query $query
                         , ReportGenerator $generator
                         ) {

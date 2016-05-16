@@ -15,6 +15,7 @@ use Lechimp\Dicto\Rules\Invoke;
 use Lechimp\Dicto\Rules\DependOn;
 use Lechimp\Dicto\Rules\ContainText;
 use Lechimp\Dicto\Rules\Rule;
+use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables\Variable;
 
 /**

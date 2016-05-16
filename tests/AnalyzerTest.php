@@ -12,7 +12,7 @@ use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Rules;
 use Lechimp\Dicto\Rules\Rule;
-use Lechimp\Dicto\Definition\Ruleset;
+use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables as Vars;
 use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\App\DB;
@@ -46,7 +46,7 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
    }
 
     public function analyzer(Rules\Rule $rule) {
-        $ruleset = new Def\Ruleset($rule->variables(), array($rule));
+        $ruleset = new Ruleset($rule->variables(), array($rule));
         return new Dicto\Analysis\Analyzer($ruleset, $this->db, $this->rp);
     }
 

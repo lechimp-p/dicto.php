@@ -54,7 +54,7 @@ class RuleLoaderTest extends PHPUnit_Framework_TestCase {
 
     public function test_loads_ruleset() {
         list($ruleset, $_) = $this->loader->load_rules_from(self::$PATH_TO_RULES_PHP);
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Ruleset", $ruleset);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Rules\\Ruleset", $ruleset);
         return $ruleset;
     }
 
@@ -84,7 +84,7 @@ class RuleLoaderTest extends PHPUnit_Framework_TestCase {
 
     public function test_loads_variables_twice() {
         list($ruleset, $_) = $this->loader->load_rules_from(self::$PATH_TO_RULES_PHP);
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Definition\\Ruleset", $ruleset);
+        $this->assertInstanceOf("\\Lechimp\\Dicto\\Rules\\Ruleset", $ruleset);
         $vars = $ruleset->variables();
         $this->assertInternalType("array", $vars);
         $this->assertCount(count(self::$VARIABLES_IN_RULES_PHP), $vars);
