@@ -77,7 +77,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     }
 
     /**
-     * @inheritdoc
+     * @param   string  $path
      */
     public function index_file($path) {
         if ($this->insert === null) {
