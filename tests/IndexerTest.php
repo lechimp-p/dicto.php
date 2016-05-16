@@ -101,6 +101,9 @@ class IndexerTest extends PHPUnit_Framework_TestCase {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $this->insert_mock = new InsertMock();
         $this->indexer = new Indexer($parser, IndexerTest::PATH_TO_SRC, $this->insert_mock);
+        (new \Lechimp\Dicto\Rules\ContainText())->register_listeners($this->indexer);
+        (new \Lechimp\Dicto\Rules\DependOn())->register_listeners($this->indexer);
+        (new \Lechimp\Dicto\Rules\Invoke())->register_listeners($this->indexer);
     }
 
     public function test_is_indexer() {

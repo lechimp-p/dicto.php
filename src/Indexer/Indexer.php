@@ -58,6 +58,10 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     protected $entity_stack = null;
 
+    /**
+     * @param   string  $project_root_path
+     * @param   Schema[]  $rule_schemas
+     */
     public function __construct(\PhpParser\Parser $parser, $project_root_path, Insert $insert) {
         $this->parser = $parser;
         assert('is_string($project_root_path)');
@@ -65,15 +69,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $this->insert = $insert;
         // TODO: This could contain class names from PhpParser as optimisation.
         $this->listeners = array("misc" => array());
-        // TODO: This should be more dynamic.
-        $this->register_listeners();
-    }
-
-    protected function register_listeners() {
-        $d = new \Lechimp\Dicto\Rules\DependOn();
-        $d->register_listeners($this);
-        $i = new \Lechimp\Dicto\Rules\Invoke();
-        $i->register_listeners($this);
     }
 
     /**
