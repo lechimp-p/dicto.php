@@ -12,6 +12,7 @@ namespace Lechimp\Dicto\Rules;
 
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Analysis\Query;
+use Lechimp\Dicto\Analysis\Violation;
 use \Lechimp\Dicto\Variables\Variable;
 
 /**
@@ -110,6 +111,11 @@ abstract class Relation extends Schema {
     }
 
     public function to_violation(Rule $rule, array $row) {
-        throw new \Exception("NYI!");
+        return new Violation
+            ( $rule
+            , $row["file"]
+            , (int)$row["line"]
+            , $row["source"]
+            );
     }
 }
