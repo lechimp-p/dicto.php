@@ -74,7 +74,7 @@ class App {
         $rule_loader = $this->dic["rule_loader"];
         list($ruleset, $config) = $rule_loader->load_rules_from($path);
         assert('is_array($config)');
-        assert('$ruleset instanceof \\Lechimp\\Dicto\\Definition\\RuleSet');
+        assert('$ruleset instanceof \\Lechimp\\Dicto\\Rules\\RuleSet');
         return array($ruleset, $config);
     }
 
