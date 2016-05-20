@@ -16,24 +16,43 @@ use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
 
 class CLIReportGenerator implements ReportGenerator {
-    /**
-     * @inheritdoc
-     */
-    public function start_ruleset(Ruleset $rule) {
-        echo "Result of analysis:\n\n";
+    protected $lines = array();
+
+    protected function line($content = "") {
+        $this->lines[] = $content;
     }
 
     /**
      * @inheritdoc
      */
-    public function start_rule(Rule $rule) {
-        echo "\n\n".$rule->pprint().":\n\n";
+    public function begin_ruleset(Ruleset $rule) {
+        $this->line("Result of analysis:");
+        $this->line();
+    }
+
+    public function end_ruleset(Ruleset $rule) {
+        echo implode("\n", $this->lines);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function begin_rule(Rule $rule) {
+        $this->line("------------------------------------------------------------------------------");
+        $this->line($rule->pprint());
+        $this->line("------------------------------------------------------------------------------");
+        $this->line();
+    }
+
+    public function end_rule(Rule $rule) {
+        $this->line();
+        $this->line();
     }
 
     /**
      * @inheritdoc
      */
     public function report_violation(Violation $violation) {
-        echo $violation->filename()." (".$violation->line_no().")\n";
+        $this->line($violation->filename()." (".$violation->line_no().")");
     }
 }

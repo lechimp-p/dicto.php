@@ -119,7 +119,8 @@ class App {
 
         $container["engine"] = function($c) {
             return new Engine
-                ( $c["config"]
+                ( $c["log"]
+                , $c["config"]
                 , $c["indexer"]
                 , $c["analyzer"]
                 );
@@ -161,10 +162,15 @@ class App {
 
         $container["analyzer"] = function($c) {
             return new \Lechimp\Dicto\Analysis\Analyzer
-                ( $c["ruleset"]
+                ( $c["log"]
+                , $c["ruleset"]
                 , $c["database"]
                 , $c["report_generator"]
                 );
+        };
+
+        $container["log"] = function ($c) {
+            return new CLILogger();
         };
 
         $container["report_generator"] = function($c) {
