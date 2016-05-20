@@ -20,6 +20,9 @@ use Lechimp\Dicto\Analysis\RulesToSqlCompiler;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Analysis\ReportGenerator;
 use Doctrine\DBAL\DriverManager;
+use Psr\Log\LogLevel;
+
+require_once(__DIR__."/LoggerMock.php");
 
 class ReportGeneratorMock implements ReportGenerator {
     public $violations = array();
@@ -43,11 +46,13 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
         $this->db->maybe_init_database_schema();
 
         $this->rp = new ReportGeneratorMock();
+
+        $this->log = new LoggerMock();
    }
 
     public function analyzer(Rules\Rule $rule) {
         $ruleset = new Ruleset($rule->variables(), array($rule));
-        return new Dicto\Analysis\Analyzer($ruleset, $this->db, $this->rp);
+        return new Dicto\Analysis\Analyzer($this->log, $ruleset, $this->db, $this->rp);
     }
 
 
@@ -128,5 +133,31 @@ CODE;
             , "foo"
             ));
         $this->assertEquals($expected, $this->rp->violations);
+    }
+
+    public function test_logging() {
+        $rule1 = new Rules\Rule
+            ( Rules\Rule::MODE_CANNOT
+            , new Vars\Classes("allClasses")
+            , new Rules\ContainText()
+            , array("foo")
+            );
+        $rule2 = new Rules\Rule
+            ( Rules\Rule::MODE_CANNOT
+            , new Vars\Functions("allFunctions")
+            , new Rules\DependOn()
+            , array(new Vars\Methods("allMethods"))
+            );
+        $vars = array_merge($rule1->variables(), $rule2->variables());
+
+        $ruleset = new Ruleset($vars, array($rule1, $rule2));
+        $analyzer = new Dicto\Analysis\Analyzer($this->log, $ruleset, $this->db, $this->rp);
+        $analyzer->run();
+
+        $expected = array(LogLevel::INFO, "checking: ".$rule1->pprint(), array());
+        $this->assertContains($expected, $this->log->log);
+
+        $expected = array(LogLevel::INFO, "checking: ".$rule2->pprint(), array());
+        $this->assertContains($expected, $this->log->log);
     }
 }

@@ -12,12 +12,18 @@ namespace Lechimp\Dicto\Analysis;
 
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables\Variable;
+use Psr\Log\LoggerInterface as Log;
 
 /**
  * Performs the actual analysis of a ruleset over a query-object
  * using a specific rules to sql compiler.
  */
 class Analyzer {
+    /**
+     * @var Log
+     */
+    protected $log;
+
     /**
      * @var Ruleset
      */
@@ -34,10 +40,12 @@ class Analyzer {
     protected $generator;
 
     public function __construct
-                        ( Ruleset $ruleset
+                        ( Log $log
+                        , Ruleset $ruleset
                         , Query $query
                         , ReportGenerator $generator
                         ) {
+        $this->log = $log;
         $this->ruleset = $ruleset;
         $this->query = $query;
         $this->generator = $generator;
@@ -51,6 +59,7 @@ class Analyzer {
     public function run() {
         $this->generator->start_ruleset($this->ruleset);
         foreach ($this->ruleset->rules() as $rule) {
+            $this->log->info("checking: ".$rule->pprint());
             $this->generator->start_rule($rule);
             $stmt = $rule->compile($this->query);
             while ($row = $stmt->fetch()) {
