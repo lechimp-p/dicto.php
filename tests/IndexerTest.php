@@ -11,9 +11,11 @@
 use Lechimp\Dicto;
 use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Indexer\Insert;
+use Lechimp\Dicto\Indexer\Location;
 use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\Indexer\CachesReferences;
 use PhpParser\ParserFactory;
+use PhpParser\Node as N;
 
 define("__IndexerTest_PATH_TO_SRC", __DIR__."/data/src");
 
@@ -89,7 +91,7 @@ class InsertMock implements Insert {
                 $ids[] = $ref["id"];
             }
         }
-        assert('count($ids) ==  $amount');
+        assert('count($ids) ==  $amount', count($ids)." ==  $amount");
         return $ids;
     }
 } 
@@ -551,4 +553,33 @@ PHP;
         $this->assertCount(0, $this->insert_mock->relations["invoke"]);
         $this->assertCount(0, $this->insert_mock->relations["depend_on"]);
     }
+
+    public function test_listener_registry() {
+        $enter_e = array();
+        $leave_e = array();
+        $enter_m = array();
+        $leave_m = array();
+
+        $this->indexer
+            ->on_enter_entity(null, function(Insert $i, Location $l, $type, $id, $node) use (&$enter_e) {
+                $enter_e[] = $type;
+            })
+            ->on_leave_entity(null, function(Insert $i, Location $l, $type, $id, $node) use (&$leave_e) {
+                $leave_e[] = $type;
+            })
+            ->on_enter_misc(array(N\Expr\FuncCall::class), function(Insert $i, Location $l, N\Expr\FuncCall $node) use (&$enter_m) {
+                $enter_m[] = $node->name->parts[0];
+            })
+            ->on_leave_misc(array(N\Expr\FuncCall::class), function(Insert $i, Location $l, N\Expr\FuncCall $node) use (&$leave_m) {
+                $leave_m[] = $node->name->parts[0];
+            });
+
+        $this->indexer->index_file("A1.php");
+
+        $this->assertEquals(array("file", "class", "method"), $enter_e);
+        $this->assertEquals($enter_e, array_reverse($leave_e));
+        $this->assertEquals(array("a_bogus_function"), $enter_m);
+        $this->assertEquals(array("a_bogus_function"), $leave_m);
+    }
+
 }

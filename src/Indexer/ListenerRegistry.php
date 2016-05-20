@@ -22,7 +22,7 @@ interface ListenerRegistry {
      *      * $location - Location interface
      *      * $type     - of the entity according to the types in Variable
      *      * $id       - of the entity
-     *      * $node     - PhpParser\Node
+     *      * $node     - PhpParser\Node or null if type is Variable::FILE_TYPE
      *
      * By using an array of types, one may announce to be only interested in
      * certain types of entities.

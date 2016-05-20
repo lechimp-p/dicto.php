@@ -33,7 +33,7 @@ class Invoke extends Relation {
      */
     public function register_listeners(ListenerRegistry $registry) {
         $registry->on_enter_misc
-            ( array(N\Expr\FuncCall::class, N\Expr\MethodClass::class)
+            ( array(N\Expr\FuncCall::class, N\Expr\MethodCall::class)
             , function(Insert $insert, Location $location, \PhpParser\Node $node) {
                 $ref_id = null;
                 if ($node instanceof N\Expr\MethodCall) {

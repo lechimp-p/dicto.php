@@ -35,7 +35,7 @@ class DependOn extends Relation {
     public function register_listeners(ListenerRegistry $registry) {
         $registry->on_enter_misc
             ( array(N\Expr\MethodCall::class, N\Expr\FuncCall::class,
-                    N\Stmt\_Global::class, N\Expr\ArrayDimFetch::class,
+                    N\Stmt\Global_::class, N\Expr\ArrayDimFetch::class,
                     N\Expr\ErrorSuppress::class)
             , function(Insert $insert, Location $location, \PhpParser\Node $node) {
                 $ref_ids = array();

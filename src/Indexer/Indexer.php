@@ -36,7 +36,22 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     /**
      * @var array   string => array()
      */
-    protected $listeners;
+    protected $listeners_enter_entity;
+
+    /**
+     * @var array   string => array()
+     */
+    protected $listeners_leave_entity;
+
+    /**
+     * @var array   string => array()
+     */
+    protected $listeners_enter_misc;
+
+    /**
+     * @var array   string => array()
+     */
+    protected $listeners_leave_misc;
 
     // state for parsing a file
 
@@ -68,7 +83,18 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $this->project_root_path = $project_root_path;
         $this->insert = $insert;
         // TODO: This could contain class names from PhpParser as optimisation.
-        $this->listeners = array("misc" => array());
+        $this->listeners_enter_entity = array
+            ( 0 => array()
+            );
+        $this->listeners_leave_entity = array
+            ( 0 => array()
+            );
+        $this->listeners_enter_misc = array
+            ( 0 => array()
+            );
+        $this->listeners_leave_misc = array
+            ( 0 => array()
+            );
     }
 
     /**
@@ -120,27 +146,76 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function on_enter_entity($types, \Closure $listener) {
+        $this->on_enter_or_leave_something("listeners_enter_entity", $types, $listener);
+        return $this;
     }
 
     /**
      * @inheritdoc
      */
     public function on_leave_entity($types, \Closure $listener) {
+        $this->on_enter_or_leave_something("listeners_leave_entity", $types, $listener);
+        return $this;
     }
 
     /**
      * @inheritdoc
      */
     public function on_enter_misc($classes, \Closure $listener) {
-        $this->listeners["misc"][] = $listener;
+        $this->on_enter_or_leave_something("listeners_enter_misc", $classes, $listener);
+        return $this;
     }
 
     /**
      * @inheritdoc
      */
     public function on_leave_misc($classes, \Closure $listener) {
+        $this->on_enter_or_leave_something("listeners_leave_misc", $classes, $listener);
+        return $this;
     }
 
+    // generalizes over over on_enter/leave_xx
+    protected function on_enter_or_leave_something($what, $things, \Closure $listener) {
+        $loc = &$this->$what;
+        if ($things === null) {
+            $loc[0][] = $listener;
+        }
+        else {
+            foreach ($things as $thing) {
+                assert('is_string($thing)');
+                if (!array_key_exists($thing, $loc)) {
+                    $loc[$thing] = array();
+                }
+                $loc[$thing][] = $listener;
+            }
+        }
+    }
+
+    // generalizes over calls to misc listeners
+    protected function call_misc_listener($which, $node) {
+        $listeners = &$this->$which;
+        foreach ($listeners[0] as $listener) {
+            $listener($this->insert, $this, $node);
+        }
+        $cls = get_class($node);
+        if (array_key_exists($cls, $listeners)) {
+            foreach ($listeners[$cls] as $listener) {
+                $listener($this->insert, $this, $node);
+            }
+        }
+    }
+
+    protected function call_entity_listener($which, $type, $id, $node) {
+        $listeners = &$this->$which;
+        foreach ($listeners[0] as $listener) {
+            $listener($this->insert, $this, $type, $id, $node);
+        }
+        if (array_key_exists($type, $listeners)) {
+            foreach ($listeners[$type] as $listener) {
+                $listener($this->insert, $this, $type, $id, $node);
+            }
+        }
+    }
 
    // from Location
 
@@ -190,12 +265,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
 
         $this->entity_stack[] = array(Variable::FILE_TYPE, $id);
 
-        // TODO: reimplement this in some other way.
-        /*
-        foreach ($this->listeners as $listener) {
-            $listener->on_enter_file($id, $this->file_path, implode("\n", $this->file_content));
-        }
-        */
+        $this->call_entity_listener("listeners_enter_entity", Variable::FILE_TYPE, $id, null);
 
         return null;
     }
@@ -204,14 +274,9 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function afterTraverse(array $nodes) {
-        $type_and_id = array_pop($this->entity_stack);
+        list($type, $id) = array_pop($this->entity_stack);
 
-        // TODO: reimplement this in some other way.
-        /*
-        foreach ($this->listeners as $listener) {
-            $listener->on_leave_file($type_and_id[1]);
-        }
-        */
+        $this->call_entity_listener("listeners_leave_entity", $type, $id, null);
 
         return null;
     }
@@ -238,13 +303,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                 , $end_line
                 , $source
                 );
-
-            // TODO: reimplement this in some other way.
-            /*
-            foreach ($this->listeners as $listener) {
-                $listener->on_enter_class($id, $node);
-            }
-            */
         }
         // Method or Function
         elseif ($node instanceof N\Stmt\ClassMethod) {
@@ -257,13 +315,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                 , $end_line
                 , $source
                 );
-
-            // TODO: reimplement this in some other way.
-            /*
-            foreach ($this->listeners as $listener) {
-                $listener->on_enter_method($id, $node);
-            }
-            */
         }
         elseif ($node instanceof N\Stmt\Function_) {
             $type = Variable::FUNCTION_TYPE;
@@ -275,22 +326,14 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                 , $end_line
                 , $source
                 );
-
-            // TODO: reimplement this in some other way.
-            /*
-            foreach ($this->listeners as $listener) {
-                $listener->on_enter_function($id, $node);
-            }
-            */
-        }
-        else {
-            foreach ($this->listeners["misc"] as $listener) {
-                $listener($this->insert, $this, $node);
-            }
         }
 
         if ($id !== null) {
+            $this->call_entity_listener("listeners_enter_entity",  $type, $id, $node);
             $this->entity_stack[] = array($type, $id);
+        }
+        else {
+            $this->call_misc_listener("listeners_enter_misc", $node);
         }
     }
 
@@ -299,49 +342,14 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     public function leaveNode(\PhpParser\Node $node) {
         // Class
-        if ($node instanceof N\Stmt\Class_) {
-            // We pushed it, we need to pop it now, as we are leaving the class.
-            $type_and_id = array_pop($this->entity_stack);
-
-            // TODO: reimplement this in some other way.
-            /*
-            foreach ($this->listeners as $listener) {
-                $listener->on_leave_class($type_and_id[1]);
-            }
-            */
-        }
-        // Method or Function
-        elseif ($node instanceof N\Stmt\ClassMethod) {
-            // We pushed it, we need to pop it now, as we are leaving the method
-            // or function.
-            $type_and_id = array_pop($this->entity_stack);
-
-            // TODO: reimplement this in some other way.
-            /*
-            foreach ($this->listeners as $listener) {
-                $listener->on_leave_method($type_and_id[1]);
-            }
-            */
-        }
-        elseif ($node instanceof N\Stmt\Function_) {
-            // We pushed it, we need to pop it now, as we are leaving the method
-            // or function.
-            $type_and_id = array_pop($this->entity_stack);
-
-            // TODO: reimplement this in some other way.
-            /*
-            foreach ($this->listeners as $listener) {
-                $listener->on_leave_function($type_and_id[1]);
-            }
-            */
+        if($node instanceof N\Stmt\Class_
+        or $node instanceof N\Stmt\ClassMethod
+        or $node instanceof N\Stmt\Function_) {
+            list($type, $id) = array_pop($this->entity_stack);
+            $this->call_entity_listener("listeners_leave_entity", $type, $id, $node);
         }
         else {
-            // TODO: reimplement this in some other way.
-            /*
-            foreach ($this->listeners as $listener) {
-                $listener->on_leave_misc($this->insert, $this, $node);
-            }
-            */
+            $this->call_misc_listener("listeners_leave_misc", $node);
         }
     }
 }
