@@ -116,10 +116,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
             throw new \RuntimeException("Can't parse file $path.");
         }
 
-        if ($stmts === null) {
-            throw new \RuntimeException("Could not parse file '$path'.");
-        }
-
         $traverser = new \PhpParser\NodeTraverser;
         $traverser->addVisitor($this);
 
