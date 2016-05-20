@@ -18,11 +18,17 @@ use Lechimp\Flightcontrol\Flightcontrol;
 use Lechimp\Flightcontrol\File;
 use Lechimp\Flightcontrol\FSObject;
 use Doctrine\DBAL\DriverManager;
+use Psr\Log\LoggerInterface as Log;
 
 /**
  * The Engine of the App drives the analysis process.
  */
 class Engine {
+    /**
+     * @var Log
+     */
+    protected $log;
+
     /**
      * @var Config
      */
@@ -38,7 +44,8 @@ class Engine {
      */
     protected $analyzer;
 
-    public function __construct(Config $config, Indexer $indexer, Analyzer $analyzer) {
+    public function __construct(Log $log, Config $config, Indexer $indexer, Analyzer $analyzer) {
+        $this->log = $log;
         $this->config = $config;
         $this->indexer = $indexer;
         $this->analyzer = $analyzer;

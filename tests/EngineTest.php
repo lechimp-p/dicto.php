@@ -15,6 +15,14 @@ use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\App\Config;
 use PhpParser\ParserFactory;
 use Doctrine\DBAL\DriverManager;
+use Psr\Log\AbstractLogger;
+
+class LoggerMock extends AbstractLogger {
+    public $log = array();
+    public function log($level, $message, array $context = array()) {
+        $this->log[] = array($level, $message, $context);
+    }
+}
 
 class AnalyzerMock extends Analyzer {
     public $run_called = false;
@@ -45,9 +53,10 @@ class EngineTest extends PHPUnit_Framework_TestCase {
                     )
                 )
             )));
+        $this->log = new LoggerMock();
         $this->indexer = new IndexerMock();
         $this->analyzer = new AnalyzerMock();
-        $this->engine = new Engine($this->config, $this->indexer, $this->analyzer);
+        $this->engine = new Engine($this->log, $this->config, $this->indexer, $this->analyzer);
     }
 
     public function test_smoke() {
