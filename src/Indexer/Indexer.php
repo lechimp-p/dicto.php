@@ -82,7 +82,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         assert('is_string($project_root_path)');
         $this->project_root_path = $project_root_path;
         $this->insert = $insert;
-        // TODO: This could contain class names from PhpParser as optimisation.
         $this->listeners_enter_entity = array
             ( 0 => array()
             );
