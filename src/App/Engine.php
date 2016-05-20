@@ -75,7 +75,12 @@ class Engine {
             })
             ->foldFiles(null, function($_, File $file) {
                 $this->log->info("indexing: ".$file->path());
-                $this->indexer->index_file($file->path());
+                try {            
+                    $this->indexer->index_file($file->path());
+                }
+                catch (\PhpParser\Error $e) {
+                    $this->log->error("in ".$file->path().": ".$e->getMessage());
+                }
             });
     }
 
