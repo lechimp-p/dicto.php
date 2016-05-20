@@ -15,14 +15,9 @@ use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\App\Config;
 use PhpParser\ParserFactory;
 use Doctrine\DBAL\DriverManager;
-use Psr\Log\AbstractLogger;
+use Psr\Log\LogLevel;
 
-class LoggerMock extends AbstractLogger {
-    public $log = array();
-    public function log($level, $message, array $context = array()) {
-        $this->log[] = array($level, $message, $context);
-    }
-}
+require_once(__DIR__."/LoggerMock.php");
 
 class AnalyzerMock extends Analyzer {
     public $run_called = false;
@@ -78,6 +73,18 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(count($expected), count($this->indexer->indexed_files));
         foreach ($expected as $e) {
             $this->assertContains($e, $this->indexer->indexed_files);
+        }
+    }
+
+    public function test_logging() {
+        $this->engine->run();
+        $expected_files = array_filter(scandir($this->root), function($n) {
+            return $n != "." && $n != ".." && $n != "A1.omit_me";
+        });
+
+        foreach ($expected_files as $e) {
+            $expected = array(LogLevel::INFO, "indexing: $e", array());
+            $this->assertContains($expected, $this->log->log);
         }
     }
 }

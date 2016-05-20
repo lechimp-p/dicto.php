@@ -57,6 +57,11 @@ class Engine {
      * @return null
      */
     public function run() {
+        $this->run_indexing();
+        $this->run_analysis();
+    }
+
+    protected function run_indexing() {
         $fc = $this->init_flightcontrol();
         $fc->directory("/")
             ->recurseOn()
@@ -69,10 +74,12 @@ class Engine {
                 return true;
             })
             ->foldFiles(null, function($_, File $file) {
-                //echo "indexing: ".$file->path()."\n";
+                $this->log->info("indexing: ".$file->path());
                 $this->indexer->index_file($file->path());
             });
-        //echo "\n\n\n";
+    }
+
+    protected function run_analysis() {
         $this->analyzer->run();
     }
 
