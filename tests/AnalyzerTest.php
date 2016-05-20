@@ -29,8 +29,10 @@ class ReportGeneratorMock implements ReportGenerator {
     public function report_violation(Violation $violation) {
         $this->violations[] = $violation;
     }
-    public function start_ruleset(Ruleset $rule) {}
-    public function start_rule(Rule $rule) {}
+    public function begin_ruleset(Ruleset $rule) {}
+    public function end_ruleset(Ruleset $rule) {}
+    public function begin_rule(Rule $rule) {}
+    public function end_rule(Rule $rule) {}
 }
 
 class AnalyzerTest extends PHPUnit_Framework_TestCase {

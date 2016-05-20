@@ -57,14 +57,16 @@ class Analyzer {
      * @return  null
      */
     public function run() {
-        $this->generator->start_ruleset($this->ruleset);
+        $this->generator->begin_ruleset($this->ruleset);
         foreach ($this->ruleset->rules() as $rule) {
             $this->log->info("checking: ".$rule->pprint());
-            $this->generator->start_rule($rule);
+            $this->generator->begin_rule($rule);
             $stmt = $rule->compile($this->query);
             while ($row = $stmt->fetch()) {
                 $this->generator->report_violation($rule->to_violation($row));
             }
+            $this->generator->end_rule($rule);
         }
+        $this->generator->end_ruleset($this->ruleset);
     }
 } 
