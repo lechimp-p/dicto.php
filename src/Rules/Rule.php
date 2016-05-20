@@ -153,11 +153,10 @@ class Rule extends Definition {
      * Turn a query result into a violation.
      *
      * @param   array   $row
-     * @param   string  $file_source
      * @return  \Lechimp\Dicto\Analysis\Violation
      */
-    public function to_violation(array $row, array $file_source) {
-        return $this->schema->to_violation($this, $row, $file_source);
+    public function to_violation(array $row) {
+        return $this->schema->to_violation($this, $row);
     }
 
     /**

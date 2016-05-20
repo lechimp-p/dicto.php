@@ -54,22 +54,7 @@ class Analyzer {
             $this->generator->start_rule($rule);
             $stmt = $rule->compile($this->query);
             while ($row = $stmt->fetch()) {
-                $builder = $this->query->builder();
-                $expr = $builder->expr();
-                $stmt = $builder
-                    ->select("source")
-                    ->from($this->query->entity_table())
-                    ->where
-                        ( $expr->eq("name", $row["file"])
-                        , $expr->eq("type", Variable::FILE_TYPE)
-                        )
-                    ->execute();
-                $file = $stmt->fetch();
-                if (!is_array($file)) {
-                    throw new \RuntimeException(
-                        "Could not find ".$row["file"]." in database.");
-                }
-                $this->generator->report_violation($rule->to_violation($row, $file));
+                $this->generator->report_violation($rule->to_violation($row));
             }
         }
     }
