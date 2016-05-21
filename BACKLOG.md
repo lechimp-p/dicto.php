@@ -32,3 +32,8 @@
   log.
 * Vars could be cleaned up; Classes, Methods, etc. are only required for pattern
   matching in Query::compile_var.
+
+# Issues
+* When saying "only SomeClasses can depend on SomeThing" we certainly mean, that
+  also methods in SomeClasses can depend on SomeThing, but currently the analysis
+  does not reflect this.
