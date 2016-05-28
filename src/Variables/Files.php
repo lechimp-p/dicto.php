@@ -10,6 +10,12 @@
 
 namespace Lechimp\Dicto\Variables;
 
-class Files extends Variable {
+class Files extends Entities {
+    /**
+     * @inheritdoc
+     */
+    public function id() {
+        return Variable::FILE_TYPE;
+    }
 }
 

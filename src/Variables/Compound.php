@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+
 abstract class Compound extends Variable {
     /**
      * @var Variable
@@ -39,5 +41,11 @@ abstract class Compound extends Variable {
      */
     public function right() {
         return $this->right;
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
     }
 }

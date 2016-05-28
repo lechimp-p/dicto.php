@@ -78,20 +78,8 @@ trait CompilesVars {
                 , $compile("right", $var, true)
                 );
         }
-        if ($var instanceof Vars\Classes) {
-            return $eq_op("$table_name.type", $b->literal(Variable::CLASS_TYPE));
-        }
         if ($var instanceof Vars\Everything) {
             return $eq_op($b->literal(1), $b->literal(1));
-        }
-        if ($var instanceof Vars\Files) {
-            return $eq_op("$table_name.type", $b->literal(Variable::FILE_TYPE));
-        }
-        if ($var instanceof Vars\Functions) {
-            return $eq_op("$table_name.type", $b->literal(Variable::FUNCTION_TYPE));
-        }
-        if ($var instanceof Vars\Globals) {
-            return $eq_op("$table_name.type", $b->literal(Variable::GLOBAL_TYPE));
         }
         if ($var instanceof Vars\LanguageConstruct) {
             // normal case : language construct and name matches
@@ -111,9 +99,6 @@ trait CompilesVars {
                     );
             }
         }
-        if ($var instanceof Vars\Methods) {
-            return $eq_op("$table_name.type", $b->literal(Variable::METHOD_TYPE));
-        }
         if ($var instanceof Vars\WithName) {
             // normal case : left_condition AND regexp matches
             if (!$negate) {
@@ -131,7 +116,6 @@ trait CompilesVars {
                     );
             }
         }
-        throw new \LogicException("Can't compile var-type '".get_class($var)."'");
+        return $var->compile($b, $table_name, $negate);
     }
-
 }

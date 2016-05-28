@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+
 class LanguageConstruct extends Variable {
     /**
      * @var string
@@ -28,6 +30,12 @@ class LanguageConstruct extends Variable {
      */
     public function construct_name() {
         return $this->construct_name;
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
     }
 }
 

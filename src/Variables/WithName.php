@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+
 /**
  * Another variable that has a certain name.
  */
@@ -45,5 +47,11 @@ class WithName extends Variable {
      */
     public function variable() {
         return $this->other;
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
     }
 }

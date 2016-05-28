@@ -10,6 +10,13 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+
 class Everything extends Variable {
+    /**
+     * @inheritdocs
+     */
+    public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
+    }
 }
 

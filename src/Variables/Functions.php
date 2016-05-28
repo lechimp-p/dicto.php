@@ -10,6 +10,12 @@
 
 namespace Lechimp\Dicto\Variables;
 
-class Functions extends Variable {
+class Functions extends Entities {
+    /**
+     * @inheritdoc
+     */
+    public function id() {
+        return Variable::FUNCTION_TYPE;
+    }
 }
 

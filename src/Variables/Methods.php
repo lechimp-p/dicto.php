@@ -10,6 +10,14 @@
 
 namespace Lechimp\Dicto\Variables;
 
-class Methods extends Variable {
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+
+class Methods extends Entities {
+    /**
+     * @inheritdoc
+     */
+    public function id() {
+        return Variable::METHOD_TYPE;
+    }
 }
 

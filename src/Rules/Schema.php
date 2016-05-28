@@ -17,7 +17,6 @@ use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Variables\Variable;
 use Doctrine\DBAL\Driver\Statement;
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
 /**
  * This is what every rule needs to define.
