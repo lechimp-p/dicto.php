@@ -81,7 +81,7 @@ class App {
      * Load extra configs from yaml files.
      *
      * @param   array   $config_file_paths
-     * @param   array&  $configs_array
+     * @param   array   &$configs_array
      * @return  null
      */
     protected function load_extra_configs(array $config_file_paths, array &$configs_array) {
