@@ -354,8 +354,8 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     public function leaveNode(\PhpParser\Node $node) {
         // Class
         if($node instanceof N\Stmt\Class_
-        or $node instanceof N\Stmt\ClassMethod
-        or $node instanceof N\Stmt\Function_) {
+        || $node instanceof N\Stmt\ClassMethod
+        || $node instanceof N\Stmt\Function_) {
             list($type, $id) = array_pop($this->entity_stack);
             $this->call_entity_listener("listeners_leave_entity", $type, $id, $node);
         }
