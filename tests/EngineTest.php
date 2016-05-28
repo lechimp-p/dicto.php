@@ -37,10 +37,11 @@ class IndexerMock extends Indexer {
 }
 
 class NullInsert implements Insert {
-    public function entity($type, $name, $file, $start_line, $end_line, $source){return 0;}
+    public function source_file($name, $content){return 0;}
+    public function entity($type, $name, $file, $start_line, $end_line){return 0;}
     public function reference($type, $name, $file, $line){return 0;}
     public function get_reference($type, $name, $file, $line){return 0;}
-    public function relation($name, $entity_id, $reference_id, $file, $line, $source_line){return 0;}
+    public function relation($name, $entity_id, $reference_id, $file, $line){return 0;}
 }
 
 class EngineTest extends PHPUnit_Framework_TestCase {

@@ -21,6 +21,10 @@ interface Query {
     // Naming
     //
     // Get the names of the different tables used by database.
+    /**
+     * @return string
+     */
+    public function source_file_table();
 
     /**
      * @return string

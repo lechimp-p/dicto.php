@@ -243,6 +243,8 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function beforeTraverse(array $nodes) {
+        $this->insert->source_file($this->file_path, implode("\n", $this->file_content));
+
         // for sure found a file
         $id = $this->insert->entity
             ( Variable::FILE_TYPE
@@ -250,7 +252,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
             , $this->file_path
             , 1
             , count($this->file_content)
-            , implode("\n", $this->file_content)
             );
 
         $this->entity_stack[] = array(Variable::FILE_TYPE, $id);

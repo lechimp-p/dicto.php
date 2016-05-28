@@ -22,6 +22,7 @@ define("__IndexerTest_PATH_TO_SRC", __DIR__."/data/src");
 class InsertMock implements Insert {
     use CachesReferences;
 
+    public $files = array();
     public $entities = array();
     public $references = array();
     public $relations = array();
@@ -33,7 +34,11 @@ class InsertMock implements Insert {
             );
     }
 
-    public function entity($type, $name, $file, $start_line, $end_line, $source) {
+    public function source_file($name, $content) {
+        $this->files[$name] = $content;
+    }
+
+    public function entity($type, $name, $file, $start_line, $end_line) {
         $id = count($this->entities) + count($this->references);
         $this->entities[] = array
             ( "id" => $id
@@ -42,7 +47,6 @@ class InsertMock implements Insert {
             , "file" => $file
             , "start_line" => $start_line
             , "end_line" => $end_line
-            , "source" => $source
             );
         return  $id;
     }
@@ -60,13 +64,12 @@ class InsertMock implements Insert {
     }
 
 
-    public function relation($name, $entity_id, $reference_id, $file, $line, $source_line) {
+    public function relation($name, $entity_id, $reference_id, $file, $line) {
         $this->relations[$name][] = array
             ( "entity_id" => $entity_id
             , "reference_id" => $reference_id
             , "file" => $file
             , "line" => $line
-            , "source_line" => $source_line
             );
     }
 
@@ -112,15 +115,32 @@ class IndexerTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf("\\Lechimp\\Dicto\\Indexer\\Indexer", $this->indexer);
     }
 
-    public function test_entity_A1_class() {
+    public function test_A1_file() {
         $this->indexer->index_file("A1.php");
         $source = <<<PHP
+<?php
+/******************************************************************************
+ * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
+ *
+ * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
+ *
+ * This software is licensed under The MIT License. You should have received
+ * a copy of the licence along with the code.
+ */
+
 class A1 {
     public function invoke_a_function() {
         return a_bogus_function();
     }    
 }
+
 PHP;
+        $this->assertEquals(array("A1.php" => $source), $this->insert_mock->files);
+    }
+
+    public function test_entity_A1_class() {
+        $this->indexer->index_file("A1.php");
+
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
         foreach($this->insert_mock->entities as $e) {
@@ -133,29 +153,11 @@ PHP;
         $this->assertEquals("A1.php", $entity["file"]);
         $this->assertEquals(11, $entity["start_line"]);
         $this->assertEquals(15, $entity["end_line"]);
-        $this->assertEquals($source, $entity["source"]);
     }
 
     public function test_entity_A1_file() {
         $this->indexer->index_file("A1.php");
-        $source = <<<PHP
-<?php
-/******************************************************************************
- * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- *
- * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
- *
- * This software is licensed under The MIT License. You should have received
- * a copy of the license along with the code.
- */
 
-class A1 {
-    public function invoke_a_function() {
-        return a_bogus_function();
-    }    
-}
-
-PHP;
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
         foreach($this->insert_mock->entities as $e) {
@@ -170,16 +172,11 @@ PHP;
         # The file will actually contain one more line then it seems,
         # as the last line ends with a newline.
         $this->assertEquals(16, $entity["end_line"]);
-        $this->assertEquals($source, $entity["source"]);
     }
 
     public function test_entity_A1_method() {
         $this->indexer->index_file("A1.php");
-        $source = <<<PHP
-    public function invoke_a_function() {
-        return a_bogus_function();
-    }    
-PHP;
+
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
         foreach($this->insert_mock->entities as $e) {
@@ -192,7 +189,6 @@ PHP;
         $this->assertEquals("A1.php", $entity["file"]);
         $this->assertEquals(12, $entity["start_line"]);
         $this->assertEquals(14, $entity["end_line"]);
-        $this->assertEquals($source, $entity["source"]);
     }
 
     public function test_references_A1_a_bogus_function() {
@@ -220,14 +216,12 @@ PHP;
             , "reference_id" => $a_bogus_function_id
             , "file" => "A1.php"
             , "line" => 13
-            , "source_line" => "        return a_bogus_function();"
             );
         $expected_dep_invoke_a_function = array
             ( "entity_id" => $invoke_a_function_id
             , "reference_id" => $a_bogus_function_id
             , "file" => "A1.php"
             , "line" => 13
-            , "source_line" => "        return a_bogus_function();"
             );
 
         $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
@@ -245,14 +239,12 @@ PHP;
             , "reference_id" => $a_bogus_function_id
             , "file" => "A1.php"
             , "line" => 13
-            , "source_line" => "        return a_bogus_function();"
             );
         $expected_inv_A1 = array
             ( "entity_id" => $A1_id
             , "reference_id" => $a_bogus_function_id
             , "file" => "A1.php"
             , "line" => 13
-            , "source_line" => "        return a_bogus_function();"
             );
 
         $this->assertCount(2, $this->insert_mock->relations["invoke"]);
@@ -285,14 +277,12 @@ PHP;
             , "reference_id" => $invoke_a_function_id
             , "file" => "A2.php"
             , "line" => 13
-            , "source_line" => '        return $obj->invoke_a_function();'
             );
         $expected_dep_invoke_a_method= array
             ( "entity_id" => $invoke_a_method_id
             , "reference_id" => $invoke_a_function_id
             , "file" => "A2.php"
             , "line" => 13
-            , "source_line" => '        return $obj->invoke_a_function();'
             );
 
         $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
@@ -310,14 +300,12 @@ PHP;
             , "reference_id" => $invoke_a_function_id
             , "file" => "A2.php"
             , "line" => 13
-            , "source_line" => '        return $obj->invoke_a_function();'
             );
         $expected_inv_A2 = array
             ( "entity_id" => $A2_id
             , "reference_id" => $invoke_a_function_id
             , "file" => "A2.php"
             , "line" => 13
-            , "source_line" => '        return $obj->invoke_a_function();'
             );
 
         $this->assertCount(2, $this->insert_mock->relations["invoke"]);
@@ -359,28 +347,24 @@ PHP;
             , "reference_id" => $glob_ids[0]
             , "file" => "A3.php"
             , "line" => 13
-            , "source_line" => '        global $glob;'
             );
         $expected_dep_A3_2 = array
             ( "entity_id" => $A3_id
             , "reference_id" => $glob_ids[1]
             , "file" => "A3.php"
             , "line" => 17
-            , "source_line" => '        $glob = $GLOBALS["glob"];'
             );
         $expected_dep_use_global_by_keyword = array
             ( "entity_id" => $use_global_by_keyword_id
             , "reference_id" => $glob_ids[0]
             , "file" => "A3.php"
             , "line" => 13
-            , "source_line" => '        global $glob;'
             );
         $expected_dep_use_global_by_array = array
             ( "entity_id" => $use_global_by_array_id
             , "reference_id" => $glob_ids[1]
             , "file" => "A3.php"
             , "line" => 17
-            , "source_line" => '        $glob = $GLOBALS["glob"];'
             );
 
         $this->assertCount(4, $this->insert_mock->relations["depend_on"]);
@@ -425,28 +409,24 @@ PHP;
             , "reference_id" => $stfu_op_id
             , "file" => "A4.php"
             , "line" => 13
-            , "source_line" => '        return @stfu();'
             );
         $expected_dep_A4_2 = array
             ( "entity_id" => $A4_id
             , "reference_id" => $stfu_fun_id
             , "file" => "A4.php"
             , "line" => 13
-            , "source_line" => '        return @stfu();'
             );
         $expected_dep_use_stfu_1 = array
             ( "entity_id" => $use_stfu_id
             , "reference_id" => $stfu_op_id
             , "file" => "A4.php"
             , "line" => 13
-            , "source_line" => '        return @stfu();'
             );
         $expected_dep_use_stfu_2 = array
             ( "entity_id" => $use_stfu_id
             , "reference_id" => $stfu_fun_id
             , "file" => "A4.php"
             , "line" => 13
-            , "source_line" => '        return @stfu();'
             );
 
         $this->assertCount(4, $this->insert_mock->relations["depend_on"]);
@@ -466,14 +446,12 @@ PHP;
             , "reference_id" => $stfu_fun_id
             , "file" => "A4.php"
             , "line" => 13
-            , "source_line" => '        return @stfu();'
             );
         $expected_inv_A4 = array
             ( "entity_id" => $A4_id
             , "reference_id" => $stfu_fun_id
             , "file" => "A4.php"
             , "line" => 13
-            , "source_line" => '        return @stfu();'
             );
 
         $this->assertCount(2, $this->insert_mock->relations["invoke"]);
@@ -493,7 +471,6 @@ PHP;
         $this->assertEquals("MD.md", $entity["file"]);
         $this->assertEquals(1, $entity["start_line"]);
         $this->assertEquals(2, $entity["end_line"]);
-        $this->assertEquals($source, $entity["source"]);
     }
 
     public function test_ignores_closure_invocations() {
@@ -514,14 +491,12 @@ PHP;
             , "reference_id" => $glob_ids[0]
             , "file" => "IndexesTwice.php"
             , "line" => 17
-            , "source_line" => '        return $GLOBALS["glob"]["bar"];'
             );
         $expected_dep_indexes_GLOBAL_twice_1 = array
             ( "entity_id" => $indexes_GLOBAL_twice_id
             , "reference_id" => $glob_ids[0]
             , "file" => "IndexesTwice.php"
             , "line" => 17
-            , "source_line" => '        return $GLOBALS["glob"]["bar"];'
             );
 
         $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
@@ -581,5 +556,4 @@ PHP;
         $this->assertEquals(array("a_bogus_function"), $enter_m);
         $this->assertEquals(array("a_bogus_function"), $leave_m);
     }
-
 }

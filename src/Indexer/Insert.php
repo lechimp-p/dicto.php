@@ -17,6 +17,15 @@ use Lechimp\Dicto\Analysis\Variable;
  */
 interface Insert {
     /**
+     * Store content of a source file in the database.
+     *
+     * @param   string          $name
+     * @param   string          $content
+     * @return  null
+     */
+    public function source_file($name, $content);
+
+    /**
      * Record general info about an entity.
      *
      * An entity is anything the user defined in its code like a class, a method or
@@ -30,10 +39,9 @@ interface Insert {
      * @param   string          $file
      * @param   int             $start_line
      * @param   int             $end_line
-     * @param   string          $source
      * @return  int                         id of new entity
      */
-    public function entity($type, $name, $file, $start_line, $end_line, $source);
+    public function entity($type, $name, $file, $start_line, $end_line);
 
     /**
      * Record general info about a reference to an entity.
@@ -80,5 +88,5 @@ interface Insert {
      * @param   string          $source_line
      * @return  null
      */
-    public function relation($name, $entity_id, $reference_id, $file, $line, $source_line);
+    public function relation($name, $entity_id, $reference_id, $file, $line);
 }

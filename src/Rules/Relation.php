@@ -66,11 +66,18 @@ abstract class Relation extends Schema {
                     , "rel.reference_id as reference_id"
                     , "rel.file as file"
                     , "rel.line as line"
-                    , "rel.source_line as source"
+                    , "src.source as source"
                     )
                 ->from($query->relations_table(), "rel")
                 ->innerJoin("rel", $query->entity_table(), "e", "rel.entity_id = e.id")
                 ->innerJoin("rel", $query->reference_table(), "r", "rel.reference_id = r.id")
+                ->innerJoin
+                    ( "rel", $query->source_file_table(), "src"
+                    , $b->andX
+                        ( $b->eq("rel.line", "src.line")
+                        , $b->eq("rel.file", "src.name")
+                        )
+                    )
                 ->where
                     ( $b->eq("rel.name", $b->literal($this->name()))
                     , $query->compile_var("e", $entity)
@@ -84,7 +91,7 @@ abstract class Relation extends Schema {
                     ( "e.id as entity_id"
                     , "e.file as file"
                     , "e.start_line as line"
-                    , "e.source as source"
+                    , "src.source as source"
                     )
                 ->from($query->entity_table(), "e")
                 ->leftJoin
@@ -101,6 +108,14 @@ abstract class Relation extends Schema {
                         , $query->compile_var("r", $reference)
                         )
                     )
+                ->innerJoin
+                    ( "e", $query->source_file_table(), "src"
+                    , $b->andX
+                        ( $b->eq("e.start_line", "src.line")
+                        , $b->eq("e.file", "src.name")
+                        )
+                    )
+
                 ->where
                     ( $query->compile_var("e", $entity)
                     , $b->isNull("r.id")
@@ -108,14 +123,5 @@ abstract class Relation extends Schema {
                 ->execute();
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
-    }
-
-    public function to_violation(Rule $rule, array $row) {
-        return new Violation
-            ( $rule
-            , $row["file"]
-            , (int)$row["line"]
-            , $row["source"]
-            );
     }
 }
