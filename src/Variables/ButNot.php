@@ -10,5 +10,19 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+
 class ButNot extends Compound {
+    /**
+     * @inheritdocs
+     */
+    public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
+        if ($negate) {
+            throw \LogicException("NYI!");
+        }
+        return $builder->andX
+            ( $this->left()->compile($builder, $table_name)
+            , $this->right()->compile($builder, $table_name, true)
+            );
+    }
 }
