@@ -509,7 +509,7 @@ PHP;
 
         $this->indexer->index_file("A1.php");
 
-        $this->assertEquals(array("file", "class", "method"), $enter_e);
+        $this->assertEquals(array(Variable::FILE_TYPE, Variable::CLASS_TYPE, Variable::METHOD_TYPE), $enter_e);
         $this->assertEquals($enter_e, array_reverse($leave_e));
         $this->assertEquals(array("a_bogus_function"), $enter_m);
         $this->assertEquals(array("a_bogus_function"), $leave_m);

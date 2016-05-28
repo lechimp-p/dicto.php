@@ -16,20 +16,20 @@ use Doctrine\DBAL\Query\Expression\CompositeExpression;
 
 
 abstract class Variable extends Def\Definition {
-    const CLASS_TYPE = "class";
-    const FILE_TYPE = "file";
-    const GLOBAL_TYPE = "global";
-    const FUNCTION_TYPE = "function";
-    const METHOD_TYPE = "method";
+    const CLASS_TYPE = "classes";
+    const FILE_TYPE = "files";
+    const GLOBAL_TYPE = "globals";
+    const FUNCTION_TYPE = "functions";
+    const METHOD_TYPE = "methods";
     const LANGUAGE_CONSTRUCT_TYPE = "language_construct";
 
     static public function is_type($t) {
         static $types = array
-            ( "class"
-            , "file"
-            , "global"
-            , "function"
-            , "method"
+            ( "classes"
+            , "files"
+            , "globals"
+            , "functions"
+            , "methods"
             , "language_construct"
             );
         return in_array($t, $types);

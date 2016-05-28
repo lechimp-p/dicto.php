@@ -17,6 +17,13 @@ use Lechimp\Dicto\Rules\ContainText;
 use Lechimp\Dicto\Rules\Rule;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables\Variable;
+use Lechimp\Dicto\Variables\Entities;
+use Lechimp\Dicto\Variables\Classes;
+use Lechimp\Dicto\Variables\Files;
+use Lechimp\Dicto\Variables\Functions;
+use Lechimp\Dicto\Variables\Globals;
+use Lechimp\Dicto\Variables\LanguageConstruct;
+use Lechimp\Dicto\Variables\Methods;
 
 /**
  * Runtime for one rule definition. A rule definition starts with
@@ -57,6 +64,11 @@ class RT {
      */
     private $known_schemas;
 
+    /**
+     * @var array<string,\Closure>
+     */
+    private $known_entities;
+
     public function __construct() {
         $this->vars = array();
         $this->current_var_name = null;
@@ -72,6 +84,27 @@ class RT {
             ( $d->name() => $d
             , $i->name() => $i
             , $c->name() => $c
+            );
+        // TODO: This needs to go somewhere else and must be more dynamic.
+        $this->known_entities = array
+            ( Classes::id() => function($name) {
+                    return new Classes($name);
+                }
+            , Files::id() => function($name) {
+                    return new Files($name);
+                }
+            , Functions::id() => function($name) {
+                    return new Functions($name);
+                }
+            , Globals::id() => function($name) {
+                    return new Globals($name);
+                }
+            , LanguageConstruct::id() => function($name, $which) {
+                    return new LanguageConstruct($name, $which);
+                }
+            , Methods::id() => function($name) {
+                    return new Methods($name);
+                }
             );
     }
 
@@ -219,6 +252,20 @@ class RT {
         assert('is_string($name)');
         if (array_key_exists($name, $this->known_schemas)) {
             return $this->known_schemas[$name];
+        }
+        return null;
+    }
+
+    /**
+     * Try to get an entity by name.
+     *
+     * @param   string  $name
+     * @return  Entities|null
+     */
+    public function get_entities_constructor($name) {
+        assert('is_string($name)');
+        if (array_key_exists($name, $this->known_entities)) {
+            return $this->known_entities[$name];
         }
         return null;
     }
