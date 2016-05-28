@@ -14,7 +14,7 @@ class Globals extends Entities {
     /**
      * @inheritdoc
      */
-    public function id() {
+    static public function id() {
         return Variable::GLOBAL_TYPE;
     }
 }
