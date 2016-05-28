@@ -146,7 +146,6 @@ abstract class Relation extends Schema {
                 ( $this->name()
                 , $entity[1]
                 , $ref_id
-                , $location->file_path()
                 );
         }
     }
