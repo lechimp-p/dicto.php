@@ -47,14 +47,4 @@ interface Query {
      * @return  QueryBuilder
      */
     public function builder();
-
-    /**
-     * Compile a variable to an SQL statement over a named table.
-     *
-     * @param   string          $table_name
-     * @param   Vars\Variable   $var
-     * @param   bool            $negate
-     * @return  string|CompositeExpression
-     */ 
-    public function compile_var($table_name, Variable $var, $negate = false);
 }
