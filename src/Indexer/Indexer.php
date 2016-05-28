@@ -313,7 +313,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                 , $this->file_path
                 , $start_line
                 , $end_line
-                , $source
                 );
             $this->call_entity_listener("listeners_enter_entity",  $type, $id, $node);
             $this->entity_stack[] = array($type, $id);
