@@ -53,5 +53,20 @@ class WithName extends Variable {
      * @inheritdocs
      */
     public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
+        // normal case : left_condition AND regexp matches
+        if (!$negate) {
+            return $builder->andX
+                ( $this->variable()->compile($builder, $table_name)
+                , "$table_name.name REGEXP ".$builder->literal('^'.$this->regexp().'$')
+                );
+        }
+        // negated case: not (left_condition_left and regexp matches)
+        //             = not left_condition and not regexp matches
+        else {
+            return $builder->orX
+                ( $this->variable()->compile($builder, $table_name, true)
+                , "$table_name.name NOT REGEXP ".$builder->literal('^'.$this->regexp().'$')
+                );
+        }
     }
 }

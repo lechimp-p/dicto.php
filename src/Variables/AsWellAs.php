@@ -10,5 +10,28 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+
 class AsWellAs extends Compound {
+    /**
+     * @inheritdocs
+     */
+    public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
+        // normal case: left_condition or right_condition
+        if (!$negate) {
+            return $builder->orX
+                ( $this->left()->compile($builder, $table_name)
+                , $this->right()->compile($builder, $table_name)
+                );
+        }
+        // negated case: not (left_condition or right_condition)
+        //             = not left_condition and not right_condition
+        if ($negate) {
+            return $builder->andX
+                ( $this->left()->compile($builder, $table_name, true)
+                , $this->right()->compile($builder, $table_name, true)
+                );
+        }
+    }
+
 }
