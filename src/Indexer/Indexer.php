@@ -75,7 +75,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
 
     /**
      * @param   string  $project_root_path
-     * @param   Schema[]  $rule_schemas
      */
     public function __construct(\PhpParser\Parser $parser, $project_root_path, Insert $insert) {
         $this->parser = $parser;
@@ -165,6 +164,11 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     }
 
     // generalizes over over on_enter/leave_xx
+
+    /**
+     * @param   string      $what
+     * @param   array|null  $things
+     */
     protected function on_enter_or_leave_something($what, $things, \Closure $listener) {
         $loc = &$this->$what;
         if ($things === null) {
@@ -182,7 +186,12 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     }
 
     // generalizes over calls to misc listeners
-    protected function call_misc_listener($which, $node) {
+
+    /**
+     * @param   string          $which
+     * @param   \PhpParser\Node $node
+     */
+    protected function call_misc_listener($which, \PhpParser\Node $node) {
         $listeners = &$this->$which;
         foreach ($listeners[0] as $listener) {
             $listener($this->insert, $this, $node);
@@ -195,7 +204,13 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         }
     }
 
-    protected function call_entity_listener($which, $type, $id, $node) {
+    /**
+     * @param   string                  $which
+     * @param   string                  $type
+     * @param   int                     $type
+     * @param   \PhpParser\Node|null    $node
+     */
+    protected function call_entity_listener($which, $type, $id, \PhpParser\Node $node = null) {
         $listeners = &$this->$which;
         foreach ($listeners[0] as $listener) {
             $listener($this->insert, $this, $type, $id, $node);
