@@ -34,11 +34,12 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
             $var = $variables[$name];
             $this->assertInstanceOf("\\Lechimp\\Dicto\\Variables\\Variable", $var);
         }
+        return $variables;
     }
 
     protected function check_single_var_definition($name, $definition) {
         $def = function() use ($name, $definition) { $definition($name); };
-        $this->check_var_definitions(array($name), $def);
+        return $this->check_var_definitions(array($name), $def);
     }
 
     /**
@@ -82,10 +83,12 @@ class RuleDefinitionTest extends PHPUnit_Framework_TestCase {
      * @dataProvider all_base_variables_provider
      */
     public function test_explain_variables($name, $def) {
-        $this->check_single_var_definition($name, function ($n) use ($def) {
+        $vars = $this->check_single_var_definition($name, function ($n) use ($def) {
             $var = $def($n);
             $var->explain("EXPLANATION");
         });
+        $var = $vars[$name];
+        $this->assertEquals("EXPLANATION", $var->explanation());
     }
 
     public function test_means_as_id() {

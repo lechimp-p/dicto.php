@@ -48,5 +48,7 @@ class ExistingVar extends Base {
      * @return  null
      */
     public function explain($explanation) {
+        $var = $this->rt->get_current_var();
+        $this->rt->current_var_is($var->explain($explanation));
     }
 }
