@@ -116,9 +116,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $this->file_path = $path;
         $this->file_content = explode("\n", $content);
         $traverser->traverse($stmts);
-        $this->entity_stack = null; 
-        $this->file_path = null;
-        $this->file_content = null;
     }
 
     // helper
