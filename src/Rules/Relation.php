@@ -14,8 +14,7 @@ use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\Location;
 use Lechimp\Dicto\Analysis\Query;
-use Lechimp\Dicto\Analysis\Violation;
-use \Lechimp\Dicto\Variables\Variable;
+use Lechimp\Dicto\Variables\Variable;
 
 /**
  * This is a rule that checks a relation between two entities
