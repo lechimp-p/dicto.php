@@ -78,9 +78,6 @@ trait CompilesVars {
                 , $compile("right", $var, true)
                 );
         }
-        if ($var instanceof Vars\Everything) {
-            return $eq_op($b->literal(1), $b->literal(1));
-        }
         if ($var instanceof Vars\WithName) {
             // normal case : left_condition AND regexp matches
             if (!$negate) {
