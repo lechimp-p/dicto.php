@@ -294,9 +294,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $type = null;
 
         // Class
-        if ($node instanceof N\Stmt\Class_
-        ||  $node instanceof N\Stmt\ClassMethod
-        ||  $node instanceof N\Stmt\Function_) {
+        if ($this->is_entity($node)) {
             $type = $this->get_type_of($node);
             $id = $this->insert->entity
                 ( $type
@@ -328,14 +326,18 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         throw \InvalidArgumentException("'".get_class($node)."' has no type.");
     }
 
+    protected function is_entity(\PhpParser\Node $node) {
+        return     $node instanceof N\Stmt\Class_
+                || $node instanceof N\Stmt\ClassMethod
+                || $node instanceof N\Stmt\Function_;
+    }
+
     /**
      * @inheritdoc
      */
     public function leaveNode(\PhpParser\Node $node) {
         // Class
-        if($node instanceof N\Stmt\Class_
-        || $node instanceof N\Stmt\ClassMethod
-        || $node instanceof N\Stmt\Function_) {
+        if($this->is_entity($node)) {
             list($type, $id) = array_pop($this->entity_stack);
             $this->call_entity_listener("listeners_leave_entity", $type, $id, $node);
         }
