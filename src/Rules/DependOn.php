@@ -102,7 +102,7 @@ class DependOn extends Relation {
                 }
                 foreach ($ref_ids as $ref_id) {
                     $start_line = $node->getAttribute("startLine");
-                    $source_line = $location->file_content($start_line, $start_line);
+
                     // Record a dependency for every entity we currently know as dependent.
                     foreach ($location->in_entities() as $entity) {
                         if ($entity[0] == Variable::FILE_TYPE) {

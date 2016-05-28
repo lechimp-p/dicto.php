@@ -65,7 +65,6 @@ class Invoke extends Relation {
                 if ($ref_id !== null) {
                     // We need to record a invocation in every invoking entity now.
                     $start_line = $node->getAttribute("startLine");
-                    $source_line = $location->file_content($start_line, $start_line);
 
                     foreach ($location->in_entities() as $entity) {
                         if ($entity[0] == Variable::FILE_TYPE) {
