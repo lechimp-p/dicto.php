@@ -34,12 +34,12 @@ class Rule extends Definition {
     private $mode;
 
     /**
-     * @var Vars\Variable
+     * @var Variable
      */
     private $subject;
 
     /**
-     * @var R\Schema
+     * @var Schema
      */
     private $schema;
 
