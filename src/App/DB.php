@@ -120,26 +120,20 @@ class DB implements Insert, Query {
     /**
      * @inheritdoc
      */
-    public function relation($name, $entity_id, $reference_id, $file, $line) {
+    public function relation($name, $entity_id, $reference_id) {
         assert('is_string($name)');
         assert('is_int($entity_id)');
         assert('is_int($reference_id)');
-        assert('is_string($file)');
-        assert('is_int($line)');
         $this->builder()
             ->insert($this->relations_table())
             ->values(array
                 ( "name" => "?"
                 , "entity_id" => "?"
                 , "reference_id" => "?"
-                , "file" => "?"
-                , "line" => "?"
                 ))
             ->setParameter(0, $name)
             ->setParameter(1, $entity_id)
             ->setParameter(2, $reference_id)
-            ->setParameter(3, $file)
-            ->setParameter(4, $line)
             ->execute();
     }
 
@@ -268,14 +262,6 @@ class DB implements Insert, Query {
             );
         $relations_table->addColumn
             ( "reference_id", "integer"
-            , array("notnull" => true, "unsigned" => true)
-            );
-        $relations_table->addColumn
-            ("file", "string"
-            , array("notnull" => true)
-            );
-        $relations_table->addColumn
-            ("line", "integer"
             , array("notnull" => true, "unsigned" => true)
             );
         $relations_table->addForeignKeyConstraint

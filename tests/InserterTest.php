@@ -101,8 +101,6 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
         $expected = array
             ( "entity_id" => "$id1"
             , "reference_id" => "$id2"
-            , "file" => "BClass.php"
-            , "line" => "1"
             , "name" => "depend_on"
             );
 
@@ -122,8 +120,6 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
         $expected = array
             ( "entity_id" => "$id1"
             , "reference_id" => "$id2"
-            , "file" => "AClass.php"
-            , "line" => "2"
             , "name" => "invoke"
             );
 

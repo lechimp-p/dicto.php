@@ -41,7 +41,7 @@ class NullInsert implements Insert {
     public function entity($type, $name, $file, $start_line, $end_line){return 0;}
     public function reference($type, $name, $file, $line){return 0;}
     public function get_reference($type, $name, $file, $line){return 0;}
-    public function relation($name, $entity_id, $reference_id, $file, $line){return 0;}
+    public function relation($name, $entity_id, $reference_id){return 0;}
 }
 
 class EngineTest extends PHPUnit_Framework_TestCase {
