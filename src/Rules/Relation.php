@@ -66,8 +66,8 @@ abstract class Relation extends Schema {
                 ->select
                     ( "rel.entity_id as entity_id"
                     , "rel.reference_id as reference_id"
-                    , "rel.file as file"
-                    , "rel.line as line"
+                    , "r.file as file"
+                    , "r.line as line"
                     , "src.source as source"
                     )
                 ->from($query->relations_table(), "rel")
@@ -76,8 +76,8 @@ abstract class Relation extends Schema {
                 ->innerJoin
                     ( "rel", $query->source_file_table(), "src"
                     , $b->andX
-                        ( $b->eq("rel.line", "src.line")
-                        , $b->eq("rel.file", "src.name")
+                        ( $b->eq("src.line", "r.line")
+                        , $b->eq("src.name", "r.file")
                         )
                     )
                 ->where
@@ -113,8 +113,8 @@ abstract class Relation extends Schema {
                 ->innerJoin
                     ( "e", $query->source_file_table(), "src"
                     , $b->andX
-                        ( $b->eq("e.start_line", "src.line")
-                        , $b->eq("e.file", "src.name")
+                        ( $b->eq("src.line", "e.start_line")
+                        , $b->eq("src.name", "e.file")
                         )
                     )
 
@@ -131,17 +131,12 @@ abstract class Relation extends Schema {
      * Insert this relation somewhere, where it is recorded for all
      * entities that the current location is in, except for files.
      *
-     * TODO: $line could be removed, at the relation certainly is on
-     * the line where the ref is.
-     *
      * @param   Insert      $insert
      * @param   Location    $location
-     * @param   int         $line
      * @param   int         $ref_id
      * @return  null
      */
-    protected function insert_relation_into(Insert $insert, Location $location, $line, $ref_id) {
-        assert('is_int($line)');
+    protected function insert_relation_into(Insert $insert, Location $location, $ref_id) {
         assert('is_int($ref_id)');
         foreach ($location->in_entities() as $entity) {
             if ($entity[0] == Variable::FILE_TYPE) {
@@ -152,7 +147,6 @@ abstract class Relation extends Schema {
                 , $entity[1]
                 , $ref_id
                 , $location->file_path()
-                , $line
                 );
         }
     }

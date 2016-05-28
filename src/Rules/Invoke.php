@@ -66,7 +66,6 @@ class Invoke extends Relation {
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $node->getAttribute("startLine")
                         , $ref_id
                         );
                 }

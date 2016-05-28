@@ -64,12 +64,10 @@ class InsertMock implements Insert {
     }
 
 
-    public function relation($name, $entity_id, $reference_id, $file, $line) {
+    public function relation($name, $entity_id, $reference_id) {
         $this->relations[$name][] = array
             ( "entity_id" => $entity_id
             , "reference_id" => $reference_id
-            , "file" => $file
-            , "line" => $line
             );
     }
 
@@ -214,14 +212,10 @@ PHP;
         $expected_dep_A1 = array
             ( "entity_id" => $A1_id
             , "reference_id" => $a_bogus_function_id
-            , "file" => "A1.php"
-            , "line" => 13
             );
         $expected_dep_invoke_a_function = array
             ( "entity_id" => $invoke_a_function_id
             , "reference_id" => $a_bogus_function_id
-            , "file" => "A1.php"
-            , "line" => 13
             );
 
         $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
@@ -237,14 +231,10 @@ PHP;
         $expected_inv_invoke_a_function = array
             ( "entity_id" => $invoke_a_function_id
             , "reference_id" => $a_bogus_function_id
-            , "file" => "A1.php"
-            , "line" => 13
             );
         $expected_inv_A1 = array
             ( "entity_id" => $A1_id
             , "reference_id" => $a_bogus_function_id
-            , "file" => "A1.php"
-            , "line" => 13
             );
 
         $this->assertCount(2, $this->insert_mock->relations["invoke"]);
@@ -275,14 +265,10 @@ PHP;
         $expected_dep_A2 = array
             ( "entity_id" => $A2_id
             , "reference_id" => $invoke_a_function_id
-            , "file" => "A2.php"
-            , "line" => 13
             );
         $expected_dep_invoke_a_method= array
             ( "entity_id" => $invoke_a_method_id
             , "reference_id" => $invoke_a_function_id
-            , "file" => "A2.php"
-            , "line" => 13
             );
 
         $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
@@ -298,14 +284,10 @@ PHP;
         $expected_inv_invoke_a_method = array
             ( "entity_id" => $invoke_a_method_id
             , "reference_id" => $invoke_a_function_id
-            , "file" => "A2.php"
-            , "line" => 13
             );
         $expected_inv_A2 = array
             ( "entity_id" => $A2_id
             , "reference_id" => $invoke_a_function_id
-            , "file" => "A2.php"
-            , "line" => 13
             );
 
         $this->assertCount(2, $this->insert_mock->relations["invoke"]);
@@ -345,26 +327,18 @@ PHP;
         $expected_dep_A3_1 = array
             ( "entity_id" => $A3_id
             , "reference_id" => $glob_ids[0]
-            , "file" => "A3.php"
-            , "line" => 13
             );
         $expected_dep_A3_2 = array
             ( "entity_id" => $A3_id
             , "reference_id" => $glob_ids[1]
-            , "file" => "A3.php"
-            , "line" => 17
             );
         $expected_dep_use_global_by_keyword = array
             ( "entity_id" => $use_global_by_keyword_id
             , "reference_id" => $glob_ids[0]
-            , "file" => "A3.php"
-            , "line" => 13
             );
         $expected_dep_use_global_by_array = array
             ( "entity_id" => $use_global_by_array_id
             , "reference_id" => $glob_ids[1]
-            , "file" => "A3.php"
-            , "line" => 17
             );
 
         $this->assertCount(4, $this->insert_mock->relations["depend_on"]);
@@ -407,26 +381,18 @@ PHP;
         $expected_dep_A4_1 = array
             ( "entity_id" => $A4_id
             , "reference_id" => $stfu_op_id
-            , "file" => "A4.php"
-            , "line" => 13
             );
         $expected_dep_A4_2 = array
             ( "entity_id" => $A4_id
             , "reference_id" => $stfu_fun_id
-            , "file" => "A4.php"
-            , "line" => 13
             );
         $expected_dep_use_stfu_1 = array
             ( "entity_id" => $use_stfu_id
             , "reference_id" => $stfu_op_id
-            , "file" => "A4.php"
-            , "line" => 13
             );
         $expected_dep_use_stfu_2 = array
             ( "entity_id" => $use_stfu_id
             , "reference_id" => $stfu_fun_id
-            , "file" => "A4.php"
-            , "line" => 13
             );
 
         $this->assertCount(4, $this->insert_mock->relations["depend_on"]);
@@ -444,14 +410,10 @@ PHP;
         $expected_inv_use_stfu = array
             ( "entity_id" => $use_stfu_id
             , "reference_id" => $stfu_fun_id
-            , "file" => "A4.php"
-            , "line" => 13
             );
         $expected_inv_A4 = array
             ( "entity_id" => $A4_id
             , "reference_id" => $stfu_fun_id
-            , "file" => "A4.php"
-            , "line" => 13
             );
 
         $this->assertCount(2, $this->insert_mock->relations["invoke"]);
@@ -489,14 +451,10 @@ PHP;
         $expected_dep_IndexesTwice_1 = array
             ( "entity_id" => $IndexesTwice_id
             , "reference_id" => $glob_ids[0]
-            , "file" => "IndexesTwice.php"
-            , "line" => 17
             );
         $expected_dep_indexes_GLOBAL_twice_1 = array
             ( "entity_id" => $indexes_GLOBAL_twice_id
             , "reference_id" => $glob_ids[0]
-            , "file" => "IndexesTwice.php"
-            , "line" => 17
             );
 
         $this->assertCount(2, $this->insert_mock->relations["depend_on"]);

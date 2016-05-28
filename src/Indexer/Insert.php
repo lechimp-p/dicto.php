@@ -83,10 +83,7 @@ interface Insert {
      * @param   string          $name   of the relation
      * @param   int             $entity_id
      * @param   int             $reference_id
-     * @param   string          $file       where the dependency was created
-     * @param   int             $line       where the dependency was created
-     * @param   string          $source_line
      * @return  null
      */
-    public function relation($name, $entity_id, $reference_id, $file, $line);
+    public function relation($name, $entity_id, $reference_id);
 }
