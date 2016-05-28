@@ -294,18 +294,10 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $type = null;
 
         // Class
-        if ($node instanceof N\Stmt\Class_) {
-            $type = Variable::CLASS_TYPE;
-        }
-        // Method or Function
-        elseif ($node instanceof N\Stmt\ClassMethod) {
-            $type = Variable::METHOD_TYPE;
-        }
-        elseif ($node instanceof N\Stmt\Function_) {
-            $type = Variable::FUNCTION_TYPE;
-        }
-
-        if ($type !== null) {
+        if ($node instanceof N\Stmt\Class_
+        ||  $node instanceof N\Stmt\ClassMethod
+        ||  $node instanceof N\Stmt\Function_) {
+            $type = $this->get_type_of($node);
             $id = $this->insert->entity
                 ( $type
                 , $node->name
@@ -319,6 +311,21 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         else {
             $this->call_misc_listener("listeners_enter_misc", $node);
         }
+    }
+
+    protected function get_type_of(\PhpParser\Node $node) {
+        // Class
+        if ($node instanceof N\Stmt\Class_) {
+            return Variable::CLASS_TYPE;
+        }
+        // Method or Function
+        elseif ($node instanceof N\Stmt\ClassMethod) {
+            return Variable::METHOD_TYPE;
+        }
+        elseif ($node instanceof N\Stmt\Function_) {
+            return Variable::FUNCTION_TYPE;
+        }
+        throw \InvalidArgumentException("'".get_class($node)."' has no type.");
     }
 
     /**
