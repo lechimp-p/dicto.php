@@ -12,7 +12,7 @@ namespace Lechimp\Dicto\Variables;
 
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
-class LanguageConstruct extends Variable {
+class LanguageConstruct extends Entities {
     /**
      * @var string
      */
@@ -33,9 +33,38 @@ class LanguageConstruct extends Variable {
     }
 
     /**
+     * @inheritdoc
+     */
+    public function id() {
+        return Variable::LANGUAGE_CONSTRUCT_TYPE;
+    }
+
+    /**
      * @inheritdocs
      */
     public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
+        $type_expr = $this->eq_op
+            ( $builder
+            , "$table_name.type"
+            , $builder->literal(Variable::LANGUAGE_CONSTRUCT_TYPE)
+            , $negate
+            );
+        $name_expr = $this->eq_op
+            ( $builder
+            , "$table_name.name"
+            , $builder->literal($this->construct_name())
+            , $negate
+            );
+
+        // normal case : language construct and name matches
+        if (!$negate) {
+            return $builder->andX($type_expr, $name_expr);
+        }
+        // negated case: not (language construct and name matches)
+        //             = not language construct or not name matches
+        else {
+            return $builder->orX($type_expr, $name_expr);
+        }
     }
 }
 
