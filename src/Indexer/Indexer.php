@@ -290,7 +290,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     public function enterNode(\PhpParser\Node $node) {
         $start_line = $node->getAttribute("startLine");
         $end_line = $node->getAttribute("endLine");
-        $source = $this->lines_from_to($start_line, $end_line);
 
         $type = null;
 
