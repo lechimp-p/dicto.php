@@ -63,21 +63,12 @@ class Invoke extends Relation {
                     }
                 }
                 if ($ref_id !== null) {
-                    // We need to record a invocation in every invoking entity now.
-                    $start_line = $node->getAttribute("startLine");
-
-                    foreach ($location->in_entities() as $entity) {
-                        if ($entity[0] == Variable::FILE_TYPE) {
-                            continue;
-                        }
-                        $insert->relation
-                            ( "invoke"
-                            , $entity[1]
-                            , $ref_id
-                            , $location->file_path()
-                            , $start_line
-                            );
-                    }
+                    $this->insert_relation_into
+                        ( $insert
+                        , $location
+                        , $node->getAttribute("startLine")
+                        , $ref_id
+                        );
                 }
             });
     }

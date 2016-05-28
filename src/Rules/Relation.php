@@ -11,6 +11,8 @@
 namespace Lechimp\Dicto\Rules;
 
 use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Indexer\Insert;
+use Lechimp\Dicto\Indexer\Location;
 use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Violation;
 use \Lechimp\Dicto\Variables\Variable;
@@ -123,5 +125,35 @@ abstract class Relation extends Schema {
                 ->execute();
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
+    }
+
+    /**
+     * Insert this relation somewhere, where it is recorded for all
+     * entities that the current location is in, except for files.
+     *
+     * TODO: $line could be removed, at the relation certainly is on
+     * the line where the ref is.
+     *
+     * @param   Insert      $insert
+     * @param   Location    $location
+     * @param   int         $line
+     * @param   int         $ref_id
+     * @return  null
+     */
+    protected function insert_relation_into(Insert $insert, Location $location, $line, $ref_id) {
+        assert('is_int($line)');
+        assert('is_int($ref_id)');
+        foreach ($location->in_entities() as $entity) {
+            if ($entity[0] == Variable::FILE_TYPE) {
+                continue;
+            }
+            $insert->relation
+                ( $this->name()
+                , $entity[1]
+                , $ref_id
+                , $location->file_path()
+                , $line
+                );
+        }
     }
 }
