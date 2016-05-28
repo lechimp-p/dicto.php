@@ -27,6 +27,28 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
         $this->builder = $this->connection->createQueryBuilder();
     }
 
+    public function test_insert_source_file() {
+        $this->inserter->source_file("foo.php", "FOO\nBAR");
+        $res = $this->builder
+            ->select("*")
+            ->from($this->inserter->source_file_table())
+            ->execute()
+            ->fetchAll();
+        $expected = array
+            ( array
+                ( "name" => "foo.php"
+                , "line" => "1"
+                , "source" => "FOO"
+                )
+            , array
+                ( "name" => "foo.php"
+                , "line" => "2"
+                , "source" => "BAR"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
     public function test_insert_entity() {
         $id = $this->inserter->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
         $res = $this->builder
@@ -42,7 +64,6 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
             , "file" => "AClass.php"
             , "start_line" => "1"
             , "end_line" => "2"
-            , "source" => "the source"
             );
 
         $this->assertEquals(array($expected), $res);
@@ -82,7 +103,6 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
             , "reference_id" => "$id2"
             , "file" => "BClass.php"
             , "line" => "1"
-            , "source_line" => "new AClass();"
             , "name" => "depend_on"
             );
 
@@ -104,7 +124,6 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
             , "reference_id" => "$id2"
             , "file" => "AClass.php"
             , "line" => "2"
-            , "source_line" => "my_fun();"
             , "name" => "invoke"
             );
 

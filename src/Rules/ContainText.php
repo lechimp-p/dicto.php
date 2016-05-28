@@ -45,20 +45,30 @@ class ContainText extends Property {
      */
     public function compile(Query $query, Rule $rule) {
         $builder = $query->builder();
+        $b = $builder->expr();
         $mode = $rule->mode();
         $checked_on = $rule->checked_on();
         $regexp = $rule->argument(0);
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select
-                    ( "id as entity_id"
-                    , "file"
-                    , "source"
+                    ( "e.id as entity_id"
+                    , "e.file"
+                    , "src.source"
+                    , "src.line"
                     )
-                ->from($query->entity_table())
+                ->from($query->entity_table(), "e")
+                ->innerJoin
+                    ( "e", $query->source_file_table(), "src"
+                    , $b->andX
+                        ( $b->gte("src.line", "e.start_line")
+                        , $b->lte("src.line", "e.end_line")
+                        , $b->eq("src.name", "e.file")
+                        , "src.source REGEXP ?"
+                        )
+                    )
                 ->where
-                    ( $query->compile_var($query->entity_table(), $checked_on)
-                    , "source REGEXP ?"
+                    ( $query->compile_var("e", $checked_on)
                     )
                 ->setParameter(0, $regexp)
                 ->execute();
@@ -66,46 +76,35 @@ class ContainText extends Property {
         if ($mode == Rule::MODE_MUST) {
             return $builder
                 ->select
-                    ( "id as entity_id"
-                    , "file"
-                    , "source"
+                    ( "e.id as entity_id"
+                    , "e.file"
+                    , "e.start_line as line"
+                    , "src.source"
                     )
-                ->from($query->entity_table())
+                ->from($query->entity_table(), "e")
+                ->innerJoin
+                    ( "e", $query->source_file_table(), "src"
+                    , $b->andX
+                        ( $b->eq("src.name", "e.file")
+                        , $b->eq("src.line", "e.start_line")
+                        )
+                    )
+                ->leftJoin
+                    ( "e", $query->source_file_table(), "match"
+                    , $b->andX
+                        ( $b->eq("match.name", "e.file")
+                        , $b->eq("match.line", "e.start_line")
+                        , "match.source REGEXP ?"
+                        )
+                    )
                 ->where
-                    ( $query->compile_var($query->entity_table(), $checked_on)
-                    , "source NOT REGEXP ?"
+                    ( $query->compile_var("e", $checked_on)
+                    , "match.line IS NULL"
                     )
                 ->setParameter(0, $regexp)
                 ->execute();
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function to_violation(Rule $rule, array $row) {
-        $line_no = 0;
-        $line = null;
-        $lines = explode("\n", $row["source"]);
-        $pattern = $rule->argument(0);
-        foreach ($lines as $l) {
-            $line_no++;
-            if (preg_match("%$pattern%", $l) > 0) {
-                $line = $l;
-                break;
-            }
-        }
-        if ($line === null) {
-            throw new \LogicException(
-                "Found '$pattern' with SQL query but not in postprocessing...");
-        }
-        return new Violation
-            ( $rule
-            , $row["file"]
-            , $line_no
-            , $line
-            );
     }
 
     /**

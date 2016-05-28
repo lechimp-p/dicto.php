@@ -77,7 +77,6 @@ class Invoke extends Relation {
                             , $ref_id
                             , $location->file_path()
                             , $start_line
-                            , $source_line
                             );
                     }
                 }

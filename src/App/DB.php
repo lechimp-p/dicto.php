@@ -45,13 +45,36 @@ class DB implements Insert, Query {
     /**
      * @inheritdoc
      */
-    public function entity($type, $name, $file, $start_line, $end_line, $source) {
+    public function source_file($name, $content) {
+        assert('is_string($name)');
+        assert('is_string($content)');
+        $stmt = $this->builder()
+            ->insert($this->source_file_table())
+            ->values(array
+                ( "name" => "?"
+                , "line" => "?"
+                , "source" => "?"
+                ))
+            ->setParameter(0, $name);
+        $line = 1;
+        foreach (split("\n", $content) as $source) {
+            $stmt
+                ->setParameter(1, $line)
+                ->setParameter(2, $source)
+                ->execute();
+            $line++;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function entity($type, $name, $file, $start_line, $end_line) {
         assert('\\Lechimp\\Dicto\\Variables\\Variable::is_type($type)');
         assert('is_string($name)');
         assert('is_string($file)');
         assert('is_int($start_line)');
         assert('is_int($end_line)');
-        assert('is_string($source)');
         $this->builder()
             ->insert($this->entity_table())
             ->values(array
@@ -60,14 +83,12 @@ class DB implements Insert, Query {
                 , "file" => "?"
                 , "start_line" => "?"
                 , "end_line" => "?"
-                , "source" => "?"
                 ))
             ->setParameter(0, $type)
             ->setParameter(1, $name)
             ->setParameter(2, $file)
             ->setParameter(3, $start_line)
             ->setParameter(4, $end_line)
-            ->setParameter(5, $source)
             ->execute();
         return (int)$this->connection->lastInsertId();
     }
@@ -99,13 +120,12 @@ class DB implements Insert, Query {
     /**
      * @inheritdoc
      */
-    public function relation($name, $entity_id, $reference_id, $file, $line, $source_line) {
+    public function relation($name, $entity_id, $reference_id, $file, $line) {
         assert('is_string($name)');
         assert('is_int($entity_id)');
         assert('is_int($reference_id)');
         assert('is_string($file)');
         assert('is_int($line)');
-        assert('is_string($source_line)');
         $this->builder()
             ->insert($this->relations_table())
             ->values(array
@@ -114,18 +134,20 @@ class DB implements Insert, Query {
                 , "reference_id" => "?"
                 , "file" => "?"
                 , "line" => "?"
-                , "source_line" => "?"
                 ))
             ->setParameter(0, $name)
             ->setParameter(1, $entity_id)
             ->setParameter(2, $reference_id)
             ->setParameter(3, $file)
             ->setParameter(4, $line)
-            ->setParameter(5, $source_line)
             ->execute();
     }
 
     // Naming
+
+    public function source_file_table() {
+        return "files";
+    }
 
     public function entity_table() {
         return "entities";
@@ -170,6 +192,21 @@ class DB implements Insert, Query {
     public function init_database_schema() {
         $schema = new Schema\Schema();
 
+        $file_table = $schema->createTable($this->source_file_table());
+        $file_table->addColumn
+            ( "name", "string"
+            , array("notnull" => true)
+            );
+        $file_table->addColumn
+            ( "line", "integer"
+            , array("notnull" => true, "unsigned" => true)
+            );
+        $file_table->addColumn
+            ( "source", "string"
+            , array("notnull" => true)
+            );
+        $file_table->setPrimaryKey(array("name", "line"));
+
         $entity_table = $schema->createTable($this->entity_table());
         $entity_table->addColumn
             ("id", "integer"
@@ -194,10 +231,6 @@ class DB implements Insert, Query {
         $entity_table->addColumn
             ("end_line", "integer"
             , array("notnull" => true, "unsigned" => true)
-            );
-        $entity_table->addColumn
-            ("source", "text"
-            , array("notnull" => true)
             );
         $entity_table->setPrimaryKey(array("id"));
 
@@ -244,10 +277,6 @@ class DB implements Insert, Query {
         $relations_table->addColumn
             ("line", "integer"
             , array("notnull" => true, "unsigned" => true)
-            );
-        $relations_table->addColumn
-            ("source_line", "text"
-            , array("notnull" => true)
             );
         $relations_table->addForeignKeyConstraint
             ( $entity_table
