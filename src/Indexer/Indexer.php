@@ -292,24 +292,21 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $end_line = $node->getAttribute("endLine");
         $source = $this->lines_from_to($start_line, $end_line);
 
-        $id = null;
         $type = null;
 
         // Class
         if ($node instanceof N\Stmt\Class_) {
             $type = Variable::CLASS_TYPE;
-            $id = $this->insert->entity
-                ( $type
-                , $node->name
-                , $this->file_path
-                , $start_line
-                , $end_line
-                , $source
-                );
         }
         // Method or Function
         elseif ($node instanceof N\Stmt\ClassMethod) {
             $type = Variable::METHOD_TYPE;
+        }
+        elseif ($node instanceof N\Stmt\Function_) {
+            $type = Variable::FUNCTION_TYPE;
+        }
+
+        if ($type !== null) {
             $id = $this->insert->entity
                 ( $type
                 , $node->name
@@ -318,20 +315,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                 , $end_line
                 , $source
                 );
-        }
-        elseif ($node instanceof N\Stmt\Function_) {
-            $type = Variable::FUNCTION_TYPE;
-            $id = $this->insert->entity
-                ( $type 
-                , $node->name
-                , $this->file_path
-                , $start_line
-                , $end_line
-                , $source
-                );
-        }
-
-        if ($id !== null) {
             $this->call_entity_listener("listeners_enter_entity",  $type, $id, $node);
             $this->entity_stack[] = array($type, $id);
         }
