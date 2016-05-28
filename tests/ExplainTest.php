@@ -27,7 +27,8 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
                 if ($m == "__construct"
                 ||  $m == "explanation"
                 || $m == "is_type"
-                || $m == "explain") {
+                || $m == "explain"
+                || $m == "compile") {
                     continue;
                 }
                 $this->assertEquals($explainable->$m(), $explained->$m(),

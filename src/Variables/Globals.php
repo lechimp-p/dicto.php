@@ -10,6 +10,11 @@
 
 namespace Lechimp\Dicto\Variables;
 
-class Globals extends Variable {
+class Globals extends Entities {
+    /**
+     * @inheritdoc
+     */
+    public function id() {
+        return Variable::GLOBAL_TYPE;
+    }
 }
-

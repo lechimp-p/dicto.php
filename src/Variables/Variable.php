@@ -9,7 +9,9 @@
  */
 
 namespace Lechimp\Dicto\Variables;
+
 use Lechimp\Dicto\Definition as Def;
+use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
 
 abstract class Variable extends Def\Definition {
@@ -42,8 +44,21 @@ abstract class Variable extends Def\Definition {
         $this->name = $name;
     }
 
+    /**
+     * @return  string
+     */
     public function name() {
         return $this->name;
     }
+
+    /**
+     * Compile the variable to an sql expression.
+     *
+     * @param   ExpressionBuilder   $builder
+     * @param   string              $table_name
+     * @param   bool                $negate
+     * @return  string|CompositeExpression
+     */
+    abstract public function compile(ExpressionBuilder $builder, $table_name, $negate = false);
 }
 
