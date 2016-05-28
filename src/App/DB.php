@@ -57,7 +57,7 @@ class DB implements Insert, Query {
                 ))
             ->setParameter(0, $name);
         $line = 1;
-        foreach (split("\n", $content) as $source) {
+        foreach (explode("\n", $content) as $source) {
             $stmt
                 ->setParameter(1, $line)
                 ->setParameter(2, $source)
