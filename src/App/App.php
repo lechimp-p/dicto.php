@@ -11,7 +11,6 @@
 namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\App\RuleLoader;
-
 use Symfony\Component\Yaml\Yaml;
 use Pimple\Container;
 use PhpParser\ParserFactory;
