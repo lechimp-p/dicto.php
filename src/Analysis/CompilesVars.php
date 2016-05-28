@@ -81,24 +81,6 @@ trait CompilesVars {
         if ($var instanceof Vars\Everything) {
             return $eq_op($b->literal(1), $b->literal(1));
         }
-        if ($var instanceof Vars\LanguageConstruct) {
-            // normal case : language construct and name matches
-            if (!$negate) {
-                return $b->andX
-                    ( $eq_op("$table_name.type", $b->literal(Variable::LANGUAGE_CONSTRUCT_TYPE))
-                    , $eq_op("$table_name.name", $b->literal($var->construct_name()))
-                    );
-            }
-            // negated case: not (language construct and name matches)
-            //             = not language construct or not name matches
-            else {
-
-                return $b->orX
-                    ( $eq_op("$table_name.type", $b->literal(Variable::LANGUAGE_CONSTRUCT_TYPE))
-                    , $eq_op("$table_name.name", $b->literal($var->construct_name()))
-                    );
-            }
-        }
         if ($var instanceof Vars\WithName) {
             // normal case : left_condition AND regexp matches
             if (!$negate) {
