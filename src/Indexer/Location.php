@@ -20,11 +20,6 @@ interface Location {
     public function file_path();
 
     /**
-     * @return string
-     */
-    public function file_content($from_line = null, $to_line = null);
-
-    /**
      * @return  array[]     List of ($entity_type, $entity_id)
      */
     public function in_entities();
