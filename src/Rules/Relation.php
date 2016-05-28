@@ -81,8 +81,8 @@ abstract class Relation extends Schema {
                     )
                 ->where
                     ( $b->eq("rel.name", $b->literal($this->name()))
-                    , $query->compile_var("e", $entity)
-                    , $query->compile_var("r", $reference)
+                    , $entity->compile($b, "e")
+                    , $reference->compile($b, "r")
                     )
                 ->execute();
         }
@@ -106,7 +106,7 @@ abstract class Relation extends Schema {
                     ("rel", $query->reference_table(), "r"
                     , $b->andX
                         ( $b->eq("rel.reference_id", "r.id")
-                        , $query->compile_var("r", $reference)
+                        , $reference->compile($b, "r")
                         )
                     )
                 ->innerJoin
@@ -118,7 +118,7 @@ abstract class Relation extends Schema {
                     )
 
                 ->where
-                    ( $query->compile_var("e", $entity)
+                    ( $entity->compile($b, "e")
                     , $b->isNull("r.id")
                     )
                 ->execute();

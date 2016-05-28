@@ -22,7 +22,6 @@ use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
 class DB implements Insert, Query {
     use CachesReferences;
-    use CompilesVars;
 
     /**
      * @var Connection

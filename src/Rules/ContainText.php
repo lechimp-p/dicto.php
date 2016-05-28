@@ -68,7 +68,7 @@ class ContainText extends Property {
                         )
                     )
                 ->where
-                    ( $query->compile_var("e", $checked_on)
+                    ( $checked_on->compile($b, "e")
                     )
                 ->setParameter(0, $regexp)
                 ->execute();
@@ -98,7 +98,7 @@ class ContainText extends Property {
                         )
                     )
                 ->where
-                    ( $query->compile_var("e", $checked_on)
+                    ( $checked_on->compile($b, "e")
                     , "match.line IS NULL"
                     )
                 ->setParameter(0, $regexp)
