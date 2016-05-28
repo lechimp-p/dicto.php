@@ -269,8 +269,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $start_line = $node->getAttribute("startLine");
         $end_line = $node->getAttribute("endLine");
 
-        $type = null;
-
         // Class
         if ($this->is_entity($node)) {
             $type = $this->get_type_of($node);
