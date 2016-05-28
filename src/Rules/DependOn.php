@@ -101,21 +101,12 @@ class DependOn extends Relation {
                             );
                 }
                 foreach ($ref_ids as $ref_id) {
-                    $start_line = $node->getAttribute("startLine");
-
-                    // Record a dependency for every entity we currently know as dependent.
-                    foreach ($location->in_entities() as $entity) {
-                        if ($entity[0] == Variable::FILE_TYPE) {
-                            continue;
-                        }
-                        $insert->relation
-                            ( "depend_on"
-                            , $entity[1]
-                            , $ref_id
-                            , $location->file_path()
-                            , $start_line
-                            );
-                    }
+                    $this->insert_relation_into
+                        ( $insert
+                        , $location
+                        , $node->getAttribute("startLine")
+                        , $ref_id
+                        );
                 }
             });
         }
