@@ -28,6 +28,15 @@ abstract class Combinator extends Variable {
     }
 
     /**
+     * Get an id for this combinator.
+     *
+     * This must return a string without whitespaces.
+     *
+     * @return  string
+     */
+    abstract public function id();
+
+    /**
      * @return  Variable
      */
     public function left() {

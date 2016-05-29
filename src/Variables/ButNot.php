@@ -16,6 +16,13 @@ class ButNot extends Combinator {
     /**
      * @inheritdocs
      */
+    public function id() {
+        return "but_not";
+    }
+
+    /**
+     * @inheritdocs
+     */
     public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
         if ($negate) {
             throw \LogicException("NYI!");

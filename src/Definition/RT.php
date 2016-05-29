@@ -24,6 +24,8 @@ use Lechimp\Dicto\Variables\Functions;
 use Lechimp\Dicto\Variables\Globals;
 use Lechimp\Dicto\Variables\LanguageConstruct;
 use Lechimp\Dicto\Variables\Methods;
+use Lechimp\Dicto\Variables\AsWellAs;
+use Lechimp\Dicto\Variables\ButNot;
 
 /**
  * Runtime for one rule definition. A rule definition starts with
@@ -69,6 +71,11 @@ class RT {
      */
     private $known_entities;
 
+    /**
+     * @var array<string,\Closure>
+     */
+    private $known_combinators;
+
     public function __construct() {
         $this->vars = array();
         $this->current_var_name = null;
@@ -104,6 +111,15 @@ class RT {
                 }
             , Methods::id() => function($name) {
                     return new Methods($name);
+                }
+            );
+        // TODO: This needs to go somewhere else and must be more dynamic.
+        $this->known_combinators = array
+            ( AsWellAs::id() => function($name, $l, $r) {
+                    return new AsWellAs($name, $l, $r);
+                }
+            , ButNot::id() => function($name, $l, $r) {
+                    return new ButNot($name, $l, $r);
                 }
             );
     }
@@ -266,6 +282,20 @@ class RT {
         assert('is_string($name)');
         if (array_key_exists($name, $this->known_entities)) {
             return $this->known_entities[$name];
+        }
+        return null;
+    }
+
+    /**
+     * Try to get a constructor for a combinator by name.
+     *
+     * @param   string  $name
+     * @return  Entities|null
+     */
+    public function get_combinator_constructor($name) {
+        assert('is_string($name)');
+        if (array_key_exists($name, $this->known_combinators)) {
+            return $this->known_combinators[$name];
         }
         return null;
     }

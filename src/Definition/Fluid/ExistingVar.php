@@ -16,24 +16,6 @@ namespace Lechimp\Dicto\Definition\Fluid;
  */
 class ExistingVar extends Base {
     /**
-     * Say to mean this variable and another variable.
-     *
-     * @return  AsWellAs
-     */
-    public function as_well_as() {
-        return new AsWellAs($this->rt);
-    }
-
-    /**
-     * Say to mean this variable but not another variable.
-     *
-     * @return  ButNot
-     */
-    public function but_not() {
-        return new ButNot($this->rt);
-    }
-
-    /**
      * Say that you want to state some properties of the variable.
      *
      * @return  With
@@ -41,6 +23,23 @@ class ExistingVar extends Base {
     public function with() {
         return new With($this->rt);
     }
+
+    /**
+     * Combine the existing variable with another variable.
+     *
+     * @throws  \InvalidArgumentException   if $arguments are passed
+     * @throws  \RuntimeException           if $name is unknown are passed
+     * @return  ExistingVar
+     */
+    public function __call($name, $arguments) {
+        $combinator_constructor = $this->rt->get_combinator_constructor($name);
+        if ($combinator_constructor !== null) {
+            return new Combinator($this->rt, $combinator_constructor);
+        }
+
+        throw new \InvalidArgumentException("Unknown combinator '$name'.");
+    }
+
 
     /**
      * Explain something about the variable.

@@ -16,6 +16,13 @@ class AsWellAs extends Combinator {
     /**
      * @inheritdocs
      */
+    public function id() {
+        return "as_well_as";
+    }
+
+    /**
+     * @inheritdocs
+     */
     public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
         // normal case: left_condition or right_condition
         if (!$negate) {

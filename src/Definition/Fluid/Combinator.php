@@ -9,14 +9,30 @@
  */
 
 namespace Lechimp\Dicto\Definition\Fluid;
+
+use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Variables as Vars;
 
 /**
- * Provides fluid interface to as_well_as().
+ * Provides fluid interface to combinators. 
  */
-class AsWellAs extends Base {
+class Combinator extends Base {
     /**
-     * Say to mean this class as well as the other class defined before.
+     * @var \Closure
+     */
+    protected $constructor;
+
+    public function __construct(Def\RT $rt, \Closure $constructor) {
+        parent::__construct($rt);
+        $this->constructor = $constructor;
+    }
+
+    /**
+     * Tell with wich variable the other variable should be combined.
+     *
+     * @throws  \InvalidArgumentException   if $arguments are passed
+     * @throws  \RuntimeException           if $name is unknown are passed
+     * @return  ExistingVar 
      */
     public function __call($name, $arguments) {
         if (count($arguments) != 0) {
@@ -30,8 +46,9 @@ class AsWellAs extends Base {
         if (!($left instanceof Vars\Variable)) {
             throw new \RuntimeException("Could not get current var from runtime.");
         }
+        $ctor = $this->constructor;
         $this->rt->current_var_is(
-            new Vars\AsWellAs($this->rt->get_current_var_name(), $left, $right));
+            $ctor($this->rt->get_current_var_name(), $left, $right));
 
         return new ExistingVar($this->rt);
     }
