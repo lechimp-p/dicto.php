@@ -41,7 +41,6 @@ abstract class Relation extends Schema {
             throw new \InvalidArgumentException(
                 "Expected variable, got '".get_class($arguments[0])."' when using a relational schema.");
         }
-
     }
 
     /**
