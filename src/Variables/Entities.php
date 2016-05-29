@@ -14,7 +14,9 @@ use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
 abstract class Entities extends Variable {
     /**
-     * Identifier for the type.
+     * Get an id for the type of entity.
+     *
+     * This must return a string without whitespaces.
      *
      * @return  string
      */
