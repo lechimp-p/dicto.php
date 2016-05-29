@@ -12,7 +12,7 @@ namespace Lechimp\Dicto\Variables;
 
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
-class AsWellAs extends Compound {
+class AsWellAs extends Combinator {
     /**
      * @inheritdocs
      */

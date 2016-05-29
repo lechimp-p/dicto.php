@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-abstract class Compound extends Variable {
+abstract class Combinator extends Variable {
     /**
      * @var Variable
      */
