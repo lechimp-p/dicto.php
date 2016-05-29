@@ -257,7 +257,7 @@ class RT {
     }
 
     /**
-     * Try to get an entity by name.
+     * Try to get a constructor for an entity by name.
      *
      * @param   string  $name
      * @return  Entities|null
