@@ -61,6 +61,10 @@ class RT {
      */
     private $config;
 
+    // TODO: This known_XY stuff and the corresponding getters
+    // should be moved to a distinct object that could implement
+    // some kind of AvailableDefinitions interface.
+
     /**
      * @var array<string,Schema>
      */
