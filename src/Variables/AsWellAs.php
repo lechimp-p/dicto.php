@@ -40,5 +40,4 @@ class AsWellAs extends Combinator {
                 );
         }
     }
-
 }
