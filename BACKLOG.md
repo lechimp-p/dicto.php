@@ -37,3 +37,9 @@
 * When saying "only SomeClasses can depend on SomeThing" we certainly mean, that
   also methods in SomeClasses can depend on SomeThing, but currently the analysis
   does not reflect this.
+
+# Reporting
+* Make the app aware of previous runs, most probably best done by using git infos.
+  It would then be possible to not reindex the codebase when just a new rule was
+  added. It would also be possible to display the commit an issue was introduced
+  or to get to know how many new issues were introduced with a commit.
