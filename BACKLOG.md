@@ -77,3 +77,6 @@
   anyway.
 * It also could be nice to use a hash of the config between runs, to at least warn
   the user when the config has changed.
+* Instead of storing a real ruleset in the runinfo, i could also use a RuleSetInfo
+  that doesn't contain real rules. This would mitigate the requirement to build a
+  parser.

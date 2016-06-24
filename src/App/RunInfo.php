@@ -10,8 +10,6 @@
 
 namespace Lechimp\Dicto\App;
 
-use Lechimp\Dicto\RulesRuleset;
-
 /**
  * Information about one run of the analysis.
  */
@@ -22,11 +20,11 @@ class RunInfo {
     private $commit_hash;
 
     /**
-     * @var RuleSet
+     * @var RuleSetInfo
      */
     private $rule_set;
 
-    public function __construct($commit_hash, RuleSet $rule_set) {
+    public function __construct($commit_hash, RuleSetInfo $rule_set) {
         assert('is_string($commit_hash)');
         $this->commit_hash = $commit_hash;
         $this->rule_set = $rule_set;
@@ -40,7 +38,7 @@ class RunInfo {
     }
 
     /**
-     * @return  RuleSet
+     * @return  RuleSetInfo
      */
     public function rule_set() {
         return $this->rule_set;
