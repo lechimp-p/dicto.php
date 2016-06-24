@@ -32,6 +32,8 @@
   log.
 * Vars could be cleaned up; Classes, Methods, etc. are only required for pattern
   matching in Query::compile_var.
+* Every submodule could have its own Config, those could then be combined to the
+  big global config.
 
 # Issues
 * When saying "only SomeClasses can depend on SomeThing" we certainly mean, that
