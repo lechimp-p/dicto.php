@@ -24,7 +24,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     protected $project_root_path;
 
     /**
-     * @var I\Insert|null
+     * @var I\Insert
      */
     protected $insert;
 
@@ -100,11 +100,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @param   string  $path
      */
     public function index_file($path) {
-        if ($this->insert === null) {
-            throw new \RuntimeException(
-                "Set an inserter to be used before starting to index files.");
-        }
-
         $content = file_get_contents($this->project_root_path."/$path");
         if ($content === false) {
             throw \InvalidArgumentException("Can't read file $path.");
