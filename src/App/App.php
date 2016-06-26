@@ -114,17 +114,22 @@ class App {
                 );
         };
 
-        $container["indexer"] = function($c) {
-            $indexer = new \Lechimp\Dicto\Indexer\Indexer
+        $container["indexer_factory"] = function($c) {
+            return new \Lechimp\Dicto\Indexer\IndexerFactory
                 ( $c["php_parser"]
                 , $c["config"]->project_root()
-                , $c["database"]
                 );
-            // TODO: Make this more dynamic.
-            (new \Lechimp\Dicto\Rules\ContainText())->register_listeners($indexer);
-            (new \Lechimp\Dicto\Rules\DependOn())->register_listeners($indexer);
-            (new \Lechimp\Dicto\Rules\Invoke())->register_listeners($indexer);
-            return $indexer;
+        };
+
+        $container["indexer"] = function($c) {
+            return $c["indexer_factory"]->build
+                ( $c["database"]
+                , array
+                    ( new \Lechimp\Dicto\Rules\ContainText()
+                    , new \Lechimp\Dicto\Rules\DependOn()
+                    , new \Lechimp\Dicto\Rules\Invoke()
+                    )
+                );
         };
 
         $container["php_parser"] = function($c) {
