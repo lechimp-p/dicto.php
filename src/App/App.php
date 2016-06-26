@@ -148,7 +148,7 @@ class App {
                 ( array
                     ( "driver" => "pdo_sqlite"
                     , "memory" => false
-                    , "path" => $c["config"]->project_root()."/index.sqlite"
+                    , "path" => $c["config"]->project_storage()."/index.sqlite"
                     )
                 );
         };
