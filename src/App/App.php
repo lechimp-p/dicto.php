@@ -146,12 +146,17 @@ class App {
                 );
         };
 
-        $container["analyzer"] = function($c) {
-            return new \Lechimp\Dicto\Analysis\Analyzer
+        $container["analyzer_factory"] = function($c) {
+            return new \Lechimp\Dicto\Analysis\AnalyzerFactory
                 ( $c["log"]
-                , $c["ruleset"]
-                , $c["database"]
                 , $c["report_generator"]
+                );
+        };
+
+        $container["analyzer"] = function($c) {
+            return $c["analyzer_factory"]->build
+                ( $c["ruleset"]
+                , $c["database"]
                 );
         };
 
