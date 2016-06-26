@@ -15,7 +15,6 @@ use Lechimp\Dicto\Rules\Ruleset;
 use Symfony\Component\Yaml\Yaml;
 use Pimple\Container;
 use PhpParser\ParserFactory;
-use Doctrine\DBAL\DriverManager;
 
 /**
  * The App to be run from a script.
@@ -136,20 +135,13 @@ class App {
             return (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         };
 
-        $container["database"] = function($c) {
-            $db = new DB($c["connection"]);
-            $db->init_sqlite_regexp();
-            $db->maybe_init_database_schema();
-            return $db;
+        $container["database_factory"] = function($c) {
+            return new DBFactory();
         };
 
-        $container["connection"] = function($c) {
-            return DriverManager::getConnection
-                ( array
-                    ( "driver" => "pdo_sqlite"
-                    , "memory" => false
-                    , "path" => $c["config"]->project_storage()."/index.sqlite"
-                    )
+        $container["database"] = function($c) {
+            return $c["database_factory"]->build
+                ( $c["config"]->project_storage()."/index.sqlite"
                 );
         };
 
