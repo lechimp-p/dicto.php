@@ -97,23 +97,25 @@ class RT {
             , $c->name() => $c
             );
         // TODO: This needs to go somewhere else and must be more dynamic.
+        // This is also creepy, as i need to instantiate the entities.
+        // Maybe id should go static again?
         $this->known_entities = array
-            ( Classes::id() => function($name) {
+            ( (new Classes("V"))->id() => function($name) {
                     return new Classes($name);
                 }
-            , Files::id() => function($name) {
+            , (new Files("V"))->id() => function($name) {
                     return new Files($name);
                 }
-            , Functions::id() => function($name) {
+            , (new Functions("V"))->id() => function($name) {
                     return new Functions($name);
                 }
-            , Globals::id() => function($name) {
+            , (new Globals("V"))->id() => function($name) {
                     return new Globals($name);
                 }
-            , LanguageConstruct::id() => function($name, $which) {
+            , (new LanguageConstruct("V", "N"))->id() => function($name, $which) {
                     return new LanguageConstruct($name, $which);
                 }
-            , Methods::id() => function($name) {
+            , (new Methods("V"))->id() => function($name) {
                     return new Methods($name);
                 }
             );
