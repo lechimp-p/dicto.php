@@ -45,16 +45,6 @@ class NullInsert implements Insert {
     public function relation($name, $entity_id, $reference_id){return 0;}
 }
 
-function tempdir() {
-    $name = tempnam(sys_get_temp_dir(), "php-dicto");
-    if (file_exists($name)) {
-        unlink($name);
-    }
-    mkdir($name);
-    assert('is_dir($name)');
-    return $name;
-}
-
 class EngineTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->root = __DIR__."/data/src";
