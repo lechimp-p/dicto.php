@@ -10,12 +10,11 @@
 
 namespace Lechimp\Dicto\Indexer;
 
-use Lechimp\Dicto\Indexer as I;
 use Lechimp\Dicto\Variables\Variable;
 use PhpParser\Node as N;
 
 /**
- * Implementation of Indexer with PhpParser.
+ * Creates an index of source files.
  */
 class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     /**
@@ -24,7 +23,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     protected $project_root_path;
 
     /**
-     * @var I\Insert
+     * @var Insert
      */
     protected $insert;
 
