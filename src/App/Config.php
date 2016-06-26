@@ -46,18 +46,10 @@ class Config implements ConfigurationInterface {
                         ->scalarNode("root")
                             ->isRequired()
                         ->end()
-                    ->end()
-                ->end()
-                ->arrayNode("sqlite")
-                    ->children()
-                        ->booleanNode("memory")
-                            ->defaultValue(true)
-                        ->end()
-                        ->scalarNode("path")
-                            ->defaultValue(null)
+                        ->scalarNode("storage")
+                            ->isRequired()
                         ->end()
                     ->end()
-                    ->addDefaultsIfNotSet()
                 ->end()
                 ->arrayNode("analysis")
                     ->children()
@@ -83,17 +75,10 @@ class Config implements ConfigurationInterface {
     }
 
     /**
-     * @return  bool 
+     * @return  string
      */
-    public function sqlite_memory() {
-        return $this->values["sqlite"]["memory"];
-    }
-
-    /**
-     * @return  string|null
-     */
-    public function sqlite_path() {
-        return $this->values["sqlite"]["path"];
+    public function project_storage() {
+        return $this->values["project"]["storage"];
     }
 
     /**

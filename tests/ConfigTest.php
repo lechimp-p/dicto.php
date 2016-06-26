@@ -14,11 +14,8 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
     public function test_smoke() {
         $config = new Config(array(array
             ( "project" => array
-                ( "root" => "/root/dir"
-                )
-            , "sqlite" => array
-                ( "memory" => true
-                , "path" => "/sqlite/path"
+                ( "root"    => "/root/dir"
+                , "storage" => "/data"
                 )
             , "analysis" => array
                 ( "ignore" => array
@@ -28,17 +25,15 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             )
         ));
         $this->assertEquals("/root/dir", $config->project_root());
-        $this->assertEquals(true, $config->sqlite_memory());
-        $this->assertEquals("/sqlite/path", $config->sqlite_path());
+        $this->assertEquals("/data", $config->project_storage());
         $this->assertEquals(array(".*\\.omit_me"), $config->analysis_ignore());
     }
 
     public function test_merge() {
         $config = new Config(array
             ( array
-                ( "sqlite" => array
-                    ( "memory" => true
-                    , "path" => "/sqlite/path"
+                ( "project" => array
+                    ( "storage" => "/data"
                     )
                 )
             , array
@@ -54,8 +49,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             )
         );
         $this->assertEquals("/root/dir", $config->project_root());
-        $this->assertEquals(true, $config->sqlite_memory());
-        $this->assertEquals("/sqlite/path", $config->sqlite_path());
+        $this->assertEquals("/data", $config->project_storage());
         $this->assertEquals(array(".*\\.omit_me"), $config->analysis_ignore());
     }
 
