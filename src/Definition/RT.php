@@ -120,11 +120,15 @@ class RT {
                 }
             );
         // TODO: This needs to go somewhere else and must be more dynamic.
+        // This is also creepy, as i need to instantiate the entities.
+        // Maybe id should go static again?
+        $as_well_as = new AsWellAs("V", new Classes("V"), new Classes("V"));
+        $but_not = new ButNot("V", new Classes("V"), new Classes("V"));
         $this->known_combinators = array
-            ( AsWellAs::id() => function($name, $l, $r) {
+            ( $as_well_as->id() => function($name, $l, $r) {
                     return new AsWellAs($name, $l, $r);
                 }
-            , ButNot::id() => function($name, $l, $r) {
+            , $but_not->id() => function($name, $l, $r) {
                     return new ButNot($name, $l, $r);
                 }
             );
