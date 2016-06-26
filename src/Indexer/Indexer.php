@@ -127,7 +127,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                 return true;
             })
             ->foldFiles(null, function($_, File $file) {
-                $this->log->info("indexing: ".$file->path());
                 try {
                     $this->index_file($file->path());
                 }
@@ -154,6 +153,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @return  null
      */
     public function index_file($path) {
+        $this->log->info("indexing: ".$path);
         $content = file_get_contents($this->project_root_path."/$path");
         if ($content === false) {
             throw \InvalidArgumentException("Can't read file $path.");

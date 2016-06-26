@@ -118,17 +118,17 @@ class App {
                 ( $c["log"]
                 , $c["php_parser"]
                 , $c["config"]->project_root()
+                , array
+                    ( new \Lechimp\Dicto\Rules\ContainText()
+                    , new \Lechimp\Dicto\Rules\DependOn()
+                    , new \Lechimp\Dicto\Rules\Invoke()
+                    )
                 );
         };
 
         $container["indexer"] = function($c) {
             return $c["indexer_factory"]->build
                 ( $c["database"]
-                , array
-                    ( new \Lechimp\Dicto\Rules\ContainText()
-                    , new \Lechimp\Dicto\Rules\DependOn()
-                    , new \Lechimp\Dicto\Rules\Invoke()
-                    )
                 );
         };
 
@@ -150,13 +150,13 @@ class App {
             return new \Lechimp\Dicto\Analysis\AnalyzerFactory
                 ( $c["log"]
                 , $c["report_generator"]
+                , $c["ruleset"]
                 );
         };
 
         $container["analyzer"] = function($c) {
             return $c["analyzer_factory"]->build
-                ( $c["ruleset"]
-                , $c["database"]
+                ( $c["database"]
                 );
         };
 

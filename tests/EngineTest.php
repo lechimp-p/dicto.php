@@ -10,16 +10,31 @@
 
 use Lechimp\Dicto\Dicto as Dicto;
 use Lechimp\Dicto\App\Engine;
+use Lechimp\Dicto\App\DBFactory;
+use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Analyzer;
+use Lechimp\Dicto\Analysis\AnalyzerFactory;
 use Lechimp\Dicto\Indexer\Indexer;
+use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\App\Config;
+use Lechimp\Dicto\Rules\RuleSet;
 use PhpParser\ParserFactory;
 use Doctrine\DBAL\DriverManager;
 use Psr\Log\LogLevel;
 
 require_once(__DIR__."/LoggerMock.php");
 require_once(__DIR__."/tempdir.php");
+
+class AnalyzerFactoryMock extends AnalyzerFactory {
+    public $analyzer_mocks = array();
+    public function __construct() {}
+    public function build(Query $query) {
+        $analyzer_mock = new AnalyzerMock();
+        $this->analyzer_mocks[] = $analyzer_mock;
+        return $analyzer_mock;
+    }
+}
 
 class AnalyzerMock extends Analyzer {
     public $run_called = false;
@@ -29,20 +44,45 @@ class AnalyzerMock extends Analyzer {
     }
 }
 
+class IndexerFactoryMock extends IndexerFactory {
+    public $indexer_mocks = array();
+    public function __construct() {}
+    public function build(Insert $insert) {
+        $indexer_mock = new IndexerMock();
+        $this->indexer_mocks[] = $indexer_mock;
+        return $indexer_mock;
+    }
+}
+
 class IndexerMock extends Indexer {
     public $indexed_files = array();
-    public function __construct() {}
+    public function __construct() {
+        $this->log = new LoggerMock();
+    }
     public function index_file($path) {
         $this->indexed_files[] = $path;
     }
 }
 
-class NullInsert implements Insert {
+class DBFactoryMock extends DBFactory {
+    public $paths = array();
+    public function build($path) {
+        $this->paths[] = $path;
+        return new NullDB();
+    }
+}
+
+class NullDB implements Insert, Query {
     public function source_file($name, $content){return 0;}
     public function entity($type, $name, $file, $start_line, $end_line){return 0;}
     public function reference($type, $name, $file, $line){return 0;}
     public function get_reference($type, $name, $file, $line){return 0;}
     public function relation($name, $entity_id, $reference_id){return 0;}
+    public function source_file_table() { return "source"; }
+    public function entity_table() { return "entities"; }
+    public function reference_table() { return "references"; }
+    public function relations_table() { return "relations"; }
+    public function builder() { throw new \RuntimeException("PANIC!"); }
 }
 
 class EngineTest extends PHPUnit_Framework_TestCase {
@@ -60,9 +100,16 @@ class EngineTest extends PHPUnit_Framework_TestCase {
                 )
             )));
         $this->log = new LoggerMock();
-        $this->indexer = new IndexerMock();
-        $this->analyzer = new AnalyzerMock();
-        $this->engine = new Engine($this->log, $this->config, $this->indexer, $this->analyzer);
+        $this->db_factory = new DBFactoryMock();
+        $this->indexer_factory = new IndexerFactoryMock();
+        $this->analyzer_factory = new AnalyzerFactoryMock();
+        $this->engine = new Engine
+            ( $this->log
+            , $this->config
+            , $this->db_factory
+            , $this->indexer_factory
+            , $this->analyzer_factory
+            );
     }
 
     public function test_smoke() {
@@ -72,53 +119,6 @@ class EngineTest extends PHPUnit_Framework_TestCase {
 
     public function test_calls_analyzer() {
         $this->engine->run();
-        $this->assertTrue($this->analyzer->run_called);
-    }
-
-    public function test_logging() {
-        $this->engine->run();
-        $expected_files = array_filter(scandir($this->root), function($n) {
-            return $n != "." && $n != ".." && $n != "A1.omit_me";
-        });
-
-        foreach ($expected_files as $e) {
-            $expected = array(LogLevel::INFO, "indexing: $e", array());
-            $this->assertContains($expected, $this->log->log);
-        }
-    }
-
-    public function test_faulty_php_logging() {
-        $root = __DIR__."/data/src";
-        $config = new Config(array(array
-            ( "project" => array
-                ( "root" => $this->root
-                , "storage" => tempdir()
-                )
-            , "analysis" => array
-                ( "ignore" => array
-                    ( ".*\.omit_me"
-                    )
-                )
-            )));
-        $log = new LoggerMock();
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        $indexer = new Indexer($parser, $root, new NullInsert());
-        $analyzer = new AnalyzerMock();
-        $engine = new Engine($log, $config, $indexer, $analyzer);
-
-        $engine->run();
-
-        // Did it still index all files?
-        $expected_files = array_filter(scandir($this->root), function($n) {
-            return $n != "." && $n != ".." && $n != "A1.omit_me";
-        });
-
-        foreach ($expected_files as $e) {
-            $expected = array(LogLevel::INFO, "indexing: $e", array());
-            $this->assertContains($expected, $log->log);
-        }
-
-        $expected_error = array(LogLevel::ERROR, "in faulty.php: Syntax error, unexpected T_FUNCTION, expecting '{' on line 4", array());
-        $this->assertContains($expected_error, $log->log);
+        $this->assertTrue($this->analyzer_factory->analyzer_mocks[0]->run_called);
     }
 }

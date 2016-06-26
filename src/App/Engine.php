@@ -10,13 +10,8 @@
 
 namespace Lechimp\Dicto\App;
 
-use Lechimp\Dicto\Indexer\Indexer;
-use Lechimp\Dicto\Analysis\Analyzer;
-use League\Flysystem\Adapter\Local;
-use League\Flysystem\Filesystem;
-use Lechimp\Flightcontrol\Flightcontrol;
-use Lechimp\Flightcontrol\File;
-use Lechimp\Flightcontrol\FSObject;
+use Lechimp\Dicto\Indexer\IndexerFactory;
+use Lechimp\Dicto\Analysis\AnalyzerFactory;
 use Doctrine\DBAL\DriverManager;
 use Psr\Log\LoggerInterface as Log;
 
@@ -35,20 +30,26 @@ class Engine {
     protected $config;
 
     /**
-     * @var Indexer
+     * @var DBFactory
      */
-    protected $indexer;
+    protected $db_factory;
 
     /**
-     * @var Analyzer
+     * @var IndexerFactory
      */
-    protected $analyzer;
+    protected $indexer_factory;
 
-    public function __construct(Log $log, Config $config, Indexer $indexer, Analyzer $analyzer) {
+    /**
+     * @var AnalyzerFactory
+     */
+    protected $analyzer_factory;
+
+    public function __construct(Log $log, Config $config, DBFactory $db_factory, IndexerFactory $indexer_factory, AnalyzerFactory $analyzer_factory) {
         $this->log = $log;
         $this->config = $config;
-        $this->indexer = $indexer;
-        $this->analyzer = $analyzer;
+        $this->db_factory = $db_factory;
+        $this->indexer_factory = $indexer_factory;
+        $this->analyzer_factory = $analyzer_factory;
     }
 
     /**
@@ -57,18 +58,21 @@ class Engine {
      * @return null
      */
     public function run() {
-        $this->run_indexing();
-        $this->run_analysis();
+        $db = $this->db_factory->build($this->config->project_storage()."/index.sqlite");
+        $this->run_indexing($db);
+        $this->run_analysis($db);
     }
 
-    protected function run_indexing() {
-        $this->indexer->index_directory
+    protected function run_indexing($db) {
+        $indexer = $this->indexer_factory->build($db);
+        $indexer->index_directory
             ( $this->config->project_root()
             , $this->config->analysis_ignore()
             );
     }
 
-    protected function run_analysis() {
-        $this->analyzer->run();
+    protected function run_analysis($db) {
+        $analyzer = $this->analyzer_factory->build($db);
+        $analyzer->run();
     }
 }

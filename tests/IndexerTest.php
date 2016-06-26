@@ -553,4 +553,40 @@ PHP;
             $this->assertContains($e, $this->indexer->indexed_files);
         }
     }
+
+    // TODO: make this work again.
+/*    public function test_faulty_php_logging() {
+        $root = __DIR__."/data/src";
+        $config = new Config(array(array
+            ( "project" => array
+                ( "root" => $this->root
+                , "storage" => tempdir()
+                )
+            , "analysis" => array
+                ( "ignore" => array
+                    ( ".*\.omit_me"
+                    )
+                )
+            )));
+        $log = new LoggerMock();
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $indexer = new Indexer($parser, $root, new NullDB());
+        $analyzer = new AnalyzerMock();
+        $engine = new Engine($log, $config, $indexer, $analyzer);
+
+        $engine->run();
+
+        // Did it still index all files?
+        $expected_files = array_filter(scandir($this->root), function($n) {
+            return $n != "." && $n != ".." && $n != "A1.omit_me";
+        });
+
+        foreach ($expected_files as $e) {
+            $expected = array(LogLevel::INFO, "indexing: $e", array());
+            $this->assertContains($expected, $log->log);
+        }
+
+        $expected_error = array(LogLevel::ERROR, "in faulty.php: Syntax error, unexpected T_FUNCTION, expecting '{' on line 4", array());
+        $this->assertContains($expected_error, $log->log);
+    }*/
 }

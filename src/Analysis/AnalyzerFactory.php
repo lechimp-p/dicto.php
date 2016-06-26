@@ -10,6 +10,9 @@
 
 namespace Lechimp\Dicto\Analysis;
 
+use Lechimp\Dicto\Analysis\Query;
+use Lechimp\Dicto\Rules\RuleSet;
+
 /**
  * Creates analyzers.
  */
@@ -24,12 +27,19 @@ class AnalyzerFactory {
      */
     protected $generator;
 
+    /**
+     * @var Ruleset
+     */
+    protected $ruleset;
+
     public function __construct
                         ( Log $log
                         , ReportGenerator $generator
+                        , RuleSet $ruleset
                         ) {
         $this->log = $log;
         $this->generator = $generator;
+        $this->ruleset = $ruleset;
     }
 
     /**
@@ -37,7 +47,7 @@ class AnalyzerFactory {
      * @param   Query       $query
      * @return  Analyzer
      */
-    public function build(RuleSet $ruleset, Query $query) {
-        return new Analyzer($this->log, $ruleset, $query, $this->generator);
+    public function build(Query $query) {
+        return new Analyzer($this->log, $this->ruleset, $query, $this->generator);
     }
 } 
