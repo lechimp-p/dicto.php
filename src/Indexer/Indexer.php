@@ -12,11 +12,17 @@ namespace Lechimp\Dicto\Indexer;
 
 use Lechimp\Dicto\Variables\Variable;
 use PhpParser\Node as N;
+use Psr\Log\LoggerInterface as Log;
 
 /**
  * Creates an index of source files.
  */
 class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
+    /**
+     * @var Log
+     */
+    protected $log;
+
     /**
      * @var string
      */
@@ -75,7 +81,8 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     /**
      * @param   string  $project_root_path
      */
-    public function __construct(\PhpParser\Parser $parser, $project_root_path, Insert $insert) {
+    public function __construct(Log $log, \PhpParser\Parser $parser, $project_root_path, Insert $insert) {
+        $this->log = $log;
         $this->parser = $parser;
         assert('is_string($project_root_path)');
         $this->project_root_path = $project_root_path;
@@ -95,7 +102,50 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     }
 
     /**
+     * Index a directory.
+     *
      * @param   string  $path
+     * @param   array   $ignore_paths
+     * @return  null
+     */
+    protected function index_directory($path, array $ignore_paths) {
+        $fc = $this->init_flightcontrol($path);
+        $fc->directory("/")
+            ->recurseOn()
+            ->filter(function(FSObject $obj) use (&$ignore_paths) {
+                foreach ($ignore_paths as $pattern) {
+                    if (preg_match("%$pattern%", $obj->path()) !== 0) {
+                        return false;
+                    }
+                }
+                return true;
+            })
+            ->foldFiles(null, function($_, File $file) {
+                $this->log->info("indexing: ".$file->path());
+                try {
+                    $this->index_file($file->path());
+                }
+                catch (\PhpParser\Error $e) {
+                    $this->log->error("in ".$file->path().": ".$e->getMessage());
+                }
+            });
+
+    }
+
+    /**
+     * Initialize the filesystem abstraction.
+     *
+     * @return  Flightcontrol
+     */
+    public function init_flightcontrol($path) {
+        $adapter = new Local($path, LOCK_EX, Local::SKIP_LINKS);
+        $flysystem = new Filesystem($adapter);
+        return new Flightcontrol($flysystem);
+    }
+
+    /**
+     * @param   string  $path
+     * @return  null
      */
     public function index_file($path) {
         $content = file_get_contents($this->project_root_path."/$path");

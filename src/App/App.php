@@ -115,7 +115,8 @@ class App {
 
         $container["indexer_factory"] = function($c) {
             return new \Lechimp\Dicto\Indexer\IndexerFactory
-                ( $c["php_parser"]
+                ( $c["log"]
+                , $c["php_parser"]
                 , $c["config"]->project_root()
                 );
         };

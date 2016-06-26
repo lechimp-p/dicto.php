@@ -10,10 +10,17 @@
 
 namespace Lechimp\Dicto\Indexer;
 
+use Psr\Log\LoggerInterface as Log;
+
 /**
  * Creates Indexers.
  */
 class IndexerFactory {
+    /**
+     * @var Log
+     */
+    protected $log;
+
     /**
      * @var \PhpParser\Parser
      */
@@ -24,7 +31,8 @@ class IndexerFactory {
      */
     protected $project_root_path;
 
-    public function __construct(\PhpParser\Parser $parser, $project_root_path) {
+    public function __construct(Log $log, \PhpParser\Parser $parser, $project_root_path) {
+        $this->log = $log;
         $this->parser = $parser;
         assert('is_string($project_root_path)');
         $this->project_root_path = $project_root_path;
@@ -34,7 +42,12 @@ class IndexerFactory {
      * @return  Indexer
      */
     public function build(Insert $insert, array $schemas) {
-        $indexer = new Indexer($this->parser, $this->project_root_path, $insert);
+        $indexer = new Indexer
+            ( $this->log
+            , $this->parser
+            , $this->project_root_path
+            , $insert
+            );
         foreach ($schemas as $schema) {
             assert('$schema instanceof \Lechimp\Dicto\Rules\Schema');
             $schema->register_listeners($indexer);

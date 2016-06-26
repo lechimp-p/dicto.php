@@ -17,6 +17,8 @@ use Lechimp\Dicto\Indexer\CachesReferences;
 use PhpParser\ParserFactory;
 use PhpParser\Node as N;
 
+require_once(__DIR__."/LoggerMock.php");
+
 define("__IndexerTest_PATH_TO_SRC", __DIR__."/data/src");
 
 class InsertMock implements Insert {
@@ -102,12 +104,20 @@ class IndexerTest extends PHPUnit_Framework_TestCase {
 
     public function setUp() {
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $this->logger_mock = new LoggerMock();
         $this->insert_mock = new InsertMock();
-        $this->indexer = new Indexer($parser, IndexerTest::PATH_TO_SRC, $this->insert_mock);
+        $this->indexer = new Indexer
+            ( $this->logger_mock
+            , $parser
+            , IndexerTest::PATH_TO_SRC
+            , $this->insert_mock
+            );
         (new \Lechimp\Dicto\Rules\ContainText())->register_listeners($this->indexer);
         (new \Lechimp\Dicto\Rules\DependOn())->register_listeners($this->indexer);
         (new \Lechimp\Dicto\Rules\Invoke())->register_listeners($this->indexer);
     }
+
+    // TODO: add tests for logging
 
     public function test_is_indexer() {
         $this->assertInstanceOf("\\Lechimp\\Dicto\\Indexer\\Indexer", $this->indexer);

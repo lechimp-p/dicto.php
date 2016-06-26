@@ -62,40 +62,13 @@ class Engine {
     }
 
     protected function run_indexing() {
-        $fc = $this->init_flightcontrol();
-        $fc->directory("/")
-            ->recurseOn()
-            ->filter(function(FSObject $obj) {
-                foreach ($this->config->analysis_ignore() as $pattern) {
-                    if (preg_match("%$pattern%", $obj->path()) !== 0) {
-                        return false;
-                    }
-                }
-                return true;
-            })
-            ->foldFiles(null, function($_, File $file) {
-                $this->log->info("indexing: ".$file->path());
-                try {            
-                    $this->indexer->index_file($file->path());
-                }
-                catch (\PhpParser\Error $e) {
-                    $this->log->error("in ".$file->path().": ".$e->getMessage());
-                }
-            });
+        $this->indexer->index_directory
+            ( $this->config->project_root()
+            , $this->config->analysis_ignore()
+            );
     }
 
     protected function run_analysis() {
         $this->analyzer->run();
-    }
-
-    /**
-     * Initialize the filesystem abstraction.
-     *
-     * @return  Flightcontrol
-     */
-    public function init_flightcontrol() {
-        $adapter = new Local($this->config->project_root(), LOCK_EX, Local::SKIP_LINKS);
-        $flysystem = new Filesystem($adapter);
-        return new Flightcontrol($flysystem);
     }
 }
