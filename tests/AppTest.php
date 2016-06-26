@@ -13,7 +13,7 @@ use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\Rules\Ruleset;
 
-require_once(__DIR__."/EngineTest.php");
+require_once(__DIR__."/tempdir.php");
 
 class _App extends App {
     public function _create_dic($ruleset, $configs) {

@@ -19,6 +19,7 @@ use Doctrine\DBAL\DriverManager;
 use Psr\Log\LogLevel;
 
 require_once(__DIR__."/LoggerMock.php");
+require_once(__DIR__."/tempdir.php");
 
 class AnalyzerMock extends Analyzer {
     public $run_called = false;
