@@ -11,6 +11,7 @@
 namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\App\RuleLoader;
+use Lechimp\Dicto\Rules\Ruleset;
 use Symfony\Component\Yaml\Yaml;
 use Pimple\Container;
 use PhpParser\ParserFactory;
@@ -21,17 +22,13 @@ use Doctrine\DBAL\DriverManager;
  */
 class App {
     /**
-     * @var Container
+     * @var RuleLoader
      */
-    protected $dic;
+    protected $rule_loader;
 
-    public function __construct(\Closure $postprocess_dic = null) {
+    public function __construct() {
         ini_set('xdebug.max_nesting_level', 200);
-
-        if ($postprocess_dic === null) {
-            $postprocess_dic = function($c) { return $c; };
-        }
-        $this->dic = $this->create_dic($postprocess_dic); 
+        $this->rule_loader = new RuleLoader();
     }
 
     /**
@@ -55,9 +52,9 @@ class App {
 
         $this->load_extra_configs($params, $configs);
 
-        $this->dic["config"] = $this->create_config($configs);
-        $this->dic["ruleset"] = $ruleset;
-        $this->dic["engine"]->run();
+        $dic = $this->create_dic($ruleset, $configs);
+
+        $dic["engine"]->run();
     }
 
     /**
@@ -70,8 +67,7 @@ class App {
         if (!file_exists($path)) {
             throw new \RuntimeException("Unknown rule-file '$path'");
         }
-        $rule_loader = $this->dic["rule_loader"];
-        list($ruleset, $config) = $rule_loader->load_rules_from($path);
+        list($ruleset, $config) = $this->rule_loader->load_rules_from($path);
         assert('is_array($config)');
         assert('$ruleset instanceof \\Lechimp\\Dicto\\Rules\\RuleSet');
         return array($ruleset, $config);
@@ -94,27 +90,20 @@ class App {
     }
 
     /**
-     * Create a validated config from arrays containing config chunks.
-     *
-     * @param   array[] $configs
-     * @return  Config
-     */
-    protected function create_config(array $configs) {
-        return new Config($configs);
-    }
-
-    /**
      * Create and initialize the DI-container.
      *
-     * @param   \Closure    $postprocess_dic    Closure to postprocess the DI.
+     * @param   RuleSet     $ruleset
+     * @param   array       &$configs
      * @return  Container
      */
-    protected function create_dic(\Closure $postprocess_dic) {
+    protected function create_dic(RuleSet $ruleset, array &$configs) {
         $container = new Container();
 
-        $container["rule_loader"] = function($c) {
-            return new RuleLoader();
+        $container["config"] = function ($c) use (&$configs) {
+            return new Config($configs);
         };
+
+        $container["ruleset"] = $ruleset;
 
         $container["engine"] = function($c) {
             return new Engine
@@ -153,8 +142,8 @@ class App {
             return DriverManager::getConnection
                 ( array
                     ( "driver" => "pdo_sqlite"
-                    , "memory" => $c["config"]->sqlite_memory()
-                    , "path" => $c["config"]->sqlite_path()
+                    , "memory" => false
+                    , "path" => $c["config"]->project_root()."/index.sqlite"
                     )
                 );
         };
@@ -176,11 +165,6 @@ class App {
             return new CLIReportGenerator();
         };
 
-        $container = $postprocess_dic($container);
-        if (!($container instanceof Container)) {
-            throw new \RuntimeException
-                ("DIC postprocessor did not return a Container.");
-        }
         return $container;
     }
 }
