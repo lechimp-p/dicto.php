@@ -27,6 +27,8 @@ abstract class Schema {
      *
      * This must return a string without whitespaces.
      *
+     * TODO: This most probably should go to Relation.
+     *
      * @return  string
      */
     abstract public function name(); 

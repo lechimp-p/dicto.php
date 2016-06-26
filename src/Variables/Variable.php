@@ -14,7 +14,6 @@ use Lechimp\Dicto\Definition as Def;
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 use Doctrine\DBAL\Query\Expression\CompositeExpression;
 
-
 abstract class Variable extends Def\Definition {
     const CLASS_TYPE = "classes";
     const FILE_TYPE = "files";
