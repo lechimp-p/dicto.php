@@ -16,7 +16,7 @@ class ButNot extends Combinator {
     /**
      * @inheritdocs
      */
-    static public function id() {
+    public function id() {
         return "but_not";
     }
 

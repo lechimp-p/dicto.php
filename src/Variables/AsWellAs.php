@@ -16,7 +16,7 @@ class AsWellAs extends Combinator {
     /**
      * @inheritdocs
      */
-    static public function id() {
+    public function id() {
         return "as_well_as";
     }
 
