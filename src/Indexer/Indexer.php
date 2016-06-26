@@ -13,6 +13,11 @@ namespace Lechimp\Dicto\Indexer;
 use Lechimp\Dicto\Variables\Variable;
 use PhpParser\Node as N;
 use Psr\Log\LoggerInterface as Log;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
+use Lechimp\Flightcontrol\Flightcontrol;
+use Lechimp\Flightcontrol\File;
+use Lechimp\Flightcontrol\FSObject;
 
 /**
  * Creates an index of source files.
@@ -24,6 +29,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     protected $log;
 
     /**
+     * TODO: remove this, we do not need it.
      * @var string
      */
     protected $project_root_path;
@@ -108,7 +114,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @param   array   $ignore_paths
      * @return  null
      */
-    protected function index_directory($path, array $ignore_paths) {
+    public function index_directory($path, array $ignore_paths) {
         $fc = $this->init_flightcontrol($path);
         $fc->directory("/")
             ->recurseOn()

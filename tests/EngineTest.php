@@ -75,18 +75,6 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->analyzer->run_called);
     }
 
-    public function test_indexes_files() {
-        $this->engine->run();
-        $expected = array_filter(scandir($this->root), function($n) {
-            return $n != "." && $n != ".." && $n != "A1.omit_me";
-        });
-
-        $this->assertEquals(count($expected), count($this->indexer->indexed_files));
-        foreach ($expected as $e) {
-            $this->assertContains($e, $this->indexer->indexed_files);
-        }
-    }
-
     public function test_logging() {
         $this->engine->run();
         $expected_files = array_filter(scandir($this->root), function($n) {

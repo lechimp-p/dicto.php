@@ -99,16 +99,26 @@ class InsertMock implements Insert {
     }
 } 
 
+
+class IndexerNoIndexFile extends Indexer {
+    public $indexed_files = array();
+
+    public function index_file($path) {
+        $this->indexed_files[] = $path;
+    }
+}
+
+
 class IndexerTest extends PHPUnit_Framework_TestCase {
     const PATH_TO_SRC = __IndexerTest_PATH_TO_SRC;
 
     public function setUp() {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $this->parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         $this->logger_mock = new LoggerMock();
         $this->insert_mock = new InsertMock();
         $this->indexer = new Indexer
             ( $this->logger_mock
-            , $parser
+            , $this->parser
             , IndexerTest::PATH_TO_SRC
             , $this->insert_mock
             );
@@ -523,5 +533,24 @@ PHP;
         $this->assertEquals($enter_e, array_reverse($leave_e));
         $this->assertEquals(array("a_bogus_function"), $enter_m);
         $this->assertEquals(array("a_bogus_function"), $leave_m);
+    }
+
+    public function test_index_directory() {
+        $this->indexer = new IndexerNoIndexFile
+            ( $this->logger_mock
+            , $this->parser
+            , IndexerTest::PATH_TO_SRC
+            , $this->insert_mock
+            );
+
+        $this->indexer->index_directory(IndexerTest::PATH_TO_SRC, array(".*\\.omit_me"));
+        $expected = array_filter(scandir(IndexerTest::PATH_TO_SRC), function($n) {
+            return $n != "." && $n != ".." && $n != "A1.omit_me";
+        });
+
+        $this->assertEquals(count($expected), count($this->indexer->indexed_files));
+        foreach ($expected as $e) {
+            $this->assertContains($e, $this->indexer->indexed_files);
+        }
     }
 }
