@@ -30,6 +30,9 @@ class IndexerFactory {
         $this->project_root_path = $project_root_path;
     }
 
+    /**
+     * @return  Indexer
+     */
     public function build(Insert $insert, array $schemas) {
         $indexer = new Indexer($this->parser, $this->project_root_path, $insert);
         foreach ($schemas as $schema) {
