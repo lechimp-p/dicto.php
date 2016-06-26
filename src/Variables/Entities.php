@@ -20,7 +20,7 @@ abstract class Entities extends Variable {
      *
      * @return  string
      */
-    abstract static public function id();
+    abstract public function id();
 
     /**
      * @inheritdocs
@@ -29,7 +29,7 @@ abstract class Entities extends Variable {
         return $this->eq_op
             ( $builder
             , "$table_name.type"
-            , $builder->literal(static::id())
+            , $builder->literal($this->id())
             , $negate);
     }
 

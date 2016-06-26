@@ -16,7 +16,7 @@ class Methods extends Entities {
     /**
      * @inheritdoc
      */
-    static public function id() {
+    public function id() {
         return Variable::METHOD_TYPE;
     }
 }

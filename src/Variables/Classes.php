@@ -14,7 +14,7 @@ class Classes extends Entities {
     /**
      * @inheritdoc
      */
-    static public function id() {
+    public function id() {
         return Variable::CLASS_TYPE;
     }
 }

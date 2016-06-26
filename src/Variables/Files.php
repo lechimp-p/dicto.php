@@ -14,7 +14,7 @@ class Files extends Entities {
     /**
      * @inheritdoc
      */
-    static public function id() {
+    public function id() {
         return Variable::FILE_TYPE;
     }
 }

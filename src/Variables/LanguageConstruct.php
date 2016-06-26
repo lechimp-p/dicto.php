@@ -35,7 +35,7 @@ class LanguageConstruct extends Entities {
     /**
      * @inheritdoc
      */
-    static public function id() {
+    public function id() {
         return Variable::LANGUAGE_CONSTRUCT_TYPE;
     }
 
