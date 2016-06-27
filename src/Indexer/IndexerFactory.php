@@ -10,8 +10,8 @@
 
 namespace Lechimp\Dicto\Indexer;
 
-use Psr\Log\LoggerInterface as Log;
 use Lechimp\Dicto\Rules\Schema;
+use Psr\Log\LoggerInterface as Log;
 
 /**
  * Creates Indexers.

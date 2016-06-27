@@ -10,7 +10,8 @@
 
 use Lechimp\Dicto\App\App;
 use Lechimp\Dicto\App\Config;
-use Lechimp\Dicto\Indexer\Indexer;
+use Lechimp\Dicto\Indexer\IndexerFactory;
+use Lechimp\Dicto\App\Engine;
 use Lechimp\Dicto\Rules\Ruleset;
 
 require_once(__DIR__."/tempdir.php");
@@ -39,11 +40,22 @@ class AppTest extends PHPUnit_Framework_TestCase {
     /**
      * @depends test_load_rules_file
      */
-    public function test_dic_indexer() {
+    public function test_dic_indexer_factory() {
         list($rs,$c) = $this->app->_load_rules_file(__DIR__."/data/rules.php");
         $c["project"]["storage"] = tempdir();
         $dic = $this->app->_create_dic($rs, array($c));
 
-        $this->assertInstanceOf(Indexer::class, $dic["indexer"]);
+        $this->assertInstanceOf(IndexerFactory::class, $dic["indexer_factory"]);
+    }
+
+    /**
+     * @depends test_load_rules_file
+     */
+    public function test_dic_engine() {
+        list($rs,$c) = $this->app->_load_rules_file(__DIR__."/data/rules.php");
+        $c["project"]["storage"] = tempdir();
+        $dic = $this->app->_create_dic($rs, array($c));
+
+        $this->assertInstanceOf(Engine::class, $dic["engine"]);
     }
 }

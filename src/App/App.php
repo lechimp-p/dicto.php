@@ -108,8 +108,9 @@ class App {
             return new Engine
                 ( $c["log"]
                 , $c["config"]
-                , $c["indexer"]
-                , $c["analyzer"]
+                , $c["database_factory"]
+                , $c["indexer_factory"]
+                , $c["analyzer_factory"]
                 );
         };
 
@@ -125,12 +126,6 @@ class App {
                 );
         };
 
-        $container["indexer"] = function($c) {
-            return $c["indexer_factory"]->build
-                ( $c["database"]
-                );
-        };
-
         $container["php_parser"] = function($c) {
             return (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         };
@@ -139,23 +134,11 @@ class App {
             return new DBFactory();
         };
 
-        $container["database"] = function($c) {
-            return $c["database_factory"]->build
-                ( $c["config"]->project_storage()."/index.sqlite"
-                );
-        };
-
         $container["analyzer_factory"] = function($c) {
             return new \Lechimp\Dicto\Analysis\AnalyzerFactory
                 ( $c["log"]
                 , $c["report_generator"]
                 , $c["ruleset"]
-                );
-        };
-
-        $container["analyzer"] = function($c) {
-            return $c["analyzer_factory"]->build
-                ( $c["database"]
                 );
         };
 

@@ -12,6 +12,7 @@ namespace Lechimp\Dicto\Analysis;
 
 use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Rules\RuleSet;
+use Psr\Log\LoggerInterface as Log;
 
 /**
  * Creates analyzers.
