@@ -66,7 +66,7 @@ class IndexerMock extends Indexer {
 
 class DBFactoryMock extends DBFactory {
     public $paths = array();
-    public function build($path) {
+    public function build_index_db($path) {
         $this->paths[] = $path;
         return new NullDB();
     }
@@ -120,5 +120,11 @@ class EngineTest extends PHPUnit_Framework_TestCase {
     public function test_calls_analyzer() {
         $this->engine->run();
         $this->assertTrue($this->analyzer_factory->analyzer_mocks[0]->run_called);
+    }
+
+    public function test_builds_index_db() {
+        $this->engine->run();
+        $expected = array($this->config->project_storage()."/index.sqlite");
+        $this->assertEquals($expected, $this->db_factory->paths);
     }
 }

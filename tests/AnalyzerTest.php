@@ -15,7 +15,7 @@ use Lechimp\Dicto\Rules\Rule;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables as Vars;
 use Lechimp\Dicto\Variables\Variable;
-use Lechimp\Dicto\App\DB;
+use Lechimp\Dicto\App\IndexDB;
 use Lechimp\Dicto\Analysis\RulesToSqlCompiler;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Analysis\ReportGenerator;
@@ -43,7 +43,7 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
                 , "memory" => true
                 )
             );
-        $this->db = new DB($this->connection);
+        $this->db = new IndexDB($this->connection);
         $this->db->init_sqlite_regexp();
         $this->db->maybe_init_database_schema();
 

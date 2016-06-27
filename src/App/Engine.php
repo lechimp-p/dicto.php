@@ -58,7 +58,7 @@ class Engine {
      * @return null
      */
     public function run() {
-        $db = $this->db_factory->build($this->config->project_storage()."/index.sqlite");
+        $db = $this->db_factory->build_index_db($this->config->project_storage()."/index.sqlite");
         $this->run_indexing($db);
         $this->run_analysis($db);
     }

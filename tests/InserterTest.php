@@ -9,7 +9,7 @@
  */
 
 use Lechimp\Dicto\Variables\Variable;
-use Lechimp\Dicto\App\DB;
+use Lechimp\Dicto\App\IndexDB;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -22,7 +22,7 @@ class DBInserterTest extends PHPUnit_Framework_TestCase {
                 , "memory" => true
                 )
             ); 
-        $this->inserter = new DB($this->connection);
+        $this->inserter = new IndexDB($this->connection);
         $this->inserter->init_database_schema();
         $this->builder = $this->connection->createQueryBuilder();
     }

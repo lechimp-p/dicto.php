@@ -14,7 +14,7 @@ use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Rules as Rules;
 use Lechimp\Dicto\Variables as Vars;
-use Lechimp\Dicto\App\DB;
+use Lechimp\Dicto\App\IndexDB;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -27,7 +27,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
                 , "memory" => true
                 )
             ); 
-        $this->db = new DB($this->connection);
+        $this->db = new IndexDB($this->connection);
         $this->db->init_sqlite_regexp();
         $this->db->maybe_init_database_schema();
     }

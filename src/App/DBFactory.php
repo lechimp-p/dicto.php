@@ -15,11 +15,11 @@ use Doctrine\DBAL\DriverManager;
 class DBFactory {
     /**
      * @param   string  $path
-     * @return  DB
+     * @return  IndexDB
      */
-    public function build($path) {
+    public function build_index_db($path) {
         $connection = $this->build_connection($path);
-        $db = new DB($connection);
+        $db = new IndexDB($connection);
         $db->init_sqlite_regexp();
         $db->maybe_init_database_schema();
         return $db;

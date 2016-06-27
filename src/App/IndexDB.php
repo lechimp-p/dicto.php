@@ -20,7 +20,7 @@ use Doctrine\DBAL\Schema;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
-class DB implements Insert, Query {
+class IndexDB implements Insert, Query {
     use CachesReferences;
 
     /**
