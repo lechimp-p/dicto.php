@@ -59,9 +59,6 @@
     - one db containing indexing results per source state
   Ideally, the latter should be removable without loosing relevant (?) historical (?)
   information.
-    -> Config needs to change, there should be a directory that is owned by php-dicto
-       instead of a path to the sqlite database
-    -> most probably the memory option for sqlite could go away
 * ReportGenerator then can go away. Everyone that wants a report can write it
   standalone as a query on the persistent database.
 * I could also keep the report generator for some time, to have a mode where only
