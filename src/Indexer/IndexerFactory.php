@@ -28,11 +28,6 @@ class IndexerFactory {
     protected $parser;
 
     /**
-     * @var string
-     */
-    protected $project_root_path;
-
-    /**
      * @var Schema[]
      */
     protected $schemas;
@@ -41,11 +36,9 @@ class IndexerFactory {
      * @param   string      $project_root_path
      * @param   Schema[]    $schemas
      */
-    public function __construct(Log $log, \PhpParser\Parser $parser, $project_root_path, array $schemas) {
+    public function __construct(Log $log, \PhpParser\Parser $parser, array $schemas) {
         $this->log = $log;
         $this->parser = $parser;
-        assert('is_string($project_root_path)');
-        $this->project_root_path = $project_root_path;
         $this->schemas = array_map(function(Schema $s) { return $s; }, $schemas);
     }
 
@@ -56,7 +49,6 @@ class IndexerFactory {
         $indexer = new Indexer
             ( $this->log
             , $this->parser
-            , $this->project_root_path
             , $insert
             );
         foreach ($this->schemas as $schema) {

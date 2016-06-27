@@ -29,12 +29,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     protected $log;
 
     /**
-     * TODO: remove this, we do not need it.
-     * @var string
-     */
-    protected $project_root_path;
-
-    /**
      * @var Insert
      */
     protected $insert;
@@ -84,14 +78,9 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     protected $entity_stack = null;
 
-    /**
-     * @param   string  $project_root_path
-     */
-    public function __construct(Log $log, \PhpParser\Parser $parser, $project_root_path, Insert $insert) {
+    public function __construct(Log $log, \PhpParser\Parser $parser, Insert $insert) {
         $this->log = $log;
         $this->parser = $parser;
-        assert('is_string($project_root_path)');
-        $this->project_root_path = $project_root_path;
         $this->insert = $insert;
         $this->listeners_enter_entity = array
             ( 0 => array()
@@ -126,9 +115,9 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                 }
                 return true;
             })
-            ->foldFiles(null, function($_, File $file) {
+            ->foldFiles(null, function($_, File $file) use ($path) {
                 try {
-                    $this->index_file($file->path());
+                    $this->index_file($path, $file->path());
                 }
                 catch (\PhpParser\Error $e) {
                     $this->log->error("in ".$file->path().": ".$e->getMessage());
@@ -149,19 +138,22 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     }
 
     /**
+     * @param   string  $base_dir
      * @param   string  $path
      * @return  null
      */
-    public function index_file($path) {
+    public function index_file($base_dir, $path) {
+        assert('is_string($base_dir)');
+        assert('is_string($path)');
         $this->log->info("indexing: ".$path);
-        $content = file_get_contents($this->project_root_path."/$path");
+        $content = file_get_contents($base_dir."/$path");
         if ($content === false) {
-            throw \InvalidArgumentException("Can't read file $path.");
+            throw \InvalidArgumentException("Can't read file $base_dir/$path.");
         }
 
         $stmts = $this->parser->parse($content);
         if ($stmts === null) {
-            throw new \RuntimeException("Can't parse file $path.");
+            throw new \RuntimeException("Can't parse file $base_dir/$path.");
         }
 
         $traverser = new \PhpParser\NodeTraverser;

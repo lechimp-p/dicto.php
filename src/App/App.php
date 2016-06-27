@@ -117,7 +117,6 @@ class App {
             return new \Lechimp\Dicto\Indexer\IndexerFactory
                 ( $c["log"]
                 , $c["php_parser"]
-                , $c["config"]->project_root()
                 , array
                     ( new \Lechimp\Dicto\Rules\ContainText()
                     , new \Lechimp\Dicto\Rules\DependOn()

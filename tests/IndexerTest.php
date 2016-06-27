@@ -103,7 +103,7 @@ class InsertMock implements Insert {
 class IndexerNoIndexFile extends Indexer {
     public $indexed_files = array();
 
-    public function index_file($path) {
+    public function index_file($base_dir, $path) {
         $this->indexed_files[] = $path;
     }
 }
@@ -119,7 +119,6 @@ class IndexerTest extends PHPUnit_Framework_TestCase {
         $this->indexer = new Indexer
             ( $this->logger_mock
             , $this->parser
-            , IndexerTest::PATH_TO_SRC
             , $this->insert_mock
             );
         (new \Lechimp\Dicto\Rules\ContainText())->register_listeners($this->indexer);
@@ -134,7 +133,7 @@ class IndexerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_A1_file() {
-        $this->indexer->index_file("A1.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
         $source = <<<PHP
 <?php
 /******************************************************************************
@@ -157,7 +156,7 @@ PHP;
     }
 
     public function test_entity_A1_class() {
-        $this->indexer->index_file("A1.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
 
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
@@ -174,7 +173,7 @@ PHP;
     }
 
     public function test_entity_A1_file() {
-        $this->indexer->index_file("A1.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
 
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
@@ -193,7 +192,7 @@ PHP;
     }
 
     public function test_entity_A1_method() {
-        $this->indexer->index_file("A1.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
 
         $this->assertCount(3, $this->insert_mock->entities);
         $entity = null;
@@ -210,7 +209,7 @@ PHP;
     }
 
     public function test_references_A1_a_bogus_function() {
-        $this->indexer->index_file("A1.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
         $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
         $expected_refs = array
             ( array
@@ -225,7 +224,7 @@ PHP;
     }
 
     public function test_entity_A1_dependencies() {
-        $this->indexer->index_file("A1.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
         $A1_id = $this->insert_mock->get_id("A1");
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
@@ -244,7 +243,7 @@ PHP;
     }
 
     public function test_entity_A1_invocations() {
-        $this->indexer->index_file("A1.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
         $A1_id = $this->insert_mock->get_id("A1");
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $a_bogus_function_id = $this->insert_mock->get_id("a_bogus_function");
@@ -263,7 +262,7 @@ PHP;
     }
 
     public function test_references_A2_invoke_a_function() {
-        $this->indexer->index_file("A2.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A2.php");
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $expected_refs = array
             ( array
@@ -278,7 +277,7 @@ PHP;
     }
 
     public function test_entity_A2_dependencies() {
-        $this->indexer->index_file("A2.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A2.php");
         $A2_id = $this->insert_mock->get_id("A2");
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $invoke_a_method_id = $this->insert_mock->get_id("invoke_a_method");
@@ -297,7 +296,7 @@ PHP;
     }
 
     public function test_entity_A2_invocations() {
-        $this->indexer->index_file("A2.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A2.php");
         $A2_id = $this->insert_mock->get_id("A2");
         $invoke_a_function_id = $this->insert_mock->get_id("invoke_a_function");
         $invoke_a_method_id = $this->insert_mock->get_id("invoke_a_method");
@@ -316,7 +315,7 @@ PHP;
     }
 
     public function test_references_A3_glob() {
-        $this->indexer->index_file("A3.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A3.php");
         $glob_ids = $this->insert_mock->get_ids("glob", 2);
         $expected_ref_1 = array
             ( "id" => $glob_ids[0]
@@ -339,7 +338,7 @@ PHP;
     }
 
     public function test_entity_A3_dependencies() {
-        $this->indexer->index_file("A3.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A3.php");
         $A3_id = $this->insert_mock->get_id("A3");
         $use_global_by_keyword_id = $this->insert_mock->get_id("use_global_by_keyword");
         $use_global_by_array_id = $this->insert_mock->get_id("use_global_by_array");
@@ -369,7 +368,7 @@ PHP;
     }
 
     public function test_references_A4_use_stfu() {
-        $this->indexer->index_file("A4.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A4.php");
         $stfu_op_id = $this->insert_mock->get_id("@");
         $stfu_fun_id = $this->insert_mock->get_id("stfu");
         $expected_ref_1 = array
@@ -393,7 +392,7 @@ PHP;
     }
 
     public function test_entity_A4_dependencies() {
-        $this->indexer->index_file("A4.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A4.php");
         $A4_id = $this->insert_mock->get_id("A4");
         $use_stfu_id = $this->insert_mock->get_id("use_stfu");
         $stfu_op_id = $this->insert_mock->get_id("@");
@@ -423,7 +422,7 @@ PHP;
     }
 
     public function test_entity_A4_invocations() {
-        $this->indexer->index_file("A4.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A4.php");
         $A4_id = $this->insert_mock->get_id("A4");
         $use_stfu_id = $this->insert_mock->get_id("use_stfu");
         $stfu_fun_id = $this->insert_mock->get_id("stfu");
@@ -442,7 +441,7 @@ PHP;
     }
 
     public function test_entity_MD_file() {
-        $this->indexer->index_file("MD.md");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "MD.md");
         $source = <<<PHP
 Some random content.
 
@@ -456,7 +455,7 @@ PHP;
     }
 
     public function test_ignores_closure_invocations() {
-        $this->indexer->index_file("CallsClosure.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "CallsClosure.php");
         $id = $this->insert_mock->get_id("CallsClosure");
 
         $this->assertCount(0, $this->insert_mock->relations["invoke"]);
@@ -464,7 +463,7 @@ PHP;
     }
 
     public function test_indexes_array_twice() {
-        $this->indexer->index_file("IndexesTwice.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "IndexesTwice.php");
         $IndexesTwice_id = $this->insert_mock->get_id("IndexesTwice");
         $indexes_GLOBAL_twice_id = $this->insert_mock->get_id("indexes_GLOBAL_twice");
         $glob_ids = $this->insert_mock->get_ids("glob", 1); 
@@ -483,7 +482,7 @@ PHP;
     }
 
     public function test_ignores_call_to_variable_method() {
-        $this->indexer->index_file("CallsVariableMethod.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "CallsVariableMethod.php");
         $id = $this->insert_mock->get_id("CallsVariableMethod");
 
         $this->assertCount(0, $this->insert_mock->relations["invoke"]);
@@ -491,7 +490,7 @@ PHP;
     }
 
     public function test_ignores_call_to_function_in_array() {
-        $this->indexer->index_file("CallsFunctionInArray.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "CallsFunctionInArray.php");
         $id = $this->insert_mock->get_id("CallsFunctionInArray");
 
         $this->assertCount(0, $this->insert_mock->relations["invoke"]);
@@ -500,7 +499,7 @@ PHP;
 
 
     public function test_ignores_use_of_globals_with_var_index() {
-        $this->indexer->index_file("UsesGlobalsWithVarIndex.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "UsesGlobalsWithVarIndex.php");
         $id = $this->insert_mock->get_id("UsesGlobalsWithVarIndex");
 
         $this->assertCount(0, $this->insert_mock->relations["invoke"]);
@@ -527,7 +526,7 @@ PHP;
                 $leave_m[] = $node->name->parts[0];
             });
 
-        $this->indexer->index_file("A1.php");
+        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
 
         $this->assertEquals(array(Variable::FILE_TYPE, Variable::CLASS_TYPE, Variable::METHOD_TYPE), $enter_e);
         $this->assertEquals($enter_e, array_reverse($leave_e));
@@ -539,7 +538,6 @@ PHP;
         $this->indexer = new IndexerNoIndexFile
             ( $this->logger_mock
             , $this->parser
-            , IndexerTest::PATH_TO_SRC
             , $this->insert_mock
             );
 

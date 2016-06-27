@@ -59,7 +59,7 @@ class IndexerMock extends Indexer {
     public function __construct() {
         $this->log = new LoggerMock();
     }
-    public function index_file($path) {
+    public function index_file($base_dir, $path) {
         $this->indexed_files[] = $path;
     }
 }
