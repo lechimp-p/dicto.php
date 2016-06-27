@@ -16,6 +16,7 @@ use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\Indexer\CachesReferences;
 use PhpParser\ParserFactory;
 use PhpParser\Node as N;
+use Psr\Log\LogLevel;
 
 require_once(__DIR__."/LoggerMock.php");
 
@@ -553,29 +554,15 @@ PHP;
     }
 
     // TODO: make this work again.
-/*    public function test_faulty_php_logging() {
-        $root = __DIR__."/data/src";
-        $config = new Config(array(array
-            ( "project" => array
-                ( "root" => $this->root
-                , "storage" => tempdir()
-                )
-            , "analysis" => array
-                ( "ignore" => array
-                    ( ".*\.omit_me"
-                    )
-                )
-            )));
+    public function test_faulty_php_logging() {
         $log = new LoggerMock();
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        $indexer = new Indexer($parser, $root, new NullDB());
-        $analyzer = new AnalyzerMock();
-        $engine = new Engine($log, $config, $indexer, $analyzer);
+        $indexer = new Indexer($log, $parser, new NullDB());
 
-        $engine->run();
+        $indexer->index_directory(IndexerTest::PATH_TO_SRC, array(".*\\.omit_me"));
 
         // Did it still index all files?
-        $expected_files = array_filter(scandir($this->root), function($n) {
+        $expected_files = array_filter(scandir(IndexerTest::PATH_TO_SRC), function($n) {
             return $n != "." && $n != ".." && $n != "A1.omit_me";
         });
 
@@ -586,5 +573,5 @@ PHP;
 
         $expected_error = array(LogLevel::ERROR, "in faulty.php: Syntax error, unexpected T_FUNCTION, expecting '{' on line 4", array());
         $this->assertContains($expected_error, $log->log);
-    }*/
+    }
 }
