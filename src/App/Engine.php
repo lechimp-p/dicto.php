@@ -44,7 +44,12 @@ class Engine {
      */
     protected $analyzer_factory;
 
-    public function __construct(Log $log, Config $config, DBFactory $db_factory, IndexerFactory $indexer_factory, AnalyzerFactory $analyzer_factory) {
+    public function __construct( Log $log
+                               , Config $config
+                               , DBFactory $db_factory
+                               , IndexerFactory $indexer_factory
+                               , AnalyzerFactory $analyzer_factory
+                               ) {
         $this->log = $log;
         $this->config = $config;
         $this->db_factory = $db_factory;
