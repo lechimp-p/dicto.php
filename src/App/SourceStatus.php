@@ -11,23 +11,13 @@
 namespace Lechimp\Dicto\App;
 
 /**
- * Describes the current state of the source code under scrutiny.
+ * Get the current state of the sourcecode.
  */
-class SourceStatus {
+interface SourceStatus {
     /**
-     * @var string
-     */
-    private $commit_hash;
-
-    public function __construct($commit_hash) {
-        assert('is_string($commit_hash)');
-        $this->commit_hash = $commit_hash;
-    }
-
-    /**
+     * Get the commit hash of the source.
+     *
      * @return  string
      */
-    public function commit_hash() {
-        return $this->commit_hash();
-    }
+    public function commit_hash();
 }
