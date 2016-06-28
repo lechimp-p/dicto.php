@@ -65,10 +65,19 @@ class IndexerMock extends Indexer {
 }
 
 class DBFactoryMock extends DBFactory {
-    public $paths = array();
+    public $build_paths = array();
+    public $load_paths = array();
+    public $index_db_exists = false;
     public function build_index_db($path) {
-        $this->paths[] = $path;
+        $this->build_paths[] = $path;
         return new NullDB();
+    }
+    public function load_index_db($path) {
+        $this->load_paths[] = $path;
+        return new NullDB();
+    }
+    public function index_db_exists($path) {
+        return $this->index_db_exists; 
     }
 }
 
@@ -124,7 +133,20 @@ class EngineTest extends PHPUnit_Framework_TestCase {
 
     public function test_builds_index_db() {
         $this->engine->run();
+
         $expected = array($this->config->project_storage()."/index.sqlite");
-        $this->assertEquals($expected, $this->db_factory->paths);
+        $this->assertEquals($expected, $this->db_factory->build_paths);
+        $this->assertEquals(array(), $this->db_factory->load_paths);
+    }
+
+    public function test_no_reindex_on_existing_index_db() {
+        $this->db_factory->index_db_exists = true;
+
+        $this->engine->run();
+
+        $this->assertEquals(array(), $this->db_factory->build_paths); 
+        $expected = array($this->config->project_storage()."/index.sqlite");
+        $this->assertEquals($expected, $this->db_factory->load_paths); 
+        $this->assertEquals(array(), $this->indexer_factory->indexer_mocks);
     }
 }

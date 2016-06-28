@@ -49,8 +49,6 @@
   or to get to know how many new issues were introduced with a commit.
 
 # Execution plan for introducing git (and further improvements)
-* Engine::run somehow needs a way to figure out, what to do, i.e. not reindex the
-  database when only rules have changed
 * There needs to be some notion of a run of the analysis, that needs to be stored
   in the database
 * The engine then somehow needs to figure out what to do based on the last run and

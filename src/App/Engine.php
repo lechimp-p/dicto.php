@@ -58,9 +58,19 @@ class Engine {
      * @return null
      */
     public function run() {
-        $db = $this->db_factory->build_index_db($this->config->project_storage()."/index.sqlite");
-        $this->run_indexing($db);
+        $path = $this->database_path();
+        if (!$this->db_factory->index_db_exists($path)) {
+            $db = $this->db_factory->build_index_db($path);
+            $this->run_indexing($db);
+        }
+        else {
+            $db = $this->db_factory->load_index_db($path);
+        }
         $this->run_analysis($db);
+    }
+
+    protected function database_path() {
+        return $this->config->project_storage()."/index.sqlite";
     }
 
     protected function run_indexing($db) {
