@@ -21,7 +21,9 @@ class DictoClassTest extends PHPUnit_Framework_TestCase {
             Dicto::startDefinition();
             $this->assertFalse("This should not happen.");
         }
-        catch (\RuntimeException $e) {}
+        catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(PHPUnit_Framework_Exception::class, $e);
+        }
     }
 
     public function test_only_end_definition_once() {
@@ -31,7 +33,9 @@ class DictoClassTest extends PHPUnit_Framework_TestCase {
             Dicto::endDefinition();
             $this->assertFalse("This should not happen.");
         }
-        catch (\RuntimeException $e) {}
+        catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(PHPUnit_Framework_Exception::class, $e);
+        }
     }
 
     public function test_no_var_def_outside_definition() {
@@ -39,7 +43,9 @@ class DictoClassTest extends PHPUnit_Framework_TestCase {
             Dicto::Foo();
             $this->assertFalse("This should not happen.");
         }
-        catch (\RuntimeException $e) {}
+        catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(PHPUnit_Framework_Exception::class, $e);
+        }
     }
 
     public function test_raise_on_args_to_var_def() {
@@ -58,7 +64,9 @@ class DictoClassTest extends PHPUnit_Framework_TestCase {
             Dicto::Foo();
             $this->assertFalse("This should not happen.");
         }
-        catch (\RuntimeException $e) {}
+        catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(PHPUnit_Framework_Exception::class, $e);
+        }
     }
 
     public function test_throw_on_unknown_var_in_var_decl() {
@@ -67,7 +75,9 @@ class DictoClassTest extends PHPUnit_Framework_TestCase {
             Dicto::Foo()->means()->Bar();
             $this->assertFalse("This should not happen.");
         }
-        catch (\RuntimeException $e) {}
+        catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(PHPUnit_Framework_Exception::class, $e);
+        }
     }
 
     public function test_configuration() {
