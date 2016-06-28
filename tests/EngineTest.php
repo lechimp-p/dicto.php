@@ -14,6 +14,7 @@ use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\App\DBFactory;
 use Lechimp\Dicto\App\Engine;
+use Lechimp\Dicto\App\SourceStatus;
 use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\Indexer\Insert;
@@ -93,6 +94,13 @@ class NullDB implements Insert, Query {
     public function builder() { throw new \RuntimeException("PANIC!"); }
 }
 
+class SourceStatusMock implements SourceStatus {
+    public $commit_hash = "commit_hash";
+    public function commit_hash() {
+        return $this->commit_hash;
+    }
+}
+
 class EngineTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->root = __DIR__."/data/src";
@@ -111,12 +119,14 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->db_factory = new DBFactoryMock();
         $this->indexer_factory = new IndexerFactoryMock();
         $this->analyzer_factory = new AnalyzerFactoryMock();
+        $this->source_status = new SourceStatusMock();
         $this->engine = new Engine
             ( $this->log
             , $this->config
             , $this->db_factory
             , $this->indexer_factory
             , $this->analyzer_factory
+            , $this->source_status
             );
     }
 
@@ -131,20 +141,25 @@ class EngineTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_builds_index_db() {
+        $commit_hash = uniqid();
+        $this->source_status->commit_hash = $commit_hash;
+
         $this->engine->run();
 
-        $expected = array($this->config->project_storage()."/index.sqlite");
+        $expected = array($this->config->project_storage()."/$commit_hash.sqlite");
         $this->assertEquals($expected, $this->db_factory->build_paths);
         $this->assertEquals(array(), $this->db_factory->load_paths);
     }
 
     public function test_no_reindex_on_existing_index_db() {
+        $commit_hash = uniqid();
+        $this->source_status->commit_hash = $commit_hash;
         $this->db_factory->index_db_exists = true;
 
         $this->engine->run();
 
         $this->assertEquals(array(), $this->db_factory->build_paths); 
-        $expected = array($this->config->project_storage()."/index.sqlite");
+        $expected = array($this->config->project_storage()."/$commit_hash.sqlite");
         $this->assertEquals($expected, $this->db_factory->load_paths); 
         $this->assertEquals(array(), $this->indexer_factory->indexer_mocks);
     }

@@ -44,17 +44,24 @@ class Engine {
      */
     protected $analyzer_factory;
 
+    /**
+     * @var SourceStatus
+     */
+    protected $source_status;
+
     public function __construct( Log $log
                                , Config $config
                                , DBFactory $db_factory
                                , IndexerFactory $indexer_factory
                                , AnalyzerFactory $analyzer_factory
+                               , SourceStatus $source_status
                                ) {
         $this->log = $log;
         $this->config = $config;
         $this->db_factory = $db_factory;
         $this->indexer_factory = $indexer_factory;
         $this->analyzer_factory = $analyzer_factory;
+        $this->source_status = $source_status;
     }
 
     /**
@@ -75,7 +82,8 @@ class Engine {
     }
 
     protected function database_path() {
-        return $this->config->project_storage()."/index.sqlite";
+        $commit_hash = $this->source_status->commit_hash();
+        return $this->config->project_storage()."/$commit_hash.sqlite";
     }
 
     protected function run_indexing($db) {

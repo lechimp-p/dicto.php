@@ -111,7 +111,16 @@ class App {
                 , $c["database_factory"]
                 , $c["indexer_factory"]
                 , $c["analyzer_factory"]
+                , $c["source_status"]
                 );
+        };
+
+        $container["log"] = function ($c) {
+            return new CLILogger();
+        };
+
+        $container["database_factory"] = function($c) {
+            return new DBFactory();
         };
 
         $container["indexer_factory"] = function($c) {
@@ -126,14 +135,6 @@ class App {
                 );
         };
 
-        $container["php_parser"] = function($c) {
-            return (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        };
-
-        $container["database_factory"] = function($c) {
-            return new DBFactory();
-        };
-
         $container["analyzer_factory"] = function($c) {
             return new \Lechimp\Dicto\Analysis\AnalyzerFactory
                 ( $c["log"]
@@ -142,12 +143,16 @@ class App {
                 );
         };
 
-        $container["log"] = function ($c) {
-            return new CLILogger();
+        $container["php_parser"] = function($c) {
+            return (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         };
 
         $container["report_generator"] = function($c) {
             return new CLIReportGenerator();
+        };
+
+        $container["source_status"] = function($c) {
+            return new SourceStatusGit();
         };
 
         return $container;
