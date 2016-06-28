@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto\App\DBFactory;
+use Lechimp\Dicto\App\IndexDB;
 
 require_once(__DIR__."/tempdir.php");
 
@@ -25,5 +26,30 @@ class DBFactoryTest extends PHPUnit_Framework_TestCase {
         catch (\RuntimeException $e) {
             $this->assertNotInstanceOf(PHPUnit_Framework_Exception::class, $e);
         }
+    }
+
+    public function test_index_db_exists_true() {
+        $v = $this->factory->index_db_exists(__DIR__."/data/exists.sqlite");
+        $this->assertTrue($v);
+    }
+
+    public function test_index_db_exists_false() {
+        $v = $this->factory->index_db_exists(__DIR__."/data/not_exists.sqlite");
+        $this->assertFalse($v);
+    }
+
+    public function test_load_index_db_not_exists() {
+        try {
+            $this->factory->load_index_db(__DIR__."/data/not_exists.sqlite");  
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(PHPUnit_Framework_Exception::class, $e);
+        }
+    }
+
+    public function test_load_index_db_exists() {
+        $db = $this->factory->load_index_db(__DIR__."/data/exists.sqlite");
+        $this->assertInstanceOf(IndexDB::class, $db);
     }
 }

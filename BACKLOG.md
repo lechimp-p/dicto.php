@@ -34,6 +34,8 @@
   matching in Query::compile_var.
 * Every submodule could have its own Config, those could then be combined to the
   big global config.
+* DBFactory is a misnomer. Its more like a manager, which is a very non descriptive
+  word.
 
 # Issues
 * When saying "only SomeClasses can depend on SomeThing" we certainly mean, that

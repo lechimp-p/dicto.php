@@ -14,8 +14,10 @@ use Doctrine\DBAL\DriverManager;
 
 class DBFactory {
     /**
+     * Create a new database for index at path.
+     *
      * @param   string  $path
-     * @throws  \RuntimeException   when database already exists.
+     * @throws  \RuntimeException   if database already exists.
      * @return  IndexDB
      */
     public function build_index_db($path) {
@@ -26,6 +28,33 @@ class DBFactory {
         $db = new IndexDB($connection);
         $db->init_sqlite_regexp();
         $db->init_database_schema();
+        return $db;
+    }
+
+    /**
+     * Check if an index database exists.
+     *
+     * @param   string  $path
+     * @return  bool
+     */
+    public function index_db_exists($path) {
+        return file_exists($path);
+    }
+
+    /**
+     * Load existing index database. 
+     *
+     * @param   string  $path
+     * @throws  \RuntimeException   if file does not exist
+     * @return  IndexDB 
+     */
+    public function load_index_db($path) {
+        if (!$this->index_db_exists($path)) {
+            throw new \RuntimeException("There is no index database at '$path'");
+        }
+        $connection = $this->build_connection($path);
+        $db = new IndexDB($connection);
+        $db->init_sqlite_regexp();
         return $db;
     }
 
