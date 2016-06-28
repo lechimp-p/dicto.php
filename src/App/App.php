@@ -152,7 +152,7 @@ class App {
         };
 
         $container["source_status"] = function($c) {
-            return new SourceStatusGit();
+            return new SourceStatusGit($c["config"]->project_root());
         };
 
         return $container;

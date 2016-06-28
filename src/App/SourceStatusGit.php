@@ -15,9 +15,28 @@ namespace Lechimp\Dicto\App;
  */
 class SourceStatusGit implements SourceStatus {
     /**
+     * @var string
+     */
+    protected $path;
+
+    /**
+     * @param   string  $path
+     */
+    public function __construct($path) {
+        assert('is_string($path)');
+        $this->path = $path;
+    }
+
+    /**
      * @inheritdoc
      */
     public function commit_hash() {
-        throw new \LogicException("NYI!");
+        $escaped_path = escapeshellarg($this->path);
+        $command = "git -C $escaped_path rev-parse HEAD";
+        exec($command, $output, $returned);
+        if ($returned != 0) {
+            throw new \RuntimeException(implode("\n", $output));
+        }
+        return $output;
     }
 }
