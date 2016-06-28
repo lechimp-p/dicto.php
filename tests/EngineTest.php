@@ -8,16 +8,15 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Dicto as Dicto;
-use Lechimp\Dicto\App\Engine;
-use Lechimp\Dicto\App\DBFactory;
-use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Analyzer;
 use Lechimp\Dicto\Analysis\AnalyzerFactory;
+use Lechimp\Dicto\Analysis\Query;
+use Lechimp\Dicto\App\Config;
+use Lechimp\Dicto\App\DBFactory;
+use Lechimp\Dicto\App\Engine;
 use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\Indexer\Insert;
-use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\Rules\RuleSet;
 use PhpParser\ParserFactory;
 use Doctrine\DBAL\DriverManager;
