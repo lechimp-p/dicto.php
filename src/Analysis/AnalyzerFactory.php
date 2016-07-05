@@ -24,31 +24,24 @@ class AnalyzerFactory {
     protected $log;
 
     /**
-     * @var ReportGenerator
-     */
-    protected $generator;
-
-    /**
      * @var Ruleset
      */
     protected $ruleset;
 
     public function __construct
                         ( Log $log
-                        , ReportGenerator $generator
                         , RuleSet $ruleset
                         ) {
         $this->log = $log;
-        $this->generator = $generator;
         $this->ruleset = $ruleset;
     }
 
     /**
-     * @param   RuleSet     $ruleset
-     * @param   Query       $query
+     * @param   Query               $query
+     * @param   ReportGenerator     $report_generator
      * @return  Analyzer
      */
-    public function build(Query $query) {
-        return new Analyzer($this->log, $this->ruleset, $query, $this->generator);
+    public function build(Query $query, ReportGenerator $report_generator) {
+        return new Analyzer($this->log, $this->ruleset, $query, $report_generator);
     }
 } 

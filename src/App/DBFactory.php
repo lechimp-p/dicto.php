@@ -58,6 +58,16 @@ class DBFactory {
         return $db;
     }
 
+    /**
+     * Get a database for results.
+     *
+     * @param   string  $path
+     * @return  ResultDB
+     */
+    public function get_result_db($path) {
+        return new ResultDB();
+    }
+
     protected function build_connection($path) {
         assert('is_string($path)');
         return DriverManager::getConnection

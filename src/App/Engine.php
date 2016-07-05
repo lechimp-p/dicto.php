@@ -70,20 +70,24 @@ class Engine {
      * @return null
      */
     public function run() {
-        $path = $this->database_path();
-        if (!$this->db_factory->index_db_exists($path)) {
-            $db = $this->db_factory->build_index_db($path);
-            $this->run_indexing($db);
+        $index_db_path = $this->index_database_path();
+        if (!$this->db_factory->index_db_exists($index_db_path)) {
+            $index_db = $this->db_factory->build_index_db($index_db_path);
+            $this->run_indexing($index_db);
         }
         else {
-            $db = $this->db_factory->load_index_db($path);
+            $index_db = $this->db_factory->load_index_db($index_db_path);
         }
-        $this->run_analysis($db);
+        $this->run_analysis($index_db);
     }
 
-    protected function database_path() {
+    protected function index_database_path() {
         $commit_hash = $this->source_status->commit_hash();
         return $this->config->project_storage()."/$commit_hash.sqlite";
+    }
+
+    protected function result_database_path() {
+        return $this->config->project_storage()."/results.sqlite";
     }
 
     protected function run_indexing($db) {
@@ -94,8 +98,9 @@ class Engine {
             );
     }
 
-    protected function run_analysis($db) {
-        $analyzer = $this->analyzer_factory->build($db);
+    protected function run_analysis($index_db) {
+        $result_db = $this->db_factory->get_result_db($this->result_database_path());
+        $analyzer = $this->analyzer_factory->build($index_db, $result_db);
         $analyzer->run();
     }
 }

@@ -138,7 +138,6 @@ class App {
         $container["analyzer_factory"] = function($c) {
             return new \Lechimp\Dicto\Analysis\AnalyzerFactory
                 ( $c["log"]
-                , $c["report_generator"]
                 , $c["ruleset"]
                 );
         };
