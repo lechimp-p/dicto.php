@@ -37,6 +37,6 @@ class SourceStatusGit implements SourceStatus {
         if ($returned != 0) {
             throw new \RuntimeException(implode("\n", $output));
         }
-        return $output;
+        return $output[0];
     }
 }
