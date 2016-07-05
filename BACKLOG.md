@@ -53,28 +53,11 @@
   in the database
 * The engine then somehow needs to figure out what to do based on the last run and
   the current state of the source.
+    -> This would also mean that we could also only reindex files that have changed
+       between two commits.
 * Instead of assuming one db, where all results are stored, there need to be
   different dbs:
     - one containing information about the runs, including info about the violations
     - one db containing indexing results per source state
   Ideally, the latter should be removable without loosing relevant (?) historical (?)
   information.
-* ReportGenerator then can go away. Everyone that wants a report can write it
-  standalone as a query on the persistent database.
-* I could also keep the report generator for some time, to have a mode where only
-  the current state of the source is analysed without taking different version
-  into account.
-    -> This would most probably mean that i would need two different engines.
-* If i want the RunInfo to alway have a rule_set field, i would need a way to
-  serialize and deserialize rules, which would make a real parser for rules be a
-  desirable thing.
-* If i also put the config in the RunInfo database, i most probably also should
-  put names of rule schemas that were used in the config. I most probably should
-  put those in the config anyway.
-* If i want to implement the parser, i should separate the config from the rules
-  anyway.
-* It also could be nice to use a hash of the config between runs, to at least warn
-  the user when the config has changed.
-* Instead of storing a real ruleset in the runinfo, i could also use a RuleSetInfo
-  that doesn't contain real rules. This would mitigate the requirement to build a
-  parser.
