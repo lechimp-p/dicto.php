@@ -99,7 +99,9 @@ class Engine {
     }
 
     protected function run_analysis($index_db) {
+        $commit_hash = $this->source_status->commit_hash();
         $result_db = $this->db_factory->get_result_db($this->result_database_path());
+        $result_db->begin_new_run($commit_hash);
         $analyzer = $this->analyzer_factory->build($index_db, $result_db);
         $analyzer->run();
     }
