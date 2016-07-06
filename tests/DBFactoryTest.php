@@ -10,6 +10,7 @@
 
 use Lechimp\Dicto\App\DBFactory;
 use Lechimp\Dicto\App\IndexDB;
+use Lechimp\Dicto\App\ResultDB;
 
 require_once(__DIR__."/tempdir.php");
 
@@ -51,5 +52,11 @@ class DBFactoryTest extends PHPUnit_Framework_TestCase {
     public function test_load_index_db_exists() {
         $db = $this->factory->load_index_db(__DIR__."/data/exists.sqlite");
         $this->assertInstanceOf(IndexDB::class, $db);
+    }
+
+    public function test_get_result_db_create() {
+        $db = $this->factory->get_result_db(tempnam(sys_get_temp_dir(), "php-dicto"));
+        $this->assertInstanceOf(ResultDB::class, $db);
+        $this->assertTrue($db->is_inited());
     }
 }
