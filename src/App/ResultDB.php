@@ -24,6 +24,11 @@ class ResultDB extends DB implements ReportGenerator {
      */
     private $current_run_id = null;
 
+    /**
+     * @var int|null
+     */
+    private $current_rule_id = null;
+
     // ReportGenerator implementation
 
     /**
@@ -48,12 +53,14 @@ class ResultDB extends DB implements ReportGenerator {
      * @inheritdoc
      */
     public function begin_ruleset(Ruleset $rule) {
+        // Nothing to do here...
     }
 
     /**
      * @inheritdoc
      */
     public function end_ruleset(Ruleset $rule) {
+        // Nothing to do here...
     }
 
     /**
@@ -85,18 +92,62 @@ class ResultDB extends DB implements ReportGenerator {
                 ->setParameter(1, $rule_id)
                 ->execute();
         }
+        $this->current_rule_id = $rule_id;
     }
 
     /**
      * @inheritdoc
      */
     public function end_rule(Rule $rule) {
+        $this->current_rule_id = null;
     }
 
     /**
      * @inheritdoc
      */
     public function report_violation(Violation $violation) {
+        assert('$this->current_run_id !== null');
+        assert('$this->current_rule_id !== null');
+        $violation_id = $this->violation_id($violation);
+        if ($violation_id === null) {
+            $this->builder()
+                ->insert($this->violation_table())
+                ->values(array
+                    ( "rule_id" => "?"
+                    , "file" => "?"
+                    , "line" => "?"
+                    , "first_seen" => "?"
+                    , "last_seen" => "?"
+                    ))
+                ->setParameter(0, $this->current_rule_id)
+                ->setParameter(1, $violation->filename())
+                ->setParameter(2, $violation->line())
+                ->setParameter(3, $this->current_run_id)
+                ->setParameter(4, $this->current_run_id)
+                ->execute();
+            $violation_id = (int)$this->connection->lastInsertId();
+        }
+        else {
+            $this->builder()
+                ->update($this->violation_table())
+                ->set("last_seen", "?")
+                ->where("id = ?")
+                ->setParameter(0, $this->current_run_id)
+                ->setParameter(1, $violation_id)
+                ->execute();
+        }
+
+        $this->builder()
+            ->insert($this->violation_location_table())
+            ->values(array
+                ( "violation_id" => "?"
+                , "run_id"  => "?"
+                , "line_no" => "?"
+                ))
+            ->setParameter(0, $violation_id)
+            ->setParameter(1, $this->current_run_id)
+            ->setParameter(2, $violation->line_no())
+            ->execute();
     }
 
     // Helpers
@@ -111,6 +162,32 @@ class ResultDB extends DB implements ReportGenerator {
             ->from($this->rule_table())
             ->where("rule = ?")
             ->setParameter(0, $rule->pprint())
+            ->execute()
+            ->fetch();
+        if ($res) {
+            return (int)$res["id"];
+        }
+        else {
+            return null;
+        }
+    }
+
+    /**
+     * @param   Violation   $violation
+     * @return  int|null
+     */
+    protected function violation_id(Violation $violation) {
+        $res = $this->builder()
+            ->select("id")
+            ->from($this->violation_table())
+            ->where($this->builder()->expr()->andX
+                ( "rule_id = ?"
+                , "file = ?"
+                , "line = ?"
+                ))
+            ->setParameter(0, $this->current_rule_id)
+            ->setParameter(1, $violation->filename())
+            ->setParameter(2, $violation->line())
             ->execute()
             ->fetch();
         if ($res) {
@@ -264,5 +341,4 @@ class ResultDB extends DB implements ReportGenerator {
         $sync = new SingleDatabaseSynchronizer($this->connection);
         $sync->createSchema($schema);
     }
-
 }
