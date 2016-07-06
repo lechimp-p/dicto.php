@@ -273,7 +273,7 @@ class ResultDB extends DB implements ReportGenerator {
         $violation_table = $schema->createTable($this->violation_table());
         $violation_table->addColumn
             ( "id", "integer"
-            , array("notnull" => true)
+            , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
             );
         $violation_table->addColumn
             ( "rule_id", "integer"
