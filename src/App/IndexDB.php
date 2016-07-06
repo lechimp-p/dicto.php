@@ -15,22 +15,12 @@ use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\CompilesVars;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\CachesReferences;
-use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Schema;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
-class IndexDB implements Insert, Query {
+class IndexDB extends DB implements Insert, Query {
     use CachesReferences;
-
-    /**
-     * @var Connection
-     */
-    protected $connection;
-
-    public function __construct(Connection $connection) {
-        $this->connection = $connection;
-    }
 
     /**
      * @return \Doctrine\DBAL\Query\Builder
@@ -154,33 +144,7 @@ class IndexDB implements Insert, Query {
         return "relations";
     }
 
-    /**
-     * Initialize REGEXP for sqlite.
-     */
-    public function init_sqlite_regexp() {
-        $pdo = $this->connection->getWrappedConnection();
-        if (!($pdo instanceof \PDO)) {
-            throw new \RuntimeException(
-                "Expected wrapped connection to be PDO-object.");
-        }
-        $pdo->sqliteCreateFunction("regexp", function($pattern, $data) {
-            return preg_match("%$pattern%", $data) > 0;
-        });
-    }
-
     // Creation of database.
-
-    public function maybe_init_database_schema() {
-        $res = $this->builder()
-            ->select("COUNT(*)")
-            ->from("sqlite_master")
-            ->where("type = 'table'")
-            ->execute()
-            ->fetchColumn();
-        if ($res == 0) {
-            $this->init_database_schema();
-        }
-    }
 
     public function init_database_schema() {
         $schema = new Schema\Schema();
