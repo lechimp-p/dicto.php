@@ -161,7 +161,8 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
             ->execute()
             ->fetchAll();
         $expected = array(array
-            ( "violation_id" => "1"
+            ( "id" => "1"
+            , "violation_id" => "1"
             , "run_id" => "1"
             , "line_no" => "42"
             ));
@@ -200,12 +201,14 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
             ->fetchAll();
         $expected = array
             ( array
-                ( "violation_id" => "1"
+                ( "id" => "1"
+                , "violation_id" => "1"
                 , "run_id" => "1"
                 , "line_no" => "42"
                 )
             , array
-                ( "violation_id" => "1"
+                ( "id" => "2"
+                , "violation_id" => "1"
                 , "run_id" => "2"
                 , "line_no" => "42"
                 )
@@ -246,12 +249,14 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
             ->fetchAll();
         $expected = array
             ( array
-                ( "violation_id" => "1"
+                ( "id" => "1"
+                , "violation_id" => "1"
                 , "run_id" => "1"
                 , "line_no" => "42"
                 )
             , array
-                ( "violation_id" => "1"
+                ( "id" => "2"
+                , "violation_id" => "1"
                 , "run_id" => "2"
                 , "line_no" => "23"
                 )
@@ -302,12 +307,14 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
             ->fetchAll();
         $expected = array
             ( array
-                ( "violation_id" => "1"
+                ( "id" => "1"
+                , "violation_id" => "1"
                 , "run_id" => "1"
                 , "line_no" => "42"
                 )
             , array
-                ( "violation_id" => "2"
+                ( "id" => "2"
+                , "violation_id" => "2"
                 , "run_id" => "2"
                 , "line_no" => "42"
                 )
@@ -358,12 +365,14 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
             ->fetchAll();
         $expected = array
             ( array
-                ( "violation_id" => "1"
+                ( "id" => "1"
+                , "violation_id" => "1"
                 , "run_id" => "1"
                 , "line_no" => "42"
                 )
             , array
-                ( "violation_id" => "2"
+                ( "id" => "2"
+                , "violation_id" => "2"
                 , "run_id" => "2"
                 , "line_no" => "42"
                 )
@@ -414,16 +423,67 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
             ->fetchAll();
         $expected = array
             ( array
-                ( "violation_id" => "1"
+                ( "id" => "1"
+                , "violation_id" => "1"
                 , "run_id" => "1"
                 , "line_no" => "42"
                 )
             , array
-                ( "violation_id" => "2"
+                ( "id" => "2"
+                , "violation_id" => "2"
                 , "run_id" => "1"
                 , "line_no" => "42"
                 )
             );
         $this->assertEquals($expected, $res);
     }
+
+    public function test_report_two_violations_in_same_file() {
+        $rule = $this->all_classes_cannot_depend_on_globals();
+        $violation1 = new Violation($rule, "file.php", 23, "line of code");
+        $violation2 = new Violation($rule, "file.php", 42, "line of code");
+        $this->db->begin_new_run("#COMMIT_HASH1#");
+        $this->db->begin_rule($rule);
+        $this->db->report_violation($violation1);
+        $this->db->report_violation($violation2);
+
+        $res = $this->builder()
+            ->select("*")
+            ->from($this->db->violation_table())
+            ->execute()
+            ->fetchAll();
+        $expected = array
+            ( array
+                ( "id" => "1"
+                , "rule_id" => "1"
+                , "file" => "file.php"
+                , "line" => "line of code"
+                , "first_seen" => "1"
+                , "last_seen" => "1"
+                )
+            );
+        $this->assertEquals($expected, $res);
+
+        $res = $this->builder()
+            ->select("*")
+            ->from($this->db->violation_location_table())
+            ->execute()
+            ->fetchAll();
+        $expected = array
+            ( array
+                ( "id" => "1"
+                , "violation_id" => "1"
+                , "run_id" => "1"
+                , "line_no" => "23"
+                )
+            , array
+                ( "id" => "2"
+                , "violation_id" => "1"
+                , "run_id" => "1"
+                , "line_no" => "42"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
 }

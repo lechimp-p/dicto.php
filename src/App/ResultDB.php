@@ -314,6 +314,11 @@ class ResultDB extends DB implements ReportGenerator {
             );
 
         $violation_location_table = $schema->createTable($this->violation_location_table());
+
+        $violation_location_table->addColumn
+            ( "id", "integer"
+            , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
+            );
         $violation_location_table->addColumn
             ( "violation_id", "integer"
             , array("notnull" => true)
@@ -326,7 +331,7 @@ class ResultDB extends DB implements ReportGenerator {
             ( "line_no", "integer"
             , array("notnull" => true)
             );
-        $violation_location_table->setPrimaryKey(array("violation_id", "run_id"));
+        $violation_location_table->setPrimaryKey(array("id"));
         $violation_location_table->addForeignKeyConstraint
             ( $violation_table
             , array("violation_id")
