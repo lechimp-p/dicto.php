@@ -61,8 +61,8 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_begin_two_new_runs() {
-        $this->db->begin_new_run("#COMMIT_HASH#");
-        $this->db->begin_new_run("#COMMIT_HASH#");
+        $this->db->begin_new_run("#COMMIT_HASH1#");
+        $this->db->begin_new_run("#COMMIT_HASH2#");
 
         $res = $this->builder
             ->select("*")
@@ -72,11 +72,11 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $expected = array
             ( array
                 ( "id" => "1"
-                , "commit_hash" => "#COMMIT_HASH#"
+                , "commit_hash" => "#COMMIT_HASH1#"
                 )
             , array
                 ( "id" => "2"
-                , "commit_hash" => "#COMMIT_HASH#"
+                , "commit_hash" => "#COMMIT_HASH2#"
                 )
             );
         $this->assertEquals($expected, $res);
