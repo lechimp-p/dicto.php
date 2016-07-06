@@ -49,15 +49,7 @@
   or to get to know how many new issues were introduced with a commit.
 
 # Execution plan for introducing git (and further improvements)
-* There needs to be some notion of a run of the analysis, that needs to be stored
-  in the database
 * The engine then somehow needs to figure out what to do based on the last run and
   the current state of the source.
     -> This would also mean that we could also only reindex files that have changed
        between two commits.
-* Instead of assuming one db, where all results are stored, there need to be
-  different dbs:
-    - one containing information about the runs, including info about the violations
-    - one db containing indexing results per source state
-  Ideally, the latter should be removable without loosing relevant (?) historical (?)
-  information.
