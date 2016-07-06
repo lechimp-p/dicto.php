@@ -19,7 +19,30 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
 class ResultDB extends DB implements ReportGenerator {
+    /**
+     * @var int|null
+     */
+    private $current_run_id = null;
+
     // ReportGenerator implementation
+
+    /**
+     * Announce to start a new run of the analysis now.
+     *
+     * @param   string  $commit_hash
+     * @return  null
+     */
+    public function begin_new_run($commit_hash) {
+        assert('is_string($commit_hash)');
+        $this->builder()
+            ->insert($this->run_table())
+            ->values(array
+                ( "commit_hash" => "?"
+                ))
+            ->setParameter(0, $commit_hash)
+            ->execute();
+        $this->current_run_id = (int)$this->connection->lastInsertId();
+    }
 
     /**
      * @inheritdoc
@@ -37,6 +60,31 @@ class ResultDB extends DB implements ReportGenerator {
      * @inheritdoc
      */
     public function begin_rule(Rule $rule) {
+        assert('$this->current_run_id !== null');
+        $rule_id = $this->rule_id($rule);
+        if ($rule_id === null) {
+            $this->builder()
+                ->insert($this->rule_table())
+                ->values(array
+                    ( "rule" => "?"
+                    , "first_seen" => "?"
+                    , "last_seen" => "?"
+                    ))
+                ->setParameter(0, $rule->pprint())
+                ->setParameter(1, $this->current_run_id)
+                ->setParameter(2, $this->current_run_id)
+                ->execute();
+            $rule_id = (int)$this->connection->lastInsertId();
+        }
+        else {
+            $this->builder()
+                ->update($this->rule_table())
+                ->set("last_seen", "?")
+                ->where("id = ?")
+                ->setParameter(0, $this->current_run_id)
+                ->setParameter(1, $rule_id)
+                ->execute();
+        }
     }
 
     /**
@@ -49,6 +97,28 @@ class ResultDB extends DB implements ReportGenerator {
      * @inheritdoc
      */
     public function report_violation(Violation $violation) {
+    }
+
+    // Helpers
+
+    /**
+     * @param   Rule    $rule
+     * @return  int|null
+     */
+    protected function rule_id(Rule $rule) {
+        $res = $this->builder()
+            ->select("id")
+            ->from($this->rule_table())
+            ->where("rule = ?")
+            ->setParameter(0, $rule->pprint())
+            ->execute()
+            ->fetch();
+        if ($res) {
+            return (int)$res["id"];
+        }
+        else {
+            return null;
+        }
     }
 
     // Names
@@ -75,18 +145,6 @@ class ResultDB extends DB implements ReportGenerator {
 
     // Creation of database.
 
-    public function maybe_init_database_schema() {
-        $res = $this->builder()
-            ->select("COUNT(*)")
-            ->from("sqlite_master")
-            ->where("type = 'table'")
-            ->execute()
-            ->fetchColumn();
-        if ($res == 0) {
-            $this->init_database_schema();
-        }
-    }
-
     public function init_database_schema() {
         $schema = new Schema\Schema();
 
@@ -96,7 +154,7 @@ class ResultDB extends DB implements ReportGenerator {
             , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
             );
         $run_table->addColumn
-            ( "commit", "string"
+            ( "commit_hash", "string"
             , array("notnull" => true)
             );
         // TODO: maybe add time
