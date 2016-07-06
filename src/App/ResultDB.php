@@ -217,7 +217,7 @@ class ResultDB extends DB implements ReportGenerator {
     }
 
     public function violation_location_table() {
-        return "violation_location";
+        return "violation_locations";
     }
 
     // Creation of database.
