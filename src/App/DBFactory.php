@@ -66,7 +66,9 @@ class DBFactory {
      */
     public function get_result_db($path) {
         $connection = $this->build_connection($path);
-        return new ResultDB($connection);
+        $db = new ResultDB($connection);
+        $db->maybe_init_database_schema();
+        return $db;
     }
 
     protected function build_connection($path) {
