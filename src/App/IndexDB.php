@@ -22,13 +22,6 @@ use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 class IndexDB extends DB implements Insert, Query {
     use CachesReferences;
 
-    /**
-     * @return \Doctrine\DBAL\Query\Builder
-     */
-    public function builder() {
-        return $this->connection->createQueryBuilder();
-    }
-
     // Implementation of Insert interface.
 
     /**
