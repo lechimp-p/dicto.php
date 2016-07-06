@@ -65,7 +65,8 @@ class DBFactory {
      * @return  ResultDB
      */
     public function get_result_db($path) {
-        return new ResultDB();
+        $connection = $this->build_connection($path);
+        return new ResultDB($connection);
     }
 
     protected function build_connection($path) {

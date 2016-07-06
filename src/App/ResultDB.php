@@ -14,8 +14,11 @@ use Lechimp\Dicto\Analysis\ReportGenerator;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
+use Doctrine\DBAL\Schema;
+use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
-class ResultDB implements ReportGenerator {
+class ResultDB extends DB implements ReportGenerator {
     // ReportGenerator implementation
 
     /**
@@ -54,12 +57,20 @@ class ResultDB implements ReportGenerator {
         return "runs";    
     }
 
+    public function variable_table() {
+        return "variables";
+    }
+
     public function rule_table() {
         return "rules";
     }
 
     public function violation_table() {
         return "violations";
+    }
+
+    public function violation_location_table() {
+        return "violation_location";
     }
 
     // Creation of database.
@@ -96,17 +107,23 @@ class ResultDB implements ReportGenerator {
 
         $rule_table = $schema->createTable($this->rule_table());
         $rule_table->addColumn
+            ( "id", "integer"
+            , array("notnull" => true)
+            );
+        $rule_table->addColumn
             ( "rule", "string"
             , array("notnull" => true)
             );
         $rule_table->addColumn
-            ( "first_seen", "int"
+            ( "first_seen", "integer"
             , array("notnull" => true)
             );
         $rule_table->addColumn
-            ( "last_seen", "int"
-            , array("notnull" => false)
+            ( "last_seen", "integer"
+            , array("notnull" => true)
             );
+        $rule_table->setPrimaryKey(array("id"));
+        $rule_table->addUniqueIndex(array("rule"));
         $rule_table->addForeignKeyConstraint
             ( $run_table
             , array("first_seen")
@@ -115,6 +132,74 @@ class ResultDB implements ReportGenerator {
         $rule_table->addForeignKeyConstraint
             ( $run_table
             , array("last_seen")
+            , array("id")
+            );
+
+        $violation_table = $schema->createTable($this->violation_table());
+        $violation_table->addColumn
+            ( "id", "integer"
+            , array("notnull" => true)
+            );
+        $violation_table->addColumn
+            ( "rule_id", "integer"
+            , array("notnull" => true)
+            );
+        $violation_table->addColumn
+            ( "file", "string"
+            , array("notnull" => true)
+            );
+        $violation_table->addColumn
+            ( "line", "string"
+            , array("notnull" => true)
+            );
+        $violation_table->addColumn
+            ( "first_seen", "integer"
+            , array("notnull" => true)
+            );
+        $violation_table->addColumn
+            ( "last_seen", "integer"
+            , array("notnull" => true)
+            );
+        $violation_table->setPrimaryKey(array("id"));
+        $violation_table->addUniqueIndex(array("rule_id", "file", "line"));
+        $violation_table->addForeignKeyConstraint
+            ( $rule_table
+            , array("rule_id")
+            , array("id")
+            );
+        $violation_table->addForeignKeyConstraint
+            ( $run_table
+            , array("first_seen")
+            , array("id")
+            );
+        $violation_table->addForeignKeyConstraint
+            ( $run_table
+            , array("last_seen")
+            , array("id")
+            );
+
+        $violation_location_table = $schema->createTable($this->violation_location_table());
+        $violation_location_table->addColumn
+            ( "violation_id", "integer"
+            , array("notnull" => true)
+            );
+        $violation_location_table->addColumn
+            ( "run_id", "integer"
+            , array("notnull" => true)
+            );
+        $violation_location_table->addColumn
+            ( "line_no", "integer"
+            , array("notnull" => true)
+            );
+        $violation_location_table->setPrimaryKey(array("violation_id", "run_id"));
+        $violation_location_table->addForeignKeyConstraint
+            ( $violation_table
+            , array("violation_id")
+            , array("id")
+            );
+        $violation_location_table->addForeignKeyConstraint
+            ( $run_table
+            , array("run_id")
             , array("id")
             );
 
