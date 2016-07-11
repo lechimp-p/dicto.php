@@ -25,6 +25,13 @@ abstract class Entities extends Variable {
     /**
      * @inheritdocs
      */
+    public function meaning() {
+        return $this->id();
+    }
+
+    /**
+     * @inheritdocs
+     */
     public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
         return $this->eq_op
             ( $builder

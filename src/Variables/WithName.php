@@ -52,6 +52,14 @@ class WithName extends Variable {
     /**
      * @inheritdocs
      */
+    public function meaning() {
+        $re = $this->regexp();
+        return $this->variable()->meaning()." with name \"$re\""; 
+    }
+
+    /**
+     * @inheritdocs
+     */
     public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
         // normal case : left_condition AND regexp matches
         if (!$negate) {

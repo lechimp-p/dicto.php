@@ -36,6 +36,15 @@ abstract class Combinator extends Variable {
      */
     abstract public function id();
 
+
+    /**
+     * @inheritdocs
+     */
+    public function meaning() {
+        $cb = str_replace("_", " ", $this->id());
+        return $this->left()->meaning()." $cb ".$this->right()->meaning();
+    }
+
     /**
      * @return  Variable
      */

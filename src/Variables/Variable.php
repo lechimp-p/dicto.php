@@ -52,6 +52,13 @@ abstract class Variable extends Def\Definition {
     }
 
     /**
+     * Get the meaning of the variable.
+     *
+     * @return  string
+     */
+    abstract public function meaning();
+
+    /**
      * Compile the variable to an sql expression.
      *
      * @param   ExpressionBuilder   $builder

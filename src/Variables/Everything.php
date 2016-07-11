@@ -16,6 +16,13 @@ class Everything extends Variable {
     /**
      * @inheritdocs
      */
+    public function meaning() {
+        return "everything";
+    }
+
+    /**
+     * @inheritdocs
+     */
     public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
         return $builder->eq 
             ( $builder->literal($negate ? 0 : 1)
