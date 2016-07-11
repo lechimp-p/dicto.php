@@ -52,6 +52,17 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
             );
     }
 
+    public function all_classes_cannot_depend_on_globals_twisted() {
+        // Like all_classes_cannot_depend_on_globals, but variable
+        // names are oddly twisted.
+        return new Rules\Rule
+            ( Rules\Rule::MODE_CANNOT
+            , new Vars\Globals("allClasses")
+            , new Rules\DependOn()
+            , array(new Vars\Classes("allGlobals"))
+            );
+    }
+
     // Actual Tests
 
     public function test_smoke() {
@@ -113,6 +124,34 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
+    public function test_begin_rule_inserts_variables() {
+        $this->db->begin_new_run("#COMMIT_HASH#");
+        $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
+
+        $res = $this->builder()
+            ->select("*")
+            ->from($this->db->variable_table())
+            ->execute()
+            ->fetchAll();
+        $expected = array
+            ( array
+                ( "id" => "1"
+                , "name" => "allClasses"
+                , "meaning" => "classes"
+                , "first_seen" => "1"
+                , "last_seen" => "1"
+                )
+            , array
+                ( "id" => "2"
+                , "name" => "allGlobals"
+                , "meaning" => "globals"
+                , "first_seen" => "1"
+                , "last_seen" => "1"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
     public function test_begin_rule_inserts_rule_twice() {
         $this->db->begin_new_run("#COMMIT_HASH1#");
         $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
@@ -130,6 +169,80 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
             , "first_seen" => "1"
             , "last_seen" => "2"
             ));
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_begin_rule_inserts_variables_twice() {
+        $this->db->begin_new_run("#COMMIT_HASH#");
+        $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
+        $this->db->begin_new_run("#COMMIT_HASH2#");
+        $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
+
+        $res = $this->builder()
+            ->select("*")
+            ->from($this->db->variable_table())
+            ->execute()
+            ->fetchAll();
+        $expected = array
+            ( array
+                ( "id" => "1"
+                , "name" => "allClasses"
+                , "meaning" => "classes"
+                , "first_seen" => "1"
+                , "last_seen" => "2"
+                )
+            , array
+                ( "id" => "2"
+                , "name" => "allGlobals"
+                , "meaning" => "globals"
+                , "first_seen" => "1"
+                , "last_seen" => "2"
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_begin_ruhle_changed_var_meaning() {
+        $this->db->begin_new_run("#COMMIT_HASH#");
+        $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
+        $this->db->begin_new_run("#COMMIT_HASH2#");
+        $this->db->begin_rule($this->all_classes_cannot_depend_on_globals_twisted());
+
+        $res = $this->builder()
+            ->select("*")
+            ->from($this->db->variable_table())
+            ->execute()
+            ->fetchAll();
+        $expected = array
+            ( array
+                ( "id" => "1"
+                , "name" => "allClasses"
+                , "meaning" => "classes"
+                , "first_seen" => "1"
+                , "last_seen" => "1"
+                )
+            , array
+                ( "id" => "2"
+                , "name" => "allGlobals"
+                , "meaning" => "globals"
+                , "first_seen" => "1"
+                , "last_seen" => "1"
+                )
+            , array
+                ( "id" => "3"
+                , "name" => "allClasses"
+                , "meaning" => "globals"
+                , "first_seen" => "2"
+                , "last_seen" => "2"
+                )
+            , array
+                ( "id" => "4"
+                , "name" => "allGlobals"
+                , "meaning" => "classes"
+                , "first_seen" => "2"
+                , "last_seen" => "2"
+                )
+            );
         $this->assertEquals($expected, $res);
     }
 

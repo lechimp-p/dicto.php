@@ -14,6 +14,7 @@ use Lechimp\Dicto\Analysis\ReportGenerator;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
+use Lechimp\Dicto\Variables\Variable;
 use Doctrine\DBAL\Schema;
 use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
@@ -92,6 +93,9 @@ class ResultDB extends DB implements ReportGenerator {
                 ->setParameter(1, $rule_id)
                 ->execute();
         }
+        foreach ($rule->variables() as $variable) {
+            $this->upsert_variable($variable);
+        } 
         $this->current_rule_id = $rule_id;
     }
 
@@ -152,6 +156,7 @@ class ResultDB extends DB implements ReportGenerator {
 
     // Helpers
 
+
     /**
      * @param   Rule    $rule
      * @return  int|null
@@ -170,6 +175,71 @@ class ResultDB extends DB implements ReportGenerator {
         else {
             return null;
         }
+    }
+
+    /**
+     * @param   Variable $var
+     * @return  int|null
+     */
+    protected function variable_id(Variable $var) {
+        $res = $this->builder()
+            ->select("id")
+            ->from($this->variable_table())
+            ->where($this->builder()->expr()->andX
+                ( "name = ?"
+                , "meaning = ?"
+                ))
+            ->setParameter(0, $var->name())
+            ->setParameter(1, $var->meaning())
+            ->execute()
+            ->fetch();
+        if ($res) {
+            return (int)$res["id"];
+        }
+        else {
+            return null;
+        }
+    }
+
+    protected function upsert_variable(Variable $var) {
+        $var_id = $this->variable_id($var);
+        if ($var_id === null) {
+            $var_id = $this->insert_variable($var);            
+        }
+        else {
+            $this->update_variable($var, $var_id);
+        }
+        return $var_id;
+    }
+
+    protected function insert_variable(Variable $var) {
+        assert('$this->current_run_id !== null');
+        $this->builder()
+            ->insert($this->variable_table())
+            ->values(array
+                ( "name" => "?"
+                , "meaning" => "?"
+                , "first_seen" => "?"
+                , "last_seen" => "?"
+                ))
+            ->setParameter(0, $var->name())
+            ->setParameter(1, $var->meaning())
+            ->setParameter(2, $this->current_run_id)
+            ->setParameter(3, $this->current_run_id)
+            ->execute();
+        return (int)$this->connection->lastInsertId();
+    }
+
+    protected function update_variable(Variable $var, $var_id) {
+        assert('is_integer($var_id)');
+        assert('$this->current_run_id !== null');
+        $this->builder()
+            ->update($this->variable_table())
+            ->set("last_seen", "?")
+            ->where("id = ?")
+            ->setParameter(0, $this->current_run_id)
+            ->setParameter(1, $var_id)
+            ->execute();
     }
 
     /**
@@ -238,7 +308,6 @@ class ResultDB extends DB implements ReportGenerator {
         // TODO: do we need some other meta information per run of the analysis? 
         $run_table->setPrimaryKey(array("id"));
 
-        // TODO: looks like i need to add the variable definitions as well
 
         $rule_table = $schema->createTable($this->rule_table());
         $rule_table->addColumn
@@ -270,6 +339,31 @@ class ResultDB extends DB implements ReportGenerator {
             , array("last_seen")
             , array("id")
             );
+
+        
+        $variable_table = $schema->createTable($this->variable_table());
+        $variable_table->addColumn
+            ( "id", "integer"
+            , array("notnull" => true)
+            );
+        $variable_table->addColumn
+            ( "name", "string"
+            , array("notnull" => true)
+            );
+        $variable_table->addColumn
+            ( "meaning", "string"
+            , array("notnull" => true)
+            );
+        $variable_table->addColumn
+            ( "first_seen", "integer"
+            , array("notnull" => true)
+            );
+        $variable_table->addColumn
+            ( "last_seen", "integer"
+            , array("notnull" => true)
+            );
+        $variable_table->setPrimaryKey(array("id"));
+
 
         $violation_table = $schema->createTable($this->violation_table());
         $violation_table->addColumn
@@ -313,6 +407,7 @@ class ResultDB extends DB implements ReportGenerator {
             , array("last_seen")
             , array("id")
             );
+
 
         $violation_location_table = $schema->createTable($this->violation_location_table());
 
