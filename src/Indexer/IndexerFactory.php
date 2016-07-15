@@ -33,7 +33,6 @@ class IndexerFactory {
     protected $schemas;
 
     /**
-     * @param   string      $project_root_path
      * @param   Schema[]    $schemas
      */
     public function __construct(Log $log, \PhpParser\Parser $parser, array $schemas) {
