@@ -11,7 +11,7 @@
 namespace Lechimp\Dicto\Analysis;
 
 use Lechimp\Dicto\Analysis\Query;
-use Lechimp\Dicto\Rules\RuleSet;
+use Lechimp\Dicto\Rules\Ruleset;
 use Psr\Log\LoggerInterface as Log;
 
 /**
@@ -30,7 +30,7 @@ class AnalyzerFactory {
 
     public function __construct
                         ( Log $log
-                        , RuleSet $ruleset
+                        , Ruleset $ruleset
                         ) {
         $this->log = $log;
         $this->ruleset = $ruleset;
