@@ -35,10 +35,5 @@ abstract class Definition {
     public function explanation() {
         return $this->explanation;
     }
-
-    protected function setExplanation($explanation) {
-        assert('is_string($explanation)');
-        $this->explanation = $explanation;
-    }
 }
 
