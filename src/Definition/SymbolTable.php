@@ -15,13 +15,37 @@ namespace Lechimp\Dicto\Definition;
  */
 class SymbolTable {
     /**
+     * @var Symbol[]
+     */
+    protected $symbols = array();
+
+    /**
      * Generator over the symbols the SymbolTable knows.
-     *
-     * The generated values are pairs of (regex, symbol constructor).
      *
      * @return Generator
      */
     public function symbols() {
+        foreach($this->symbols as $symbol) {
+            yield $symbol;
+        }
+    }
+
+    /**
+     * Add a symbol to the table.
+     *
+     * @param   string  $regexp
+     * @param   int     $binding_power
+     * @throws  \InvalidArgumentException if %$regexp% is not a regexp
+     * @throws  \LogicException if there already is a symbol with that $regexp.
+     * @return  Symbol
+     */
+    public function add_symbol($regexp, $binding_power) {
+        if (array_key_exists($regexp, $this->symbols)) {
+            throw new \LogicException("Symbol for regexp $regexp already exists.");
+        }
+        $s = new Symbol($regexp, $binding_power);
+        $this->symbols[$regexp] = $s;
+        return $s;
     }
 }
 

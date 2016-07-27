@@ -26,8 +26,13 @@ class Symbol {
 
     public function __construct($regexp, $binding_power) {
         assert('is_string($regexp)');
+        if (!is_string($regexp) || @preg_match("%$regexp%", "") === false) {
+            throw new \InvalidArgumentException("Invalid regexp: '%$regexp%'");
+        }
         assert('is_int($binding_power)');
+        assert('$binding_power >= 0');
         $this->regexp = $regexp;
+        $this->binding_power = $binding_power;
     }
 
     /**
