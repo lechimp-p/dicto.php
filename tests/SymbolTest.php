@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto\Definition\Symbol;
+use Lechimp\Dicto\Definition\ParserException;
 
 class SymbolText extends PHPUnit_Framework_TestCase {
     public function test_valid_regexp_only() {
@@ -19,5 +20,57 @@ class SymbolText extends PHPUnit_Framework_TestCase {
         catch (\InvalidArgumentException $e) {
             $this->assertTrue(true);
         }
+    }
+
+    public function test_no_null_denotation() {
+        $s = new Symbol("a", 10);
+        try {
+            $arr = array("match");
+            $s->null_denotation($arr);
+            $this->assertFalse("This should not happen.");
+        }
+        catch (ParserException $e) {
+            $this->assertTrue(true);
+        }
+    }
+
+
+    public function test_null_denotation() {
+        $s = new Symbol("a", 10);
+        $s2 = $s->null_denotation_is(function(array $match) {
+            return $match[0];
+        });
+
+        $this->assertEquals($s, $s2);
+
+        $arr = array("match");
+        $res = $s->null_denotation($arr);
+        $this->assertEquals("match", $res);
+    }
+
+    public function test_no_left_denotation() {
+        $s = new Symbol("a", 10);
+        try {
+            $arr = array("match");
+            $s->left_denotation($arr);
+            $this->assertFalse("This should not happen.");
+        }
+        catch (ParserException $e) {
+            $this->assertTrue(true);
+        }
+    }
+
+
+    public function test_left_denotation() {
+        $s = new Symbol("a", 10);
+        $s2 = $s->left_denotation_is(function(array $match) {
+            return $match[0];
+        });
+
+        $this->assertEquals($s, $s2);
+
+        $arr = array("match");
+        $res = $s->left_denotation($arr);
+        $this->assertEquals("match", $res);
     }
 }

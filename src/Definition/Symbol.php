@@ -24,6 +24,22 @@ class Symbol {
      */
     protected $binding_power;
 
+    /**
+     * This defines what a token means when appearing in the initial position
+     * of an expression.
+     *
+     * @var \Closure
+     */
+    protected $null_denotation = null;
+
+    /**
+     * This defines what a token means when appearing inside an expression
+     * to the left of the rest.
+     *
+     * @var \Closure
+     */
+    protected $left_denotation = null;
+
     public function __construct($regexp, $binding_power) {
         assert('is_string($regexp)');
         if (!is_string($regexp) || @preg_match("%$regexp%", "") === false) {
@@ -47,5 +63,51 @@ class Symbol {
      */
     public function binding_power() {
         return $this->binding_power;
+    }
+
+    /**
+     * @param   \Closure    $led
+     * @return  self
+     */
+    public function null_denotation_is(\Closure $led) {
+        assert('$this->null_denotation === null');
+        $this->null_denotation = $led;
+        return $this;
+    }
+
+    /**
+     * @param   array   $matches
+     * @return  mixed
+     */
+    public function null_denotation(array &$matches) {
+        if ($this->null_denotation === null) {
+            $m = $matches[0];
+            throw new ParserException("Syntax Error: $m");
+        }
+        $led = $this->null_denotation;
+        return $led($matches);
+    }
+
+    /**
+     * @param   \Closure    $led
+     * @return  self
+     */
+    public function left_denotation_is(\Closure $led) {
+        assert('$this->left_denotation === null');
+        $this->left_denotation = $led;
+        return $this;
+    }
+
+    /**
+     * @param   array   $matches
+     * @return  mixed
+     */
+    public function left_denotation(array &$matches) {
+        if ($this->left_denotation === null) {
+            $m = $matches[0];
+            throw new ParserException("Syntax Error: $m");
+        }
+        $led = $this->left_denotation;
+        return $led($matches);
     }
 }
