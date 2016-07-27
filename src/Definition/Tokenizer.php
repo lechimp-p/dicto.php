@@ -51,7 +51,7 @@ class Tokenizer implements \Iterator {
     // Methods from Iterator-interface
 
     /**
-     * @inheritdocs
+     * @return  array (Symbol,$matches)
      */
     public function current() {
         $this->maybe_parse_next_token();
@@ -111,10 +111,11 @@ class Tokenizer implements \Iterator {
         }
         $tok = $this->get_next_token();
 
-        foreach ($this->symbol_table->symbols() as list($re, $constructor)) {
+        foreach ($this->symbol_table->symbols() as $symbol) {
+            $re = $symbol->regexp();
             $matches = array();
             if (preg_match("%^$re$%", $tok, $matches) == 1) {
-                $this->tokens[] = $constructor($matches);
+                $this->tokens[] = array($symbol, $matches);
                 return;
             }
         }

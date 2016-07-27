@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto\Definition\Tokenizer;
+use Lechimp\Dicto\Definition\Symbol;
 use Lechimp\Dicto\Definition\SymbolTable;
 use Lechimp\Dicto\Definition\ParserException;
 
@@ -16,7 +17,7 @@ class SymbolTableMock extends SymbolTable {
     public $all_symbols = array();
     public function symbols() {
         foreach ($this->all_symbols as $symbol) {
-            yield $symbol;
+            yield new Symbol($symbol, 0);
         }
     }
 }
@@ -24,7 +25,6 @@ class SymbolTableMock extends SymbolTable {
 class TokenizerTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->symbol_table = new SymbolTableMock();
-        $this->noop = function (&$v) { return $v[0]; };
     }
 
     protected function tokenizer($source) {
@@ -34,7 +34,7 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
     public function test_syntax_error() {
         $t = $this->tokenizer("some source.");
         try {
-            $s = $t->current();
+            $t->current();
             $this->assertTrue("This should not happen.");
         }
         catch (ParserException $e) {
@@ -43,27 +43,31 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_one_token() {
-        $this->symbol_table->all_symbols[] = array("\w+", $this->noop);
+        $this->symbol_table->all_symbols[] = "\w+";
         $t = $this->tokenizer("hello");
-        $s = $t->current();
-        $this->assertEquals("hello", $s);
+        list($s,$m) = $t->current();
+        $this->assertEquals(new Symbol("\w+", 0), $s);
+        $this->assertEquals(array("hello"), $m);
     }
 
     public function test_two_tokens() {
-        $this->symbol_table->all_symbols[] = array("\w+", $this->noop);
+        $this->symbol_table->all_symbols[] = "\w+";
         $t = $this->tokenizer("hello world");
-        $s1 = $t->current();
+        list($s1, $m1) = $t->current();
         $t->next();
-        $s2 = $t->current();
-        $this->assertEquals("hello", $s1);
-        $this->assertEquals("world", $s2);
+        list($s2, $m2) = $t->current();
+        $expected = new Symbol("\w+", 0);
+        $this->assertEquals($expected, $s1);
+        $this->assertEquals(array("hello"), $m1);
+        $this->assertEquals($expected, $s2);
+        $this->assertEquals(array("world"), $m2);
     }
 
     public function test_syntax_error2() {
-        $this->symbol_table->all_symbols[] = array("\d+", $this->noop);
+        $this->symbol_table->all_symbols[] = "\d+";
         $t = $this->tokenizer("hello world");
         try {
-            $s = $t->current();
+            $t->current();
             $this->assertTrue("This should not happen.");
         }
         catch (ParserException $e) {
@@ -72,16 +76,17 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_rewind() {
-        $this->symbol_table->all_symbols[] = array("\w+", $this->noop);
+        $this->symbol_table->all_symbols[] = "\w+";
         $t = $this->tokenizer("hello world");
         $t->next();
         $t->rewind();
-        $s = $t->current();
-        $this->assertEquals("hello", $s);
+        list($s,$m) = $t->current();
+        $this->assertEquals(new Symbol("\w+", 0), $s);
+        $this->assertEquals(array("hello"), $m);
     }
 
     public function test_key() {
-        $this->symbol_table->all_symbols[] = array("\w+", $this->noop);
+        $this->symbol_table->all_symbols[] = "\w+";
         $t = $this->tokenizer("hello world");
         $p1 = $t->key();
         $t->next();
@@ -91,7 +96,7 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_valid() {
-        $this->symbol_table->all_symbols[] = array("\w+", $this->noop);
+        $this->symbol_table->all_symbols[] = "\w+";
         $t = $this->tokenizer("hello world");
         $this->assertTrue($t->valid());
         $t->next();
