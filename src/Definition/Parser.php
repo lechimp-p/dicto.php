@@ -118,7 +118,6 @@ class Parser {
             ->null_denotation_is($converter);
     }
 
-
     // Helpers for actual parsing.
 
     /**
