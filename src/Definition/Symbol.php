@@ -99,15 +99,16 @@ class Symbol {
     }
 
     /**
+     * @param   mixed   $left
      * @param   array   $matches
      * @return  mixed
      */
-    public function left_denotation(array &$matches) {
+    public function left_denotation($left, array &$matches) {
         if ($this->left_denotation === null) {
             $m = $matches[0];
             throw new ParserException("Syntax Error: $m");
         }
         $led = $this->left_denotation;
-        return $led($matches);
+        return $led($left, $matches);
     }
 }
