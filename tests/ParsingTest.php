@@ -15,8 +15,7 @@ use Lechimp\Dicto\Definition\SymbolTable;
 class Parser extends ParserBase {
     public function __construct() {
         parent::__construct();
-        $this->symbol("\\d+")
-            ->null_denotation_is(function(array &$matches) {
+        $this->literal("\\d+", function(array &$matches) {
                 return intval($matches[0]);
             });
         $this->operator("+", 10)

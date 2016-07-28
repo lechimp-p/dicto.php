@@ -91,11 +91,33 @@ class Parser {
      *
      * Convenience, will split the given string and wrap each char in []
      * before passing it to symbol.
+     *
+     * @param   string  $op
+     * @param   int     $binding_power
+     * @throws  \InvalidArgumentException if %$regexp% is not a regexp
+     * @throws  \LogicException if there already is a symbol with that $regexp.
+     * @return  Symbol
      */
     protected function operator($op, $binding_power = 0) {
         $regexp = $this->operator_regexp($op);
         return $this->symbol($regexp, $binding_power);
     }
+
+    /**
+     * Add a literal to the symbol table, where the matches are
+     * transformed using the $converter.
+     *
+     * @param   string      $regexp
+     * @param   \Closure    $converter
+     * @throws  \InvalidArgumentException if %$regexp% is not a regexp
+     * @throws  \LogicException if there already is a symbol with that $regexp.
+     * @return  Symbol
+     */
+    protected function literal($regexp, $converter) {
+        return $this->symbol($regexp)
+            ->null_denotation_is($converter);
+    }
+
 
     // Helpers for actual parsing.
 
