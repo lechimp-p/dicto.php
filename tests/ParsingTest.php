@@ -30,6 +30,17 @@ class Parser {
                     return $left - $right;
                 }
             });
+        $this->symbol_table
+            ->add_symbol("[*/]", 20)
+            ->left_denotation_is(function($left, array &$matches) {
+                $right = $this->expression(20);
+                if ($matches[0] == "*") {
+                    return $left * $right;
+                }
+                else { // if ($matches[0] == "/")
+                    return $left / $right;
+                }
+            });
     }
 
     public function parse($source) {
@@ -46,13 +57,11 @@ class Parser {
     protected function expression($right_binding_power) {
         list($t,$m) = $this->token;
         $this->token = $this->next();
-        list($nt,$nm) = $this->token;
         $left = $t->null_denotation($m);
 
-        while ($right_binding_power < $nt->binding_power()) {
-            list($t, $m) = array($nt,$nm);
+        while ($right_binding_power < $this->token[0]->binding_power()) {
+            list($t, $m) = $this->token;
             $this->token = $this->next();
-            list($nt, $nm) = $this->token;
             $left = $t->left_denotation($left, $m);
         }
         return $left;
@@ -81,5 +90,15 @@ class ParsingText extends PHPUnit_Framework_TestCase {
     public function test_subtract() {
         $res = $this->parse("1 - 2");
         $this->assertEquals(-1, $res);
+    }
+
+    public function test_multiply() {
+        $res = $this->parse("2 * 3");
+        $this->assertEquals(6, $res);
+    }
+
+    public function test_binding() {
+        $res = $this->parse("2 * 3 - 1");
+        $this->assertEquals(5, $res);
     }
 }
