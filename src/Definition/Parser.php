@@ -13,7 +13,7 @@ namespace Lechimp\Dicto\Definition;
 /**
  * Baseclass for Parsers.
  */
-class Parser {
+abstract class Parser {
     /**
      * @var SymbolTable
      */
@@ -42,13 +42,20 @@ class Parser {
         try {
             $this->tokenizer = $this->create_tokenizer($source);
             $this->token = $this->tokenizer->current();
-            return $this->expression(0);
+            return $this->root();
         }
         finally {
             $this->tokenizer = null;
             $this->token = null;
         }
     }
+
+    /**
+     * The root for the parse tree.
+     *
+     * @return  mixed
+     */
+    abstract protected function root();
 
     // Factory Methods
 

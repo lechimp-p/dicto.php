@@ -47,6 +47,10 @@ class Parser extends ParserBase {
         $this->operator(")");
     }
 
+    protected function root() {
+        return $this->expression(0);
+    }
+
     protected function expression($right_binding_power) {
         $t = $this->current_symbol();
         $m = $this->current_match();
