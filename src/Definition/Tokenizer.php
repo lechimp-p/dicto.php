@@ -114,7 +114,7 @@ class Tokenizer implements \Iterator {
     protected function parse_next_token() {
         if ($this->is_everything_parsed()) {
             if (!$this->is_end_token_added) {
-                $this->tokens[] = array(new Symbol("", 0), array());
+                $this->tokens[] = array(new Symbol("", 0), array(""));
                 $this->is_end_token_added = true;
             }
             return;
