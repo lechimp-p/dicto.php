@@ -76,7 +76,7 @@ class Parser {
      *
      * @return  array   (Symbol, array $matches)
      */
-    protected function next() {
+    protected function fetch_next_token() {
         assert('is_array($this->token)');
         assert('$this->tokenizer !== null');
         $this->tokenizer->next();

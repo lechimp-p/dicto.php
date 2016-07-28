@@ -60,12 +60,12 @@ class Parser extends ParserBase {
 
     protected function expression($right_binding_power) {
         list($t,$m) = $this->token;
-        $this->next();
+        $this->fetch_next_token();
         $left = $t->null_denotation($m);
 
         while ($right_binding_power < $this->token[0]->binding_power()) {
             list($t, $m) = $this->token;
-            $this->next();
+            $this->fetch_next_token();
             $left = $t->left_denotation($left, $m);
         }
         return $left;
