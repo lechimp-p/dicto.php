@@ -8,12 +8,13 @@
  * a copy of the license along with the code.
  */
 
+use Lechimp\Dicto\Definition\Parser as ParserBase;
 use Lechimp\Dicto\Definition\Tokenizer;
 use Lechimp\Dicto\Definition\SymbolTable;
 
-class Parser {
+class Parser extends ParserBase {
     public function __construct() {
-        $this->symbol_table = new SymbolTable();
+        parent::__construct();
         $this->symbol_table
             ->add_symbol("\\d+")
             ->null_denotation_is(function(array &$matches) {
@@ -57,32 +58,14 @@ class Parser {
             ->add_symbol("[)]");
     }
 
-    public function parse($source) {
-        $this->tokenizer = new Tokenizer($this->symbol_table, $source); 
-        $this->token = $this->tokenizer->current();
-        return $this->expression(0);
-    }
-
-    protected function next() {
-        $this->tokenizer->next();
-        return $this->tokenizer->current();
-    }
-
-    protected function advance($regexp) {
-        if ($this->token[0]->regexp() != $regexp) {
-            throw new ParserException("Syntax Error: Expected '$regexp'");
-        }
-        $this->token = $this->next();
-    }
-
     protected function expression($right_binding_power) {
         list($t,$m) = $this->token;
-        $this->token = $this->next();
+        $this->next();
         $left = $t->null_denotation($m);
 
         while ($right_binding_power < $this->token[0]->binding_power()) {
             list($t, $m) = $this->token;
-            $this->token = $this->next();
+            $this->next();
             $left = $t->left_denotation($left, $m);
         }
         return $left;
