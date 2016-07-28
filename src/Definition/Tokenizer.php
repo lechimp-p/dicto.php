@@ -49,6 +49,8 @@ class Tokenizer implements \Iterator {
      */
     protected $is_end_token_added;
 
+    static $UNPARSED_PREVIEW_FOR_ERROR = 10;
+
     public function __construct(SymbolTable $symbol_table, $source) {
         assert('is_string($source)');
         $this->symbol_table = $symbol_table;
@@ -135,7 +137,8 @@ class Tokenizer implements \Iterator {
             }
         }
 
-        throw new ParserException("Could not match \"$tok\".");
+        $next = substr($this->unparsed, 0, static::$UNPARSED_PREVIEW_FOR_ERROR);
+        throw new ParserException("Could not match \"$next\".");
     }
 
     /**

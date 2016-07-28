@@ -46,7 +46,7 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
         $t = $this->tokenizer("");
         $end = $t->current();
         $this->assertEquals(new Symbol("", 0), $end[0]);
-        $this->assertEquals(array(), $end[1]);
+        $this->assertEquals(array(""), $end[1]);
     }
 
     public function test_one_token() {
