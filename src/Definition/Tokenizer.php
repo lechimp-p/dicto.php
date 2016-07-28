@@ -35,6 +35,11 @@ class Tokenizer implements \Iterator {
     protected $source;
 
     /**
+     * @var string
+     */
+    protected $unparsed;
+
+    /**
      * @var int
      */
     protected $parsing_position;
@@ -50,7 +55,7 @@ class Tokenizer implements \Iterator {
         $this->tokens = array();
         $this->position = 0;
         $this->source = $source;
-        $this->parsing_position = 0;
+        $this->unparsed = $source;
         $this->is_end_token_added = false;
     }
 
@@ -119,12 +124,12 @@ class Tokenizer implements \Iterator {
             }
             return;
         }
-        $tok = $this->get_next_token();
 
         foreach ($this->symbol_table->symbols() as $symbol) {
             $re = $symbol->regexp();
             $matches = array();
-            if (preg_match("%^$re$%", $tok, $matches) == 1) {
+            if (preg_match("%^$re%", $this->unparsed, $matches) == 1) {
+                $this->advance($matches[0]);
                 $this->tokens[] = array($symbol, $matches);
                 return;
             }
@@ -134,29 +139,22 @@ class Tokenizer implements \Iterator {
     }
 
     /**
+     * Go forward in the string we have parsed so far.
+     *
+     * @param  string   $match
+     * @return null
+     */
+    public function advance($match) {
+        assert('is_string($match)');
+        $this->unparsed = ltrim(substr($this->unparsed, strlen($match)));
+    }
+
+    /**
      * Checkout if everything is parsed.
      *
      * @return  bool
      */
     protected function is_everything_parsed() {
-        return empty(substr($this->source, $this->parsing_position));
-    }
-
-    /**
-     * Get the next token from the source regarding to parsing_position.
-     *
-     * @throws  ParserException if next token can not be retreived.
-     * @return  string
-     */
-    protected function get_next_token() {
-        $tok_re = "%(.+?)($|\\s+)%";
-        $flags = 0;
-        $m = array();
-        $r = preg_match($tok_re, $this->source, $m, $flags, $this->parsing_position);
-        if ($r != 1) {
-            throw new ParserException("Can not get next token.");
-        }
-        $this->parsing_position += strlen($m[0]);
-        return $m[1];
+        return empty($this->unparsed);
     }
 }

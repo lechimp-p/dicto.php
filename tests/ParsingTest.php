@@ -31,6 +31,11 @@ class Parser {
                 }
             });
         $this->symbol_table
+            ->add_symbol("[*][*]", 30)
+            ->left_denotation_is(function($left, array &$matches) {
+                return pow($left, $this->expression(30-1));
+            });
+        $this->symbol_table
             ->add_symbol("[*/]", 20)
             ->left_denotation_is(function($left, array &$matches) {
                 $right = $this->expression(20);
@@ -40,11 +45,6 @@ class Parser {
                 else { // if ($matches[0] == "/")
                     return $left / $right;
                 }
-            });
-        $this->symbol_table
-            ->add_symbol("[*][*]", 30)
-            ->left_denotation_is(function($left, array &$matches) {
-                return pow($left, $this->expression(30-1));
             });
         $this->symbol_table
             ->add_symbol("[(]")
@@ -140,6 +140,11 @@ class ParsingText extends PHPUnit_Framework_TestCase {
 
     public function test_parantheses_2() {
         $res = $this->parse("( 3 - 1 )");
+        $this->assertEquals(2, $res);
+    }
+
+    public function test_no_space() {
+        $res = $this->parse("(3-1)");
         $this->assertEquals(2, $res);
     }
 }
