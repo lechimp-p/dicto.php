@@ -39,7 +39,7 @@ class SymbolTable {
      * @throws  \LogicException if there already is a symbol with that $regexp.
      * @return  Symbol
      */
-    public function add_symbol($regexp, $binding_power) {
+    public function add_symbol($regexp, $binding_power = 0) {
         if (array_key_exists($regexp, $this->symbols)) {
             throw new \LogicException("Symbol for regexp $regexp already exists.");
         }
