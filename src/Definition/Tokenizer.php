@@ -39,6 +39,11 @@ class Tokenizer implements \Iterator {
      */
     protected $parsing_position;
 
+    /**
+     * @var bool
+     */
+    protected $is_end_token_added;
+
     public function __construct(SymbolTable $symbol_table, $source) {
         assert('is_string($source)');
         $this->symbol_table = $symbol_table;
@@ -46,6 +51,7 @@ class Tokenizer implements \Iterator {
         $this->position = 0;
         $this->source = $source;
         $this->parsing_position = 0;
+        $this->is_end_token_added = false;
     }
 
     // Methods from Iterator-interface
@@ -107,6 +113,10 @@ class Tokenizer implements \Iterator {
      */
     protected function parse_next_token() {
         if ($this->is_everything_parsed()) {
+            if (!$this->is_end_token_added) {
+                $this->tokens[] = array(new Symbol("", 0), array());
+                $this->is_end_token_added = true;
+            }
             return;
         }
         $tok = $this->get_next_token();

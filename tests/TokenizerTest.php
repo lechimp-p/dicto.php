@@ -42,6 +42,13 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
         }
     }
 
+    public function test_end_token() {
+        $t = $this->tokenizer("");
+        $end = $t->current();
+        $this->assertEquals(new Symbol("", 0), $end[0]);
+        $this->assertEquals(array(), $end[1]);
+    }
+
     public function test_one_token() {
         $this->symbol_table->all_symbols[] = "\w+";
         $t = $this->tokenizer("hello");
@@ -98,6 +105,8 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
     public function test_valid() {
         $this->symbol_table->all_symbols[] = "\w+";
         $t = $this->tokenizer("hello world");
+        $this->assertTrue($t->valid());
+        $t->next();
         $this->assertTrue($t->valid());
         $t->next();
         $this->assertTrue($t->valid());
