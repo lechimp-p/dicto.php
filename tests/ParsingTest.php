@@ -42,7 +42,7 @@ class Parser extends ParserBase {
         $this->operator("(")
             ->null_denotation_is(function(array &$matches) {
                 $res = $this->expression(0);
-                $this->advance("[)]");
+                $this->advance_operator(")");
                 return $res;
             });
         $this->operator(")");

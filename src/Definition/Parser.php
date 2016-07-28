@@ -147,6 +147,17 @@ class Parser {
         $this->token = $this->tokenizer->current();
     }
 
+    /**
+     * Advance the tokenizer to the next token if current token
+     * was matched by the given operator.
+     *
+     * @param   string  $op
+     * @return  null
+     */
+    protected function advance_operator($op) {
+        $this->advance($this->operator_regexp($op));
+    }
+
     // Internal Helpers
     /**
      * "abc" -> "[a][b][c]"
