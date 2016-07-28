@@ -41,6 +41,11 @@ class Parser {
                     return $left / $right;
                 }
             });
+        $this->symbol_table
+            ->add_symbol("[*][*]", 30)
+            ->left_denotation_is(function($left, array &$matches) {
+                return pow($left, $this->expression(30-1));
+            });
     }
 
     public function parse($source) {
@@ -100,5 +105,15 @@ class ParsingText extends PHPUnit_Framework_TestCase {
     public function test_binding() {
         $res = $this->parse("2 * 3 - 1");
         $this->assertEquals(5, $res);
+    }
+
+    public function test_pow() {
+        $res = $this->parse("2 ** 3");
+        $this->assertEquals(8, $res);
+    }
+
+    public function test_right_binding() {
+        $res = $this->parse("2 ** 3 ** 2");
+        $this->assertEquals(512, $res);
     }
 }
