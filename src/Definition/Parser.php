@@ -86,6 +86,17 @@ class Parser {
         return $this->symbol_table->add_symbol($regexp, $binding_power);
     }
 
+    /**
+     * Add an operator to the symbol table.
+     *
+     * Convenience, will split the given string and wrap each char in []
+     * before passing it to symbol.
+     */
+    protected function operator($op, $binding_power = 0) {
+        $regexp = $this->operator_regexp($op);
+        return $this->symbol($regexp, $binding_power);
+    }
+
     // Helpers for actual parsing.
 
     /**
@@ -119,9 +130,6 @@ class Parser {
     }
 
     /**
-     * Get the
-
-    /**
      * Advance the tokenizer to the next token if current token
      * was matched by the given regexp.
      *
@@ -137,5 +145,21 @@ class Parser {
         }
         $this->tokenizer->next();
         $this->token = $this->tokenizer->current();
+    }
+
+    // Internal Helpers
+    /**
+     * "abc" -> "[a][b][c]"
+     *
+     * @param   string  $op
+     * @return  string
+     */
+    protected function operator_regexp($op) {
+        assert('is_string($op)');
+        $regexp = array();
+        foreach (str_split($op, 1) as $c) {
+            $regexp[] = "[$c]";
+        }
+        return implode("", $regexp);
     }
 }

@@ -19,37 +19,33 @@ class Parser extends ParserBase {
             ->null_denotation_is(function(array &$matches) {
                 return intval($matches[0]);
             });
-        $this->symbol("[+-]", 10)
+        $this->operator("+", 10)
             ->left_denotation_is(function($left, array &$matches) {
-                $right = $this->expression(10);
-                if ($matches[0] == "+") {
-                    return $left + $right;
-                }
-                else { // if ($matches[0] == "-")
-                    return $left - $right;
-                }
+                return $left + $this->expression(10);
             });
-        $this->symbol("[*][*]", 30)
+        $this->operator("-", 10)
+            ->left_denotation_is(function($left, array &$matches) {
+                return $left - $this->expression(10);
+            });
+        $this->operator("**", 30)
             ->left_denotation_is(function($left, array &$matches) {
                 return pow($left, $this->expression(30-1));
             });
-        $this->symbol("[*/]", 20)
+        $this->operator("*", 20)
             ->left_denotation_is(function($left, array &$matches) {
-                $right = $this->expression(20);
-                if ($matches[0] == "*") {
-                    return $left * $right;
-                }
-                else { // if ($matches[0] == "/")
-                    return $left / $right;
-                }
+                return $left * $this->expression(20);
             });
-        $this->symbol("[(]")
+        $this->operator("/", 20)
+            ->left_denotation_is(function($left, array &$matches) {
+                return $left / $this->expression(20);
+            });
+        $this->operator("(")
             ->null_denotation_is(function(array &$matches) {
                 $res = $this->expression(0);
                 $this->advance("[)]");
                 return $res;
             });
-        $this->symbol("[)]");
+        $this->operator(")");
     }
 
     protected function expression($right_binding_power) {
