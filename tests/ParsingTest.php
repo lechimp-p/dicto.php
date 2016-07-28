@@ -19,6 +19,17 @@ class Parser {
             ->null_denotation_is(function(array &$matches) {
                 return intval($matches[0]);
             });
+        $this->symbol_table
+            ->add_symbol("[+-]", 10)
+            ->left_denotation_is(function($left, array &$matches) {
+                $right = $this->expression(10);
+                if ($matches[0] == "+") {
+                    return $left + $right;
+                }
+                else { // if ($matches[0] == "-")
+                    return $left - $right;
+                }
+            });
     }
 
     public function parse($source) {
@@ -27,15 +38,21 @@ class Parser {
         return $this->expression(0);
     }
 
+    protected function next() {
+        $this->tokenizer->next();
+        return $this->tokenizer->current();
+    }
+
     protected function expression($right_binding_power) {
         list($t,$m) = $this->token;
-        $this->tokenizer->next();
-        list($nt,$nm) = $this->tokenizer->current();
+        $this->token = $this->next();
+        list($nt,$nm) = $this->token;
         $left = $t->null_denotation($m);
+
         while ($right_binding_power < $nt->binding_power()) {
-            $t = $nt; $m = $nm;
-            $this->tokenizer->next();
-            list($nt, $nm) = $this->tokenizer->current();
+            list($t, $m) = array($nt,$nm);
+            $this->token = $this->next();
+            list($nt, $nm) = $this->token;
             $left = $t->left_denotation($left, $m);
         }
         return $left;
@@ -47,8 +64,22 @@ class ParsingText extends PHPUnit_Framework_TestCase {
         $this->parser = new Parser();
     }
 
+    public function parse($expr) {
+        return $this->parser->parse($expr);
+    }
+
     public function test_1() {
-        $res = $this->parser->parse("1");
+        $res = $this->parse("1");
         $this->assertEquals(1, $res);
+    }
+
+    public function test_add() {
+        $res = $this->parse("1 + 2");
+        $this->assertEquals(3, $res);
+    }
+
+    public function test_subtract() {
+        $res = $this->parse("1 - 2");
+        $this->assertEquals(-1, $res);
     }
 }
