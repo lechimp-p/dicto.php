@@ -91,7 +91,7 @@ class Parser {
     /**
      * Set the current token to the next token from the tokenizer.
      *
-     * @return  array   (Symbol, array $matches)
+     * @return  null
      */
     protected function fetch_next_token() {
         assert('is_array($this->token)');
@@ -99,6 +99,27 @@ class Parser {
         $this->tokenizer->next();
         $this->token = $this->tokenizer->current();
     }
+
+    /**
+     * Get the current symbol.
+     *
+     * @return  Symbol
+     */
+    protected function current_symbol() {
+        return $this->token[0];
+    }
+
+    /**
+     * Get the current match.
+     *
+     * @return  string[] 
+     */
+    protected function current_match() {
+        return $this->token[1];
+    }
+
+    /**
+     * Get the
 
     /**
      * Advance the tokenizer to the next token if current token
