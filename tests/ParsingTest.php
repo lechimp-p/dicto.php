@@ -15,7 +15,7 @@ class Parser {
     public function __construct() {
         $this->symbol_table = new SymbolTable();
         $this->symbol_table
-            ->add_symbol("\\d+", 0)
+            ->add_symbol("\\d+")
             ->null_denotation_is(function(array &$matches) {
                 return intval($matches[0]);
             });
@@ -46,6 +46,15 @@ class Parser {
             ->left_denotation_is(function($left, array &$matches) {
                 return pow($left, $this->expression(30-1));
             });
+        $this->symbol_table
+            ->add_symbol("[(]")
+            ->null_denotation_is(function(array &$matches) {
+                $res = $this->expression(0);
+                $this->advance("[)]");
+                return $res;
+            });
+        $this->symbol_table
+            ->add_symbol("[)]");
     }
 
     public function parse($source) {
@@ -57,6 +66,13 @@ class Parser {
     protected function next() {
         $this->tokenizer->next();
         return $this->tokenizer->current();
+    }
+
+    protected function advance($regexp) {
+        if ($this->token[0]->regexp() != $regexp) {
+            throw new ParserException("Syntax Error: Expected '$regexp'");
+        }
+        $this->token = $this->next();
     }
 
     protected function expression($right_binding_power) {
@@ -115,5 +131,15 @@ class ParsingText extends PHPUnit_Framework_TestCase {
     public function test_right_binding() {
         $res = $this->parse("2 ** 3 ** 2");
         $this->assertEquals(512, $res);
+    }
+
+    public function test_parantheses() {
+        $res = $this->parse("2 * ( 3 - 1 )");
+        $this->assertEquals(4, $res);
+    }
+
+    public function test_parantheses_2() {
+        $res = $this->parse("( 3 - 1 )");
+        $this->assertEquals(2, $res);
     }
 }
