@@ -15,13 +15,11 @@ use Lechimp\Dicto\Definition\SymbolTable;
 class Parser extends ParserBase {
     public function __construct() {
         parent::__construct();
-        $this->symbol_table
-            ->add_symbol("\\d+")
+        $this->symbol("\\d+")
             ->null_denotation_is(function(array &$matches) {
                 return intval($matches[0]);
             });
-        $this->symbol_table
-            ->add_symbol("[+-]", 10)
+        $this->symbol("[+-]", 10)
             ->left_denotation_is(function($left, array &$matches) {
                 $right = $this->expression(10);
                 if ($matches[0] == "+") {
@@ -31,13 +29,11 @@ class Parser extends ParserBase {
                     return $left - $right;
                 }
             });
-        $this->symbol_table
-            ->add_symbol("[*][*]", 30)
+        $this->symbol("[*][*]", 30)
             ->left_denotation_is(function($left, array &$matches) {
                 return pow($left, $this->expression(30-1));
             });
-        $this->symbol_table
-            ->add_symbol("[*/]", 20)
+        $this->symbol("[*/]", 20)
             ->left_denotation_is(function($left, array &$matches) {
                 $right = $this->expression(20);
                 if ($matches[0] == "*") {
@@ -47,15 +43,13 @@ class Parser extends ParserBase {
                     return $left / $right;
                 }
             });
-        $this->symbol_table
-            ->add_symbol("[(]")
+        $this->symbol("[(]")
             ->null_denotation_is(function(array &$matches) {
                 $res = $this->expression(0);
                 $this->advance("[)]");
                 return $res;
             });
-        $this->symbol_table
-            ->add_symbol("[)]");
+        $this->symbol("[)]");
     }
 
     protected function expression($right_binding_power) {

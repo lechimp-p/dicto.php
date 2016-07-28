@@ -71,6 +71,23 @@ class Parser {
         return new SymbolTable();
     }
 
+    // Helpers for defining the grammar.
+
+    /**
+     * Add a symbol to the symbol table.
+     *
+     * @param   string  $regexp
+     * @param   int     $binding_power
+     * @throws  \InvalidArgumentException if %$regexp% is not a regexp
+     * @throws  \LogicException if there already is a symbol with that $regexp.
+     * @return  Symbol
+     */
+    protected function symbol($regexp, $binding_power = 0) {
+        return $this->symbol_table->add_symbol($regexp, $binding_power);
+    }
+
+    // Helpers for actual parsing.
+
     /**
      * Set the current token to the next token from the tokenizer.
      *
