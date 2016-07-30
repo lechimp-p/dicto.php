@@ -26,6 +26,7 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
             foreach ($methods as $m) {
                 if ($m == "__construct"
                 ||  $m == "explanation"
+                ||  $m == "withName"
                 || $m == "is_type"
                 || $m == "explain"
                 || $m == "compile") {
