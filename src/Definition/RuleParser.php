@@ -19,8 +19,22 @@ use Lechimp\Dicto\Variables as V;
 class RuleParser extends Parser {
     const ASSIGNMENT_RE = "(\w+)\s*=\s*";
 
+    /**
+     * @var Variable[]
+     */
+    protected $predefined_variables;
+
     public function __construct() {
         parent::__construct();
+        $this->predefined_variables = array
+            ( new V\Classes()
+            , new V\Functions()
+            , new V\Globals()
+            , new V\Files()
+            , new V\Methods()
+            // TODO: Add some language constructs here...
+            );
+
         // Assignment 
         $this->symbol(self::ASSIGNMENT_RE)
             ->null_denotation_is(function(array &$matches) {
@@ -29,15 +43,22 @@ class RuleParser extends Parser {
                 $this->add_variable_definition($matches[1], $def);
                 return null;
             });
-        // Known Names
-        $this->literal("Classes", function (&$_) {
-                return new V\Classes("Classes"); 
-            });
-        $this->literal("Functions", function (&$_) {
-                return new V\Functions("Functions"); 
+        // Names
+        $this->literal("\w+", function (array &$matches) {
+                return $this->get_variable($matches[0]);
             });
 
         $this->symbol("\n");
+    }
+
+    /**
+     * @return  Ruleset
+     */
+    public function parse($source) {
+        $this->variables = array();
+        $this->rules = array();
+        $this->add_predefined_variables();
+        return parent::parse($source);
     }
 
     /**
@@ -50,8 +71,6 @@ class RuleParser extends Parser {
         if ($this->is_end_of_file_reached()) {
             return new Ruleset(array(), array());
         }
-        $this->variables = array();
-        $this->rules = array();
         while (true) {
             $t = $this->current_symbol();
             $m = $this->current_match(); 
@@ -68,6 +87,7 @@ class RuleParser extends Parser {
             }
             $this->advance("\n");
         }
+        $this->purge_predefined_variables($this->variables);
         return new Ruleset($this->variables, $this->rules);
     }
 
@@ -92,5 +112,24 @@ class RuleParser extends Parser {
         }
         assert('$def instanceof Lechimp\Dicto\Variables\Variable');
         $this->variables[$name] = $def->withName($name);
+    }
+
+    protected function get_variable($name) {
+        if (!array_key_exists($name, $this->variables)) {
+            throw new ParserException("Unknown variable '$name'.");
+        }
+        return $this->variables[$name];
+    }
+
+    protected function add_predefined_variables() {
+        foreach ($this->predefined_variables as $predefined_var) {
+            $this->add_variable_definition($predefined_var->name(), $predefined_var);
+        }
+    }
+
+    protected function purge_predefined_variables(array &$variables) {
+        foreach ($this->predefined_variables as $predefined_var) {
+            unset($variables[$predefined_var->name()]);
+        }
     }
 }
