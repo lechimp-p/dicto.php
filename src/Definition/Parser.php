@@ -168,7 +168,7 @@ abstract class Parser {
         assert('is_string($regexp)');
         assert('is_array($this->token)');
         assert('$this->tokenizer !== null');
-        if ($this->token[0]->regexp() != $regexp) {
+        if (!$this->is_current_token_matched_by($regexp)) {
             throw new ParserException("Syntax Error: Expected '$regexp'");
         }
         $this->tokenizer->next();
@@ -184,6 +184,26 @@ abstract class Parser {
      */
     protected function advance_operator($op) {
         $this->advance($this->operator_regexp($op));
+    }
+
+    /**
+     * Is the end of the file reached?
+     *
+     * @return  bool
+     */
+    public function is_end_of_file_reached() {
+        return $this->is_current_token_matched_by("");
+    }
+
+    /**
+     * Check if the current token was matched by the given regexp.
+     *
+     * @param   string  $regexp
+     * @return  bool
+     */
+    protected function is_current_token_matched_by($regexp) {
+        assert('is_string($regexp)');
+        return $this->token[0]->regexp() == $regexp;
     }
 
     // Internal Helpers
