@@ -13,6 +13,13 @@ namespace Lechimp\Dicto\Variables;
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
 abstract class Entities extends Variable {
+    public function __construct($name= null) {
+        if ($name === null) {
+            $name = ucfirst($this->id());
+        }
+        parent::__construct($name);
+    }
+
     /**
      * Get an id for the type of entity.
      *

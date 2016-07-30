@@ -100,22 +100,22 @@ class RT {
         // This is also creepy, as i need to instantiate the entities.
         // Maybe id should go static again?
         $this->known_entities = array
-            ( (new Classes("V"))->id() => function($name) {
+            ( (new Classes())->id() => function($name) {
                     return new Classes($name);
                 }
-            , (new Files("V"))->id() => function($name) {
+            , (new Files())->id() => function($name) {
                     return new Files($name);
                 }
-            , (new Functions("V"))->id() => function($name) {
+            , (new Functions())->id() => function($name) {
                     return new Functions($name);
                 }
-            , (new Globals("V"))->id() => function($name) {
+            , (new Globals())->id() => function($name) {
                     return new Globals($name);
                 }
             , (new LanguageConstruct("V", "N"))->id() => function($name, $which) {
                     return new LanguageConstruct($name, $which);
                 }
-            , (new Methods("V"))->id() => function($name) {
+            , (new Methods())->id() => function($name) {
                     return new Methods($name);
                 }
             );

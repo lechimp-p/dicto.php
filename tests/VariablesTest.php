@@ -29,6 +29,13 @@ class VariablesTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
+     * @dataProvider    var_entities_provider
+     */
+    public function test_entity_name($var) {
+        $this->assertEquals(ucfirst($var->id()), $var->name());
+    }
+
+    /**
      * @dataProvider    var_test_cases_provider
      */
     public function test_meaning($var, $_, $meaning) {
@@ -38,20 +45,31 @@ class VariablesTest extends PHPUnit_Framework_TestCase {
     public function var_test_cases_provider() {
         return array
             ( array
-                ( new V\Classes("allClasses")
-                , "allClasses"
+                ( new V\Classes()
+                , "Classes"
                 , "classes"
                 )
             , array
                 ( new V\WithName
                     ( ".*GUI"
-                    , new V\Classes("GUIClasses")
+                    , new V\Classes()
                     ) 
-                , "GUIClasses"
+                , "Classes"
                 , "classes with name \".*GUI\""
                 )
             // TODO: add more TestCases here, that cover all
             //       types of variables.
+            );
+    }
+
+    public function var_entities_provider() {
+        return array
+            ( array(new V\Classes())
+            , array(new V\Functions())
+            , array(new V\Globals())
+            , array(new V\Files())
+            , array(new V\Methods())
+            // TODO: introduce LanguageConstruct here?
             );
     }
 }
