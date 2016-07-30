@@ -45,12 +45,7 @@ class Parser extends ParserBase {
                 return $res;
             });
         $this->operator(")");
-        $this->symbol("\n")
-            ->left_denotation_is(function($left, array &$matches) {
-                die("here");
-                $this->results[] = $left;
-                return $this->expression(0);
-            });
+        $this->symbol("\n");
     }
 
     protected function root() {
