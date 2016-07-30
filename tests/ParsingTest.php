@@ -67,7 +67,7 @@ class Parser extends ParserBase {
     }
 }
 
-class ParsingText extends PHPUnit_Framework_TestCase {
+class ParsingTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->parser = new Parser();
     }
