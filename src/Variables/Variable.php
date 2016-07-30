@@ -52,6 +52,17 @@ abstract class Variable extends Def\Definition {
     }
 
     /**
+     * @param   string  $name
+     * @return  self
+     */
+    public function withName($name) {
+        assert('is_string($name)');
+        $clone = clone $this;
+        $clone->name = $name;
+        return $clone;
+    }
+
+    /**
      * Get the meaning of the variable.
      *
      * @return  string

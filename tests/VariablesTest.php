@@ -11,7 +11,22 @@
 use Lechimp\Dicto\Variables as V;
 
 class VariablesTest extends PHPUnit_Framework_TestCase {
-    // TODO: add a test on naming here.
+    /**
+     * @dataProvider    var_test_cases_provider
+     */
+    public function test_name($var, $name, $_) {
+        $this->assertEquals($name, $var->name());
+    }
+
+    /**
+     * @dataProvider    var_test_cases_provider
+     */
+    public function test_withName($var, $_, $meaning) {
+        $renamed = $var->withName("RENAMED"); 
+        $this->assertEquals("RENAMED", $renamed->name());
+        $this->assertEquals(get_class($var), get_class($renamed));
+        $this->assertEquals($meaning, $renamed->meaning());
+    }
 
     /**
      * @dataProvider    var_test_cases_provider
