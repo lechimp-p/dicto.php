@@ -45,10 +45,28 @@ class Parser extends ParserBase {
                 return $res;
             });
         $this->operator(")");
+        $this->symbol("\n")
+            ->left_denotation_is(function($left, array &$matches) {
+                die("here");
+                $this->results[] = $left;
+                return $this->expression(0);
+            });
     }
 
     protected function root() {
-        return $this->expression(0);
+        // Empty file
+        if ($this->is_end_of_file_reached()) {// End of file
+            return array();
+        }
+
+        $res = array();
+        while (true) {
+            $res[] = $this->expression(0);
+            if ($this->is_end_of_file_reached()) {
+                return $res;
+            }
+            $this->advance("\n");
+        }
     }
 
     protected function expression($right_binding_power) {
@@ -78,51 +96,61 @@ class ParsingTest extends PHPUnit_Framework_TestCase {
 
     public function test_1() {
         $res = $this->parse("1");
-        $this->assertEquals(1, $res);
+        $this->assertEquals(array(1), $res);
     }
 
     public function test_add() {
         $res = $this->parse("1 + 2");
-        $this->assertEquals(3, $res);
+        $this->assertEquals(array(3), $res);
     }
 
     public function test_subtract() {
         $res = $this->parse("1 - 2");
-        $this->assertEquals(-1, $res);
+        $this->assertEquals(array(-1), $res);
     }
 
     public function test_multiply() {
         $res = $this->parse("2 * 3");
-        $this->assertEquals(6, $res);
+        $this->assertEquals(array(6), $res);
     }
 
     public function test_binding() {
         $res = $this->parse("2 * 3 - 1");
-        $this->assertEquals(5, $res);
+        $this->assertEquals(array(5), $res);
     }
 
     public function test_pow() {
         $res = $this->parse("2 ** 3");
-        $this->assertEquals(8, $res);
+        $this->assertEquals(array(8), $res);
     }
 
     public function test_right_binding() {
         $res = $this->parse("2 ** 3 ** 2");
-        $this->assertEquals(512, $res);
+        $this->assertEquals(array(512), $res);
     }
 
     public function test_parantheses() {
         $res = $this->parse("2 * ( 3 - 1 )");
-        $this->assertEquals(4, $res);
+        $this->assertEquals(array(4), $res);
     }
 
     public function test_parantheses_2() {
         $res = $this->parse("( 3 - 1 )");
-        $this->assertEquals(2, $res);
+        $this->assertEquals(array(2), $res);
     }
 
     public function test_no_space() {
         $res = $this->parse("(3-1)");
-        $this->assertEquals(2, $res);
+        $this->assertEquals(array(2), $res);
+    }
+
+    public function test_empty() {
+        $res = $this->parse("");
+        $this->assertEquals(array(), $res);
+    }
+
+    public function test_multiline() {
+        $res = $this->parse("1-2\n4-3");
+        $this->assertEquals(array(-1,1), $res);
     }
 }

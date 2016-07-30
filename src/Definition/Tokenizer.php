@@ -130,7 +130,7 @@ class Tokenizer implements \Iterator {
         foreach ($this->symbol_table->symbols() as $symbol) {
             $re = $symbol->regexp();
             $matches = array();
-            if (preg_match("%^$re%", $this->unparsed, $matches) == 1) {
+            if (preg_match("%^$re%s", $this->unparsed, $matches) == 1) {
                 $this->advance($matches[0]);
                 $this->tokens[] = array($symbol, $matches);
                 return;
@@ -149,7 +149,10 @@ class Tokenizer implements \Iterator {
      */
     public function advance($match) {
         assert('is_string($match)');
-        $this->unparsed = ltrim(substr($this->unparsed, strlen($match)));
+        $this->unparsed = ltrim
+            ( substr($this->unparsed, strlen($match))
+            , "\t \0\x0B" // don't trim linebreaks
+            );
     }
 
     /**
