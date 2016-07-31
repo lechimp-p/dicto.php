@@ -121,6 +121,20 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
+    public function test_with_name_assignment() {
+        $res = $this->parse("Foo = Classes with name: \"foo\"");
+
+        $expected = array
+            ( "Foo" => (new V\WithName
+                ( "foo"
+                , new V\Classes()
+                ))
+                ->withName("Foo")
+            );
+        $this->assertEquals($expected, $res->variables());
+
+    }
+
     public function test_string() {
         $this->parser->which_expression = "string";
         $res = $this->parse("\"foo\"");
