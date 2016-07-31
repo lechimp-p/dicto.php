@@ -66,6 +66,8 @@ abstract class Variable extends Def\Definition {
     /**
      * Get the meaning of the variable.
      *
+     * In opposite to name, this gives insight in the structure of this variable.
+     *
      * @return  string
      */
     abstract public function meaning();
