@@ -12,6 +12,7 @@ namespace Lechimp\Dicto\Definition;
 
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables as V;
+use Lechimp\Dicto\Rules as R;
 
 /**
  * Parser for Rulesets.
@@ -19,6 +20,7 @@ use Lechimp\Dicto\Variables as V;
 class RuleParser extends Parser {
     const ASSIGNMENT_RE = "(\w+)\s*=\s*";
     const STRING_RE = "[\"]((\w|\s|([\\\\][\"])|([\\\\]n))+)[\"]";
+    const RULE_MODE_RE = "must|can(not)?";
 
     /**
      * @var Variable[]
@@ -88,6 +90,27 @@ class RuleParser extends Parser {
                 return $this->unescape_string($matches[1]);
             });
 
+        // Rules
+        $this->symbol("only");
+        $this->symbol(self::RULE_MODE_RE, 0)
+            ->null_denotation_is(function (array &$matches) {
+                if ($matches[0] == "can") {
+                    return R\Rule::MODE_ONLY_CAN;
+                }
+                if ($matches[0] == "must") {
+                    return R\Rule::MODE_MUST;
+                }
+                if ($matches[0] == "cannot") {
+                    return R\Rule::MODE_CANNOT;
+                }
+                throw new \LogicException("Unexpected \"".$matches[0]."\".");
+            });
+        $this->symbol("contain text")
+            ->null_denotation_is(function(array &$_) {
+                $right = $this->string(20);
+                return array(new R\ContainText(), array($right));
+            });
+
         // Names
         $this->literal("\w+", function (array &$matches) {
                 return $this->get_variable($matches[0]);
@@ -119,12 +142,21 @@ class RuleParser extends Parser {
         while (true) {
             $t = $this->current_symbol();
             $m = $this->current_match(); 
+            // An assignment to a variable
             if ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {
                 $t->null_denotation($m);
             }
+            // Head of a rule definition
+            else if ($this->is_current_token_matched_by("\w+")
+                     || $this->is_current_token_matched_by("only")) {
+                if ($this->is_current_token_matched_by("only")) {
+                    $this->advance("only");
+                }
+                $this->rule_declaration();
+            }
             else {
                 throw new ParserException
-                    ("Unexpected '".$m[0]."', expected assignment.");
+                    ("Unexpected '".$m[0]."', expected assignment or rule definition.");
             }
 
             if ($this->is_end_of_file_reached()) {
@@ -136,7 +168,7 @@ class RuleParser extends Parser {
         return new Ruleset($this->variables, $this->rules);
     }
 
-    protected function variable_definition($right_binding_power = 0) {
+    protected function expression($right_binding_power = 0) {
         $t = $this->current_symbol();
         $m = $this->current_match();
         $this->fetch_next_token();
@@ -148,10 +180,36 @@ class RuleParser extends Parser {
             $this->fetch_next_token();
             $left = $t->left_denotation($left, $m);
         }
-        if (!($left instanceof V\Variable)) {
+        return $left;
+    }
+
+    protected function variable_definition($right_binding_power = 0) {
+        $expr = $this->expression($right_binding_power);
+        if (!($expr instanceof V\Variable)) {
             throw new ParserException("Expected variable.");
         }
-        return $left;
+        return $expr;
+    }
+
+    protected function rule_declaration() {
+        $var = $this->variable_definition();
+        $mode = $this->rule_mode();
+        $m = $this->current_match();
+        $res = $this->expression();
+        if (!(is_array($res) && count($res) > 0 && $res[0] instanceof R\Schema)) {
+            throw new ParserException
+                ("Expected a valid schema name, found \"".$m[0]."\".");
+        }
+        $this->rules[] = new R\Rule($mode, $var, $res[0], $res[1]);
+    }
+
+    protected function rule_mode() {
+        $this->is_current_token_matched_by(self::RULE_MODE_RE);
+        $t = $this->current_symbol();
+        $m = $this->current_match();
+        $this->fetch_next_token();
+        $mode = $t->null_denotation($m);
+        return $mode;
     }
 
     protected function string($right_binding_power = 0) {
@@ -160,6 +218,7 @@ class RuleParser extends Parser {
         }
         $t = $this->current_symbol();
         $m = $this->current_match();
+        $this->fetch_next_token();
         return $t->null_denotation($m);
     }
 

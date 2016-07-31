@@ -11,6 +11,7 @@
 use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables as V;
+use Lechimp\Dicto\Rules as R;
 
 class _RuleParser extends RuleParser {
     // Makes testing easier.
@@ -139,5 +140,47 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $res = $this->parse("\"foo\\n\"");
 
         $this->assertEquals("foo\n", $res);
+    }
+
+    public function test_classes_cannot_contain_text() {
+        $res = $this->parser->parse("Classes cannot contain text \"foo\"");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_CANNOT
+                , new V\Classes()
+                , new R\ContainText
+                , array("foo")
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
+    }
+
+    public function test_classes_must_contain_text() {
+        $res = $this->parser->parse("Classes must contain text \"foo\"");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_MUST
+                , new V\Classes()
+                , new R\ContainText
+                , array("foo")
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
+    }
+
+    public function test_only_classes_can_contain_text() {
+        $res = $this->parser->parse("only Classes can contain text \"foo\"");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_ONLY_CAN
+                , new V\Classes()
+                , new R\ContainText
+                , array("foo")
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
     }
 }
