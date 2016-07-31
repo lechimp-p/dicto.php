@@ -47,6 +47,21 @@ class RuleParser extends Parser {
         $this->literal("\w+", function (array &$matches) {
                 return $this->get_variable($matches[0]);
             });
+        // Any
+        $this->operator("{")
+            ->null_denotation_is(function(array &$matches) {
+                $arr = array();
+                while(true) {
+                    $arr[] = $this->variable_definition(0);
+                    if ($this->is_current_token_operator("}")) {
+                        $this->advance_operator("}");
+                        return new V\Any($arr);
+                    }
+                    $this->advance_operator(",");
+                }
+            });
+        $this->operator("}");
+        $this->operator(",");
 
         $this->symbol("\n");
     }
