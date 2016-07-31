@@ -437,10 +437,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function all_classes_as_well_as_all_functions_cannot_depend_on_globals() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new Vars\AsWellAs
+            , new Vars\Any(array
                 ( new Vars\Classes("allClasses")
                 , new Vars\Functions("allFunctions")
-                )
+                ))
             , new Rules\DependOn()
             , array(new Vars\Globals("allGlobals"))
             );

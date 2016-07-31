@@ -30,14 +30,31 @@ class Any extends Variable {
      * @inheritdocs
      */
     public function meaning() {
-        return "{".implode(", ", $this->variables)."}";
+        $meanings = array_map(function($v) { return $v->meaning(); }, $this->variables);
+        return "{".implode(", ", $meanings)."}";
     }
 
     /**
      * @inheritdocs
      */
     public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
-        throw new \Exception("NYI!");
+        // normal case: 1 or 2 or 3 ...
+        if (!$negate) {
+            $orX = $builder->orX();
+            foreach ($this->variables as $variable) {
+                $orX->add($variable->compile($builder, $table_name));
+            }
+            return $orX;
+        }
+        // negated case: not (left_condition or right_condition)
+        //             = not left_condition and not right_condition
+        if ($negate) {
+            $andX = $builder->andX();
+            foreach ($this->variables as $variable) {
+                $andX->add($variable->compile($builder, $table_name, true));
+            }
+            return $andX;
+        }
     }
 }
 
