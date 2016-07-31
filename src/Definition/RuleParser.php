@@ -39,20 +39,14 @@ class RuleParser extends Parser {
             );
 
         // Assignment 
-        $this->symbol(self::ASSIGNMENT_RE)
-            ->null_denotation_is(function(array &$matches) {
-                $this->fetch_next_token();
-                $def = $this->variable_definition(0);
-                $this->add_variable_definition($matches[1], $def);
-                return null;
-            });
+        $this->symbol(self::ASSIGNMENT_RE);
 
         // Any
         $this->operator("{")
             ->null_denotation_is(function(array &$matches) {
                 $arr = array();
                 while(true) {
-                    $arr[] = $this->variable_definition(0);
+                    $arr[] = $this->variable(0);
                     if ($this->is_current_token_operator("}")) {
                         $this->advance_operator("}");
                         return new V\Any($arr);
@@ -70,7 +64,7 @@ class RuleParser extends Parser {
                     throw new ParserException
                         ("Expected a variable at the left of except.");
                 }
-                $right = $this->variable_definition(10);
+                $right = $this->variable(10);
                 return new V\Except($left, $right);
             });
 
@@ -86,9 +80,7 @@ class RuleParser extends Parser {
             });
 
         // Strings
-        $this->literal(self::STRING_RE, function(array &$matches) {
-                return $this->unescape_string($matches[1]);
-            });
+        $this->symbol(self::STRING_RE);
 
         // Rules
         $this->symbol("only");
@@ -130,7 +122,7 @@ class RuleParser extends Parser {
     }
 
     /**
-     * The root for the parse tree.
+     * Parses the top level statements in the rules file.
      *
      * @return  Ruleset 
      */
@@ -140,12 +132,12 @@ class RuleParser extends Parser {
             return new Ruleset(array(), array());
         }
         while (true) {
-            $t = $this->current_symbol();
-            $m = $this->current_match(); 
-            // An assignment to a variable
+            // A top level statments is either..
+            // ..an assignment to a variable.
             if ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {
-                $t->null_denotation($m);
+                $this->variable_assignment();
             }
+            // ..or a rule declaration
             else {
                 $this->rule_declaration();
             }
@@ -155,10 +147,11 @@ class RuleParser extends Parser {
             }
             $this->advance("\n");
         }
-        $this->purge_predefined_variables($this->variables);
+        $this->purge_predefined_variables();
         return new Ruleset($this->variables, $this->rules);
     }
 
+    // TODO: this might go away, as it seems wrong to use it in rule_declaration.
     protected function expression($right_binding_power = 0) {
         $t = $this->current_symbol();
         $m = $this->current_match();
@@ -174,7 +167,44 @@ class RuleParser extends Parser {
         return $left;
     }
 
-    protected function variable_definition($right_binding_power = 0) {
+    // EXPRESSION TYPES
+
+    /**
+     * Fetch a rule mode from the stream.
+     *
+     * @return mixed
+     */
+    protected function rule_mode() {
+        $this->is_current_token_matched_by(self::RULE_MODE_RE);
+        $t = $this->current_symbol();
+        $m = $this->current_match();
+        $this->fetch_next_token();
+        $mode = $t->null_denotation($m);
+        return $mode;
+    }
+
+    /**
+     * Fetch a string from the stream.
+     *
+     * @return  string
+     */
+    protected function string($right_binding_power = 0) {
+        if (!$this->is_current_token_matched_by(self::STRING_RE)) {
+            throw new ParserException("Expected string.");
+        }
+        $m = $this->current_match();
+        $this->fetch_next_token();
+        return  str_replace("\\\"", "\"",
+                    str_replace("\\n", "\n",
+                        $m[1]));
+    }
+
+    /**
+     * Fetch a variable from the stream.
+     *
+     * @return  V\Variable
+     */
+    protected function variable($right_binding_power = 0) {
         $expr = $this->expression($right_binding_power);
         if (!($expr instanceof V\Variable)) {
             throw new ParserException("Expected variable.");
@@ -182,11 +212,30 @@ class RuleParser extends Parser {
         return $expr;
     }
 
+    // TOP LEVEL STATEMENTS
+
+    /**
+     * Process a variable assignment.
+     *
+     * @return  null
+     */
+    protected function variable_assignment() {
+        $m = $this->current_match(); 
+        $this->fetch_next_token();
+        $def = $this->variable();
+        $this->add_variable($m[1], $def);
+    }
+
+    /**
+     * Process a rule declaration.
+     *
+     * @return  null
+     */
     protected function rule_declaration() {
         if ($this->is_current_token_matched_by("only")) {
             $this->advance("only");
         }
-        $var = $this->variable_definition();
+        $var = $this->variable();
         $mode = $this->rule_mode();
         $m = $this->current_match();
         $res = $this->expression();
@@ -197,26 +246,17 @@ class RuleParser extends Parser {
         $this->rules[] = new R\Rule($mode, $var, $res[0], $res[1]);
     }
 
-    protected function rule_mode() {
-        $this->is_current_token_matched_by(self::RULE_MODE_RE);
-        $t = $this->current_symbol();
-        $m = $this->current_match();
-        $this->fetch_next_token();
-        $mode = $t->null_denotation($m);
-        return $mode;
-    }
+    // HANDLING OF VARIABLES
 
-    protected function string($right_binding_power = 0) {
-        if (!$this->is_current_token_matched_by(self::STRING_RE)) {
-            throw new ParserException("Expected string.");
-        }
-        $t = $this->current_symbol();
-        $m = $this->current_match();
-        $this->fetch_next_token();
-        return $t->null_denotation($m);
-    }
-
-    protected function add_variable_definition($name, $def) {
+    /**
+     * Add a variable to the variables currently known.
+     *
+     * @param   string      $name
+     * @param   V\Variable  $def
+     * @return null
+     */
+    protected function add_variable($name, V\Variable $def) {
+        assert('is_string($name)');
         if (array_key_exists($name, $this->variables)) {
             throw new ParserException("Variable '$name' already defined.");
         }
@@ -224,6 +264,12 @@ class RuleParser extends Parser {
         $this->variables[$name] = $def->withName($name);
     }
 
+    /**
+     * Get a predefined variable.
+     *
+     * @param   string  $name
+     * @return  V\Variable
+     */
     protected function get_variable($name) {
         if (!array_key_exists($name, $this->variables)) {
             throw new ParserException("Unknown variable '$name'.");
@@ -231,22 +277,25 @@ class RuleParser extends Parser {
         return $this->variables[$name];
     }
 
-    protected function unescape_string($str) {
-        assert('is_string($str)');
-        return  str_replace("\\\"", "\"",
-                    str_replace("\\n", "\n",
-                        $str));
-    }
-
+    /**
+     * Add all predefined variables to the current set of variables.
+     *
+     * @return null
+     */
     protected function add_predefined_variables() {
         foreach ($this->predefined_variables as $predefined_var) {
-            $this->add_variable_definition($predefined_var->name(), $predefined_var);
+            $this->add_variable($predefined_var->name(), $predefined_var);
         }
     }
 
-    protected function purge_predefined_variables(array &$variables) {
+    /**
+     * Purge all predefined variables from the current set of variables.
+     *
+     * @return null
+     */
+    protected function purge_predefined_variables() {
         foreach ($this->predefined_variables as $predefined_var) {
-            unset($variables[$predefined_var->name()]);
+            unset($this->variables[$predefined_var->name()]);
         }
     }
 }

@@ -58,7 +58,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_any() {
-        $this->parser->which_expression = "variable_definition";
+        $this->parser->which_expression = "variable";
         $res = $this->parse("{Classes, Functions}");
 
         $expected = new V\Any(array
@@ -69,7 +69,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_except() {
-        $this->parser->which_expression = "variable_definition";
+        $this->parser->which_expression = "variable";
         $res = $this->parse("Classes except Functions");
 
         $expected = new V\Except
@@ -80,7 +80,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_any_except() {
-        $this->parser->which_expression = "variable_definition";
+        $this->parser->which_expression = "variable";
         $res = $this->parse("{Classes except Functions, Methods} except Globals");
 
         $expected = new V\Except
@@ -97,7 +97,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_except_binding() {
-        $this->parser->which_expression = "variable_definition";
+        $this->parser->which_expression = "variable";
         $res = $this->parse("Classes except Functions except Methods");
 
         $expected = new V\Except
@@ -111,7 +111,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_with_name() {
-        $this->parser->which_expression = "variable_definition";
+        $this->parser->which_expression = "variable";
         $res = $this->parse("Classes with name:\"foo\"");
 
         $expected = new V\WithName
