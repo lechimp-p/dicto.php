@@ -183,4 +183,38 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
             );
         $this->assertEquals($expected, $res->rules());
     }
+
+    public function test_classes_with_name_must_contain_text() {
+        $res = $this->parser->parse("Classes with name:\"foo\" must contain text \"foo\"");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_MUST
+                , new V\WithName
+                    ( "foo"
+                    , new V\Classes()
+                    )
+                , new R\ContainText
+                , array("foo")
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
+    }
+
+    public function test_classes_and_functions_must_contain_text() {
+        $res = $this->parser->parse("{Classes,Functions} must contain text \"foo\"");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_MUST
+                , new V\Any(array
+                    ( new V\Classes()
+                    , new V\Functions()
+                    ))
+                , new R\ContainText
+                , array("foo")
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
+    }
 }

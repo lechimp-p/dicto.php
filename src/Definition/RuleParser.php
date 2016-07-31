@@ -146,17 +146,8 @@ class RuleParser extends Parser {
             if ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {
                 $t->null_denotation($m);
             }
-            // Head of a rule definition
-            else if ($this->is_current_token_matched_by("\w+")
-                     || $this->is_current_token_matched_by("only")) {
-                if ($this->is_current_token_matched_by("only")) {
-                    $this->advance("only");
-                }
-                $this->rule_declaration();
-            }
             else {
-                throw new ParserException
-                    ("Unexpected '".$m[0]."', expected assignment or rule definition.");
+                $this->rule_declaration();
             }
 
             if ($this->is_end_of_file_reached()) {
@@ -192,6 +183,9 @@ class RuleParser extends Parser {
     }
 
     protected function rule_declaration() {
+        if ($this->is_current_token_matched_by("only")) {
+            $this->advance("only");
+        }
         $var = $this->variable_definition();
         $mode = $this->rule_mode();
         $m = $this->current_match();
