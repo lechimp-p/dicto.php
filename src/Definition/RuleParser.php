@@ -62,7 +62,7 @@ class RuleParser extends Parser {
         $this->operator(",");
 
         // Except
-        $this->operator("except", 10)
+        $this->symbol("except", 10)
             ->left_denotation_is(function($left, array &$matches) {
                 if (!($left instanceof V\Variable)) {
                     throw new ParserException
@@ -73,7 +73,7 @@ class RuleParser extends Parser {
             });
 
         // WithName
-        $this->operator("with name:", 20)
+        $this->symbol("with name:", 20)
             ->left_denotation_is(function($left, array &$matches) {
                 if (!($left instanceof V\Variable)) {
                     throw new ParserException
