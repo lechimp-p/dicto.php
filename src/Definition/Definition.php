@@ -20,6 +20,7 @@ abstract class Definition {
     private $explanation = null;
 
     /**
+     * TODO: rename to withExplanation
      * @param   string
      * return   self
      */
