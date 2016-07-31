@@ -113,4 +113,17 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
         $t->next();
         $this->assertFalse($t->valid());
     }
+
+    public function test_proper_grouping() {
+        $this->symbol_table->all_symbols[] = "(a)|(b)";
+        $t = $this->tokenizer("cb");
+        try {
+            $t->current();
+            $this->assertTrue("This should not happen.");
+        }
+        catch (ParserException $e) {
+            $this->assertTrue(true);
+        }
+
+    }
 }
