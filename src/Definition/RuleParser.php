@@ -72,6 +72,17 @@ class RuleParser extends Parser {
                 return new V\Except($left, $right);
             });
 
+        // WithName
+        $this->operator("with name:", 20)
+            ->left_denotation_is(function($left, array &$matches) {
+                if (!($left instanceof V\Variable)) {
+                    throw new ParserException
+                        ("Expected a variable at the left of \"with name:\".");
+                }
+                $right = $this->string(20);
+                return new V\WithName($right, $left);
+            });
+
         // Strings
         $this->literal(self::STRING_RE, function(array &$matches) {
                 return $this->unescape_string($matches[1]);
@@ -156,7 +167,7 @@ class RuleParser extends Parser {
         if (array_key_exists($name, $this->variables)) {
             throw new ParserException("Variable '$name' already defined.");
         }
-        assert('$def instanceof Lechimp\Dicto\Variables\Variable');
+        assert('$def instanceof Lechimp\\Dicto\\Variables\\Variable');
         $this->variables[$name] = $def->withName($name);
     }
 
