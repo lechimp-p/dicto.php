@@ -217,4 +217,32 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
             );
         $this->assertEquals($expected, $res->rules());
     }
+
+    public function test_classes_cannot_depend_on_functions() {
+        $res = $this->parser->parse("Classes cannot depend on Functions");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_CANNOT
+                , new V\Classes()
+                , new R\DependOn
+                , array(new V\Functions())
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
+    }
+
+    public function test_classes_cannot_invoke_functions() {
+        $res = $this->parser->parse("Classes cannot invoke Functions");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_CANNOT
+                , new V\Classes()
+                , new R\Invoke
+                , array(new V\Functions())
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
+    }
 }

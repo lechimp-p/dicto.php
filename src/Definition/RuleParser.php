@@ -99,8 +99,18 @@ class RuleParser extends Parser {
             });
         $this->symbol("contain text")
             ->null_denotation_is(function(array &$_) {
-                $right = $this->string(20);
+                $right = $this->string();
                 return array(new R\ContainText(), array($right));
+            });
+        $this->symbol("depend on")
+           ->null_denotation_is(function(array &$_) {
+                $right = $this->variable();
+                return array(new R\DependOn(), array($right));
+            });
+        $this->symbol("invoke")
+           ->null_denotation_is(function(array &$_) {
+                $right = $this->variable();
+                return array(new R\Invoke(), array($right));
             });
 
         // Names
