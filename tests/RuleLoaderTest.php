@@ -33,19 +33,19 @@ class RuleLoaderTest extends PHPUnit_Framework_TestCase {
         $this->AClasses =
             new Vars\WithName( "A.*", new Vars\Classes("AClasses"));
         $this->ABClasses =
-            new Vars\AsWellAs
-                ( "ABClasses"
-                , new Vars\WithName( "A.*", new Vars\Classes("AClasses"))
+            (new Vars\AsWellAs
+                ( new Vars\WithName( "A.*", new Vars\Classes("AClasses"))
                 , new Vars\WithName( "B.*", new Vars\Classes("BClasses"))
-                );
+                )
+            )->withName("ABClasses");
         $this->AFunctions =
             new Vars\WithName( "a_.*", new Vars\Functions("AFunctions"));
         $this->ANotBFunctions =
-            new Vars\ButNot
-                ( "ANotBFunctions"
-                , $this->AFunctions
+            (new Vars\ButNot
+                ( $this->AFunctions
                 , new Vars\WithName( "b_.*", new Vars\Functions("BFunctions"))
-                );
+                )
+             )->withName("ANotBFunctions");
         $this->Suppressor =
             new Vars\LanguageConstruct("Suppressor", "@");
         $this->FooFiles =

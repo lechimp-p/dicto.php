@@ -36,11 +36,11 @@ class RulesTest extends PHPUnit_Framework_TestCase {
                 , array(new Vars\Functions("FUNCTIONS"))
                 );
         $expected_checked_on =
-            new Vars\ButNot
-                ( "ONLY_CAN_INVERSION"
-                , new Vars\Everything("EVERYTHING")
+            (new Vars\ButNot
+                ( new Vars\Everything("EVERYTHING")
                 , new Vars\Classes("CLASSES")
-                );
+                )
+            )->withName("ONLY_CAN_INVERSION");
         $this->assertEquals($expected_checked_on, $rule->checked_on());
     }
 

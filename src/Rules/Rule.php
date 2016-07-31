@@ -88,8 +88,7 @@ class Rule extends Definition {
     public function checked_on() {
         if ($this->mode() == self::MODE_ONLY_CAN) {
             return new ButNot
-                ( "ONLY_CAN_INVERSION"
-                , new Everything("EVERYTHING")
+                ( new Everything("EVERYTHING")
                 , $this->subject()
                 );
         }

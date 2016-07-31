@@ -21,8 +21,8 @@ abstract class Combinator extends Variable {
      */
     private $right;
 
-    public function __construct($name, Variable $left, Variable $right) {
-        parent::__construct($name);
+    public function __construct(Variable $left, Variable $right) {
+        parent::__construct();
         $this->left = $left;
         $this->right = $right;
     }

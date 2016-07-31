@@ -383,8 +383,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
             , new Vars\ButNot
-                ( "but_AClasses"
-                , new Vars\Everything("everything")
+                ( new Vars\Everything("everything")
                 , new Vars\WithName
                     ( "AClass"
                     , new Vars\Classes("AClasses")
@@ -439,8 +438,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
             , new Vars\AsWellAs
-                ( "AllClassesAsWellAsAllFunctions"
-                , new Vars\Classes("allClasses")
+                ( new Vars\Classes("allClasses")
                 , new Vars\Functions("allFunctions")
                 )
             , new Rules\DependOn()
@@ -515,8 +513,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         return new Rules\Rule
             ( Rules\Rule::MODE_MUST
             , new Vars\ButNot
-                ( "but_AClasses"
-                , new Vars\Everything("everything")
+                ( new Vars\Everything("everything")
                 , new Vars\WithName
                     ( "AClass"
                     , new Vars\Classes("AClasses")
