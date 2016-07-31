@@ -66,4 +66,46 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
             ));
         $this->assertEquals($expected, $res);
     }
+
+    public function test_except() {
+        $this->parser->which_expression = "variable_definition";
+        $res = $this->parse("Classes except Functions");
+
+        $expected = new V\Except
+            ( new V\Classes()
+            , new V\Functions()
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_any_except() {
+        $this->parser->which_expression = "variable_definition";
+        $res = $this->parse("{Classes except Functions, Methods} except Globals");
+
+        $expected = new V\Except
+            ( new V\Any(array
+                ( new V\Except
+                    ( new V\Classes()
+                    , new V\Functions()
+                    )
+                , new V\Methods()
+                ))
+            , new V\Globals()
+            );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_except_binding() {
+        $this->parser->which_expression = "variable_definition";
+        $res = $this->parse("Classes except Functions except Methods");
+
+        $expected = new V\Except
+            ( new V\Except
+                ( new V\Classes()
+                , new V\Functions()
+                )
+            , new V\Methods()
+            );
+        $this->assertEquals($expected, $res);
+    }
 }

@@ -43,10 +43,7 @@ class RuleParser extends Parser {
                 $this->add_variable_definition($matches[1], $def);
                 return null;
             });
-        // Names
-        $this->literal("\w+", function (array &$matches) {
-                return $this->get_variable($matches[0]);
-            });
+
         // Any
         $this->operator("{")
             ->null_denotation_is(function(array &$matches) {
@@ -62,6 +59,22 @@ class RuleParser extends Parser {
             });
         $this->operator("}");
         $this->operator(",");
+
+        // Except
+        $foo = $this->operator("except", 10)
+            ->left_denotation_is(function($left, array &$matches) {
+                if (!($left instanceof V\Variable)) {
+                    throw new ParserException
+                        ("Expected a variable at the left of except.");
+                }
+                $right = $this->variable_definition(10);
+                return new V\Except($left, $right);
+            });
+
+        // Names
+        $this->literal("\w+", function (array &$matches) {
+                return $this->get_variable($matches[0]);
+            });
 
         $this->symbol("\n");
     }
@@ -117,6 +130,9 @@ class RuleParser extends Parser {
             $m = $this->current_match();
             $this->fetch_next_token();
             $left = $t->left_denotation($left, $m);
+        }
+        if (!($left instanceof V\Variable)) {
+            throw new ParserException("Expected variable.");
         }
         return $left;
     }
