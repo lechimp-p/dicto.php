@@ -137,11 +137,15 @@ class RuleParser extends Parser {
      * @return  Ruleset 
      */
     protected function root() {
-        // Empty file
-        if ($this->is_end_of_file_reached()) {
-            return new Ruleset(array(), array());
-        }
         while (true) {
+            // drop empty lines
+            while ($this->is_current_token_matched_by("\n")) {
+                $this->advance("\n");
+            }
+            if ($this->is_end_of_file_reached()) {
+                break;
+            }
+
             // A top level statments is either..
             // ..an assignment to a variable.
             if ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {

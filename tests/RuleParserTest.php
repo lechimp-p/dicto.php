@@ -245,4 +245,15 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
             );
         $this->assertEquals($expected, $res->rules());
     }
+
+    public function test_drop_empty_lines() {
+        $res = $this->parse("\nAllClasses = Classes\n\nAllFunctions = Functions\n");
+
+        $expected = array
+            ( "AllClasses" => new V\Classes("AllClasses")
+            , "AllFunctions" => new V\Functions("AllFunctions")
+            );
+
+        $this->assertEquals($expected, $res->variables());
+    }
 }
