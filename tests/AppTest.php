@@ -25,6 +25,12 @@ class _App extends App {
     public function _load_rules_file($path) {
         return $this->load_rules_file($path);
     }
+
+    public function _load_configs($path) {
+        $arr = array();
+        $this->load_configs(array($path), $arr);
+        return $arr[0]; 
+    }
 }
 
 class AppTest extends PHPUnit_Framework_TestCase {
@@ -33,16 +39,16 @@ class AppTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_load_rules_file() {
-        list($rs,$c) = $this->app->_load_rules_file(__DIR__."/data/rules.php");
+        $rs = $this->app->_load_rules_file(__DIR__."/data/rules");
         $this->assertInstanceOf(Ruleset::class, $rs);
-        $this->assertInternalType("array", $c);
     }
 
     /**
      * @depends test_load_rules_file
      */
     public function test_dic_indexer_factory() {
-        list($rs,$c) = $this->app->_load_rules_file(__DIR__."/data/rules.php");
+        $rs = $this->app->_load_rules_file(__DIR__."/data/rules");
+        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
         $dic = $this->app->_create_dic($rs, array($c));
 
@@ -53,7 +59,8 @@ class AppTest extends PHPUnit_Framework_TestCase {
      * @depends test_load_rules_file
      */
     public function test_dic_engine() {
-        list($rs,$c) = $this->app->_load_rules_file(__DIR__."/data/rules.php");
+        $rs = $this->app->_load_rules_file(__DIR__."/data/rules");
+        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
         $dic = $this->app->_create_dic($rs, array($c));
 
@@ -61,7 +68,8 @@ class AppTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_source_status() {
-        list($rs,$c) = $this->app->_load_rules_file(__DIR__."/data/rules.php");
+        $rs = $this->app->_load_rules_file(__DIR__."/data/rules");
+        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
         $dic = $this->app->_create_dic($rs, array($c));
 

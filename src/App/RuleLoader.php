@@ -10,19 +10,32 @@
 
 namespace Lechimp\Dicto\App;
 
-use Lechimp\Dicto\Dicto as Dicto;
+use Lechimp\Dicto\Rule\Ruleset;
+use Lechimp\Dicto\Definition\RuleParser;
+use Lechimp\Dicto\Definition\ParserException;
 
 class RuleLoader {
     /**
-     * @inheritdocs
+     * @var RuleParser
+     */
+    protected $parser;
+
+    public function __construct(RuleParser $parser) {
+        $this->parser = $parser;
+    }
+
+    /**
+     * Load rules from file at given path.
+     *
+     * @param   string  $rule_file_path
+     * @throws  ParserException if file can't be parsed.
+     * @return  Ruleset
      */
     public function load_rules_from($rule_file_path) {
         if (!file_exists($rule_file_path)) {
             throw new \InvalidArgumentException("$rule_file_path does not exist.");
         }
-        // TODO: Some more checking on the file...
-        Dicto::startDefinition();
-        require($rule_file_path);
-        return Dicto::endDefinition();
+        $content = file_get_contents($rule_file_path);
+        return $this->parser->parse($content);
     }
 }

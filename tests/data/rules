@@ -2,8 +2,8 @@ AClasses = Classes with name: "A.*"
 BClasses = Classes with name: "B.*"
 ABClasses = {AClasses, BClasses}
 AFunctions = Functions with name: "a_.*"
-BFunction = Function with name: "b_.*"
-ANotBFunctions = AFunction except BFunctions
+BFunctions = Functions with name: "b_.*"
+ANotBFunctions = AFunctions except BFunctions
 FooFiles = Files with name: "foo"
 
 AClasses must invoke AFunctions

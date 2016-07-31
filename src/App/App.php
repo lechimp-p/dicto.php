@@ -11,6 +11,7 @@
 namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\App\RuleLoader;
+use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules\Ruleset;
 use Symfony\Component\Yaml\Yaml;
 use Pimple\Container;
@@ -27,7 +28,8 @@ class App {
 
     public function __construct() {
         ini_set('xdebug.max_nesting_level', 200);
-        $this->rule_loader = new RuleLoader();
+        $parser = new RuleParser();
+        $this->rule_loader = new RuleLoader($parser);
     }
 
     /**
@@ -42,14 +44,14 @@ class App {
                 "Expected path to rule-file as first parameter.");
         }
 
-        $configs = array();
-        list($ruleset, $configs[]) = $this->load_rules_file($params[1]);
+        $ruleset = $this->load_rules_file($params[1]);
 
         // drop programm name and rule file path
         array_shift($params);
         array_shift($params);
 
-        $this->load_extra_configs($params, $configs);
+        $configs = array();
+        $this->load_configs($params, $configs);
 
         $dic = $this->create_dic($ruleset, $configs);
 
@@ -66,10 +68,8 @@ class App {
         if (!file_exists($path)) {
             throw new \RuntimeException("Unknown rule-file '$path'");
         }
-        list($ruleset, $config) = $this->rule_loader->load_rules_from($path);
-        assert('is_array($config)');
-        assert('$ruleset instanceof \\Lechimp\\Dicto\\Rules\\RuleSet');
-        return array($ruleset, $config);
+        $ruleset = $this->rule_loader->load_rules_from($path);
+        return $ruleset;
     }
 
     /**
@@ -79,7 +79,7 @@ class App {
      * @param   array   &$configs_array
      * @return  null
      */
-    protected function load_extra_configs(array $config_file_paths, array &$configs_array) {
+    protected function load_configs(array $config_file_paths, array &$configs_array) {
         foreach ($config_file_paths as $config_file) {
             if (!file_exists($config_file)) {
                 throw new \RuntimeException("Unknown config-file '$config_file'");
