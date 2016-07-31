@@ -10,27 +10,30 @@
 
 use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Dicto as D;
+use Lechimp\Dicto\Definition\RuleParser;
 
 class PPrintRuleTest extends PHPUnit_Framework_TestCase {
     protected static $printed_rules;
 
     static public function setUpBeforeClass() {
-        D::startDefinition();
+        $parser = new RuleParser();
+        $rules = <<<RULES
 
-        D::A()->means()->classes();
-        D::B()->means()->classes();
+A = Classes
+B = Classes
 
-        D::A()->must()->depend_on()->B();
-        D::A()->cannot()->depend_on()->B();
-        D::only()->A()->can()->depend_on()->B();
-        D::A()->must()->invoke()->B();
-        D::A()->cannot()->invoke()->B();
-        D::only()->A()->can()->invoke()->B();
-        D::A()->must()->contain_text("foo");
-        D::A()->cannot()->contain_text("foo");
-        D::only()->A()->can()->contain_text("foo");
+A must depend on B
+A cannot depend on B
+only A can depend on B
+A must invoke B
+A cannot invoke B
+only A can invoke B
+A must contain text "foo"
+A cannot contain text "foo"
+only A can contain text "foo"
 
-        list($ruleset, $_) = D::endDefinition();
+RULES;
+        $ruleset = $parser->parse($rules);
 
         self::$printed_rules = array_map(function($rule) {
             return $rule->pprint();
