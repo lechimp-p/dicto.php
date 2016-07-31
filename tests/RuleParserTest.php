@@ -108,4 +108,25 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
             );
         $this->assertEquals($expected, $res);
     }
+
+    public function test_string() {
+        $this->parser->which_expression = "string";
+        $res = $this->parse("\"foo\"");
+
+        $this->assertEquals("foo", $res);
+    }
+
+    public function test_string_escaped_quote() {
+        $this->parser->which_expression = "string";
+        $res = $this->parse("\"foo\\\"\"");
+
+        $this->assertEquals("foo\"", $res);
+    }
+
+    public function test_string_escaped_newline() {
+        $this->parser->which_expression = "string";
+        $res = $this->parse("\"foo\\n\"");
+
+        $this->assertEquals("foo\n", $res);
+    }
 }

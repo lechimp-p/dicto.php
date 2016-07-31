@@ -18,6 +18,7 @@ use Lechimp\Dicto\Variables as V;
  */
 class RuleParser extends Parser {
     const ASSIGNMENT_RE = "(\w+)\s*=\s*";
+    const STRING_RE = "[\"]((\w|\s|([\\\\][\"])|([\\\\]n))+)[\"]";
 
     /**
      * @var Variable[]
@@ -69,6 +70,11 @@ class RuleParser extends Parser {
                 }
                 $right = $this->variable_definition(10);
                 return new V\Except($left, $right);
+            });
+
+        // Strings
+        $this->literal(self::STRING_RE, function(array &$matches) {
+                return $this->unescape_string($matches[1]);
             });
 
         // Names
@@ -137,6 +143,15 @@ class RuleParser extends Parser {
         return $left;
     }
 
+    protected function string($right_binding_power = 0) {
+        if (!$this->is_current_token_matched_by(self::STRING_RE)) {
+            throw new ParserException("Expected string.");
+        }
+        $t = $this->current_symbol();
+        $m = $this->current_match();
+        return $t->null_denotation($m);
+    }
+
     protected function add_variable_definition($name, $def) {
         if (array_key_exists($name, $this->variables)) {
             throw new ParserException("Variable '$name' already defined.");
@@ -150,6 +165,13 @@ class RuleParser extends Parser {
             throw new ParserException("Unknown variable '$name'.");
         }
         return $this->variables[$name];
+    }
+
+    protected function unescape_string($str) {
+        assert('is_string($str)');
+        return  str_replace("\\\"", "\"",
+                    str_replace("\\n", "\n",
+                        $str));
     }
 
     protected function add_predefined_variables() {
