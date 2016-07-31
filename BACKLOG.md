@@ -38,6 +38,7 @@
   big global config.
 * DBFactory is a misnomer. Its more like a manager, which is a very non descriptive
   word.
+* Introduce a RegExp class to put checking for validity in one place.
 
 # Issues
 * When saying "only SomeClasses can depend on SomeThing" we certainly mean, that
