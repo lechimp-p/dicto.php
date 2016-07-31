@@ -43,18 +43,6 @@ abstract class Schema {
     }
 
     /**
-     * Get the Fluid interface that should be returned on using the
-     * schema.
-     *
-     * @param   Def\RT    $rt
-     * @param   string                  $name
-     * @param   string                  $mode
-     * @param   array                   $arguments
-     * @return  Def\Fluid\Base|null
-     */
-    abstract public function fluid_interface(Def\RT $rt, $name, $mode, array $arguments);
-
-    /**
      * Check the arguments given in the fluid interface on using the schema.
      *
      * @param   array   $arguments

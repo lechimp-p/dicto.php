@@ -21,17 +21,6 @@ use Lechimp\Dicto\Variables\Variable;
  * in the code.
  */
 abstract class Relation extends Schema {
-    /**
-     * @inheritdoc
-     */
-    public function fluid_interface(Def\RT $rt, $name, $mode, array $arguments) {
-        if (count($arguments) != 0) {
-            throw new \InvalidArgumentException(
-                "No arguments are allowed when using a relational rule schema.");
-        }
-        return new Def\Fluid\Relation($rt, $name, $mode, $this);
-    }
-
     public function check_arguments(array $arguments) {
          if (count($arguments) != 1) {
             throw new \InvalidArgumentException(

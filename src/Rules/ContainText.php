@@ -25,9 +25,6 @@ class ContainText extends Property {
         return "contain_text";
     } 
 
-    /**
-     * @inheritdoc
-     */
     public function check_arguments(array $arguments) {
         if (count($arguments) != 1) {
             throw new \InvalidArgumentException(
