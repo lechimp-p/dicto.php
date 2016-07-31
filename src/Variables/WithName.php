@@ -27,6 +27,7 @@ class WithName extends Variable {
     private $other;
 
     public function __construct($regexp, Variable $other) {
+        // TODO: call parent constructur without name? (see BACKLOG)
         parent::__construct($other->name());
         if (!is_string($regexp) || @preg_match("%$regexp%", "") === false) {
             throw new \InvalidArgumentException("Invalid regexp: '%$regexp%'");
