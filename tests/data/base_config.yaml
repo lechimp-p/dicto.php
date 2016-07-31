@@ -1,0 +1,5 @@
+project:
+    root: ./src
+analysis:
+    ignore:
+        - ".*\\.omit_me"
