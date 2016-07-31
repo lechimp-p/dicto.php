@@ -19,7 +19,7 @@ use Lechimp\Dicto\Rules as R;
  */
 class RuleParser extends Parser {
     const ASSIGNMENT_RE = "(\w+)\s*=\s*";
-    const STRING_RE = "[\"]((\w|\s|([\\\\][\"])|([\\\\]n))+)[\"]";
+    const STRING_RE = "[\"]((([\\\\][\"])|[^\"])+)[\"]";
     const RULE_MODE_RE = "must|can(not)?";
 
     /**

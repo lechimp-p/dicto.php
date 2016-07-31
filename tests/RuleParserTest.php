@@ -156,6 +156,13 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("foo\n", $res);
     }
 
+    public function test_string_with_star_and_dot() {
+        $this->parser->which_expression = "string";
+        $res = $this->parse("\"A.*\"");
+
+        $this->assertEquals("A.*", $res);
+    }
+
     public function test_classes_cannot_contain_text() {
         $res = $this->parser->parse("Classes cannot contain text \"foo\"");
 
