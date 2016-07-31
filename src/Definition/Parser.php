@@ -206,6 +206,16 @@ abstract class Parser {
         return $this->token[0]->regexp() == $regexp;
     }
 
+    /**
+     * Check if the current token is the given operator.
+     *
+     * @param   string  $operator
+     * @return  bool
+     */
+    protected function is_current_token_operator($operator) {
+        return $this->is_current_token_matched_by($this->operator_regexp($operator));
+    }
+
     // Internal Helpers
     /**
      * "abc" -> "[a][b][c]"
