@@ -124,6 +124,5 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
         catch (ParserException $e) {
             $this->assertTrue(true);
         }
-
     }
 }
