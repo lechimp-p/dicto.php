@@ -36,7 +36,7 @@ class RulesTest extends PHPUnit_Framework_TestCase {
                 , array(new Vars\Functions("FUNCTIONS"))
                 );
         $expected_checked_on =
-            new Vars\ButNot
+            new Vars\Except
                 ( new Vars\Everything("EVERYTHING")
                 , new Vars\Classes("CLASSES")
                 );

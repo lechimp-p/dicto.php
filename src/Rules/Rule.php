@@ -12,7 +12,7 @@ namespace Lechimp\Dicto\Rules;
 
 use Lechimp\Dicto\Definition\Definition;
 use Lechimp\Dicto\Variables\Variable;
-use Lechimp\Dicto\Variables\ButNot;
+use Lechimp\Dicto\Variables\Except;
 use Lechimp\Dicto\Variables\Everything;
 use Lechimp\Dicto\Analysis\Query;
 use Doctrine\DBAL\Driver\Statement;
@@ -89,7 +89,7 @@ class Rule extends Definition {
      */
     public function checked_on() {
         if ($this->mode() == self::MODE_ONLY_CAN) {
-            return new ButNot
+            return new Except
                 ( new Everything("EVERYTHING")
                 , $this->subject()
                 );

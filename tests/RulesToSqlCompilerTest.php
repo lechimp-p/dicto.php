@@ -382,7 +382,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function everything_but_a_classes_cannot_depend_on_error_suppressor() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new Vars\ButNot
+            , new Vars\Except
                 ( new Vars\Everything("everything")
                 , new Vars\WithName
                     ( "AClass"
@@ -512,7 +512,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function everything_but_a_classes_must_depend_on_globals() {
         return new Rules\Rule
             ( Rules\Rule::MODE_MUST
-            , new Vars\ButNot
+            , new Vars\Except
                 ( new Vars\Everything("everything")
                 , new Vars\WithName
                     ( "AClass"
