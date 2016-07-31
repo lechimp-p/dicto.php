@@ -35,17 +35,18 @@ abstract class Variable extends Def\Definition {
     }
 
     /**
-     * @var string
+     * @var string|null
      */
     private $name;
 
-    public function __construct($name) {
-        assert('is_string($name)');
+    // TODO: remove name argument in favour of withName
+    public function __construct($name = null) {
+        assert('is_string($name) || ($name === null)');
         $this->name = $name;
     }
 
     /**
-     * @return  string
+     * @return  string|null
      */
     public function name() {
         return $this->name;
