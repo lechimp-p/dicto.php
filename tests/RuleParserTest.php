@@ -185,7 +185,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_classes_with_name_must_contain_text() {
-        $res = $this->parser->parse("Classes with name:\"foo\" must contain text \"foo\"");
+        $res = $this->parser->parse("Classes with name: \"foo\" must contain text \"foo\"");
 
         $expected = array
             ( new R\Rule
