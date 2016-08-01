@@ -34,7 +34,7 @@ class SourceStatusGit implements SourceStatus {
         $escaped_path = escapeshellarg($this->path);
         $command = "git -C $escaped_path rev-parse HEAD";
         exec($command, $output, $returned);
-        if ($returned != 0) {
+        if ($returned !== 0) {
             throw new \RuntimeException(implode("\n", $output));
         }
         return $output[0];
