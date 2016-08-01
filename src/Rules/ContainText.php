@@ -22,9 +22,20 @@ class ContainText extends Property {
      * @inheritdoc
      */
     public function name() {
-        return "contain_text";
+        return "contain text";
     } 
 
+    /**
+     * @inheritdoc
+     */
+    public function fetch_arguments(ArgumentParser $parser) {
+        $regexp = $parser->fetch_string();
+        return array($regexp);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function check_arguments(array $arguments) {
         if (count($arguments) != 1) {
             throw new \InvalidArgumentException(
@@ -108,6 +119,6 @@ class ContainText extends Property {
      * @inheritdoc
      */
     public function pprint(Rule $rule) {
-        return $this->printable_name().' "'.$rule->argument(0).'"';
+        return $this->name().' "'.$rule->argument(0).'"';
     }
 }

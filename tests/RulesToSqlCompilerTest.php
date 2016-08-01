@@ -105,7 +105,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -141,7 +141,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "a_function", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -231,7 +231,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity($type, "entity", "file", 1, 2);
         $id2 = $this->db->reference(Variable::LANGUAGE_CONSTRUCT_TYPE, "@", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -263,7 +263,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::LANGUAGE_CONSTRUCT_TYPE, "unset", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -292,7 +292,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -315,7 +315,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "BClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -344,7 +344,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -367,7 +367,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "another_glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -399,7 +399,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "SomeClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::LANGUAGE_CONSTRUCT_TYPE, "@", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -422,7 +422,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::LANGUAGE_CONSTRUCT_TYPE, "@", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -451,7 +451,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -474,7 +474,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "a_function", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -497,7 +497,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::METHOD_TYPE, "a_method", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -571,7 +571,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -632,7 +632,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::METHOD_TYPE, "a_method", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -655,7 +655,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "a_method", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -678,7 +678,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::METHOD_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);
@@ -701,7 +701,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $this->db->source_file("file", "foo\na line");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::GLOBAL_TYPE, "glob", "file", 2);
-        $this->db->relation("depend_on", $id1, $id2, "file", 2);
+        $this->db->relation("depend on", $id1, $id2, "file", 2);
         $stmt = $rule->compile($this->db);
 
         $this->assertInstanceOf("\\Doctrine\\DBAL\\Driver\\Statement", $stmt);

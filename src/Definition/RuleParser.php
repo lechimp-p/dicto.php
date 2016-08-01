@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Definition;
 
+use Lechimp\Dicto\Rules\ArgumentParser;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Rules as R;
@@ -17,7 +18,7 @@ use Lechimp\Dicto\Rules as R;
 /**
  * Parser for Rulesets.
  */
-class RuleParser extends Parser {
+class RuleParser extends Parser implements ArgumentParser {
     const ASSIGNMENT_RE = "(\w+)\s*=\s*";
     const STRING_RE = "[\"]((([\\\\][\"])|[^\"])+)[\"]";
     const RULE_MODE_RE = "must|can(not)?";
@@ -36,6 +37,12 @@ class RuleParser extends Parser {
             , new V\Files()
             , new V\Methods()
             // TODO: Add some language constructs here...
+            );
+
+        $known_schemas = array
+            ( new R\ContainText()
+            , new R\DependOn()
+            , new R\Invoke()
             );
 
         // Assignment 
@@ -97,21 +104,7 @@ class RuleParser extends Parser {
                 }
                 throw new \LogicException("Unexpected \"".$matches[0]."\".");
             });
-        $this->symbol("contain text")
-            ->null_denotation_is(function(array &$_) {
-                $right = $this->string();
-                return array(new R\ContainText(), array($right));
-            });
-        $this->symbol("depend on")
-           ->null_denotation_is(function(array &$_) {
-                $right = $this->variable();
-                return array(new R\DependOn(), array($right));
-            });
-        $this->symbol("invoke")
-           ->null_denotation_is(function(array &$_) {
-                $right = $this->variable();
-                return array(new R\Invoke(), array($right));
-            });
+        $this->add_schemas($known_schemas);
 
         // Names
         $this->literal("\w+", function (array &$matches) {
@@ -311,5 +304,63 @@ class RuleParser extends Parser {
         foreach ($this->predefined_variables as $predefined_var) {
             unset($this->variables[$predefined_var->name()]);
         }
+    }
+
+    // HANDLING OF SCHEMAS
+
+    /**
+     * Add a list of schemas to the parser.
+     *
+     * @param   Schema[]
+     * @return  null
+     */
+    protected function add_schemas(array &$schemas) {
+        foreach ($schemas as $schema) {
+            $this->add_schema($schema);
+        }
+    }
+
+    /**
+     * Add a schema to the parser.
+     *
+     * @param   R/Schema
+     * @return  null
+     */
+    protected function add_schema(R\Schema $schema) {
+        $this->symbol($schema->name())
+            ->null_denotation_is(function(array &$_) use ($schema) {
+                $this->is_start_of_rule_arguments = true;
+                return array($schema, $schema->fetch_arguments($this));
+            });
+    }
+
+    // IMPLEMENTATION OF ArgumentParser
+
+    /**
+     * @var bool
+     */
+    protected $is_start_of_rule_arguments = false;
+
+    protected function maybe_fetch_argument_delimiter() {
+        if (!$this->is_start_of_rule_arguments) {
+            $this->advance_operator(",");
+            $this->is_start_of_rule_arguments = false;
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function fetch_string() {
+        $this->maybe_fetch_argument_delimiter();
+        return $this->string();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function fetch_variable() {
+        $this->maybe_fetch_argument_delimiter();
+        return $this->variable();
     }
 }

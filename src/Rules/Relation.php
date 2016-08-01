@@ -21,6 +21,17 @@ use Lechimp\Dicto\Variables\Variable;
  * in the code.
  */
 abstract class Relation extends Schema {
+    /**
+     * @inheritdoc
+     */
+    public function fetch_arguments(ArgumentParser $parser) {
+        $var = $parser->fetch_variable();
+        return array($var);
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function check_arguments(array $arguments) {
          if (count($arguments) != 1) {
             throw new \InvalidArgumentException(
@@ -36,7 +47,7 @@ abstract class Relation extends Schema {
      * @inheritdoc
      */
     public function pprint(Rule $rule) {
-        return $this->printable_name()." ".$rule->argument(0)->name();
+        return $this->name()." ".$rule->argument(0)->name();
     }
 
     /**

@@ -32,7 +32,7 @@ class InsertMock implements Insert {
 
     public function __construct() {
         $this->relations = array
-            ( "depend_on" => array()
+            ( "depend on" => array()
             , "invoke" => array()
             );
     }
@@ -238,9 +238,9 @@ PHP;
             , "reference_id" => $a_bogus_function_id
             );
 
-        $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_A1, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_invoke_a_function, $this->insert_mock->relations["depend_on"]);
+        $this->assertCount(2, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_A1, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_invoke_a_function, $this->insert_mock->relations["depend on"]);
     }
 
     public function test_entity_A1_invocations() {
@@ -291,9 +291,9 @@ PHP;
             , "reference_id" => $invoke_a_function_id
             );
 
-        $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_A2, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_invoke_a_method, $this->insert_mock->relations["depend_on"]);
+        $this->assertCount(2, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_A2, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_invoke_a_method, $this->insert_mock->relations["depend on"]);
     }
 
     public function test_entity_A2_invocations() {
@@ -361,11 +361,11 @@ PHP;
             , "reference_id" => $glob_ids[1]
             );
 
-        $this->assertCount(4, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_A3_1, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_A3_2, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_use_global_by_keyword, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_use_global_by_array, $this->insert_mock->relations["depend_on"]);
+        $this->assertCount(4, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_A3_1, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_A3_2, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_use_global_by_keyword, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_use_global_by_array, $this->insert_mock->relations["depend on"]);
     }
 
     public function test_references_A4_use_stfu() {
@@ -415,11 +415,11 @@ PHP;
             , "reference_id" => $stfu_fun_id
             );
 
-        $this->assertCount(4, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_A4_1, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_A4_2, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_use_stfu_1, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_use_stfu_2, $this->insert_mock->relations["depend_on"]);
+        $this->assertCount(4, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_A4_1, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_A4_2, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_use_stfu_1, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_use_stfu_2, $this->insert_mock->relations["depend on"]);
     }
 
     public function test_entity_A4_invocations() {
@@ -460,7 +460,7 @@ PHP;
         $id = $this->insert_mock->get_id("CallsClosure");
 
         $this->assertCount(0, $this->insert_mock->relations["invoke"]);
-        $this->assertCount(0, $this->insert_mock->relations["depend_on"]);
+        $this->assertCount(0, $this->insert_mock->relations["depend on"]);
     }
 
     public function test_indexes_array_twice() {
@@ -477,9 +477,9 @@ PHP;
             , "reference_id" => $glob_ids[0]
             );
 
-        $this->assertCount(2, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_IndexesTwice_1, $this->insert_mock->relations["depend_on"]);
-        $this->assertContains($expected_dep_indexes_GLOBAL_twice_1, $this->insert_mock->relations["depend_on"]);
+        $this->assertCount(2, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_IndexesTwice_1, $this->insert_mock->relations["depend on"]);
+        $this->assertContains($expected_dep_indexes_GLOBAL_twice_1, $this->insert_mock->relations["depend on"]);
     }
 
     public function test_ignores_call_to_variable_method() {
@@ -487,7 +487,7 @@ PHP;
         $id = $this->insert_mock->get_id("CallsVariableMethod");
 
         $this->assertCount(0, $this->insert_mock->relations["invoke"]);
-        $this->assertCount(0, $this->insert_mock->relations["depend_on"]);
+        $this->assertCount(0, $this->insert_mock->relations["depend on"]);
     }
 
     public function test_ignores_call_to_function_in_array() {
@@ -495,7 +495,7 @@ PHP;
         $id = $this->insert_mock->get_id("CallsFunctionInArray");
 
         $this->assertCount(0, $this->insert_mock->relations["invoke"]);
-        $this->assertCount(0, $this->insert_mock->relations["depend_on"]);
+        $this->assertCount(0, $this->insert_mock->relations["depend on"]);
     }
 
 
@@ -504,7 +504,7 @@ PHP;
         $id = $this->insert_mock->get_id("UsesGlobalsWithVarIndex");
 
         $this->assertCount(0, $this->insert_mock->relations["invoke"]);
-        $this->assertCount(0, $this->insert_mock->relations["depend_on"]);
+        $this->assertCount(0, $this->insert_mock->relations["depend on"]);
     }
 
     public function test_listener_registry() {

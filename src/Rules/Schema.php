@@ -23,27 +23,26 @@ use Doctrine\DBAL\Driver\Statement;
  */
 abstract class Schema {
     /**
-     * Get the name of the relation.
-     *
-     * This must return a string without whitespaces.
-     *
-     * TODO: This most probably should go to Relation.
+     * Get the name of the schema.
      *
      * @return  string
      */
     abstract public function name(); 
 
     /**
-     * Get the name where _ is replace by space.
+     * Fetch arguments for the Schema from a stream of tokens during parsing.
      *
-     * @return string
+     * @param   ArgumentParser  $parser
+     * @return  array
      */
-    public function printable_name() {
-        return str_replace("_", " ", $this->name());
-    }
+    abstract public function fetch_arguments(ArgumentParser $parser);
 
     /**
      * Check the arguments given in the fluid interface on using the schema.
+     *
+     * TODO: This should stop throwing exception and return a boolean instead.
+     *       Probably it should also be renamed. Then it could just be use to
+     *       assert argument correctness on construction of Rule.
      *
      * @param   array   $arguments
      * @throws  \InvalidArgumentException   if $arguments are not ok

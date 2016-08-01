@@ -26,7 +26,7 @@ class DependOn extends Relation {
      * @inheritdoc
      */
     public function name() {
-        return "depend_on";    
+        return "depend on";
     }
 
     /**

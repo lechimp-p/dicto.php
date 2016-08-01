@@ -127,7 +127,7 @@ CODE;
         $this->db->entity(Variable::FILE_TYPE, "file", "file", 1, 2);
         $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "AClass", "file", 1, 2);
         $id2 = $this->db->reference(Variable::METHOD_TYPE, "a_method", "file", 4);
-        $this->db->relation("depend_on", $id1, $id2, "file", 4);
+        $this->db->relation("depend on", $id1, $id2, "file", 4);
 
         $analyzer->run();
         $expected = array(new Violation
