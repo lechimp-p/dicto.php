@@ -114,6 +114,8 @@ class RuleParser extends Parser implements ArgumentParser {
         $this->symbol("\n");
     }
 
+    // IMPLEMENTATION OF Parser
+
     /**
      * @return  Ruleset
      */
@@ -158,22 +160,6 @@ class RuleParser extends Parser implements ArgumentParser {
         return new Ruleset($this->variables, $this->rules);
     }
 
-    // TODO: this might go away, as it seems wrong to use it in rule_declaration.
-    protected function expression($right_binding_power = 0) {
-        $t = $this->current_symbol();
-        $m = $this->current_match();
-        $this->fetch_next_token();
-        $left = $t->null_denotation($m);
-
-        while ($right_binding_power < $this->token[0]->binding_power()) {
-            $t = $this->current_symbol();
-            $m = $this->current_match();
-            $this->fetch_next_token();
-            $left = $t->left_denotation($left, $m);
-        }
-        return $left;
-    }
-
     // EXPRESSION TYPES
 
     /**
@@ -212,11 +198,23 @@ class RuleParser extends Parser implements ArgumentParser {
      * @return  V\Variable
      */
     protected function variable($right_binding_power = 0) {
-        $expr = $this->expression($right_binding_power);
-        if (!($expr instanceof V\Variable)) {
+        $t = $this->current_symbol();
+        $m = $this->current_match();
+        $this->fetch_next_token();
+        $left = $t->null_denotation($m);
+
+        while ($right_binding_power < $this->token[0]->binding_power()) {
+            $t = $this->current_symbol();
+            $m = $this->current_match();
+            $this->fetch_next_token();
+            $left = $t->left_denotation($left, $m);
+        }
+
+        if (!($left instanceof V\Variable)) {
             throw new ParserException("Expected variable.");
         }
-        return $expr;
+
+        return $left;
     }
 
     /**
