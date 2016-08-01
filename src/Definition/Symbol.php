@@ -80,12 +80,8 @@ class Symbol {
      * @return  mixed
      */
     public function null_denotation(array &$matches) {
-        if ($this->null_denotation === null) {
-            $m = $matches[0];
-            throw new ParserException("Syntax Error: $m");
-        }
-        $led = $this->null_denotation;
-        return $led($matches);
+        $denotation = $this->denotation("null", $matches); 
+        return $denotation($matches);
     }
 
     /**
@@ -104,11 +100,19 @@ class Symbol {
      * @return  mixed
      */
     public function left_denotation($left, array &$matches) {
-        if ($this->left_denotation === null) {
+        $denotation = $this->denotation("left", $matches); 
+        return $denotation($left, $matches);
+    }
+
+    // HELPER
+
+    protected function denotation($which, array &$matches) {
+        $which = $which."_denotation";
+        $denotation = $this->$which;
+        if ($this->$which === null) {
             $m = $matches[0];
             throw new ParserException("Syntax Error: $m");
         }
-        $led = $this->left_denotation;
-        return $led($left, $matches);
+        return $denotation;
     }
 }
