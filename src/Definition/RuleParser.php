@@ -24,9 +24,19 @@ class RuleParser extends Parser implements ArgumentParser {
     const RULE_MODE_RE = "must|can(not)?";
 
     /**
-     * @var Variable[]
+     * @var V\Variable[]
      */
     protected $predefined_variables;
+
+    /**
+     * @var V\Variable[]|null
+     */
+    protected $variables = null;
+
+    /**
+     * @var R\Rule[]|null
+     */
+    protected $rules = null;
 
     public function __construct() {
         parent::__construct();
@@ -50,7 +60,7 @@ class RuleParser extends Parser implements ArgumentParser {
 
         // Any
         $this->operator("{")
-            ->null_denotation_is(function(array &$matches) {
+            ->null_denotation_is(function() {
                 $arr = array();
                 while(true) {
                     $arr[] = $this->variable(0);
@@ -77,12 +87,12 @@ class RuleParser extends Parser implements ArgumentParser {
 
         // WithName
         $this->symbol("with name:", 20)
-            ->left_denotation_is(function($left, array &$matches) {
+            ->left_denotation_is(function($left) {
                 if (!($left instanceof V\Variable)) {
                     throw new ParserException
                         ("Expected a variable at the left of \"with name:\".");
                 }
-                $right = $this->string(20);
+                $right = $this->string();
                 return new V\WithName($right, $left);
             });
 
@@ -181,7 +191,7 @@ class RuleParser extends Parser implements ArgumentParser {
      *
      * @return  string
      */
-    protected function string($right_binding_power = 0) {
+    protected function string() {
         if (!$this->is_current_token_matched_by(self::STRING_RE)) {
             throw new ParserException("Expected string.");
         }
@@ -222,7 +232,7 @@ class RuleParser extends Parser implements ArgumentParser {
      *
      * @return  array   (R\Schema, array)
      */
-    protected function rule_schema($right_binding_power = 0) {
+    protected function rule_schema() {
         $t = $this->current_symbol();
         $m = $this->current_match();
         $this->fetch_next_token();
