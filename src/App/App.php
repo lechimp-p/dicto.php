@@ -98,7 +98,7 @@ class App {
     protected function create_dic(RuleSet $ruleset, array &$configs) {
         $container = new Container();
 
-        $container["config"] = function ($c) use (&$configs) {
+        $container["config"] = function () use (&$configs) {
             return new Config($configs);
         };
 
@@ -115,11 +115,11 @@ class App {
                 );
         };
 
-        $container["log"] = function ($c) {
+        $container["log"] = function () {
             return new CLILogger();
         };
 
-        $container["database_factory"] = function($c) {
+        $container["database_factory"] = function() {
             return new DBFactory();
         };
 
@@ -142,11 +142,11 @@ class App {
                 );
         };
 
-        $container["php_parser"] = function($c) {
+        $container["php_parser"] = function() {
             return (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         };
 
-        $container["report_generator"] = function($c) {
+        $container["report_generator"] = function() {
             return new CLIReportGenerator();
         };
 
