@@ -75,6 +75,9 @@ abstract class Parser {
      * @return SymbolTable
      */
     public function create_symbol_table() {
+        // TODO: When symbol, operator and stuff were moved to
+        //       Symbol table, there could be an add_symbols method
+        //       postprocessing the table instead of using this->symbol etc.
         return new SymbolTable();
     }
 
@@ -82,6 +85,8 @@ abstract class Parser {
 
     /**
      * Add a symbol to the symbol table.
+     *
+     * TODO: This most probably should go to symbol table.
      *
      * @param   string  $regexp
      * @param   int     $binding_power
@@ -95,6 +100,8 @@ abstract class Parser {
 
     /**
      * Add an operator to the symbol table.
+     *
+     * TODO: This most probably should go to symbol table.
      *
      * Convenience, will split the given string and wrap each char in []
      * before passing it to symbol.
@@ -113,6 +120,8 @@ abstract class Parser {
     /**
      * Add a literal to the symbol table, where the matches are
      * transformed using the $converter.
+     *
+     * TODO: This most probably should go to symbol table.
      *
      * @param   string      $regexp
      * @param   \Closure    $converter
