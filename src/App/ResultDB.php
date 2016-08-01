@@ -207,7 +207,7 @@ class ResultDB extends DB implements ReportGenerator {
             $var_id = $this->insert_variable($var);            
         }
         else {
-            $this->update_variable($var, $var_id);
+            $this->update_variable($var_id);
         }
         return $var_id;
     }
@@ -230,7 +230,7 @@ class ResultDB extends DB implements ReportGenerator {
         return (int)$this->connection->lastInsertId();
     }
 
-    protected function update_variable(Variable $var, $var_id) {
+    protected function update_variable($var_id) {
         assert('is_integer($var_id)');
         assert('$this->current_run_id !== null');
         $this->builder()
