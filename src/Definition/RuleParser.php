@@ -219,6 +219,22 @@ class RuleParser extends Parser implements ArgumentParser {
         return $expr;
     }
 
+    /**
+     * Fetch a rule schema and its arguments from the stream.
+     *
+     * @return  array   (R\Schema, array)
+     */
+    protected function rule_schema($right_binding_power = 0) {
+        $t = $this->current_symbol();
+        $m = $this->current_match();
+        $this->fetch_next_token();
+        $schema = $t->null_denotation($m);
+        if (!($schema instanceof R\Schema)) {
+            throw new ParserException("Expected name of a rule schema.");
+        }
+        return $schema;
+    }
+
     // TOP LEVEL STATEMENTS
 
     /**
@@ -244,14 +260,13 @@ class RuleParser extends Parser implements ArgumentParser {
         }
         $var = $this->variable();
         $mode = $this->rule_mode();
-        $m = $this->current_match();
-        $res = $this->expression();
-        if (!(is_array($res) && count($res) > 0 && $res[0] instanceof R\Schema)) {
-            throw new ParserException
-                ("Expected a valid schema name, found \"".$m[0]."\".");
-        }
-        $this->rules[] = new R\Rule($mode, $var, $res[0], $res[1]);
+        $schema = $this->rule_schema();
+        $this->is_start_of_rule_arguments = true;
+        $arguments = $schema->fetch_arguments($this);
+        assert('is_array($arguments)');
+        $this->rules[] = new R\Rule($mode, $var, $schema, $arguments);
     }
+
 
     // HANDLING OF VARIABLES
 
@@ -329,8 +344,7 @@ class RuleParser extends Parser implements ArgumentParser {
     protected function add_schema(R\Schema $schema) {
         $this->symbol($schema->name())
             ->null_denotation_is(function(array &$_) use ($schema) {
-                $this->is_start_of_rule_arguments = true;
-                return array($schema, $schema->fetch_arguments($this));
+                return $schema;
             });
     }
 
