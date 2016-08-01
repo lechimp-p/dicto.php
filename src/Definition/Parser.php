@@ -25,9 +25,9 @@ abstract class Parser {
     protected $tokenizer = null;
 
     /**
-     * @var array   (Symbol, array $matches)
+     * @var array|null   (Symbol, array $matches)
      */
-    protected $token;
+    protected $token = null;
 
     public function __construct() {
         $this->symbol_table = $this->create_symbol_table();
