@@ -49,8 +49,6 @@ class Rule extends Definition {
     private $arguments;
 
     /**
-     * TODO: This stuff with the arguments seems fishy since i introduced the parser.
-     *
      * @param string $mode
      */
     public function __construct($mode, Variable $subject, Schema $schema, array $arguments) {
