@@ -19,8 +19,6 @@
 * Expose `everything` on fluid interface.
 * Make `language_construct` more pleasant to use.
 * Define known types of `language_construct`s.
-* It seems like WithName should not use the name of the underlying variable
-  for its name since i introduced Variable::withName.
 
 # DB
 * Use another schema for the database. There could be a file table, where each

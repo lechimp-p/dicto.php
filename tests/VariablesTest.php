@@ -54,7 +54,7 @@ class VariablesTest extends PHPUnit_Framework_TestCase {
                     ( ".*GUI"
                     , new V\Classes()
                     ) 
-                , "Classes"
+                , null
                 , "classes with name \".*GUI\""
                 )
             // TODO: add more TestCases here, that cover all
