@@ -32,15 +32,14 @@ abstract class Relation extends Schema {
     /**
      * @inheritdoc
      */
-    public function check_arguments(array $arguments) {
+    public function arguments_are_valid(array &$arguments) {
          if (count($arguments) != 1) {
-            throw new \InvalidArgumentException(
-                "One argument is required when using a relational rule schema.");
+            return false;
         }
-       if (!($arguments[0] instanceof Variable)) {
-            throw new \InvalidArgumentException(
-                "Expected variable, got '".get_class($arguments[0])."' when using a relational schema.");
+        if (!($arguments[0] instanceof Variable)) {
+            return false;
         }
+        return true;
     }
 
     /**

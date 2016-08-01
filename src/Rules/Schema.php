@@ -38,17 +38,12 @@ abstract class Schema {
     abstract public function fetch_arguments(ArgumentParser $parser);
 
     /**
-     * Check the arguments given in the fluid interface on using the schema.
-     *
-     * TODO: This should stop throwing exception and return a boolean instead.
-     *       Probably it should also be renamed. Then it could just be use to
-     *       assert argument correctness on construction of Rule.
+     * Check if the given arguments are valid for the rule schema.
      *
      * @param   array   $arguments
-     * @throws  \InvalidArgumentException   if $arguments are not ok
-     * @return  null
+     * @return  bool 
      */
-    abstract public function check_arguments(array $arguments);
+    abstract public function arguments_are_valid(array &$arguments);
 
     /**
      * Get a pretty printed version of the rules.

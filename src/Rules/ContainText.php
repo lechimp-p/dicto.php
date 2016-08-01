@@ -36,16 +36,15 @@ class ContainText extends Property {
     /**
      * @inheritdoc
      */
-    public function check_arguments(array $arguments) {
+    public function arguments_are_valid(array &$arguments) {
         if (count($arguments) != 1) {
-            throw new \InvalidArgumentException(
-                "One argument is required when using a contain text.");
+            return false;
         }
         $regexp = $arguments[0];
         if (!is_string($regexp) || @preg_match("%$regexp%", "") === false) {
-            throw new \InvalidArgumentException(
-                "Invalid regexp '$regexp' when using contain text.");
+            return false;
         }
+        return true;
     }
 
     /**

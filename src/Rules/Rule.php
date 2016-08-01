@@ -55,7 +55,7 @@ class Rule extends Definition {
      */
     public function __construct($mode, Variable $subject, Schema $schema, array $arguments) {
         assert('in_array($mode, self::$modes)');
-        $schema->check_arguments($arguments);
+        assert('$schema->arguments_are_valid($arguments)');
         $this->mode = $mode;
         $this->subject = $subject;
         $this->schema = $schema;
