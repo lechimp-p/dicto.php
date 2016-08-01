@@ -312,7 +312,6 @@ class ResultDB extends DB implements ReportGenerator {
         $rule_table = $schema->createTable($this->rule_table());
         $rule_table->addColumn
             ( "id", "integer"
-            , array("notnull" => true)
             , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
             );
         $rule_table->addColumn
