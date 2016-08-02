@@ -54,7 +54,7 @@ class WithName extends Variable {
      */
     public function meaning() {
         $re = $this->regexp();
-        return $this->variable()->meaning()." with name \"$re\""; 
+        return $this->variable()->meaning()." with name: \"$re\"";
     }
 
     /**

@@ -42,6 +42,7 @@
 * When saying "only SomeClasses can depend on SomeThing" we certainly mean, that
   also methods in SomeClasses can depend on SomeThing, but currently the analysis
   does not reflect this.
+* Make Variable::meaning be parseable again?
 
 # Reporting
 * Make the app aware of previous runs, most probably best done by using git infos.
