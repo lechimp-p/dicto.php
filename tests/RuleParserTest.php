@@ -114,9 +114,10 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $this->parser->which_expression = "variable";
         $res = $this->parse("Classes with name:\"foo\"");
 
-        $expected = new V\WithName
-            ( "foo"
-            , new V\Classes()
+        $expected = new V\WithProperty
+            ( new V\Classes()
+            , new V\Name
+            , array("foo")
             );
         $this->assertEquals($expected, $res);
     }
@@ -125,9 +126,10 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $res = $this->parse("Foo = Classes with name: \"foo\"");
 
         $expected = array
-            ( "Foo" => (new V\WithName
-                ( "foo"
-                , new V\Classes()
+            ( "Foo" => (new V\WithProperty
+                ( new V\Classes()
+                , new V\Name
+                , array("foo")
                 ))
                 ->withName("Foo")
             );
@@ -211,9 +213,10 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $expected = array
             ( new R\Rule
                 ( R\Rule::MODE_MUST
-                , new V\WithName
-                    ( "foo"
-                    , new V\Classes()
+                , new V\WithProperty
+                    ( new V\Classes()
+                    , new V\Name()
+                    , array("foo")
                     )
                 , new R\ContainText
                 , array("foo")

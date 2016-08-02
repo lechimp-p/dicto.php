@@ -75,8 +75,11 @@ class RuleParser extends Parser implements ArgumentParser {
                     throw new ParserException
                         ("Expected a variable at the left of \"with name:\".");
                 }
-                $right = $this->string();
-                return new V\WithName($right, $left);
+                $name_property = new V\Name();
+                $this->is_start_of_rule_arguments = true;
+                $arguments = $name_property->fetch_arguments($this);
+                assert('is_array($arguments)');
+                return new V\WithProperty($left, $name_property, $arguments);
             });
 
         $this->add_symbols_for_rules_to($table);
