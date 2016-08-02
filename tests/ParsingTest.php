@@ -15,37 +15,40 @@ use Lechimp\Dicto\Definition\SymbolTable;
 class Parser extends ParserBase {
     public function __construct() {
         parent::__construct();
-        $this->literal("\\d+", function(array &$matches) {
+    }
+
+    protected function add_symbols_to_table(SymbolTable $table) {
+        $table->literal("\\d+", function(array &$matches) {
                 return intval($matches[0]);
             });
-        $this->operator("+", 10)
+        $table->operator("+", 10)
             ->left_denotation_is(function($left, array &$matches) {
                 return $left + $this->expression(10);
             });
-        $this->operator("-", 10)
+        $table->operator("-", 10)
             ->left_denotation_is(function($left, array &$matches) {
                 return $left - $this->expression(10);
             });
-        $this->operator("**", 30)
+        $table->operator("**", 30)
             ->left_denotation_is(function($left, array &$matches) {
                 return pow($left, $this->expression(30-1));
             });
-        $this->operator("*", 20)
+        $table->operator("*", 20)
             ->left_denotation_is(function($left, array &$matches) {
                 return $left * $this->expression(20);
             });
-        $this->operator("/", 20)
+        $table->operator("/", 20)
             ->left_denotation_is(function($left, array &$matches) {
                 return $left / $this->expression(20);
             });
-        $this->operator("(")
+        $table->operator("(")
             ->null_denotation_is(function(array &$matches) {
                 $res = $this->expression(0);
                 $this->advance_operator(")");
                 return $res;
             });
-        $this->operator(")");
-        $this->symbol("\n");
+        $table->operator(")");
+        $table->symbol("\n");
     }
 
     protected function root() {

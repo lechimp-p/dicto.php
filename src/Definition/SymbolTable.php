@@ -47,5 +47,69 @@ class SymbolTable {
         $this->symbols[$regexp] = $s;
         return $s;
     }
+
+    // HELPERS that make defining symbols a little more concise.
+
+    /**
+     * Add a symbol to the symbol table.
+     *
+     * @param   string  $regexp
+     * @param   int     $binding_power
+     * @throws  \InvalidArgumentException if %$regexp% is not a regexp
+     * @throws  \LogicException if there already is a symbol with that $regexp.
+     * @return  Symbol
+     */
+    public function symbol($regexp, $binding_power = 0) {
+        return $this->add_symbol($regexp, $binding_power);
+    }
+
+    /**
+     * Add an operator to the symbol table.
+     *
+     * Convenience, will split the given string and wrap each char in []
+     * before passing it to symbol.
+     *
+     * @param   string  $op
+     * @param   int     $binding_power
+     * @throws  \InvalidArgumentException if %$regexp% is not a regexp
+     * @throws  \LogicException if there already is a symbol with that $regexp.
+     * @return  Symbol
+     */
+    public function operator($op, $binding_power = 0) {
+        $regexp = $this->operator_regexp($op);
+        return $this->symbol($regexp, $binding_power);
+    }
+
+    /**
+     * Add a literal to the symbol table, where the matches are
+     * transformed using the $converter.
+     *
+     * @param   string      $regexp
+     * @param   \Closure    $converter
+     * @throws  \InvalidArgumentException if %$regexp% is not a regexp
+     * @throws  \LogicException if there already is a symbol with that $regexp.
+     * @return  Symbol
+     */
+    public function literal($regexp, $converter) {
+        return $this->symbol($regexp)
+            ->null_denotation_is($converter);
+    }
+
+    /**
+     * "abc" -> "[a][b][c]" 
+     *
+     * Makes handling operators like "*" easier.
+     *
+     * @param   string  $op
+     * @return  string
+     */
+    public function operator_regexp($op) {
+        assert('is_string($op)');
+        $regexp = array();
+        foreach (str_split($op, 1) as $c) {
+            $regexp[] = "[$c]";
+        }
+        return implode("", $regexp);
+    }
 }
 

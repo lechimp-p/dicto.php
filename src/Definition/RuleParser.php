@@ -48,7 +48,14 @@ class RuleParser extends Parser implements ArgumentParser {
             , new V\Methods()
             // TODO: Add some language constructs here...
             );
+    }
 
+    // Definition of symbols in the parser
+
+    /**
+     * @inheritdocs
+     */
+    protected function add_symbols_to_table(SymbolTable $table) {
         $known_schemas = array
             ( new R\ContainText()
             , new R\DependOn()
@@ -56,10 +63,10 @@ class RuleParser extends Parser implements ArgumentParser {
             );
 
         // Assignment 
-        $this->symbol(self::ASSIGNMENT_RE);
+        $table->symbol(self::ASSIGNMENT_RE);
 
         // Any
-        $this->operator("{")
+        $table->operator("{")
             ->null_denotation_is(function() {
                 $arr = array();
                 while(true) {
@@ -71,11 +78,11 @@ class RuleParser extends Parser implements ArgumentParser {
                     $this->advance_operator(",");
                 }
             });
-        $this->operator("}");
-        $this->operator(",");
+        $table->operator("}");
+        $table->operator(",");
 
         // Except
-        $this->symbol("except", 10)
+        $table->symbol("except", 10)
             ->left_denotation_is(function($left, array &$matches) {
                 if (!($left instanceof V\Variable)) {
                     throw new ParserException
@@ -86,7 +93,7 @@ class RuleParser extends Parser implements ArgumentParser {
             });
 
         // WithName
-        $this->symbol("with name:", 20)
+        $table->symbol("with name:", 20)
             ->left_denotation_is(function($left) {
                 if (!($left instanceof V\Variable)) {
                     throw new ParserException
@@ -97,11 +104,11 @@ class RuleParser extends Parser implements ArgumentParser {
             });
 
         // Strings
-        $this->symbol(self::STRING_RE);
+        $table->symbol(self::STRING_RE);
 
         // Rules
-        $this->symbol("only");
-        $this->symbol(self::RULE_MODE_RE, 0)
+        $table->symbol("only");
+        $table->symbol(self::RULE_MODE_RE, 0)
             ->null_denotation_is(function (array &$matches) {
                 if ($matches[0] == "can") {
                     return R\Rule::MODE_ONLY_CAN;
@@ -114,14 +121,43 @@ class RuleParser extends Parser implements ArgumentParser {
                 }
                 throw new \LogicException("Unexpected \"".$matches[0]."\".");
             });
-        $this->add_schemas($known_schemas);
+        $this->add_schemas($table, $known_schemas);
 
         // Names
-        $this->literal("\w+", function (array &$matches) {
+        $table->literal("\w+", function (array &$matches) {
                 return $this->get_variable($matches[0]);
             });
 
-        $this->symbol("\n");
+        $table->symbol("\n");
+    }
+
+    // HANDLING OF SCHEMAS AS SYMBOLS
+
+    /**
+     * Add a list of schemas to the parser.
+     *
+     * @param   SymbolTable     $table
+     * @param   Schema[]    $schemas
+     * @return  null
+     */
+    protected function add_schemas(SymbolTable $table, array &$schemas) {
+        foreach ($schemas as $schema) {
+            $this->add_schema($table, $schema);
+        }
+    }
+
+    /**
+     * Add a schema to the parser.
+     *
+     * @param   SymbolTable     $table
+     * @param   R/Schema        $schema
+     * @return  null
+     */
+    protected function add_schema(SymbolTable $table, R\Schema $schema) {
+        $table->symbol($schema->name())
+            ->null_denotation_is(function(array &$_) use ($schema) {
+                return $schema;
+            });
     }
 
     // IMPLEMENTATION OF Parser
@@ -327,33 +363,6 @@ class RuleParser extends Parser implements ArgumentParser {
         foreach ($this->predefined_variables as $predefined_var) {
             unset($this->variables[$predefined_var->name()]);
         }
-    }
-
-    // HANDLING OF SCHEMAS
-
-    /**
-     * Add a list of schemas to the parser.
-     *
-     * @param   Schema[]
-     * @return  null
-     */
-    protected function add_schemas(array &$schemas) {
-        foreach ($schemas as $schema) {
-            $this->add_schema($schema);
-        }
-    }
-
-    /**
-     * Add a schema to the parser.
-     *
-     * @param   R/Schema
-     * @return  null
-     */
-    protected function add_schema(R\Schema $schema) {
-        $this->symbol($schema->name())
-            ->null_denotation_is(function(array &$_) use ($schema) {
-                return $schema;
-            });
     }
 
     // IMPLEMENTATION OF ArgumentParser

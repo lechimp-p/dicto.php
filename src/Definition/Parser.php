@@ -17,7 +17,7 @@ abstract class Parser {
     /**
      * @var SymbolTable
      */
-    protected $symbol_table;
+    private $symbol_table;
 
     /**
      * @var Tokenizer|null
@@ -31,6 +31,7 @@ abstract class Parser {
 
     public function __construct() {
         $this->symbol_table = $this->create_symbol_table();
+        $this->add_symbols_to_table($this->symbol_table);
     }
 
     /**
@@ -74,65 +75,18 @@ abstract class Parser {
      *
      * @return SymbolTable
      */
-    public function create_symbol_table() {
-        // TODO: When symbol, operator and stuff were moved to
-        //       Symbol table, there could be an add_symbols method
-        //       postprocessing the table instead of using this->symbol etc.
+    protected function create_symbol_table() {
         return new SymbolTable();
     }
 
+    /**
+     * @param   SymbolTable
+     * @return  null
+     */
+    abstract protected function add_symbols_to_table(SymbolTable $table);
+
     // Helpers for defining the grammar.
 
-    /**
-     * Add a symbol to the symbol table.
-     *
-     * TODO: This most probably should go to symbol table.
-     *
-     * @param   string  $regexp
-     * @param   int     $binding_power
-     * @throws  \InvalidArgumentException if %$regexp% is not a regexp
-     * @throws  \LogicException if there already is a symbol with that $regexp.
-     * @return  Symbol
-     */
-    protected function symbol($regexp, $binding_power = 0) {
-        return $this->symbol_table->add_symbol($regexp, $binding_power);
-    }
-
-    /**
-     * Add an operator to the symbol table.
-     *
-     * TODO: This most probably should go to symbol table.
-     *
-     * Convenience, will split the given string and wrap each char in []
-     * before passing it to symbol.
-     *
-     * @param   string  $op
-     * @param   int     $binding_power
-     * @throws  \InvalidArgumentException if %$regexp% is not a regexp
-     * @throws  \LogicException if there already is a symbol with that $regexp.
-     * @return  Symbol
-     */
-    protected function operator($op, $binding_power = 0) {
-        $regexp = $this->operator_regexp($op);
-        return $this->symbol($regexp, $binding_power);
-    }
-
-    /**
-     * Add a literal to the symbol table, where the matches are
-     * transformed using the $converter.
-     *
-     * TODO: This most probably should go to symbol table.
-     *
-     * @param   string      $regexp
-     * @param   \Closure    $converter
-     * @throws  \InvalidArgumentException if %$regexp% is not a regexp
-     * @throws  \LogicException if there already is a symbol with that $regexp.
-     * @return  Symbol
-     */
-    protected function literal($regexp, $converter) {
-        return $this->symbol($regexp)
-            ->null_denotation_is($converter);
-    }
 
     // Helpers for actual parsing.
 
@@ -192,7 +146,7 @@ abstract class Parser {
      * @return  null
      */
     protected function advance_operator($op) {
-        $this->advance($this->operator_regexp($op));
+        $this->advance($this->symbol_table->operator_regexp($op));
     }
 
     /**
@@ -222,22 +176,7 @@ abstract class Parser {
      * @return  bool
      */
     protected function is_current_token_operator($operator) {
-        return $this->is_current_token_matched_by($this->operator_regexp($operator));
-    }
-
-    // Internal Helpers
-    /**
-     * "abc" -> "[a][b][c]"
-     *
-     * @param   string  $op
-     * @return  string
-     */
-    protected function operator_regexp($op) {
-        assert('is_string($op)');
-        $regexp = array();
-        foreach (str_split($op, 1) as $c) {
-            $regexp[] = "[$c]";
-        }
-        return implode("", $regexp);
+        return $this->is_current_token_matched_by
+            ($this->symbol_table->operator_regexp($operator));
     }
 }
