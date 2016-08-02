@@ -10,7 +10,6 @@
 
 namespace Lechimp\Dicto\Definition;
 
-use Lechimp\Dicto\Rules\ArgumentParser;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Rules as R;

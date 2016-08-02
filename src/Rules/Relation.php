@@ -10,10 +10,10 @@
 
 namespace Lechimp\Dicto\Rules;
 
-use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Analysis\Query;
+use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\Location;
-use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Variables\Variable;
 
 /**

@@ -10,11 +10,10 @@
 
 namespace Lechimp\Dicto\Rules;
 
-use Lechimp\Dicto\Definition as Def;
-use Lechimp\Dicto\Variables as Vars;
-use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Violation;
+use Lechimp\Dicto\Definition\ArgumentParser;
+use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Variables\Variable;
 use Doctrine\DBAL\Driver\Statement;
 

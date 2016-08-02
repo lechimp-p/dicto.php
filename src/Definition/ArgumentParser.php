@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-namespace Lechimp\Dicto\Rules;
+namespace Lechimp\Dicto\Definition;
 
 use Lechimp\Dicto\Variables\Variable;
 

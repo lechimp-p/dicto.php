@@ -12,6 +12,7 @@ namespace Lechimp\Dicto\Rules;
 
 use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Violation;
+use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
 
 /**
