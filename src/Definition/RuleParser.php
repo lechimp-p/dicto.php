@@ -29,6 +29,11 @@ class RuleParser extends Parser implements ArgumentParser {
     protected $predefined_variables;
 
     /**
+     * @var R\Schema[]
+     */
+    protected $known_schemas;
+
+    /**
      * @var V\Variable[]
      */
     protected $variables = array();
@@ -39,7 +44,6 @@ class RuleParser extends Parser implements ArgumentParser {
     protected $rules = array();
 
     public function __construct() {
-        parent::__construct();
         $this->predefined_variables = array
             ( new V\Classes()
             , new V\Functions()
@@ -48,6 +52,12 @@ class RuleParser extends Parser implements ArgumentParser {
             , new V\Methods()
             // TODO: Add some language constructs here...
             );
+        $this->known_schemas = array
+            ( new R\ContainText()
+            , new R\DependOn()
+            , new R\Invoke()
+            );
+        parent::__construct();
     }
 
     // Definition of symbols in the parser
@@ -55,16 +65,45 @@ class RuleParser extends Parser implements ArgumentParser {
     /**
      * @inheritdocs
      */
-    protected function add_symbols_to_table(SymbolTable $table) {
-        $known_schemas = array
-            ( new R\ContainText()
-            , new R\DependOn()
-            , new R\Invoke()
-            );
+    protected function add_symbols_to(SymbolTable $table) {
+        $this->add_symbols_for_variables_to($table);
+
+        // TODO: make this more dynamic by using some Property class.
+        // WithName
+        $table->symbol("with name:", 20)
+            ->left_denotation_is(function($left) {
+                if (!($left instanceof V\Variable)) {
+                    throw new ParserException
+                        ("Expected a variable at the left of \"with name:\".");
+                }
+                $right = $this->string();
+                return new V\WithName($right, $left);
+            });
+
+        $this->add_symbols_for_rules_to($table);
+
+        // Strings
+        $table->symbol(self::STRING_RE);
 
         // Assignment 
         $table->symbol(self::ASSIGNMENT_RE);
 
+        // Names
+        $table->literal("\w+", function (array &$matches) {
+                return $this->get_variable($matches[0]);
+            });
+
+        // End of statement
+        $table->symbol("\n");
+    }
+
+    /**
+     * Add symbols for parsing of variables.
+     *
+     * @param   SymbolTable
+     * @return  null
+     */
+    protected function add_symbols_for_variables_to(SymbolTable $table) {
         // Any
         $table->operator("{")
             ->null_denotation_is(function() {
@@ -91,21 +130,15 @@ class RuleParser extends Parser implements ArgumentParser {
                 $right = $this->variable(10);
                 return new V\Except($left, $right);
             });
+    }
 
-        // WithName
-        $table->symbol("with name:", 20)
-            ->left_denotation_is(function($left) {
-                if (!($left instanceof V\Variable)) {
-                    throw new ParserException
-                        ("Expected a variable at the left of \"with name:\".");
-                }
-                $right = $this->string();
-                return new V\WithName($right, $left);
-            });
-
-        // Strings
-        $table->symbol(self::STRING_RE);
-
+    /**
+     * Add symbols for parsing of rules.
+     *
+     * @param   SymbolTable
+     * @return  null
+     */
+    protected function add_symbols_for_rules_to(SymbolTable $table) {
         // Rules
         $table->symbol("only");
         $table->symbol(self::RULE_MODE_RE, 0)
@@ -121,14 +154,7 @@ class RuleParser extends Parser implements ArgumentParser {
                 }
                 throw new \LogicException("Unexpected \"".$matches[0]."\".");
             });
-        $this->add_schemas($table, $known_schemas);
-
-        // Names
-        $table->literal("\w+", function (array &$matches) {
-                return $this->get_variable($matches[0]);
-            });
-
-        $table->symbol("\n");
+        $this->add_schemas($table, $this->known_schemas);
     }
 
     // HANDLING OF SCHEMAS AS SYMBOLS

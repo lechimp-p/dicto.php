@@ -17,7 +17,7 @@ class Parser extends ParserBase {
         parent::__construct();
     }
 
-    protected function add_symbols_to_table(SymbolTable $table) {
+    protected function add_symbols_to(SymbolTable $table) {
         $table->literal("\\d+", function(array &$matches) {
                 return intval($matches[0]);
             });

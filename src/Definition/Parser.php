@@ -31,7 +31,7 @@ abstract class Parser {
 
     public function __construct() {
         $this->symbol_table = $this->create_symbol_table();
-        $this->add_symbols_to_table($this->symbol_table);
+        $this->add_symbols_to($this->symbol_table);
     }
 
     /**
@@ -83,7 +83,7 @@ abstract class Parser {
      * @param   SymbolTable
      * @return  null
      */
-    abstract protected function add_symbols_to_table(SymbolTable $table);
+    abstract protected function add_symbols_to(SymbolTable $table);
 
     // Helpers for defining the grammar.
 
