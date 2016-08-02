@@ -10,14 +10,14 @@
 
 namespace Lechimp\Dicto\Rules;
 
-use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Violation;
+use Lechimp\Dicto\Indexer\ListenerRegistry;
 
 /**
  * This checks wheather there is some text in the definition of an entity.
  */
-class ContainText extends Property {
+class ContainText extends Schema {
     /**
      * @inheritdoc
      */
@@ -120,4 +120,13 @@ class ContainText extends Property {
     public function pprint(Rule $rule) {
         return $this->name().' "'.$rule->argument(0).'"';
     }
+
+    /**
+     * No listeners required for contains text. 
+     *
+     * @inheritdoc
+     */
+    public function register_listeners(ListenerRegistry $registry) {
+    }
+
 }
