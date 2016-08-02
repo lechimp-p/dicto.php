@@ -25,6 +25,17 @@ abstract class Property {
     abstract public function name();
 
     /**
+     * How to match property during parsing.
+     *
+     * Defaults to "with $name"
+     *
+     * @return string
+     */
+    public function parse_as() {
+        return "with ".$this->name();
+    }
+
+    /**
      * Fetch arguments for the Property from a stream of tokens during parsing.
      *
      * @param   ArgumentParser  $parser

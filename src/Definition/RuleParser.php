@@ -33,6 +33,11 @@ class RuleParser extends Parser implements ArgumentParser {
     protected $known_schemas;
 
     /**
+     * @var R\Property[]
+     */
+    protected $known_properties;
+
+    /**
      * @var V\Variable[]
      */
     protected $variables = array();
@@ -56,6 +61,9 @@ class RuleParser extends Parser implements ArgumentParser {
             , new R\DependOn()
             , new R\Invoke()
             );
+        $this->known_properties = array
+            ( new V\Name()
+            );
         parent::__construct();
     }
 
@@ -66,21 +74,6 @@ class RuleParser extends Parser implements ArgumentParser {
      */
     protected function add_symbols_to(SymbolTable $table) {
         $this->add_symbols_for_variables_to($table);
-
-        // TODO: make this more dynamic by using some Property class.
-        // WithName
-        $table->symbol("with name:", 20)
-            ->left_denotation_is(function($left) {
-                if (!($left instanceof V\Variable)) {
-                    throw new ParserException
-                        ("Expected a variable at the left of \"with name:\".");
-                }
-                $name_property = new V\Name();
-                $this->is_start_of_rule_arguments = true;
-                $arguments = $name_property->fetch_arguments($this);
-                assert('is_array($arguments)');
-                return new V\WithProperty($left, $name_property, $arguments);
-            });
 
         $this->add_symbols_for_rules_to($table);
 
@@ -100,8 +93,6 @@ class RuleParser extends Parser implements ArgumentParser {
     }
 
     /**
-     * Add symbols for parsing of variables.
-     *
      * @param   SymbolTable
      * @return  null
      */
@@ -132,11 +123,32 @@ class RuleParser extends Parser implements ArgumentParser {
                 $right = $this->variable(10);
                 return new V\Except($left, $right);
             });
+
+        $this->add_symbols_for_properties_to($table, $this->known_properties);
     }
 
     /**
-     * Add symbols for parsing of rules.
-     *
+     * @param   SymbolTable     $table
+     * @param   V\Property[]    $properties
+     * @return  null
+     */
+    protected function add_symbols_for_properties_to(SymbolTable $table, array &$properties) {
+        foreach ($properties as $property) {
+            $table->symbol($property->parse_as().":", 20)
+                ->left_denotation_is(function($left) use ($property) {
+                    if (!($left instanceof V\Variable)) {
+                        throw new ParserException
+                            ("Expected a variable at the left of \"with name:\".");
+                    }
+                    $this->is_start_of_rule_arguments = true;
+                    $arguments = $property->fetch_arguments($this);
+                    assert('is_array($arguments)');
+                    return new V\WithProperty($left, $property, $arguments);
+                });
+        }
+    }
+
+    /**
      * @param   SymbolTable
      * @return  null
      */
@@ -156,36 +168,21 @@ class RuleParser extends Parser implements ArgumentParser {
                 }
                 throw new \LogicException("Unexpected \"".$matches[0]."\".");
             });
-        $this->add_schemas($table, $this->known_schemas);
+        $this->add_symbols_for_schemas_to($table, $this->known_schemas);
     }
 
-    // HANDLING OF SCHEMAS AS SYMBOLS
-
     /**
-     * Add a list of schemas to the parser.
-     *
      * @param   SymbolTable     $table
-     * @param   Schema[]    $schemas
+     * @param   R\Schema[]    $schemas
      * @return  null
      */
-    protected function add_schemas(SymbolTable $table, array &$schemas) {
+    protected function add_symbols_for_schemas_to(SymbolTable $table, array &$schemas) {
         foreach ($schemas as $schema) {
-            $this->add_schema($table, $schema);
+            $table->symbol($schema->name())
+                ->null_denotation_is(function(array &$_) use ($schema) {
+                    return $schema;
+                });
         }
-    }
-
-    /**
-     * Add a schema to the parser.
-     *
-     * @param   SymbolTable     $table
-     * @param   R/Schema        $schema
-     * @return  null
-     */
-    protected function add_schema(SymbolTable $table, R\Schema $schema) {
-        $table->symbol($schema->name())
-            ->null_denotation_is(function(array &$_) use ($schema) {
-                return $schema;
-            });
     }
 
     // IMPLEMENTATION OF Parser
