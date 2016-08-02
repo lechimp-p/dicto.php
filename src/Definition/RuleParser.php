@@ -29,14 +29,14 @@ class RuleParser extends Parser implements ArgumentParser {
     protected $predefined_variables;
 
     /**
-     * @var V\Variable[]|null
+     * @var V\Variable[]
      */
-    protected $variables = null;
+    protected $variables = array();
 
     /**
-     * @var R\Rule[]|null
+     * @var R\Rule[]
      */
-    protected $rules = null;
+    protected $rules = array();
 
     public function __construct() {
         parent::__construct();
