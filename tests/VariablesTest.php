@@ -50,9 +50,10 @@ class VariablesTest extends PHPUnit_Framework_TestCase {
                 , "classes"
                 )
             , array
-                ( new V\WithName
-                    ( ".*GUI"
-                    , new V\Classes()
+                ( new V\WithProperty
+                    ( new V\Classes()
+                    , new V\Name()
+                    , array(".*GUI")
                     ) 
                 , null
                 , "classes with name: \".*GUI\""

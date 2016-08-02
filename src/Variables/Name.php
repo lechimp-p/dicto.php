@@ -66,10 +66,10 @@ class Name extends Property {
     public function compile(array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false) {
         assert('$this->arguments_are_valid($arguments)');
         if (!$negate) {
-            return "$table_name.name REGEXP ".$builder->literal('^'.$this->regexp().'$');
+            return "$table_name.name REGEXP ".$builder->literal('^'.$arguments[0].'$');
         }
         else {
-            return "$table_name.name NOT REGEXP ".$builder->literal('^'.$this->regexp().'$');
+            return "$table_name.name NOT REGEXP ".$builder->literal('^'.$arguments[0].'$');
         }
     }
 }

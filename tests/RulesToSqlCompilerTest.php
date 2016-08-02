@@ -278,9 +278,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function a_classes_cannot_depend_on_globals() {
         return new Rules\Rule
             ( Rules\Rule::MODE_CANNOT
-            , new Vars\WithName
-                ( "AClass"
-                , new Vars\Classes("AClasses")
+            , new Vars\WithProperty
+                ( new Vars\Classes("AClasses")
+                , new Vars\Name()
+                , array("AClass")
                 )
             , new Rules\DependOn()
             , array(new Vars\Globals("allGlobals"))
@@ -332,9 +333,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             ( Rules\Rule::MODE_CANNOT
             , new Vars\Classes("allClasses")
             , new Rules\DependOn()
-            , array(new Vars\WithName
-                ( "glob"
-                , new Vars\Globals("glob")
+            , array(new Vars\WithProperty
+                ( new Vars\Globals("glob")
+                , new Vars\Name()
+                , array("glob")
                 ))
             );
     }
@@ -384,9 +386,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             ( Rules\Rule::MODE_CANNOT
             , new Vars\Except
                 ( new Vars\Everything("everything")
-                , new Vars\WithName
-                    ( "AClass"
-                    , new Vars\Classes("AClasses")
+                , new Vars\WithProperty
+                    ( new Vars\Classes("AClasses")
+                    , new Vars\Name()
+                    , array("AClass")
                     )
                 )
             , new Rules\DependOn
@@ -514,9 +517,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
             ( Rules\Rule::MODE_MUST
             , new Vars\Except
                 ( new Vars\Everything("everything")
-                , new Vars\WithName
-                    ( "AClass"
-                    , new Vars\Classes("AClasses")
+                , new Vars\WithProperty
+                    ( new Vars\Classes("AClasses")
+                    , new Vars\Name()
+                    , array("AClass")
                     )
                 )
             , new Rules\DependOn()
@@ -618,9 +622,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function only_a_classes_can_depend_on_globals() {
         return new Rules\Rule
             ( Rules\Rule::MODE_ONLY_CAN
-            , new Vars\WithName
-                ( "AClass"
-                , new Vars\Classes("AClasses")
+            , new Vars\WithProperty
+                ( new Vars\Classes("AClasses")
+                , new Vars\Name()
+                , array("AClass")
                 )
             , new Rules\DependOn()
             , array(new Vars\Globals("allGlobals"))
@@ -715,9 +720,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function a_classes_must_contain_text_foo() {
         return new Rules\Rule
             ( Rules\Rule::MODE_MUST
-            , new Vars\WithName
-                ( "AClass"
-                , new Vars\Classes("AClasses")
+            , new Vars\WithProperty
+                ( new Vars\Classes("AClasses")
+                , new Vars\Name()
+                , array("AClass")
                 )
             , new Rules\ContainText()
             , array("foo")
@@ -785,9 +791,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function only_a_classes_can_contain_text_foo() {
         return new Rules\Rule
             ( Rules\Rule::MODE_ONLY_CAN
-            , new Vars\WithName
-                ( "AClass"
-                , new Vars\Classes("AClasses")
+            , new Vars\WithProperty
+                ( new Vars\Classes("AClasses")
+                , new Vars\Name()
+                , array("AClass")
                 )
             , new Rules\ContainText()
             , array("foo")
@@ -863,9 +870,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function a_classes_must_invoke_functions() {
         return new Rules\Rule
             ( Rules\Rule::MODE_MUST
-            , new Vars\WithName
-                ( "AClass"
-                , new Vars\Classes("AClasses")
+            , new Vars\WithProperty
+                ( new Vars\Classes("AClasses")
+                , new Vars\Name()
+                , array("AClass")
                 )
             , new Rules\Invoke()
             , array(new Vars\Functions("allFunctions"))
@@ -926,9 +934,10 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function only_a_classes_can_invoke_functions() {
         return new Rules\Rule
             ( Rules\Rule::MODE_ONLY_CAN
-            , new Vars\WithName
-                ( "AClass"
-                , new Vars\Classes("AClasses")
+            , new Vars\WithProperty
+                ( new Vars\Classes("AClasses")
+                , new Vars\Name()
+                , array("AClass")
                 )
             , new Rules\Invoke()
             , array(new Vars\Functions("allFunctions"))

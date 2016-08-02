@@ -58,7 +58,7 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
         $explainable = array();
         foreach ($base as $b) {
             $explainable[] = array($b);
-            $explainable[] = array(new Vars\WithName("the_name", $b));
+            $explainable[] = array(new Vars\WithProperty($b, new Vars\Name(), array("the_name")));
             foreach ($base as $b2) {
                 $explainable[] = array((new Vars\Any(array($b, $b2)))
                                         ->withName("AS_WELL_AS"));

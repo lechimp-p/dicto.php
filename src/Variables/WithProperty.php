@@ -50,7 +50,6 @@ class WithProperty extends Variable {
      * @inheritdocs
      */
     public function meaning() {
-        $re = $this->regexp();
         // TODO: maybe i should use the name here?
         return $this->variable()->meaning()." with ".$this->property->name().": ".$this->argument_list();
     }
