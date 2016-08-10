@@ -24,22 +24,58 @@ interface Query {
     /**
      * @return string
      */
-    public function source_file_table();
+//    public function source_file_table();
 
     /**
      * @return string
      */
-    public function entity_table();
+//    public function entity_table();
 
     /**
      * @return string
      */
+//    public function reference_table();
+
+    /**
+     * @return string
+     */
+//    public function relations_table();
+
+    /**
+     * @return string
+     */
+    public function name_table();
+
+    /**
+     * @return string
+     */
+    public function source_table();
+
+    /**
+     * @return string
+     */
+    // TODO: This seems to be a bridge to the new database
+    // schema, as the location is currently located in a separate
+    // table, but could be moved to the relations table. This
+    // should be possible when the inserter interface gets a new
+    // shape.
     public function reference_table();
 
     /**
      * @return string
      */
-    public function relations_table();
+    public function relation_table();
+
+    /**
+     * @return string
+     */
+    public function definition_table();
+
+    /**
+     * @return string
+     */
+    // TODO: implement this
+    //public function name_table();
 
     /**
      * Get a builder to create queries.

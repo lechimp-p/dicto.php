@@ -22,26 +22,29 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
                 , "memory" => true
                 )
             ); 
-        $this->inserter = new IndexDB($this->connection);
-        $this->inserter->init_database_schema();
-        $this->builder = $this->connection->createQueryBuilder();
+        $this->db = new IndexDB($this->connection);
+        $this->db->init_database_schema();
+    }
+
+    public function builder() {
+        return $this->connection->createQueryBuilder();
     }
 
     public function test_insert_source_file() {
-        $this->inserter->source_file("foo.php", "FOO\nBAR");
-        $res = $this->builder
-            ->select("*")
-            ->from($this->inserter->source_file_table())
+        $this->db->source_file("foo.php", "FOO\nBAR");
+        $res = $this->builder()
+            ->select("file", "line", "source")
+            ->from($this->db->source_table())
             ->execute()
             ->fetchAll();
         $expected = array
             ( array
-                ( "name" => "foo.php"
+                ( "file" => "foo.php"
                 , "line" => "1"
                 , "source" => "FOO"
                 )
             , array
-                ( "name" => "foo.php"
+                ( "file" => "foo.php"
                 , "line" => "2"
                 , "source" => "BAR"
                 )
@@ -50,87 +53,133 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_insert_entity() {
-        $id = $this->inserter->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
-        $res = $this->builder
-            ->select("*")
-            ->from($this->inserter->entity_table())
+        $this->db->source_file("AClass.php", "FOO\nBAR");
+        $id = $this->db->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2);
+
+        $builder = $this->builder();
+        $b = $builder->expr();
+        $res = $builder
+            ->select
+                ( "n.id"
+                , "n.name"
+                , "n.type"
+                , "s.file"
+                , "s.line as start_line"
+                , "(s.line + d.lines - 1) as end_line"
+                )
+            ->from($this->db->definition_table(), "d")
+            ->join
+                ( "d", $this->db->name_table(), "n"
+                , $b->eq("d.name", "n.id")
+                )
+            ->join
+                ( "d", $this->db->source_table(), "s"
+                , $b->eq("d.source_location", "s.id")
+                )
             ->execute()
             ->fetchAll();
-
         $expected = array
-            ( "id" => $id
-            , "type" => Variable::CLASS_TYPE
+            ( "id" => "$id"
             , "name" => "AClass"
+            , "type" => Variable::CLASS_TYPE
             , "file" => "AClass.php"
             , "start_line" => "1"
             , "end_line" => "2"
             );
-
         $this->assertEquals(array($expected), $res);
     }
 
     public function test_insert_reference() {
-        $id = $this->inserter->reference(Variable::CLASS_TYPE, "AClass", "AClass.php", 1);
-        $res = $this->builder
-            ->select("*")
-            ->from($this->inserter->reference_table())
+        $this->db->source_file("AClass.php", "FOO\nBAR");
+        $id = $this->db->reference(Variable::CLASS_TYPE, "AClass", "AClass.php", 1);
+
+        $builder = $this->builder();
+        $b = $builder->expr();
+        $res = $builder
+            ->select
+                ( "n.id"
+                , "n.name"
+                , "n.type"
+                , "s.file"
+                , "s.line"
+                )
+            ->from($this->db->name_table(), "n")
+            ->join
+                ( "n", $this->db->reference_table(), "r"
+                , $b->eq("n.id","r.name")
+                )
+            ->join
+                ( "r", $this->db->source_table(), "s"
+                , $b->eq("r.source_location", "s.id")
+                )
             ->execute()
             ->fetchAll();
-
         $expected = array
             ( "id" => $id
-            , "type" => Variable::CLASS_TYPE
             , "name" => "AClass"
+            , "type" => Variable::CLASS_TYPE
             , "file" => "AClass.php"
             , "line" => "1"
             );
-
         $this->assertEquals(array($expected), $res);
     }
 
     public function test_insert_dependency() {
-        $id1 = $this->inserter->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
-        $id2 = $this->inserter->reference(Variable::CLASS_TYPE, "AClass", "BClass.php", 1);
-        $this->inserter->relation("depend_on", $id1, $id2, "BClass.php", 1, "new AClass();");
-        $res = $this->builder
-            ->select("*")
-            ->from($this->inserter->relations_table())
+        $this->db->source_file("AClass.php", "FOO\nBAR");
+        $this->db->source_file("BClass.php", "FOO\nBAR");
+        $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
+        $id2 = $this->db->reference(Variable::CLASS_TYPE, "AClass", "BClass.php", 1);
+        $this->db->relation("depend_on", $id1, $id2, "BClass.php", 1, "new AClass();");
+
+        $res = $this->builder()
+            ->select
+                ( "r.name_left"
+                , "r.name_right"
+                , "r.which"
+                )
+            ->from($this->db->relation_table(), "r")
             ->execute()
             ->fetchAll();
-
         $expected = array
-            ( "entity_id" => "$id1"
-            , "reference_id" => "$id2"
-            , "name" => "depend_on"
+            ( "name_left" => "$id1"
+            , "name_right" => "$id2"
+            , "which" => "depend_on"
             );
 
         $this->assertEquals(array($expected), $res);
     }
 
     public function test_insert_invocation() {
-        $id1 = $this->inserter->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
-        $id2 = $this->inserter->reference(Variable::FUNCTION_TYPE, "my_fun", "AClass.php", 2);
-        $this->inserter->relation("invoke", $id1, $id2, "AClass.php", 2, "my_fun();");
-        $res = $this->builder
-            ->select("*")
-            ->from($this->inserter->relations_table())
+        $this->db->source_file("AClass.php", "FOO\nBAR");
+        $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
+        $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "my_fun", "AClass.php", 2);
+        $this->db->relation("invoke", $id1, $id2, "AClass.php", 2, "my_fun();");
+
+        $res = $this->builder()
+            ->select
+                ( "r.name_left"
+                , "r.name_right"
+                , "r.which"
+                )
+            ->from($this->db->relation_table(), "r")
             ->execute()
             ->fetchAll();
 
         $expected = array
-            ( "entity_id" => "$id1"
-            , "reference_id" => "$id2"
-            , "name" => "invoke"
+            ( "name_left" => "$id1"
+            , "name_right" => "$id2"
+            , "which" => "invoke"
             );
 
         $this->assertEquals(array($expected), $res);
     }
 
     public function test_id_is_int() {
-        $id1 = $this->inserter->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
+        $this->db->source_file("AClass.php", "FOO\nBAR");
+        $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
         $this->assertInternalType("integer", $id1);
 
-        $id2 = $this->inserter->reference(Variable::FUNCTION_TYPE, "my_fun", "AClass.php", 2);
+        $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "my_fun", "AClass.php", 2);
         $this->assertInternalType("int", $id2);
     }
 }
