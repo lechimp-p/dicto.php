@@ -14,7 +14,7 @@ use Lechimp\Dicto\App\IndexDB;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
-class DBInserterTest extends PHPUnit_Framework_TestCase {
+class IndexDBTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->connection = DriverManager::getConnection
             ( array
