@@ -107,31 +107,27 @@ abstract class Relation extends Schema {
                     ( "d", $query->file_table(), "f"
                     , $b->eq("d.file", "f.id")
                     )
+                ->join
+                    ( "d", $query->name_table(), "n"
+                    , $b->eq("d.name", "n.id")
+                    )
                 ->leftJoin
                     ("d", $query->relation_table(), "rel"
                     , $b->andX
-                        ( $b->eq("rel.name", $b->literal($this->name()))
-                        , $b->eq("rel.entity_id", "d.id")
-                        )
-                    )
-                ->leftJoin
-                    ("rel", $query->reference_table(), "r"
-                    , $b->andX
-                        ( $b->eq("rel.reference_id", "r.id")
-                        , $reference->compile($b, "r")
+                        ( $b->eq("rel.which", $b->literal($this->name()))
+                        , $b->eq("rel.name_left", "d.name")
                         )
                     )
                 ->innerJoin
-                    ( "e", $query->source_table(), "src"
+                    ( "d", $query->source_table(), "src"
                     , $b->andX
-                        ( $b->eq("src.line", "e.start_line")
-                        , $b->eq("src.name", "e.file")
+                        ( $b->eq("src.line", "d.start_line")
+                        , $b->eq("src.file", "d.file")
                         )
                     )
-
                 ->where
-                    ( $entity->compile($b, "e")
-                    , $b->isNull("r.id")
+                    ( $entity->compile($b, "n")
+                    , $b->isNull("rel.name_right")
                     )
                 ->execute();
         }
