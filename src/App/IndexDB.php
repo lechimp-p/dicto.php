@@ -103,20 +103,25 @@ class IndexDB extends DB implements Insert, Query {
     /**
      * @inheritdoc
      */
-    public function relation($name, $entity_id, $reference_id) {
+    public function relation($name, $entity_id, $reference_id, $file, $line) {
         assert('is_string($name)');
         assert('is_int($entity_id)');
         assert('is_int($reference_id)');
+        $file_id = $this->maybe_insert_file($file);
         $this->builder()
             ->insert($this->relation_table())
             ->values(array
                 ( "name_left" => "?"
                 , "name_right" => "?"
                 , "which" => "?"
+                , "file" => "?"
+                , "line" => "?"
                 ))
             ->setParameter(0, $entity_id)
             ->setParameter(1, $reference_id)
             ->setParameter(2, $name)
+            ->setParameter(3, $file_id)
+            ->setParameter(4, $line)
             ->execute();
     }
 
@@ -348,7 +353,7 @@ class IndexDB extends DB implements Insert, Query {
         return "relations";
     }
 
-    public function init_relation_table(S\Schema $schema, S\Table $name_table) {
+    public function init_relation_table(S\Schema $schema, S\Table $name_table, S\Table $source_table) {
         $relation_table = $schema->createTable($this->relation_table());
         $relation_table->addColumn
             ( "name_left", "integer"
@@ -362,6 +367,14 @@ class IndexDB extends DB implements Insert, Query {
             ( "which", "string"
             , array("notnull" => true)
             );
+        $relation_table->addColumn
+            ( "file", "integer"
+            , array("notnull" => true)
+            );
+        $relation_table->addColumn
+            ( "line", "integer"
+            , array("notnull" => true)
+            );
         $relation_table->setPrimaryKey(array("name_left", "name_right", "which"));
         $relation_table->addForeignKeyConstraint
             ( $name_table
@@ -372,6 +385,11 @@ class IndexDB extends DB implements Insert, Query {
             ( $name_table
             , array("name_right")
             , array("id")
+            );
+        $relation_table->addForeignKeyConstraint
+            ( $source_table
+            , array("file", "line")
+            , array("file", "line")
             );
         return $relation_table;
     }
@@ -386,7 +404,7 @@ class IndexDB extends DB implements Insert, Query {
         $source_table = $this->init_source_table($schema, $name_table);
         $this->init_definition_table($schema, $name_table, $source_table);
         $this->init_reference_table($schema, $name_table, $source_table);
-        $this->init_relation_table($schema, $name_table);
+        $this->init_relation_table($schema, $name_table, $source_table);
 
         $sync = new SingleDatabaseSynchronizer($this->connection);
         $sync->createSchema($schema);

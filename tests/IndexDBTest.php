@@ -130,51 +130,36 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array($expected), $res);
     }
 
-    public function test_insert_dependency() {
+    public function test_insert_some_relation() {
         $this->db->source_file("AClass.php", "FOO\nBAR");
         $this->db->source_file("BClass.php", "FOO\nBAR");
         $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
         $id2 = $this->db->reference(Variable::CLASS_TYPE, "AClass", "BClass.php", 1);
-        $this->db->relation("depend_on", $id1, $id2, "BClass.php", 1, "new AClass();");
+        $this->db->relation("some_relation", $id1, $id2, "BClass.php", 1);
 
-        $res = $this->builder()
+        $builder = $this->builder();
+        $b = $builder->expr();
+        $res = $builder
             ->select
                 ( "r.name_left"
                 , "r.name_right"
                 , "r.which"
+                , "f.path"
+                , "r.line"
                 )
             ->from($this->db->relation_table(), "r")
+            ->join
+                ( "r", $this->db->file_table(), "f"
+                , $b->eq("r.file", "f.id")
+                )
             ->execute()
             ->fetchAll();
         $expected = array
             ( "name_left" => "$id1"
             , "name_right" => "$id2"
-            , "which" => "depend_on"
-            );
-
-        $this->assertEquals(array($expected), $res);
-    }
-
-    public function test_insert_invocation() {
-        $this->db->source_file("AClass.php", "FOO\nBAR");
-        $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
-        $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "my_fun", "AClass.php", 2);
-        $this->db->relation("invoke", $id1, $id2, "AClass.php", 2, "my_fun();");
-
-        $res = $this->builder()
-            ->select
-                ( "r.name_left"
-                , "r.name_right"
-                , "r.which"
-                )
-            ->from($this->db->relation_table(), "r")
-            ->execute()
-            ->fetchAll();
-
-        $expected = array
-            ( "name_left" => "$id1"
-            , "name_right" => "$id2"
-            , "which" => "invoke"
+            , "which" => "some_relation"
+            , "path" => "BClass.php"
+            , "line" => "1"
             );
 
         $this->assertEquals(array($expected), $res);
