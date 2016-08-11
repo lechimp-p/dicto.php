@@ -52,6 +52,7 @@ class Invoke extends Relation {
                         ( $insert
                         , $location
                         , $ref_id
+                        , $node->getAttribute("startLine")
                         );
                 }
             });
@@ -77,6 +78,7 @@ class Invoke extends Relation {
                         ( $insert
                         , $location
                         , $ref_id
+                        , $node->getAttribute("startLine")
                         );
                 }
             });

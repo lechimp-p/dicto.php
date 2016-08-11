@@ -56,6 +56,7 @@ class DependOn extends Relation {
                         ( $insert
                         , $location
                         , $ref_id
+                        , $node->getAttribute("startLine")
                         );
                 }
             });
@@ -81,6 +82,7 @@ class DependOn extends Relation {
                         ( $insert
                         , $location
                         , $ref_id
+                        , $node->getAttribute("startLine")
                         );
                 }
             });
@@ -105,6 +107,7 @@ class DependOn extends Relation {
                     ( $insert
                     , $location
                     , $ref_id
+                    , $node->getAttribute("startLine")
                     );
                 }
             });
@@ -128,6 +131,7 @@ class DependOn extends Relation {
                         ( $insert
                         , $location
                         , $ref_id
+                        , $node->getAttribute("startLine")
                         );
                 }
             });
@@ -147,6 +151,7 @@ class DependOn extends Relation {
                     ( $insert
                     , $location
                     , $ref_id
+                    , $node->getAttribute("startLine")
                     );
             });
         }

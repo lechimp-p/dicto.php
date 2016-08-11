@@ -19,6 +19,7 @@ use PhpParser\Node as N;
 use Psr\Log\LogLevel;
 
 require_once(__DIR__."/LoggerMock.php");
+require_once(__DIR__."/NullDB.php");
 
 define("__IndexerTest_PATH_TO_SRC", __DIR__."/data/src");
 
@@ -67,7 +68,7 @@ class InsertMock implements Insert {
     }
 
 
-    public function relation($name, $entity_id, $reference_id) {
+    public function relation($name, $entity_id, $reference_id, $file, $line) {
         $this->relations[$name][] = array
             ( "entity_id" => $entity_id
             , "reference_id" => $reference_id
@@ -553,7 +554,6 @@ PHP;
         }
     }
 
-    // TODO: make this work again.
     public function test_faulty_php_logging() {
         $log = new LoggerMock();
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
