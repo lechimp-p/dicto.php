@@ -26,6 +26,7 @@ use Psr\Log\LogLevel;
 
 require_once(__DIR__."/LoggerMock.php");
 require_once(__DIR__."/tempdir.php");
+require_once(__DIR__."/NullDB.php");
 
 class AnalyzerFactoryMock extends AnalyzerFactory {
     public $analyzer_mocks = array();
@@ -80,19 +81,6 @@ class DBFactoryMock extends DBFactory {
     public function index_db_exists($path) {
         return $this->index_db_exists; 
     }
-}
-
-class NullDB implements Insert, Query {
-    public function source_file($name, $content){return 0;}
-    public function entity($type, $name, $file, $start_line, $end_line){return 0;}
-    public function reference($type, $name, $file, $line){return 0;}
-    public function get_reference($type, $name, $file, $line){return 0;}
-    public function relation($name, $entity_id, $reference_id){return 0;}
-    public function source_file_table() { return "source"; }
-    public function entity_table() { return "entities"; }
-    public function reference_table() { return "references"; }
-    public function relations_table() { return "relations"; }
-    public function builder() { throw new \RuntimeException("PANIC!"); }
 }
 
 class SourceStatusMock implements SourceStatus {
