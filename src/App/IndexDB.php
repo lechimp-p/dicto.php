@@ -232,7 +232,7 @@ class IndexDB extends DB implements Insert, Query {
     }
 
     public function file_table() {
-        return "file";
+        return "files";
     }
 
     public function init_file_table(S\Schema $schema) {
