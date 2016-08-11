@@ -61,43 +61,57 @@ abstract class Relation extends Schema {
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select
-                    ( "rel.entity_id as entity_id"
-                    , "rel.reference_id as reference_id"
-                    , "r.file as file"
-                    , "r.line as line"
+                    ( "rel.name_left as entity_id"
+                    , "rel.name_right as reference_id"
+                    , "f.path as file"
+                    , "rel.line as line"
                     , "src.source as source"
                     )
-                ->from($query->relations_table(), "rel")
-                ->innerJoin("rel", $query->entity_table(), "e", "rel.entity_id = e.id")
-                ->innerJoin("rel", $query->reference_table(), "r", "rel.reference_id = r.id")
-                ->innerJoin
-                    ( "rel", $query->source_file_table(), "src"
+                ->from($query->relation_table(), "rel")
+                ->join
+                    ( "rel", $query->file_table(), "f"
+                    , $b->eq("rel.file", "f.id")
+                    )
+                ->join
+                    ( "rel", $query->name_table(), "nl"
+                    , $b->eq("rel.name_left", "nl.id")
+                    )
+                ->join
+                    ( "rel", $query->name_table(), "nr"
+                    , $b->eq("rel.name_right", "nr.id")
+                    )
+                ->join
+                    ( "rel", $query->source_table(), "src"
                     , $b->andX
-                        ( $b->eq("src.line", "r.line")
-                        , $b->eq("src.name", "r.file")
+                        ( $b->eq("src.line", "rel.line")
+                        , $b->eq("src.file", "rel.file")
                         )
                     )
                 ->where
-                    ( $b->eq("rel.name", $b->literal($this->name()))
-                    , $entity->compile($b, "e")
-                    , $reference->compile($b, "r")
+                    ( $b->eq("rel.which", $b->literal($this->name()))
+                    , $entity->compile($b, "nl")
+                    , $reference->compile($b, "nr")
                     )
                 ->execute();
         }
         if ($mode == Rule::MODE_MUST) {
             return $builder
                 ->select
-                    ( "e.id as entity_id"
-                    , "e.file as file"
-                    , "e.start_line as line"
+                    ( "d.name as entity_id"
+                    , "f.path as file"
+                    , "d.start_line as line"
                     , "src.source as source"
                     )
-                ->from($query->entity_table(), "e")
+                ->from($query->definition_table(), "d")
+                ->join
+                    ( "d", $query->file_table(), "f"
+                    , $b->eq("d.file", "f.id")
+                    )
                 ->leftJoin
-                    ("e", $query->relations_table(), "rel"
+                    ("d", $query->relation_table(), "rel"
                     , $b->andX
                         ( $b->eq("rel.name", $b->literal($this->name()))
-                        , $b->eq("rel.entity_id", "e.id")
+                        , $b->eq("rel.entity_id", "d.id")
                         )
                     )
                 ->leftJoin
@@ -108,7 +122,7 @@ abstract class Relation extends Schema {
                         )
                     )
                 ->innerJoin
-                    ( "e", $query->source_file_table(), "src"
+                    ( "e", $query->source_table(), "src"
                     , $b->andX
                         ( $b->eq("src.line", "e.start_line")
                         , $b->eq("src.name", "e.file")

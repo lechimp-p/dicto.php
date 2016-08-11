@@ -85,19 +85,7 @@ class IndexDB extends DB implements Insert, Query {
         assert('is_string($file)');
         assert('is_int($line)');
         $name_id = $this->maybe_insert_name($name, $type);
-        $file_id = $this->maybe_insert_file($file);
-        $this->builder()
-            ->insert($this->reference_table())
-            ->values(array
-                ( "name" => "?"
-                , "file" => "?"
-                , "line" => "?"
-                ))
-            ->setParameter(0, $name_id)
-            ->setParameter(1, $file_id)
-            ->setParameter(2, $line)
-            ->execute();
-        return (int)$this->connection->lastInsertId();
+        return $name_id;
     }
 
     /**

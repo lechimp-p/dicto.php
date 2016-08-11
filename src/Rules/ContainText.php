@@ -60,23 +60,31 @@ class ContainText extends Schema {
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select
-                    ( "e.id as entity_id"
-                    , "e.file"
-                    , "src.source"
+                    ( "d.file as entity_id"
+                    , "f.path as file"
                     , "src.line"
+                    , "src.source"
                     )
-                ->from($query->entity_table(), "e")
-                ->innerJoin
-                    ( "e", $query->source_file_table(), "src"
+                ->from($query->definition_table(), "d")
+                ->join
+                    ( "d", $query->file_table(), "f"
+                    , $b->eq("d.file", "f.id")
+                    )
+                ->join
+                    ( "d", $query->name_table(), "n"
+                    , $b->eq("d.name", "n.id")
+                    )
+                ->join
+                    ( "d", $query->source_table(), "src"
                     , $b->andX
-                        ( $b->gte("src.line", "e.start_line")
-                        , $b->lte("src.line", "e.end_line")
-                        , $b->eq("src.name", "e.file")
+                        ( $b->gte("src.line", "d.start_line")
+                        , $b->lte("src.line", "d.end_line")
+                        , $b->eq("src.file", "d.file")
                         , "src.source REGEXP ?"
                         )
                     )
                 ->where
-                    ( $checked_on->compile($b, "e")
+                    ( $checked_on->compile($b, "n")
                     )
                 ->setParameter(0, $regexp)
                 ->execute();
@@ -84,29 +92,37 @@ class ContainText extends Schema {
         if ($mode == Rule::MODE_MUST) {
             return $builder
                 ->select
-                    ( "e.id as entity_id"
-                    , "e.file"
-                    , "e.start_line as line"
+                    ( "d.file as entity_id"
+                    , "f.path as file"
+                    , "d.start_line as line"
                     , "src.source"
                     )
-                ->from($query->entity_table(), "e")
-                ->innerJoin
-                    ( "e", $query->source_file_table(), "src"
+                ->from($query->definition_table(), "d")
+                ->join
+                    ( "d", $query->file_table(), "f"
+                    , $b->eq("d.file", "f.id")
+                    )
+                ->join
+                    ( "d", $query->name_table(), "n"
+                    , $b->eq("d.name", "n.id")
+                    )
+                ->join
+                    ( "d", $query->source_table(), "src"
                     , $b->andX
-                        ( $b->eq("src.name", "e.file")
-                        , $b->eq("src.line", "e.start_line")
+                        ( $b->eq("src.file", "d.file")
+                        , $b->eq("src.line", "d.start_line")
                         )
                     )
                 ->leftJoin
-                    ( "e", $query->source_file_table(), "match"
+                    ( "d", $query->source_table(), "match"
                     , $b->andX
-                        ( $b->eq("match.name", "e.file")
-                        , $b->eq("match.line", "e.start_line")
+                        ( $b->eq("match.file", "d.file")
+                        , $b->eq("match.line", "d.start_line")
                         , "match.source REGEXP ?"
                         )
                     )
                 ->where
-                    ( $checked_on->compile($b, "e")
+                    ( $checked_on->compile($b, "n")
                     , "match.line IS NULL"
                     )
                 ->setParameter(0, $regexp)

@@ -106,26 +106,14 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
                 ( "n.id"
                 , "n.name"
                 , "n.type"
-                , "f.path"
-                , "r.line"
                 )
             ->from($this->db->name_table(), "n")
-            ->join
-                ( "n", $this->db->reference_table(), "r"
-                , $b->eq("n.id","r.name")
-                )
-            ->join
-                ( "r", $this->db->file_table(), "f"
-                , $b->eq("r.file", "f.id")
-                )
             ->execute()
             ->fetchAll();
         $expected = array
             ( "id" => $id
             , "name" => "AClass"
             , "type" => Variable::CLASS_TYPE
-            , "path" => "AClass.php"
-            , "line" => "1"
             );
         $this->assertEquals(array($expected), $res);
     }

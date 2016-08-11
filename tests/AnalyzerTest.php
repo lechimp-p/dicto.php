@@ -41,6 +41,7 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
             ( array
                 ( "driver" => "pdo_sqlite"
                 , "memory" => true
+                //, "path" => "/home/lechimp/foobar.sqlite"
                 )
             );
         $this->db = new IndexDB($this->connection);
