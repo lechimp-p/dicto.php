@@ -30,6 +30,7 @@ class IndexDB extends DB implements Insert, Query {
     public function source_file($name, $content) {
         assert('is_string($name)');
         assert('is_string($content)');
+        $file_id = $this->maybe_insert_file($name);
         $stmt = $this->builder()
             ->insert($this->source_table())
             ->values(array
@@ -37,7 +38,7 @@ class IndexDB extends DB implements Insert, Query {
                 , "line" => "?"
                 , "source" => "?"
                 ))
-            ->setParameter(0, $name);
+            ->setParameter(0, $file_id);
         $line = 1;
         foreach (explode("\n", $content) as $source) {
             $stmt
@@ -58,17 +59,19 @@ class IndexDB extends DB implements Insert, Query {
         assert('is_int($start_line)');
         assert('is_int($end_line)');
         $name_id = $this->maybe_insert_name($name, $type);
-        $loc_id = $this->get_source_location_id($file, $start_line);
+        $file_id = $this->maybe_insert_file($file);
         $this->builder()
             ->insert($this->definition_table())
             ->values(array
                 ( "name" => "?"
-                , "source_location" => "?"
-                , "lines" => "?"
+                , "file" => "?"
+                , "start_line" => "?"
+                , "end_line" => "?"
                 ))
             ->setParameter(0, $name_id)
-            ->setParameter(1, $loc_id)
-            ->setParameter(2, $end_line - $start_line + 1)
+            ->setParameter(1, $file_id)
+            ->setParameter(2, $start_line)
+            ->setParameter(3, $end_line)
             ->execute();
         return (int)$this->connection->lastInsertId();
     }
@@ -82,15 +85,17 @@ class IndexDB extends DB implements Insert, Query {
         assert('is_string($file)');
         assert('is_int($line)');
         $name_id = $this->maybe_insert_name($name, $type);
-        $loc_id = $this->get_source_location_id($file, $line);
+        $file_id = $this->maybe_insert_file($file);
         $this->builder()
             ->insert($this->reference_table())
             ->values(array
                 ( "name" => "?"
-                , "source_location" => "?"
+                , "file" => "?"
+                , "line" => "?"
                 ))
             ->setParameter(0, $name_id)
-            ->setParameter(1, $loc_id)
+            ->setParameter(1, $file_id)
+            ->setParameter(2, $line)
             ->execute();
         return (int)$this->connection->lastInsertId();
     }
@@ -156,19 +161,43 @@ class IndexDB extends DB implements Insert, Query {
         }
     }
 
-    public function get_source_location_id($file, $line) {
-        $b = $this->builder()->expr();
+    protected function file_id($path) {
         $res = $this->builder()
             ->select("id")
-            ->from($this->source_table())
-            ->where
-                ( $b->eq("file", $b->literal($file))
-                , $b->eq("line", $b->literal($line))
-                )
+            ->from($this->file_table())
+            ->where($this->builder()->expr()->andX
+                ( "path = ?"
+                ))
+            ->setParameter(0, $path)
             ->execute()
-            ->fetchAll();
-        assert('count($res) == 1');
-        return (int)$res[0]["id"];
+            ->fetch();
+        if ($res) {
+            return (int)$res["id"];
+        }
+        else {
+            return null;
+        }
+    }
+
+    protected function insert_file($path) {
+        $this->builder()
+            ->insert($this->file_table())
+            ->values(array
+                ( "path" => "?"
+                ))
+            ->setParameter(0, $path)
+            ->execute();
+        return (int)$this->connection->lastInsertId();
+    }
+
+    protected function maybe_insert_file($path) {
+        $id = $this->file_id($path);
+        if ($id === null) {
+            return $this->insert_file($path);
+        }
+        else {
+            return $id;
+        }
     }
 
     // Naming
@@ -197,18 +226,32 @@ class IndexDB extends DB implements Insert, Query {
         return $name_table;
     }
 
+    public function file_table() {
+        return "file";
+    }
+
+    public function init_file_table(S\Schema $schema) {
+        $file_table = $schema->createTable($this->file_table());
+        $file_table->addColumn
+            ("id", "integer"
+            , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
+            );
+        $file_table->addColumn
+            ( "path", "string"
+            , array("notnull" => true)
+            );
+        $file_table->setPrimaryKey(array("id"));
+        return $file_table;
+    }
+
     public function source_table() {
         return "source";
     }
 
-    public function init_source_table(S\Schema $schema) {
+    public function init_source_table(S\Schema $schema, S\Table $file_table) {
         $source_table = $schema->createTable($this->source_table());
         $source_table->addColumn
-            ("id", "integer"
-            , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
-            );
-        $source_table->addColumn
-            ( "file", "string"
+            ( "file", "integer"
             , array("notnull" => true)
             );
         $source_table->addColumn
@@ -219,8 +262,12 @@ class IndexDB extends DB implements Insert, Query {
             ( "source", "string"
             , array("notnull" => true)
             );
-        $source_table->setPrimaryKey(array("id"));
-        $source_table->addUniqueIndex(array("file", "line"));
+        $source_table->setPrimaryKey(array("file", "line"));
+        $source_table->addForeignKeyConstraint
+            ( $file_table
+            , array("file")
+            , array("id")
+            );
         return $source_table;
     }
 
@@ -235,11 +282,15 @@ class IndexDB extends DB implements Insert, Query {
             , array("notnull" => true)
             );
         $definition_table->addColumn
-            ( "source_location", "integer"
+            ( "file", "integer"
             , array("notnull" => true)
             );
         $definition_table->addColumn
-            ( "lines", "integer"
+            ( "start_line", "integer"
+            , array("notnull" => true)
+            );
+        $definition_table->addColumn
+            ( "end_line", "integer"
             , array("notnull" => true)
             );
         $definition_table->setPrimaryKey(array("name"));
@@ -250,8 +301,13 @@ class IndexDB extends DB implements Insert, Query {
             );
         $definition_table->addForeignKeyConstraint
             ( $source_table
-            , array("source_location")
-            , array("id")
+            , array("file", "start_line")
+            , array("file", "line")
+            );
+        $definition_table->addForeignKeyConstraint
+            ( $source_table
+            , array("file", "end_line")
+            , array("file", "line")
             );
         return $definition_table;
     }
@@ -267,10 +323,14 @@ class IndexDB extends DB implements Insert, Query {
             , array("notnull" => true)
             );
         $reference_table->addColumn
-            ( "source_location", "integer"
+            ( "file", "integer"
             , array("notnull" => true)
             );
-        $reference_table->setPrimaryKey(array("name", "source_location"));
+        $reference_table->addColumn
+            ( "line", "integer"
+            , array("notnull" => true)
+            );
+        $reference_table->setPrimaryKey(array("name", "file", "line"));
         $reference_table->addForeignKeyConstraint
             ( $name_table
             , array("name")
@@ -278,8 +338,8 @@ class IndexDB extends DB implements Insert, Query {
             );
         $reference_table->addForeignKeyConstraint
             ( $source_table
-            , array("source_location")
-            , array("id")
+            , array("file", "line")
+            , array("file", "line")
             );
         return $reference_table;
     }
@@ -322,6 +382,7 @@ class IndexDB extends DB implements Insert, Query {
         $schema = new S\Schema();
 
         $name_table = $this->init_name_table($schema);
+        $file_table = $this->init_file_table($schema);
         $source_table = $this->init_source_table($schema, $name_table);
         $this->init_definition_table($schema, $name_table, $source_table);
         $this->init_reference_table($schema, $name_table, $source_table);

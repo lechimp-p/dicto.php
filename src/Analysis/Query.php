@@ -49,6 +49,11 @@ interface Query {
     /**
      * @return string
      */
+    public function file_table();
+
+    /**
+     * @return string
+     */
     public function source_table();
 
     /**

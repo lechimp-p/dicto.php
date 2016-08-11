@@ -32,19 +32,25 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
 
     public function test_insert_source_file() {
         $this->db->source_file("foo.php", "FOO\nBAR");
-        $res = $this->builder()
-            ->select("file", "line", "source")
-            ->from($this->db->source_table())
+        $builder = $this->builder();
+        $b = $builder->expr();
+        $res = $builder
+            ->select("f.path", "s.line", "s.source")
+            ->from($this->db->file_table(), "f")
+            ->join
+                ( "f", $this->db->source_table(), "s"
+                , $b->eq("f.id", "s.file")
+                )
             ->execute()
             ->fetchAll();
         $expected = array
             ( array
-                ( "file" => "foo.php"
+                ( "path" => "foo.php"
                 , "line" => "1"
                 , "source" => "FOO"
                 )
             , array
-                ( "file" => "foo.php"
+                ( "path" => "foo.php"
                 , "line" => "2"
                 , "source" => "BAR"
                 )
@@ -63,9 +69,9 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
                 ( "n.id"
                 , "n.name"
                 , "n.type"
-                , "s.file"
-                , "s.line as start_line"
-                , "(s.line + d.lines - 1) as end_line"
+                , "f.path"
+                , "d.start_line"
+                , "d.end_line"
                 )
             ->from($this->db->definition_table(), "d")
             ->join
@@ -73,8 +79,8 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
                 , $b->eq("d.name", "n.id")
                 )
             ->join
-                ( "d", $this->db->source_table(), "s"
-                , $b->eq("d.source_location", "s.id")
+                ( "d", $this->db->file_table(), "f"
+                , $b->eq("d.file", "f.id")
                 )
             ->execute()
             ->fetchAll();
@@ -82,7 +88,7 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
             ( "id" => "$id"
             , "name" => "AClass"
             , "type" => Variable::CLASS_TYPE
-            , "file" => "AClass.php"
+            , "path" => "AClass.php"
             , "start_line" => "1"
             , "end_line" => "2"
             );
@@ -100,8 +106,8 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
                 ( "n.id"
                 , "n.name"
                 , "n.type"
-                , "s.file"
-                , "s.line"
+                , "f.path"
+                , "r.line"
                 )
             ->from($this->db->name_table(), "n")
             ->join
@@ -109,8 +115,8 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
                 , $b->eq("n.id","r.name")
                 )
             ->join
-                ( "r", $this->db->source_table(), "s"
-                , $b->eq("r.source_location", "s.id")
+                ( "r", $this->db->file_table(), "f"
+                , $b->eq("r.file", "f.id")
                 )
             ->execute()
             ->fetchAll();
@@ -118,7 +124,7 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
             ( "id" => $id
             , "name" => "AClass"
             , "type" => Variable::CLASS_TYPE
-            , "file" => "AClass.php"
+            , "path" => "AClass.php"
             , "line" => "1"
             );
         $this->assertEquals(array($expected), $res);
