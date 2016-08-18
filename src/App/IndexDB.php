@@ -128,18 +128,14 @@ class IndexDB extends DB implements Insert, Query {
     /**
      * @inheritdoc
      */
-    public function relation($name_left, $name_right, $which, $file, $line) {
-        assert('is_string($name_left)');
-        assert('is_string($name_right)');
+    public function relation($name_left_id, $name_right_id, $which, $file, $line) {
+        assert('is_int($name_left_id)');
+        assert('is_int($name_right_id)');
         assert('is_string($which)');
         assert('is_int($line)');
 
-        $id_left = $this->get_int_id($name_left, $this->name_table(), "name");
-        $id_right = $this->get_int_id($name_right, $this->name_table(), "name");
         $file_id = $this->get_int_id($file, $this->file_table(), "path");
 
-        assert('is_int($id_left)');
-        assert('is_int($id_right)');
         assert('is_int($file_id)');
 
         $this->builder()
@@ -151,8 +147,8 @@ class IndexDB extends DB implements Insert, Query {
                 , "file" => "?"
                 , "line" => "?"
                 ))
-            ->setParameter(0, $id_left)
-            ->setParameter(1, $id_right)
+            ->setParameter(0, $name_left_id)
+            ->setParameter(1, $name_right_id)
             ->setParameter(2, $which)
             ->setParameter(3, $file_id)
             ->setParameter(4, $line)

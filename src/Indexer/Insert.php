@@ -63,12 +63,12 @@ interface Insert {
      * The names must have been inserted before.
      * The source code for the location must have been inserted before.
      *
-     * @param   string      $name_left
-     * @param   string      $name_right
+     * @param   int         $name_left_id
+     * @param   int         $name_right_id
      * @param   string      $which
      * @param   string      $file
      * @param   int         $line
      * @return  null
      */
-     public function relation($name_left, $name_right, $which, $file, $line);
+     public function relation($name_left_id, $name_right_id, $which, $file, $line);
 }
