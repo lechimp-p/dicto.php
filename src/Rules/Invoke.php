@@ -25,7 +25,7 @@ class Invoke extends Relation {
      * @inheritdoc
      */
     public function name() {
-        return "invoke";    
+        return "invoke";
     }
 
     /**
@@ -42,16 +42,14 @@ class Invoke extends Relation {
             , function(Insert $insert, Location $location, N\Expr\MethodCall $node) {
                 // The 'name' could also be a variable like in $this->$method();
                 if (is_string($node->name)) {
-                    $ref_id = $insert->get_reference
-                        ( Variable::METHOD_TYPE
-                        , $node->name
-                        , $location->file_path()
-                        , $node->getAttribute("startLine")
+                    $name_id = $insert->name
+                        ( $node->name
+                        , Variable::METHOD_TYPE
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $ref_id
+                        , $name_id
                         , $node->getAttribute("startLine")
                         );
                 }
@@ -68,16 +66,14 @@ class Invoke extends Relation {
                 // analyze them anyway atm.
                 if (!($node->name instanceof N\Expr\Variable ||
                       $node->name instanceof N\Expr\ArrayDimFetch)) {
-                    $ref_id = $insert->get_reference
-                        ( Variable::FUNCTION_TYPE
-                        , $node->name->parts[0]
-                        , $location->file_path()
-                        , $node->getAttribute("startLine")
+                    $name_id = $insert->name
+                        ( $node->name->parts[0]
+                        , Variable::FUNCTION_TYPE
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $ref_id
+                        , $name_id
                         , $node->getAttribute("startLine")
                         );
                 }

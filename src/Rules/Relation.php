@@ -136,24 +136,21 @@ abstract class Relation extends Schema {
 
     /**
      * Insert this relation somewhere, where it is recorded for all
-     * entities that the current location is in, except for files.
+     * entities that the current location is in.
      *
      * @param   Insert      $insert
      * @param   Location    $location
-     * @param   int         $ref_id
+     * @param   int         $name_id
      * @return  null
      */
-    protected function insert_relation_into(Insert $insert, Location $location, $ref_id, $line) {
-        assert('is_int($ref_id)');
+    protected function insert_relation_into(Insert $insert, Location $location, $name_id, $line) {
+        assert('is_int($name_id)');
         assert('is_int($line)');
         foreach ($location->in_entities() as $entity) {
-            if ($entity[0] == Variable::FILE_TYPE) {
-                continue;
-            }
             $insert->relation
-                ( $this->name()
-                , $entity[1]
-                , $ref_id
+                ( $entity[1]
+                , $name_id
+                , $this->name()
                 , $location->file_path()
                 , $line
                 );

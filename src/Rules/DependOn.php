@@ -46,16 +46,14 @@ class DependOn extends Relation {
             , function(Insert $insert, Location $location, N\Expr\MethodCall $node) {
                 // The 'name' could also be a variable like in $this->$method();
                 if (is_string($node->name)) {
-                    $ref_id = $insert->get_reference
-                        ( Variable::METHOD_TYPE
-                        , $node->name
-                        , $location->file_path()
-                        , $node->getAttribute("startLine")
+                    $name_id = $insert->name
+                        ( $node->name
+                        , Variable::METHOD_TYPE
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $ref_id
+                        , $name_id
                         , $node->getAttribute("startLine")
                         );
                 }
@@ -72,16 +70,14 @@ class DependOn extends Relation {
                 // analyze them anyway atm.
                 if (!($node->name instanceof N\Expr\Variable ||
                       $node->name instanceof N\Expr\ArrayDimFetch)) {
-                    $ref_id = $insert->get_reference
-                        ( Variable::FUNCTION_TYPE
-                        , $node->name->parts[0]
-                        , $location->file_path()
-                        , $node->getAttribute("startLine")
+                    $name_id = $insert->name
+                        ( $node->name->parts[0]
+                        , Variable::FUNCTION_TYPE
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $ref_id
+                        , $name_id
                         , $node->getAttribute("startLine")
                         );
                 }
@@ -97,18 +93,16 @@ class DependOn extends Relation {
                         throw new \RuntimeException(
                             "Expected Variable with string name, found: ".print_r($var, true));
                     }
-                    $ref_id = $insert->get_reference
-                        ( Variable::GLOBAL_TYPE
-                        , $var->name
-                        , $location->file_path()
+                    $name_id = $insert->name
+                        ( $var->name
+                        , Variable::GLOBAL_TYPE
+                        );
+                    $this->insert_relation_into
+                        ( $insert
+                        , $location
+                        , $name_id
                         , $node->getAttribute("startLine")
                         );
-                $this->insert_relation_into
-                    ( $insert
-                    , $location
-                    , $ref_id
-                    , $node->getAttribute("startLine")
-                    );
                 }
             });
     }
@@ -141,16 +135,14 @@ class DependOn extends Relation {
         $registry->on_enter_misc
             ( array(N\Expr\ErrorSuppress::class)
             , function(Insert $insert, Location $location, N\Expr\ErrorSuppress $node) {
-                $ref_id = $insert->get_reference
-                    ( Variable::LANGUAGE_CONSTRUCT_TYPE
-                    , "@"
-                    , $location->file_path()
-                    , $node->getAttribute("startLine")
+                $name_id = $insert->name
+                    ( "@"
+                    , Variable::LANGUAGE_CONSTRUCT_TYPE
                     );
                 $this->insert_relation_into
                     ( $insert
                     , $location
-                    , $ref_id
+                    , $name_id
                     , $node->getAttribute("startLine")
                     );
             });

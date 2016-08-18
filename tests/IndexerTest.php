@@ -125,6 +125,7 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
+
     public function test_function_definition() {
         $source = <<<PHP
 <?php
@@ -152,6 +153,303 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
+
+    public function test_method_uses_global() {
+        $source = <<<PHP
+<?php
+
+class AClass {
+    public function a_method() {
+        global \$foo;
+    }
+}
+PHP;
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->getMock();
+
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("definition")
+            ->willReturnOnConsecutiveCalls(1,2)
+            ->withConsecutive
+                ( array
+                    ( $this->equalTo("AClass")
+                    , $this->equalTo(Variable::CLASS_TYPE)
+                    )
+                , array
+                    ( $this->equalTo("a_method")
+                    , $this->equalTo(Variable::METHOD_TYPE)
+                    )
+                );
+
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("name")
+            ->willReturn(3)
+            ->with
+                ( $this->equalTo("foo")
+                , $this->equalTo(Variable::GLOBAL_TYPE)
+                );
+
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("relation")
+            ->withConsecutive
+                ( array
+                    ( $this->equalTo(1) // AClass
+                    , $this->equalTo(3) // foo
+                    , $this->equalTo("depend on")
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(5)
+                    )
+                , array
+                    ( $this->equalTo(2) // a_method
+                    , $this->equalTo(3) // foo
+                    , $this->equalTo("depend on")
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(5)
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+
+    public function test_function_uses_global() {
+        $source = <<<PHP
+<?php
+
+function a_function() {
+    global \$foo;
+}
+PHP;
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->getMock();
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("definition")
+            ->willReturn(1)
+            ->with
+                ( $this->equalTo("a_function")
+                , $this->equalTo(Variable::FUNCTION_TYPE)
+                );
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("name")
+            ->willReturn(2)
+            ->with
+                ( $this->equalTo("foo")
+                , $this->equalTo(Variable::GLOBAL_TYPE)
+                );
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("relation")
+            ->with
+                ( $this->equalTo(1) // a_function
+                , $this->equalTo(2) // foo
+                , $this->equalTo("depend on")
+                , $this->equalTo("source.php")
+                , $this->equalTo(4)
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+
+    public function test_function_invokes_function() {
+        $source = <<<PHP
+<?php
+
+function a_function() {
+    another_function();
+}
+PHP;
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->getMock();
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("definition")
+            ->willReturn(1)
+            ->with
+                ( $this->equalTo("a_function")
+                , $this->equalTo(Variable::FUNCTION_TYPE)
+                );
+
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("name")
+            ->willReturn(2)
+            ->with
+                ( $this->equalTo("another_function")
+                , $this->equalTo(Variable::FUNCTION_TYPE)
+                );
+
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("relation")
+            ->withConsecutive
+                ( array
+                    ( $this->equalTo(1) // a_function
+                    , $this->equalTo(2) // another_function
+                    , $this->equalTo("depend on")
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(4)
+                    )
+                , array
+                    ( $this->equalTo(1) // a_function
+                    , $this->equalTo(2) // another_function
+                    , $this->equalTo("invoke")
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(4)
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+
+    public function test_function_invokes_method() {
+        $source = <<<PHP
+<?php
+
+function a_function() {
+    \$foo->some_method();
+}
+PHP;
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->getMock();
+
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("definition")
+            ->willReturn(1)
+            ->with
+                ( $this->equalTo("a_function")
+                , $this->equalTo(Variable::FUNCTION_TYPE)
+                );
+
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("name")
+            ->willReturn(2)
+            ->with
+                ( $this->equalTo("some_method")
+                , $this->equalTo(Variable::METHOD_TYPE)
+                );
+
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("relation")
+            ->withConsecutive
+                ( array
+                    ( $this->equalTo(1) // a_function
+                    , $this->equalTo(2) // some_method
+                    , $this->equalTo("depend on")
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(4)
+                    )
+                , array
+                    ( $this->equalTo(1) // a_function
+                    , $this->equalTo(2) // some_method
+                    , $this->equalTo("invoke")
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(4)
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+
+    public function test_function_use_error_suppressor() {
+        $source = <<<PHP
+<?php
+
+function a_function() {
+    @\$foo->some_method();
+}
+PHP;
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->getMock();
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("definition")
+            ->willReturn(1)
+            ->with
+                ( $this->equalTo("a_function")
+                , $this->equalTo(Variable::FUNCTION_TYPE)
+                );
+
+        $insert_mock
+            ->expects($this->exactly(3))
+            ->method("name")
+            ->willReturnOnConsecutiveCalls(2,3,3)
+            ->withConsecutive
+                ( array
+                    ( $this->equalTo("@")
+                    , $this->equalTo(Variable::LANGUAGE_CONSTRUCT_TYPE)
+                    )
+                , array
+                    ( $this->equalTo("some_method")
+                    , $this->equalTo(Variable::METHOD_TYPE)
+                    )
+                , array
+                    ( $this->equalTo("some_method")
+                    , $this->equalTo(Variable::METHOD_TYPE)
+                    )
+                );
+
+        $insert_mock
+            ->expects($this->exactly(3))
+            ->method("relation")
+            ->withConsecutive
+                ( array
+                    ( $this->equalTo(1) // a_function
+                    , $this->equalTo(2) // @
+                    , $this->equalTo("depend on")
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(4)
+                    )
+                , array
+                    ( $this->equalTo(1) // a_function
+                    , $this->equalTo(3) // some_method
+                    , $this->equalTo("depend on")
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(4)
+                    )
+                , array
+                    ( $this->equalTo(1) // a_function
+                    , $this->equalTo(3) // some_method
+                    , $this->equalTo("invoke")
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(4)
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
 
 /*    public function test_entity_A1_class() {
         $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");

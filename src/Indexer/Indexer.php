@@ -253,6 +253,8 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     }
 
     /**
+     * TODO: Rename this to call_definition_listener
+     *
      * @param   string                  $which
      * @param   string                  $type
      * @param   int                     $type
@@ -292,9 +294,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function beforeTraverse(array $nodes) {
-        $this->insert->source($this->file_path, $this->file_content);
-
-        //$this->entity_stack[] = array(Variable::FILE_TYPE, $id);
+        $id = $this->insert->source($this->file_path, $this->file_content);
 
         //$this->call_entity_listener("listeners_enter_entity", Variable::FILE_TYPE, $id, null);
 
@@ -307,7 +307,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     public function afterTraverse(array $nodes) {
         list($type, $id) = array_pop($this->entity_stack);
 
-        $this->call_entity_listener("listeners_leave_entity", $type, $id, null);
+        //$this->call_entity_listener("listeners_leave_entity", $type, $id, null);
 
         return null;
     }
@@ -321,18 +321,18 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
 
         if ($this->is_definition($node)) {
             $type = $this->get_type_of($node);
-            $this->insert->definition
+            $id = $this->insert->definition
                 ( $node->name
                 , $type
                 , $this->file_path
                 , $start_line
                 , $end_line
                 );
-            //$this->call_entity_listener("listeners_enter_entity",  $type, $id, $node);
-            //$this->entity_stack[] = array($type, $id);
+            $this->call_entity_listener("listeners_enter_entity",  $type, $id, $node);
+            $this->entity_stack[] = array($type, $id);
         }
         else {
-            //$this->call_misc_listener("listeners_enter_misc", $node);
+            $this->call_misc_listener("listeners_enter_misc", $node);
         }
     }
 
