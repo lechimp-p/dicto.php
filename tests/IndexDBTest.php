@@ -163,4 +163,12 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         $this->assertInternalType("integer", $id1);
         $this->assertEquals($id1, $id2);
     }
+
+    public function test_retreive_name_of_definition() {
+        $this->db->source("AClass.php", "FOO\nBAR");
+        $id1 = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
+        $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
+        $this->assertEquals($id1, $id2);
+    }
+
 }
