@@ -38,7 +38,7 @@ interface Insert {
      *
      * @param   string      $path
      * @param   string      $content
-     * @return  null 
+     * @return  int         id of file 
      */
     public function source($path, $content);
 
@@ -52,7 +52,7 @@ interface Insert {
      * @param   string      $file
      * @param   int         $start_line
      * @param   int         $end_line
-     * @return  int         of name
+     * @return  int         id of name
      */
     public function definition($name, $type, $file, $start_line, $end_line);
 

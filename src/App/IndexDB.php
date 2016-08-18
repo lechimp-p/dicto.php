@@ -96,6 +96,7 @@ class IndexDB extends DB implements Insert, Query {
                 ->execute();
             $line++;
         }
+        return $file_id;
     }
 
     /**
