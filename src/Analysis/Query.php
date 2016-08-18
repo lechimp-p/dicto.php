@@ -19,27 +19,6 @@ use Doctrine\DBAL\Query\Expression\CompositeExpression;
  */
 interface Query {
     // Naming
-    //
-    // Get the names of the different tables used by database.
-    /**
-     * @return string
-     */
-//    public function source_file_table();
-
-    /**
-     * @return string
-     */
-//    public function entity_table();
-
-    /**
-     * @return string
-     */
-//    public function reference_table();
-
-    /**
-     * @return string
-     */
-//    public function relations_table();
 
     /**
      * @return string
@@ -75,12 +54,6 @@ interface Query {
      * @return string
      */
     public function definition_table();
-
-    /**
-     * @return string
-     */
-    // TODO: implement this
-    //public function name_table();
 
     /**
      * Get a builder to create queries.
