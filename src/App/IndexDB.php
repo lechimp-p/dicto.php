@@ -20,17 +20,66 @@ use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
 class IndexDB extends DB implements Insert, Query {
-    use CachesReferences;
+//    use CachesReferences;
 
     // Implementation of Insert interface.
 
     /**
      * @inheritdoc
      */
-    public function source_file($name, $content) {
+    public function name($name, $type) {
         assert('is_string($name)');
+        assert('\\Lechimp\\Dicto\\Variables\\Variable::is_type($type)');
+
+        $name_id = $this->get_int_id($name, $this->name_table(), "name");
+        if ($name_id !== null) {
+            return $name_id;
+        }
+
+        $this->builder()
+            ->insert($this->name_table())
+            ->values(array
+                ( "name" => "?"
+                , "type" => "?"
+                ))
+            ->setParameter(0, $name)
+            ->setParameter(1, $type)
+            ->execute();
+        return (int)$this->connection->lastInsertId();
+    }
+
+    /**
+     * Store a filename or just get its id if the file is already stored.
+     *
+     * @param   string      $path
+     * @return  int
+     */
+    public function file($path) {
+        assert('is_string($path)');
+
+        $file_id = $this->get_int_id($path, $this->file_table(), "path");
+        if ($file_id !== null) {
+            return $file_id;
+        }
+
+        $this->builder()
+            ->insert($this->file_table())
+            ->values(array
+                ( "path" => "?"
+                ))
+            ->setParameter(0, $path)
+            ->execute();
+        return (int)$this->connection->lastInsertId();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function source($path, $content) {
         assert('is_string($content)');
-        $file_id = $this->maybe_insert_file($name);
+
+        $file_id = $this->file($path);
+
         $stmt = $this->builder()
             ->insert($this->source_table())
             ->values(array
@@ -52,14 +101,13 @@ class IndexDB extends DB implements Insert, Query {
     /**
      * @inheritdoc
      */
-    public function entity($type, $name, $file, $start_line, $end_line) {
-        assert('\\Lechimp\\Dicto\\Variables\\Variable::is_type($type)');
-        assert('is_string($name)');
-        assert('is_string($file)');
+    public function definition($name, $type, $file, $start_line, $end_line) {
         assert('is_int($start_line)');
         assert('is_int($end_line)');
-        $name_id = $this->maybe_insert_name($name, $type);
-        $file_id = $this->maybe_insert_file($file);
+
+        $name_id = $this->name($name, $type);
+        $file_id = $this->file($file);
+
         $this->builder()
             ->insert($this->definition_table())
             ->values(array
@@ -73,29 +121,25 @@ class IndexDB extends DB implements Insert, Query {
             ->setParameter(2, $start_line)
             ->setParameter(3, $end_line)
             ->execute();
-        return (int)$this->connection->lastInsertId();
     }
 
     /**
      * @inheritdoc
      */
-    public function reference($type, $name, $file, $line) {
-        assert('\\Lechimp\\Dicto\\Variables\\Variable::is_type($type)');
-        assert('is_string($name)');
-        assert('is_string($file)');
+    public function relation($name_left, $name_right, $which, $file, $line) {
+        assert('is_string($name_left)');
+        assert('is_string($name_right)');
+        assert('is_string($which)');
         assert('is_int($line)');
-        $name_id = $this->maybe_insert_name($name, $type);
-        return $name_id;
-    }
 
-    /**
-     * @inheritdoc
-     */
-    public function relation($name, $entity_id, $reference_id, $file, $line) {
-        assert('is_string($name)');
-        assert('is_int($entity_id)');
-        assert('is_int($reference_id)');
-        $file_id = $this->maybe_insert_file($file);
+        $id_left = $this->get_int_id($name_left, $this->name_table(), "name");
+        $id_right = $this->get_int_id($name_right, $this->name_table(), "name");
+        $file_id = $this->get_int_id($file, $this->file_table(), "path");
+
+        assert('is_int($id_left)');
+        assert('is_int($id_right)');
+        assert('is_int($file_id)');
+
         $this->builder()
             ->insert($this->relation_table())
             ->values(array
@@ -105,22 +149,31 @@ class IndexDB extends DB implements Insert, Query {
                 , "file" => "?"
                 , "line" => "?"
                 ))
-            ->setParameter(0, $entity_id)
-            ->setParameter(1, $reference_id)
-            ->setParameter(2, $name)
+            ->setParameter(0, $id_left)
+            ->setParameter(1, $id_right)
+            ->setParameter(2, $which)
             ->setParameter(3, $file_id)
             ->setParameter(4, $line)
             ->execute();
     }
 
-    protected function name_id($name) {
+    /**
+     * Get the numeric id for the stringy id in table by using id_column
+     * as column name.
+     *
+     * @param   string  $id
+     * @param   string  $table
+     * @param   string  $id_colum
+     * @return  int|null
+     */
+    protected function get_int_id($id, $table, $id_column) {
         $res = $this->builder()
             ->select("id")
-            ->from($this->name_table())
+            ->from($table)
             ->where($this->builder()->expr()->andX
-                ( "name = ?"
+                ( "$id_column = ?"
                 ))
-            ->setParameter(0, $name)
+            ->setParameter(0, $id)
             ->execute()
             ->fetch();
         if ($res) {
@@ -128,68 +181,6 @@ class IndexDB extends DB implements Insert, Query {
         }
         else {
             return null;
-        }
-    }
-
-    protected function insert_name($name, $type) {
-        $this->builder()
-            ->insert($this->name_table())
-            ->values(array
-                ( "name" => "?"
-                , "type" => "?"
-                ))
-            ->setParameter(0, $name)
-            ->setParameter(1, $type)
-            ->execute();
-        return (int)$this->connection->lastInsertId();
-    }
-
-    protected function maybe_insert_name($name, $type) {
-        $id = $this->name_id($name);
-        if ($id === null) {
-            return $this->insert_name($name, $type);
-        }
-        else {
-            return $id;
-        }
-    }
-
-    protected function file_id($path) {
-        $res = $this->builder()
-            ->select("id")
-            ->from($this->file_table())
-            ->where($this->builder()->expr()->andX
-                ( "path = ?"
-                ))
-            ->setParameter(0, $path)
-            ->execute()
-            ->fetch();
-        if ($res) {
-            return (int)$res["id"];
-        }
-        else {
-            return null;
-        }
-    }
-
-    protected function insert_file($path) {
-        $this->builder()
-            ->insert($this->file_table())
-            ->values(array
-                ( "path" => "?"
-                ))
-            ->setParameter(0, $path)
-            ->execute();
-        return (int)$this->connection->lastInsertId();
-    }
-
-    protected function maybe_insert_file($path) {
-        $id = $this->file_id($path);
-        if ($id === null) {
-            return $this->insert_file($path);
-        }
-        else {
-            return $id;
         }
     }
 

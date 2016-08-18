@@ -120,7 +120,7 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->source("BClass.php", "FOO\nBAR");
         $id1 = $this->db->name("AClass", Variable::CLASS_TYPE);
         $id2 = $this->db->name("BClass", Variable::CLASS_TYPE);
-        $this->db->relation("some_relation", $id1, $id2, "BClass.php", 1);
+        $this->db->relation("AClass", "BClass", "some_relation", "BClass.php", 1);
 
         $builder = $this->builder();
         $b = $builder->expr();

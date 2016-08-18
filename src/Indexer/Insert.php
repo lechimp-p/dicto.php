@@ -37,10 +37,10 @@ interface Insert {
      * Store some source code of file.
      *
      * @param   string      $path
-     * @param   string      $source
+     * @param   string      $content
      * @return  null 
      */
-    public function source($path, $source);
+    public function source($path, $content);
 
     /**
      * Store the location of some name definition.
@@ -54,7 +54,7 @@ interface Insert {
      * @param   int         $end_line
      * @return  null 
      */
-    public function definition($name, $file, $start_line, $end_line);
+    public function definition($name, $type, $file, $start_line, $end_line);
 
     /**
      * Store the fact, that two names have a relation, established at a
