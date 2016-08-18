@@ -30,8 +30,8 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         return $this->connection->createQueryBuilder();
     }
 
-    public function test_insert_source_file() {
-        $this->db->source_file("foo.php", "FOO\nBAR");
+    public function test_insert_source() {
+        $this->db->source("foo.php", "FOO\nBAR");
         $builder = $this->builder();
         $b = $builder->expr();
         $res = $builder
@@ -58,16 +58,15 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
-    public function test_insert_entity() {
-        $this->db->source_file("AClass.php", "FOO\nBAR");
-        $id = $this->db->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2);
+    public function test_insert_definition() {
+        $this->db->source("AClass.php", "FOO\nBAR");
+        $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
 
         $builder = $this->builder();
         $b = $builder->expr();
         $res = $builder
             ->select
-                ( "n.id"
-                , "n.name"
+                ( "n.name"
                 , "n.type"
                 , "f.path"
                 , "d.start_line"
@@ -85,8 +84,7 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
             ->execute()
             ->fetchAll();
         $expected = array
-            ( "id" => "$id"
-            , "name" => "AClass"
+            ( "name" => "AClass"
             , "type" => Variable::CLASS_TYPE
             , "path" => "AClass.php"
             , "start_line" => "1"
@@ -95,9 +93,8 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array($expected), $res);
     }
 
-    public function test_insert_reference() {
-        $this->db->source_file("AClass.php", "FOO\nBAR");
-        $id = $this->db->reference(Variable::CLASS_TYPE, "AClass", "AClass.php", 1);
+    public function test_insert_name() {
+        $id = $this->db->name("AClass", Variable::CLASS_TYPE);
 
         $builder = $this->builder();
         $b = $builder->expr();
@@ -119,10 +116,10 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_insert_some_relation() {
-        $this->db->source_file("AClass.php", "FOO\nBAR");
-        $this->db->source_file("BClass.php", "FOO\nBAR");
-        $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
-        $id2 = $this->db->reference(Variable::CLASS_TYPE, "AClass", "BClass.php", 1);
+        $this->db->source("AClass.php", "FOO\nBAR");
+        $this->db->source("BClass.php", "FOO\nBAR");
+        $id1 = $this->db->name("AClass", Variable::CLASS_TYPE);
+        $id2 = $this->db->name("BClass", Variable::CLASS_TYPE);
         $this->db->relation("some_relation", $id1, $id2, "BClass.php", 1);
 
         $builder = $this->builder();
@@ -153,12 +150,17 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array($expected), $res);
     }
 
-    public function test_id_is_int() {
-        $this->db->source_file("AClass.php", "FOO\nBAR");
-        $id1 = $this->db->entity(Variable::CLASS_TYPE, "AClass", "AClass.php", 1, 2, "the source");
+    public function test_retreive_name_id() {
+        $id1 = $this->db->name("AClass", Variable::CLASS_TYPE);
+        $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
         $this->assertInternalType("integer", $id1);
+        $this->assertEquals($id1, $id2);
+    }
 
-        $id2 = $this->db->reference(Variable::FUNCTION_TYPE, "my_fun", "AClass.php", 2);
-        $this->assertInternalType("int", $id2);
+    public function test_retreive_file_id() {
+        $id1 = $this->db->file("AClass.php");
+        $id2 = $this->db->file("AClass.php");
+        $this->assertInternalType("integer", $id1);
+        $this->assertEquals($id1, $id2);
     }
 }
