@@ -146,14 +146,26 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         assert('is_string($base_dir)');
         assert('is_string($path)');
         $this->log->info("indexing: ".$path);
-        $content = file_get_contents($base_dir."/$path");
+        $full_path = "$base_dir/$path";
+        $content = file_get_contents($full_path);
         if ($content === false) {
-            throw \InvalidArgumentException("Can't read file $base_dir/$path.");
+            throw \InvalidArgumentException("Can't read file $path.");
         }
+        $this->index_content($path, $content);
+    }
+
+    /**
+     * @param   string  $path
+     * @param   string  $content
+     * @return  null
+     */
+    public function index_content($path, $content) {
+        assert('is_string($path)');
+        assert('is_string($content)');
 
         $stmts = $this->parser->parse($content);
         if ($stmts === null) {
-            throw new \RuntimeException("Can't parse file $base_dir/$path.");
+            throw new \RuntimeException("Can't parse file $path.");
         }
 
         $traverser = new \PhpParser\NodeTraverser;
@@ -280,20 +292,11 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function beforeTraverse(array $nodes) {
-        $this->insert->source_file($this->file_path, $this->file_content);
+        $this->insert->source($this->file_path, $this->file_content);
 
-        // for sure found a file
-        $id = $this->insert->entity
-            ( Variable::FILE_TYPE
-            , $this->file_path
-            , $this->file_path
-            , 1
-            , substr_count($this->file_content, "\n") + 1
-            );
+        //$this->entity_stack[] = array(Variable::FILE_TYPE, $id);
 
-        $this->entity_stack[] = array(Variable::FILE_TYPE, $id);
-
-        $this->call_entity_listener("listeners_enter_entity", Variable::FILE_TYPE, $id, null);
+        //$this->call_entity_listener("listeners_enter_entity", Variable::FILE_TYPE, $id, null);
 
         return null;
     }
@@ -316,21 +319,20 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $start_line = $node->getAttribute("startLine");
         $end_line = $node->getAttribute("endLine");
 
-        // Class
-        if ($this->is_entity($node)) {
+        if ($this->is_definition($node)) {
             $type = $this->get_type_of($node);
-            $id = $this->insert->entity
-                ( $type
-                , $node->name
+            $this->insert->definition
+                ( $node->name
+                , $type
                 , $this->file_path
                 , $start_line
                 , $end_line
                 );
-            $this->call_entity_listener("listeners_enter_entity",  $type, $id, $node);
-            $this->entity_stack[] = array($type, $id);
+            //$this->call_entity_listener("listeners_enter_entity",  $type, $id, $node);
+            //$this->entity_stack[] = array($type, $id);
         }
         else {
-            $this->call_misc_listener("listeners_enter_misc", $node);
+            //$this->call_misc_listener("listeners_enter_misc", $node);
         }
     }
 
@@ -349,7 +351,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         throw \InvalidArgumentException("'".get_class($node)."' has no type.");
     }
 
-    protected function is_entity(\PhpParser\Node $node) {
+    protected function is_definition(\PhpParser\Node $node) {
         return     $node instanceof N\Stmt\Class_
                 || $node instanceof N\Stmt\ClassMethod
                 || $node instanceof N\Stmt\Function_;
@@ -360,12 +362,12 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     public function leaveNode(\PhpParser\Node $node) {
         // Class
-        if($this->is_entity($node)) {
+/*        if($this->is_entity($node)) {
             list($type, $id) = array_pop($this->entity_stack);
             $this->call_entity_listener("listeners_leave_entity", $type, $id, $node);
         }
         else {
             $this->call_misc_listener("listeners_leave_misc", $node);
-        }
+        }*/
     }
 }

@@ -19,145 +19,141 @@ use PhpParser\Node as N;
 use Psr\Log\LogLevel;
 
 require_once(__DIR__."/LoggerMock.php");
-require_once(__DIR__."/NullDB.php");
-
-define("__IndexerTest_PATH_TO_SRC", __DIR__."/data/src");
-
-class InsertMock implements Insert {
-    use CachesReferences;
-
-    public $files = array();
-    public $entities = array();
-    public $references = array();
-    public $relations = array();
-
-    public function __construct() {
-        $this->relations = array
-            ( "depend on" => array()
-            , "invoke" => array()
-            );
-    }
-
-    public function source_file($name, $content) {
-        $this->files[$name] = $content;
-    }
-
-    public function entity($type, $name, $file, $start_line, $end_line) {
-        $id = count($this->entities) + count($this->references);
-        $this->entities[] = array
-            ( "id" => $id
-            , "type" => $type
-            , "name" => $name
-            , "file" => $file
-            , "start_line" => $start_line
-            , "end_line" => $end_line
-            );
-        return  $id;
-    }
-
-    public function reference($type, $name, $file, $line) {
-        $id = count($this->entities) + count($this->references);
-        $this->references[] = array
-            ( "id" => $id
-            , "type" => $type
-            , "name" => $name
-            , "file" => $file
-            , "line" => $line
-            );
-        return $id;
-    }
-
-
-    public function relation($name, $entity_id, $reference_id, $file, $line) {
-        $this->relations[$name][] = array
-            ( "entity_id" => $entity_id
-            , "reference_id" => $reference_id
-            );
-    }
-
-    public function get_id($name) {
-        foreach ($this->entities as $entity) {
-            if ($entity["name"] == $name) {
-                return $entity["id"];
-            }
-        }
-        foreach ($this->references as $ref) {
-            if ($ref["name"] == $name) {
-                return $ref["id"];
-            }
-        }
-        assert(false, "entity or reference named '$name' exists");
-    }
-
-    public function get_ids($name, $amount) {
-        $ids = array();
-        foreach ($this->references as $ref) {
-            if ($ref["name"] == $name) {
-                $ids[] = $ref["id"];
-            }
-        }
-        assert('count($ids) ==  $amount', count($ids)." ==  $amount");
-        return $ids;
-    }
-} 
-
-
-class IndexerNoIndexFile extends Indexer {
-    public $indexed_files = array();
-
-    public function index_file($base_dir, $path) {
-        $this->indexed_files[] = $path;
-    }
-}
-
 
 class IndexerTest extends PHPUnit_Framework_TestCase {
-    const PATH_TO_SRC = __IndexerTest_PATH_TO_SRC;
-
     public function setUp() {
-        $this->parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        $this->logger_mock = new LoggerMock();
-        $this->insert_mock = new InsertMock();
-        $this->indexer = new Indexer
-            ( $this->logger_mock
-            , $this->parser
-            , $this->insert_mock
+
+    }
+
+    protected function indexer(Insert $insert_mock) {
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $logger_mock = new LoggerMock();
+        $indexer = new Indexer
+            ( $logger_mock
+            , $parser
+            , $insert_mock
             );
-        (new \Lechimp\Dicto\Rules\ContainText())->register_listeners($this->indexer);
-        (new \Lechimp\Dicto\Rules\DependOn())->register_listeners($this->indexer);
-        (new \Lechimp\Dicto\Rules\Invoke())->register_listeners($this->indexer);
+        (new \Lechimp\Dicto\Rules\ContainText())->register_listeners($indexer);
+        (new \Lechimp\Dicto\Rules\DependOn())->register_listeners($indexer);
+        (new \Lechimp\Dicto\Rules\Invoke())->register_listeners($indexer);
+        return $indexer;
     }
 
-    // TODO: add tests for logging
-
-    public function test_is_indexer() {
-        $this->assertInstanceOf("\\Lechimp\\Dicto\\Indexer\\Indexer", $this->indexer);
-    }
-
-    public function test_A1_file() {
-        $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
+    public function test_file_empty() {
         $source = <<<PHP
 <?php
-/******************************************************************************
- * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- *
- * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
- *
- * This software is licensed under The MIT License. You should have received
- * a copy of the license along with the code.
- */
-
-class A1 {
-    public function invoke_a_function() {
-        return a_bogus_function();
-    }    
-}
-
 PHP;
-        $this->assertEquals(array("A1.php" => $source), $this->insert_mock->files);
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->getMock();
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("source")
+            ->with
+                ( $this->equalTo("source.php")
+                , $this->equalTo($source)
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
     }
 
-    public function test_entity_A1_class() {
+    public function test_class_definition() {
+        $source = <<<PHP
+<?php
+
+class AClass {
+}
+PHP;
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->getMock();
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("definition")
+            ->with
+                ( $this->equalTo("AClass")
+                , $this->equalTo(Variable::CLASS_TYPE)
+                , $this->equalTo("source.php")
+                , $this->equalTo(3)
+                , $this->equalTo(4)
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+    public function test_method_definition() {
+        $source = <<<PHP
+<?php
+
+class AClass {
+    public function a_method() {
+    }
+}
+PHP;
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->getMock();
+
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("definition")
+            ->withConsecutive
+                ( array
+                    ( $this->equalTo("AClass")
+                    , $this->equalTo(Variable::CLASS_TYPE)
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(3)
+                    , $this->equalTo(6)
+                    )
+                , array
+                    ( $this->equalTo("a_method")
+                    , $this->equalTo(Variable::METHOD_TYPE)
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(4)
+                    , $this->equalTo(5)
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+    public function test_function_definition() {
+        $source = <<<PHP
+<?php
+
+function a_function() {
+}
+PHP;
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->getMock();
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("definition")
+            ->with
+                ( $this->equalTo("a_function")
+                , $this->equalTo(Variable::FUNCTION_TYPE)
+                , $this->equalTo("source.php")
+                , $this->equalTo(3)
+                , $this->equalTo(4)
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+
+/*    public function test_entity_A1_class() {
         $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
 
         $this->assertCount(3, $this->insert_mock->entities);
@@ -573,5 +569,5 @@ PHP;
 
         $expected_error = array(LogLevel::ERROR, "in faulty.php: Syntax error, unexpected T_FUNCTION, expecting '{' on line 4", array());
         $this->assertContains($expected_error, $log->log);
-    }
+    }*/
 }
