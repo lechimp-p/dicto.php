@@ -35,11 +35,10 @@
 * DBFactory is a misnomer. Its more like a manager, which is a very non descriptive
   word.
 * Introduce a RegExp class to put checking for validity in one place.
-* Remove old "reference"-mechanism completely
-* rename "entities"-stuff to definition
 * Use custom rules in indexer test.
+* Remove the notion of "reference" and "entity" completely.
 
-# Issues
+. Issues
 * When saying "only SomeClasses can depend on SomeThing" we certainly mean, that
   also methods in SomeClasses can depend on SomeThing, but currently the analysis
   does not reflect this.
