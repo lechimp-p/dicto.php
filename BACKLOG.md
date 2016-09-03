@@ -1,8 +1,4 @@
 # Indexer
-* Besides entities, dependencies and invokations i felt the need to introduce a
-  reference to model locations in the code where i know a name and a possible
-  type of an entity, but not its identity, source or location of definition. Is
-  this a good idea? Could we dereference some or all references?
 * How should i keep track of namespaces? Is it just a part of the name? Could i
   store it separately?
 * It may be a good idea to use tuple (start,end) for all places where we record
@@ -16,7 +12,7 @@
 * What happens if i use a 'multi global' statement: global $a1, $a2;
 
 # Definition
-* Expose `everything` on fluid interface.
+* Expose `everything` in definition language.
 * Make `language_construct` more pleasant to use.
 * Define known types of `language_construct`s.
 
@@ -26,10 +22,6 @@
 
 # Cleanup
 * Reorder tests to match the different rules better.
-* Make Engine (and propably Indexer and Analyzer) depend on a logger. Make them
-  log.
-* Vars could be cleaned up; Classes, Methods, etc. are only required for pattern
-  matching in Query::compile_var.
 * Every submodule could have its own Config, those could then be combined to the
   big global config.
 * DBFactory is a misnomer. Its more like a manager, which is a very non descriptive
