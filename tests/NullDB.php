@@ -23,7 +23,6 @@ class NullDB implements Insert, Query {
     public function file_table() { return "files"; }
     public function source_table() { return "source"; }
     public function definition_table() { return "definitions"; }
-    public function reference_table() { return "refs"; }
     public function relation_table() { return "relations"; }
     public function builder() { throw new \RuntimeException("PANIC!"); }
 }

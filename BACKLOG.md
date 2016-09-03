@@ -36,7 +36,6 @@
   word.
 * Introduce a RegExp class to put checking for validity in one place.
 * Use custom rules in indexer test.
-* Remove the notion of "reference" and "entity" completely.
 
 . Issues
 * When saying "only SomeClasses can depend on SomeThing" we certainly mean, that
