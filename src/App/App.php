@@ -37,6 +37,7 @@ class App {
                 , new V\Globals()
                 , new V\Files()
                 , new V\Methods()
+                , new V\LanguageConstruct("ErrorSuppressor", "@")
                 // TODO: Add some language constructs here...
                 )
             , array

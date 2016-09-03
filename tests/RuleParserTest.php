@@ -31,6 +31,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 , new V\Globals()
                 , new V\Files()
                 , new V\Methods()
+                , new V\LanguageConstruct("ErrorSuppressor", "@")
                 // TODO: Add some language constructs here...
                 )
             , array

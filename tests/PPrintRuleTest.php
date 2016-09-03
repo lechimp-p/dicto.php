@@ -25,7 +25,6 @@ class PPrintRuleTest extends PHPUnit_Framework_TestCase {
                 , new V\Globals()
                 , new V\Files()
                 , new V\Methods()
-                // TODO: Add some language constructs here...
                 )
             , array
                 ( new R\ContainText()
