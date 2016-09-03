@@ -83,6 +83,7 @@ class Tokenizer implements \Iterator {
      */
     public function next() {
         $this->position++;
+        $this->maybe_parse_next_token();
     }
 
     /**
@@ -98,6 +99,22 @@ class Tokenizer implements \Iterator {
     public function valid() {
         $this->maybe_parse_next_token();
         return count($this->tokens) > $this->position;
+    }
+
+    /**
+     * Get the current position in the source.
+     *
+     * @return  int[]   [line, column]
+     */
+    public function source_position() {
+        $str = "";
+        for ($i = 0; $i < $this->position; $i++) {
+            $str .= $this->tokens[$i][1][0];
+        }
+        $lines = explode("\n", $str);
+        $line = count($lines);
+        $column = strlen(array_pop($lines)) + 1;
+        return array($line, $column);
     }
 
     /**

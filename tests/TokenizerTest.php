@@ -125,4 +125,34 @@ class TokenizerTest extends PHPUnit_Framework_TestCase {
             $this->assertTrue(true);
         }
     }
+
+    public function test_source_position_1() {
+        $this->symbol_table->all_symbols[] = "(a)|(b)";
+        $t = $this->tokenizer("ab");
+        $this->assertEquals(array(1,1), $t->source_position());
+    }
+
+    public function test_source_position_2() {
+        $this->symbol_table->all_symbols[] = "(a)|(b)";
+        $t = $this->tokenizer("ab");
+        $t->next();
+        $this->assertEquals(array(1,2), $t->source_position());
+    }
+
+    public function test_source_position_3() {
+        $this->symbol_table->all_symbols[] = "(a)|(b)|\n";
+        $t = $this->tokenizer("a\nb");
+        $t->next();
+        $t->next();
+        $this->assertEquals(array(2,1), $t->source_position());
+    }
+
+    public function test_source_position_after_rewind() {
+        $this->symbol_table->all_symbols[] = "(a)|(b)|\n";
+        $t = $this->tokenizer("a\nb");
+        $t->next();
+        $t->next();
+        $t->rewind();
+        $this->assertEquals(array(1,1), $t->source_position());
+    }
 }
