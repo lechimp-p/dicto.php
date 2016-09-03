@@ -33,6 +33,11 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 , new V\Methods()
                 // TODO: Add some language constructs here...
                 )
+            , array
+                ( new R\ContainText()
+                , new R\DependOn()
+                , new R\Invoke()
+                )
             );
     }
 

@@ -10,6 +10,7 @@
 
 use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Dicto as D;
+use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Definition\RuleParser;
 
@@ -25,6 +26,11 @@ class PPrintRuleTest extends PHPUnit_Framework_TestCase {
                 , new V\Files()
                 , new V\Methods()
                 // TODO: Add some language constructs here...
+                )
+            , array
+                ( new R\ContainText()
+                , new R\DependOn()
+                , new R\Invoke()
                 )
             );
 

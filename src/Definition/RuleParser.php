@@ -30,7 +30,7 @@ class RuleParser extends Parser implements ArgumentParser {
     /**
      * @var R\Schema[]
      */
-    protected $known_schemas;
+    protected $rule_schemas;
 
     /**
      * @var R\Property[]
@@ -48,17 +48,19 @@ class RuleParser extends Parser implements ArgumentParser {
     protected $rules = array();
 
     /**
+     * TODO: make arrays passed by reference as they get copied anyway.
+     *
      * @param   V\Variable[]    $predefined_variables
+     * @param   R\Schema[]      $rule_schemas
      */
-    public function __construct(array $predefined_variables) {
+    public function __construct( array $predefined_variables
+                               , array $rule_schemas) {
         $this->predefined_variables = array_map(function(V\Variable $v) {
             return $v;
         }, $predefined_variables);
-        $this->known_schemas = array
-            ( new R\ContainText()
-            , new R\DependOn()
-            , new R\Invoke()
-            );
+        $this->rule_schemas = array_map(function(R\Schema $s) {
+            return $s;
+        }, $rule_schemas);
         $this->known_properties = array
             ( new V\Name()
             );
@@ -166,7 +168,7 @@ class RuleParser extends Parser implements ArgumentParser {
                 }
                 throw new \LogicException("Unexpected \"".$matches[0]."\".");
             });
-        $this->add_symbols_for_schemas_to($table, $this->known_schemas);
+        $this->add_symbols_for_schemas_to($table, $this->rule_schemas);
     }
 
     /**

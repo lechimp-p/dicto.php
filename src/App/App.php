@@ -13,6 +13,7 @@ namespace Lechimp\Dicto\App;
 use Lechimp\Dicto\App\RuleLoader;
 use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules\Ruleset;
+use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Symfony\Component\Yaml\Yaml;
 use Pimple\Container;
@@ -37,6 +38,11 @@ class App {
                 , new V\Files()
                 , new V\Methods()
                 // TODO: Add some language constructs here...
+                )
+            , array
+                ( new R\ContainText()
+                , new R\DependOn()
+                , new R\Invoke()
                 )
             );
         $this->rule_loader = new RuleLoader($parser);
