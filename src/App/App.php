@@ -44,6 +44,9 @@ class App {
                 , new R\DependOn()
                 , new R\Invoke()
                 )
+            , array
+                ( new V\Name()
+                )
             );
         $this->rule_loader = new RuleLoader($parser);
     }

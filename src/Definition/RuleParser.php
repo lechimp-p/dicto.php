@@ -30,12 +30,12 @@ class RuleParser extends Parser implements ArgumentParser {
     /**
      * @var R\Schema[]
      */
-    protected $rule_schemas;
+    protected $schemas;
 
     /**
      * @var R\Property[]
      */
-    protected $known_properties;
+    protected $properties;
 
     /**
      * @var V\Variable[]
@@ -51,19 +51,21 @@ class RuleParser extends Parser implements ArgumentParser {
      * TODO: make arrays passed by reference as they get copied anyway.
      *
      * @param   V\Variable[]    $predefined_variables
-     * @param   R\Schema[]      $rule_schemas
+     * @param   R\Schema[]      $schemas
+     * @param   V\Property[]    $properties
      */
     public function __construct( array $predefined_variables
-                               , array $rule_schemas) {
+                               , array $schemas
+                               , array $properties) {
         $this->predefined_variables = array_map(function(V\Variable $v) {
             return $v;
         }, $predefined_variables);
-        $this->rule_schemas = array_map(function(R\Schema $s) {
+        $this->schemas = array_map(function(R\Schema $s) {
             return $s;
-        }, $rule_schemas);
-        $this->known_properties = array
-            ( new V\Name()
-            );
+        }, $schemas);
+        $this->properties = array_map(function(V\Property $p) {
+            return $p;
+        }, $properties);
         parent::__construct();
     }
 
@@ -124,7 +126,7 @@ class RuleParser extends Parser implements ArgumentParser {
                 return new V\Except($left, $right);
             });
 
-        $this->add_symbols_for_properties_to($table, $this->known_properties);
+        $this->add_symbols_for_properties_to($table, $this->properties);
     }
 
     /**
@@ -168,7 +170,7 @@ class RuleParser extends Parser implements ArgumentParser {
                 }
                 throw new \LogicException("Unexpected \"".$matches[0]."\".");
             });
-        $this->add_symbols_for_schemas_to($table, $this->rule_schemas);
+        $this->add_symbols_for_schemas_to($table, $this->schemas);
     }
 
     /**
@@ -293,7 +295,7 @@ class RuleParser extends Parser implements ArgumentParser {
      *
      * @return  array   (R\Schema, array)
      */
-    protected function rule_schema() {
+    protected function schema() {
         $t = $this->current_symbol();
         $m = $this->current_match();
         $this->fetch_next_token();
@@ -329,7 +331,7 @@ class RuleParser extends Parser implements ArgumentParser {
         }
         $var = $this->variable();
         $mode = $this->rule_mode();
-        $schema = $this->rule_schema();
+        $schema = $this->schema();
         $this->is_start_of_rule_arguments = true;
         $arguments = $schema->fetch_arguments($this);
         assert('is_array($arguments)');
