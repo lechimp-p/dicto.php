@@ -16,7 +16,9 @@ use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
 
 /**
- * This checks wheather there is some text in the definition of an entity.
+ * This checks wheather there is some text in some entity.
+ *
+ * TODO: Test if ContainText finds text in files.
  */
 class ContainText extends Schema {
     /**
