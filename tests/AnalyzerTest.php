@@ -35,13 +35,16 @@ class ReportGeneratorMock implements ReportGenerator {
     public function end_rule(Rule $rule) {}
 }
 
+// TODO: This seems to be a bad test, as it does not test Analyzer really.
+// instead it tests if the rule works. This should be tested too, but tests
+// need to be reorganized. This also might mean that Analyzer is not a good
+// class.
 class AnalyzerTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->connection = DriverManager::getConnection
             ( array
                 ( "driver" => "pdo_sqlite"
                 , "memory" => true
-                //, "path" => "/home/lechimp/foobar.sqlite"
                 )
             );
         $this->db = new IndexDB($this->connection);
@@ -84,9 +87,8 @@ foo
 6
 CODE;
 
-        $this->db->source_file("file", $code);
-        $this->db->entity(Variable::FILE_TYPE, "file", "file", 1, 7);
-        $this->db->entity(Variable::CLASS_TYPE, "AClass", "file", 1, 7);
+        $this->db->source("file", $code);
+        $this->db->definition("AClass", Variable::CLASS_TYPE, "file", 1, 7);
 
         $analyzer->run();
         $expected = array(new Violation
@@ -124,11 +126,10 @@ foo
 6
 CODE;
 
-        $this->db->source_file("file", $code);
-        $this->db->entity(Variable::FILE_TYPE, "file", "file", 1, 2);
-        $id1 = $this->db->entity(Variable::FUNCTION_TYPE, "AClass", "file", 1, 2);
-        $id2 = $this->db->reference(Variable::METHOD_TYPE, "a_method", "file", 4);
-        $this->db->relation("depend on", $id1, $id2, "file", 4);
+        $this->db->source("file", $code);
+        $id1 = $this->db->definition("a_function", Variable::FUNCTION_TYPE, "file", 1, 7);
+        $id2 = $this->db->name("a_method", Variable::METHOD_TYPE);
+        $this->db->relation($id1, $id2, "depend on", "file", 4);
 
         $analyzer->run();
         $expected = array(new Violation
