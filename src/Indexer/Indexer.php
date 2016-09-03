@@ -41,12 +41,12 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     /**
      * @var array   string => array()
      */
-    protected $listeners_enter_entity;
+    protected $listeners_enter_definition;
 
     /**
      * @var array   string => array()
      */
-    protected $listeners_leave_entity;
+    protected $listeners_leave_definition;
 
     /**
      * @var array   string => array()
@@ -74,18 +74,18 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * This contains the stack of ids were currently in, i.e. the nesting of
      * known code blocks we are in.
      *
-     * @var array|null  contain ($entity_type, $entity_id)
+     * @var array|null  contain ($definition_type, $definition_id)
      */
-    protected $entity_stack = null;
+    protected $definition_stack = null;
 
     public function __construct(Log $log, \PhpParser\Parser $parser, Insert $insert) {
         $this->log = $log;
         $this->parser = $parser;
         $this->insert = $insert;
-        $this->listeners_enter_entity = array
+        $this->listeners_enter_definition = array
             ( 0 => array()
             );
-        $this->listeners_leave_entity = array
+        $this->listeners_leave_definition = array
             ( 0 => array()
             );
         $this->listeners_enter_misc = array
@@ -171,7 +171,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $traverser = new \PhpParser\NodeTraverser;
         $traverser->addVisitor($this);
 
-        $this->entity_stack = array();
+        $this->definition_stack = array();
         $this->file_path = $path;
         $this->file_content = $content;
         $traverser->traverse($stmts);
@@ -182,16 +182,16 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     /**
      * @inheritdoc
      */
-    public function on_enter_entity($types, \Closure $listener) {
-        $this->on_enter_or_leave_something("listeners_enter_entity", $types, $listener);
+    public function on_enter_definition($types, \Closure $listener) {
+        $this->on_enter_or_leave_something("listeners_enter_definition", $types, $listener);
         return $this;
     }
 
     /**
      * @inheritdoc
      */
-    public function on_leave_entity($types, \Closure $listener) {
-        $this->on_enter_or_leave_something("listeners_leave_entity", $types, $listener);
+    public function on_leave_definition($types, \Closure $listener) {
+        $this->on_enter_or_leave_something("listeners_leave_definition", $types, $listener);
         return $this;
     }
 
@@ -253,14 +253,12 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     }
 
     /**
-     * TODO: Rename this to call_definition_listener
-     *
      * @param   string                  $which
      * @param   string                  $type
      * @param   int                     $type
      * @param   \PhpParser\Node|null    $node
      */
-    protected function call_entity_listener($which, $type, $id, \PhpParser\Node $node = null) {
+    protected function call_definition_listener($which, $type, $id, \PhpParser\Node $node = null) {
         $listeners = &$this->$which;
         foreach ($listeners[0] as $listener) {
             $listener($this->insert, $this, $type, $id, $node);
@@ -285,7 +283,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function in_entities() {
-        return $this->entity_stack;
+        return $this->definition_stack;
     }
 
     // from \PhpParser\NodeVisitor
@@ -296,8 +294,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     public function beforeTraverse(array $nodes) {
         $id = $this->insert->source($this->file_path, $this->file_content);
 
-        //$this->call_entity_listener("listeners_enter_entity", Variable::FILE_TYPE, $id, null);
-
         return null;
     }
 
@@ -305,9 +301,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function afterTraverse(array $nodes) {
-        list($type, $id) = array_pop($this->entity_stack);
-
-        //$this->call_entity_listener("listeners_leave_entity", $type, $id, null);
+        list($type, $id) = array_pop($this->definition_stack);
 
         return null;
     }
@@ -328,8 +322,8 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                 , $start_line
                 , $end_line
                 );
-            $this->call_entity_listener("listeners_enter_entity",  $type, $id, $node);
-            $this->entity_stack[] = array($type, $id);
+            $this->call_definition_listener("listeners_enter_definition",  $type, $id, $node);
+            $this->definition_stack[] = array($type, $id);
         }
         else {
             $this->call_misc_listener("listeners_enter_misc", $node);
@@ -362,9 +356,9 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     public function leaveNode(\PhpParser\Node $node) {
         // Class
-/*        if($this->is_entity($node)) {
-            list($type, $id) = array_pop($this->entity_stack);
-            $this->call_entity_listener("listeners_leave_entity", $type, $id, $node);
+/*        if($this->is_definition($node)) {
+            list($type, $id) = array_pop($this->definition_stack);
+            $this->call_definition_listener("listeners_leave_definition", $type, $id, $node);
         }
         else {
             $this->call_misc_listener("listeners_leave_misc", $node);

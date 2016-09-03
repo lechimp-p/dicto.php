@@ -31,18 +31,18 @@ interface ListenerRegistry {
      * @param   \Closure    $listener
      * @return  self
      */
-    public function on_enter_entity($types, \Closure $listener);
+    public function on_enter_definition($types, \Closure $listener);
 
     /**
      * Add a listener for entities that are left.
      *
-     * Works like on_enter_entity.
+     * Works like on_enter_definition.
      *
      * @param   array|null  $types
      * @param   \Closure    $listener
      * @return  self
      */
-    public function on_leave_entity($types, \Closure $listener);
+    public function on_leave_definition($types, \Closure $listener);
 
     /**
      * Add a listener for nodes in the AST that get entered.
