@@ -451,6 +451,56 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
+    public function test_function_use_global() {
+        $source = <<<PHP
+<?php
+
+function a_function() {
+    return \$GLOBALS["foo"];
+}
+PHP;
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->getMock();
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("definition")
+            ->willReturn(1)
+            ->with
+                ( $this->equalTo("a_function")
+                , $this->equalTo(Variable::FUNCTION_TYPE)
+                );
+
+        $insert_mock
+            ->expects($this->exactly(1))
+            ->method("name")
+            ->willReturnOnConsecutiveCalls(2)
+            ->withConsecutive
+                ( array
+                    ( $this->equalTo("foo")
+                    , $this->equalTo(Variable::GLOBAL_TYPE)
+                    )
+                );
+
+        $insert_mock
+            ->expects($this->exactly(1))
+            ->method("relation")
+            ->withConsecutive
+                ( array
+                    ( $this->equalTo(1) // a_function
+                    , $this->equalTo(2) // global foo
+                    , $this->equalTo("depend on")
+                    , $this->equalTo("source.php")
+                    , $this->equalTo(4)
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
 /*    public function test_entity_A1_class() {
         $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
 
