@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto\Definition\Parser as ParserBase;
+use Lechimp\Dicto\Definition\ParserException;
 use Lechimp\Dicto\Definition\Tokenizer;
 use Lechimp\Dicto\Definition\SymbolTable;
 
@@ -150,5 +151,17 @@ class ParsingTest extends PHPUnit_Framework_TestCase {
     public function test_multiline() {
         $res = $this->parse("1-2\n4-3");
         $this->assertEquals(array(-1,1), $res);
+    }
+
+    public function test_error() {
+        try {
+            $this->parse("1-2\n4-a");
+            $this->assertFalse("This should not happen.");
+        }
+        catch (ParserException $e) {
+            $this->assertEquals(2, $e->line());
+            $this->assertEquals(3, $e->column());
+        }
+
     }
 }

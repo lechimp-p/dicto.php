@@ -45,6 +45,11 @@ abstract class Parser {
             $this->token = $this->tokenizer->current();
             return $this->root();
         }
+        catch (ParserException $e) {
+            list($l, $c) = $this->tokenizer->source_position();
+            $e->setPosition($l, $c);
+            throw $e;
+        }
         finally {
             $this->tokenizer = null;
             $this->token = null;
