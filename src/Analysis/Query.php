@@ -38,16 +38,6 @@ interface Query {
     /**
      * @return string
      */
-    // TODO: This seems to be a bridge to the new database
-    // schema, as the location is currently located in a separate
-    // table, but could be moved to the relations table. This
-    // should be possible when the inserter interface gets a new
-    // shape.
-    public function reference_table();
-
-    /**
-     * @return string
-     */
     public function relation_table();
 
     /**

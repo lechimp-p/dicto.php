@@ -55,7 +55,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"   => "$id"
+                ( "name"        => "$id"
                 , "file"        => "file"
                 , "source"      => "foo"
                 , "line"        => 1
@@ -113,8 +113,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -175,8 +175,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -239,8 +239,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -301,8 +301,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -354,8 +354,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -410,8 +410,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -462,8 +462,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -485,8 +485,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -540,7 +540,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"   => "$id1"
+                ( "name"        => "$id1"
                 , "file"        => "file"
                 , "line"        => "1"
                 , "source"      => "foo"
@@ -561,7 +561,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"   => "$id1"
+                ( "name"        => "$id1"
                 , "file"        => "file"
                 , "line"        => "1"
                 , "source"      => "foo"
@@ -609,7 +609,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"   => "$id1"
+                ( "name"        => "$id1"
                 , "file"        => "file"
                 , "line"        => "1"
                 , "source"      => "foo"
@@ -645,8 +645,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -668,8 +668,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -691,8 +691,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -741,7 +741,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"   => "$id"
+                ( "name"        => "$id"
                 , "file"        => "file"
                 , "source"      => "bar"
                 , "line"        => 1
@@ -812,7 +812,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"   => "$id"
+                ( "name"        => "$id"
                 , "file"        => "file"
                 , "source"      => "foo"
                 , "line"        => 1
@@ -844,7 +844,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"   => "$id"
+                ( "name"        => "$id"
                 , "file"        => "file"
                 , "source"      => "foo"
                 , "line"        => 2
@@ -892,7 +892,7 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"   => "$id1"
+                ( "name"        => "$id1"
                 , "file"        => "file"
                 , "line"        => "1"
                 , "source"      => "foo"
@@ -957,8 +957,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"
@@ -994,8 +994,8 @@ class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
         $res = $stmt->fetchAll();
         $expected = array
             ( array
-                ( "entity_id"       => "$id1"
-                , "reference_id"    => "$id2"
+                ( "name_left"       => "$id1"
+                , "name_right"    => "$id2"
                 , "file"            => "file"
                 , "line"            => 2
                 , "source"          => "a line"

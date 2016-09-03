@@ -60,7 +60,7 @@ class ContainText extends Schema {
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select
-                    ( "d.file as entity_id"
+                    ( "d.name"
                     , "f.path as file"
                     , "src.line"
                     , "src.source"
@@ -92,7 +92,7 @@ class ContainText extends Schema {
         if ($mode == Rule::MODE_MUST) {
             return $builder
                 ->select
-                    ( "d.file as entity_id"
+                    ( "d.name"
                     , "f.path as file"
                     , "d.start_line as line"
                     , "src.source"

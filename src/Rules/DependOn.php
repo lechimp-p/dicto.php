@@ -115,6 +115,7 @@ class DependOn extends Relation {
                 &&  $node->var->name == "GLOBALS"
                 // Ignore usage of $GLOBALS with variable index.
                 && !($node->dim instanceof N\Expr\Variable)) {
+                    // TODO: make a test, that finds this outdated function.
                     $ref_id = $insert->get_reference
                         ( Variable::GLOBAL_TYPE
                         , $node->dim->value

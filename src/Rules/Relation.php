@@ -56,13 +56,13 @@ abstract class Relation extends Schema {
         $builder = $query->builder();
         $b = $builder->expr();
         $mode = $rule->mode();
-        $entity = $rule->checked_on();
-        $reference = $rule->argument(0);
+        $name_left = $rule->checked_on();
+        $name_right = $rule->argument(0);
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             return $builder
                 ->select
-                    ( "rel.name_left as entity_id"
-                    , "rel.name_right as reference_id"
+                    ( "rel.name_left"
+                    , "rel.name_right"
                     , "f.path as file"
                     , "rel.line as line"
                     , "src.source as source"
@@ -89,15 +89,15 @@ abstract class Relation extends Schema {
                     )
                 ->where
                     ( $b->eq("rel.which", $b->literal($this->name()))
-                    , $entity->compile($b, "nl")
-                    , $reference->compile($b, "nr")
+                    , $name_left->compile($b, "nl")
+                    , $name_right->compile($b, "nr")
                     )
                 ->execute();
         }
         if ($mode == Rule::MODE_MUST) {
             return $builder
                 ->select
-                    ( "d.name as entity_id"
+                    ( "d.name"
                     , "f.path as file"
                     , "d.start_line as line"
                     , "src.source as source"
@@ -126,7 +126,7 @@ abstract class Relation extends Schema {
                         )
                     )
                 ->where
-                    ( $entity->compile($b, "n")
+                    ( $name_left->compile($b, "n")
                     , $b->isNull("rel.name_right")
                     )
                 ->execute();

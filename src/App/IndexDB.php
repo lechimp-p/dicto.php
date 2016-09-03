@@ -294,38 +294,6 @@ class IndexDB extends DB implements Insert, Query {
         return $definition_table;
     }
 
-    public function reference_table() {
-        return "refs";
-    }
-
-    public function init_reference_table(S\Schema $schema, S\Table $name_table, S\Table $source_table) {
-        $reference_table = $schema->createTable($this->reference_table());
-        $reference_table->addColumn
-            ( "name", "integer"
-            , array("notnull" => true)
-            );
-        $reference_table->addColumn
-            ( "file", "integer"
-            , array("notnull" => true)
-            );
-        $reference_table->addColumn
-            ( "line", "integer"
-            , array("notnull" => true)
-            );
-        $reference_table->setPrimaryKey(array("name", "file", "line"));
-        $reference_table->addForeignKeyConstraint
-            ( $name_table
-            , array("name")
-            , array("id")
-            );
-        $reference_table->addForeignKeyConstraint
-            ( $source_table
-            , array("file", "line")
-            , array("file", "line")
-            );
-        return $reference_table;
-    }
-
     public function relation_table() {
         return "relations";
     }
@@ -380,7 +348,6 @@ class IndexDB extends DB implements Insert, Query {
         $file_table = $this->init_file_table($schema);
         $source_table = $this->init_source_table($schema, $name_table);
         $this->init_definition_table($schema, $name_table, $source_table);
-        $this->init_reference_table($schema, $name_table, $source_table);
         $this->init_relation_table($schema, $name_table, $source_table);
 
         $sync = new SingleDatabaseSynchronizer($this->connection);
