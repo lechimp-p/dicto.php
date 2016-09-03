@@ -13,6 +13,7 @@ namespace Lechimp\Dicto\App;
 use Lechimp\Dicto\App\RuleLoader;
 use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules\Ruleset;
+use Lechimp\Dicto\Variables as V;
 use Symfony\Component\Yaml\Yaml;
 use Pimple\Container;
 use PhpParser\ParserFactory;
@@ -28,7 +29,16 @@ class App {
 
     public function __construct() {
         ini_set('xdebug.max_nesting_level', 200);
-        $parser = new RuleParser();
+        $parser = new RuleParser
+            ( array
+                ( new V\Classes()
+                , new V\Functions()
+                , new V\Globals()
+                , new V\Files()
+                , new V\Methods()
+                // TODO: Add some language constructs here...
+                )
+            );
         $this->rule_loader = new RuleLoader($parser);
     }
 

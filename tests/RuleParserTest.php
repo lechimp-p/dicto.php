@@ -24,7 +24,16 @@ class _RuleParser extends RuleParser {
 
 class RuleParserTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
-        $this->parser = new _RuleParser();
+        $this->parser = new _RuleParser
+            ( array
+                ( new V\Classes()
+                , new V\Functions()
+                , new V\Globals()
+                , new V\Files()
+                , new V\Methods()
+                // TODO: Add some language constructs here...
+                )
+            );
     }
 
     public function parse($expr) {

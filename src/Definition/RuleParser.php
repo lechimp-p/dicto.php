@@ -47,15 +47,13 @@ class RuleParser extends Parser implements ArgumentParser {
      */
     protected $rules = array();
 
-    public function __construct() {
-        $this->predefined_variables = array
-            ( new V\Classes()
-            , new V\Functions()
-            , new V\Globals()
-            , new V\Files()
-            , new V\Methods()
-            // TODO: Add some language constructs here...
-            );
+    /**
+     * @param   V\Variable[]    $predefined_variables
+     */
+    public function __construct(array $predefined_variables) {
+        $this->predefined_variables = array_map(function(V\Variable $v) {
+            return $v;
+        }, $predefined_variables);
         $this->known_schemas = array
             ( new R\ContainText()
             , new R\DependOn()

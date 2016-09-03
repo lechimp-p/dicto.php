@@ -10,13 +10,24 @@
 
 use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Dicto as D;
+use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Definition\RuleParser;
 
 class PPrintRuleTest extends PHPUnit_Framework_TestCase {
     protected static $printed_rules;
 
     static public function setUpBeforeClass() {
-        $parser = new RuleParser();
+        $parser = new RuleParser
+            ( array
+                ( new V\Classes()
+                , new V\Functions()
+                , new V\Globals()
+                , new V\Files()
+                , new V\Methods()
+                // TODO: Add some language constructs here...
+                )
+            );
+
         $rules = <<<RULES
 
 A = Classes
