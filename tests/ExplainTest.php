@@ -18,7 +18,7 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
      */
     public function test_explain($explainable) {
         $this->assertEquals("", $explainable->explanation());
-        $explained = $explainable->explain("EXPLANATION");
+        $explained = $explainable->withExplanation("EXPLANATION");
         $this->assertEquals(get_class($explainable), get_class($explained));
         $this->assertEquals("EXPLANATION", $explained->explanation());
         $methods = get_class_methods(get_class($explainable));
@@ -28,7 +28,7 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
                 ||  $m == "explanation"
                 ||  $m == "withName"
                 || $m == "is_type"
-                || $m == "explain"
+                || $m == "withExplanation"
                 || $m == "compile") {
                     continue;
                 }

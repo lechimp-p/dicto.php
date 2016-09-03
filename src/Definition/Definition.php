@@ -20,11 +20,10 @@ abstract class Definition {
     private $explanation = null;
 
     /**
-     * TODO: rename to withExplanation
      * @param   string
      * return   self
      */
-    public function explain($explanation) {
+    public function withExplanation($explanation) {
         $clone = clone $this;
         $clone->explanation = $explanation;
         return $clone;
