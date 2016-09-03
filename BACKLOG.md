@@ -21,10 +21,8 @@
 * Define known types of `language_construct`s.
 
 # DB
-* Use another schema for the database. There could be a file table, where each
-  file is stored in separate lines. That would make the database smaller and
-  also ContainText easier.
-* Make rules (and maybe vars) able to initialize their own tables.
+* Maybe make rules (and maybe vars) able to initialize their own tables.
+* Maybe move DBs to their own namespace.
 
 # Cleanup
 * Reorder tests to match the different rules better.
