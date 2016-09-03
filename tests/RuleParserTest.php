@@ -297,4 +297,63 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($expected, $res->variables());
     }
+
+    public function test_explain_variables() {
+        $res = $this->parse("/** Explanation */\nAllClasses = Classes");
+
+        $res = $res->variables()["AllClasses"];
+        $this->assertInstanceOf(V\Classes::class, $res);
+        $this->assertEquals("Explanation", $res->explanation());
+
+    }
+
+    public function test_explain_rules() {
+        $res = $this->parser->parse("/** Explanation */\nClasses cannot depend on Functions");
+
+        $res = $res->rules()[0];
+        $this->assertInstanceOf(R\Rule::class, $res);
+        $this->assertEquals("Explanation", $res->explanation());
+    }
+
+    public function test_explain_more_space() {
+        $res = $this->parse("/** Explanation */\n\nAllClasses = Classes");
+
+        $res = $res->variables()["AllClasses"];
+        $this->assertInstanceOf(V\Classes::class, $res);
+        $this->assertEquals("Explanation", $res->explanation());
+
+    }
+
+    public function test_explain_multi_line () {
+        $res = $this->parse("/** Explanation \n * some more \n */\n\nAllClasses = Classes");
+
+        $res = $res->variables()["AllClasses"];
+        $this->assertInstanceOf(V\Classes::class, $res);
+        $this->assertEquals("Explanation\nsome more", $res->explanation());
+
+    }
+
+    public function test_no_explanation_ordinary_comment() {
+        $res = $this->parse("// Comment \nAllClasses = Classes");
+
+        $res = $res->variables()["AllClasses"];
+        $this->assertInstanceOf(V\Classes::class, $res);
+        $this->assertSame(null, $res->explanation());
+    }
+
+    public function test_no_explanation_ordinary_comment_multi_line() {
+        $res = $this->parse("/* Comment \nfoo\n*/\nAllClasses = Classes");
+
+        $res = $res->variables()["AllClasses"];
+        $this->assertInstanceOf(V\Classes::class, $res);
+        $this->assertSame(null, $res->explanation());
+    }
+
+    public function test_no_double_explanation() {
+        $res = $this->parse("/** Explanation \nfoo\n*/\nAllClasses = Classes\nAllFunctions = Functions");
+
+        $res = $res->variables()["AllFunctions"];
+        $this->assertInstanceOf(V\Functions::class, $res);
+        $this->assertSame(null, $res->explanation());
+    }
 }

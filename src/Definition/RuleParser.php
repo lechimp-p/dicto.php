@@ -18,6 +18,9 @@ use Lechimp\Dicto\Rules as R;
  * Parser for Rulesets.
  */
 class RuleParser extends Parser implements ArgumentParser {
+    const EXPLANATION_RE = "[/][*][*](([^*]|([*][^/]))*)[*][/]";
+    const SINGLE_LINE_COMMENT_RE = "[/][/]([^\n]*)";
+    const MULTI_LINE_COMMENT_RE = "[/][*](([^*]|([*][^/]))*)[*][/]";
     const ASSIGNMENT_RE = "(\w+)\s*=\s*";
     const STRING_RE = "[\"]((([\\\\][\"])|[^\"])+)[\"]";
     const RULE_MODE_RE = "must|can(not)?";
@@ -48,6 +51,11 @@ class RuleParser extends Parser implements ArgumentParser {
     protected $rules = array();
 
     /**
+     * @var string|null
+     */
+    protected $last_explanation = null;
+
+    /**
      * TODO: make arrays passed by reference as they get copied anyway.
      *
      * @param   V\Variable[]    $predefined_variables
@@ -75,6 +83,8 @@ class RuleParser extends Parser implements ArgumentParser {
      * @inheritdocs
      */
     protected function add_symbols_to(SymbolTable $table) {
+        $this->add_symbols_for_comments($table);
+
         $this->add_symbols_for_variables_to($table);
 
         $this->add_symbols_for_rules_to($table);
@@ -92,6 +102,16 @@ class RuleParser extends Parser implements ArgumentParser {
 
         // End of statement
         $table->symbol("\n");
+    }
+
+    /**
+     * @param   SymbolTable
+     * @return  null
+     */
+    protected function add_symbols_for_comments(SymbolTable $table) {
+        $table->symbol(self::EXPLANATION_RE);
+        $table->symbol(self::SINGLE_LINE_COMMENT_RE);
+        $table->symbol(self::MULTI_LINE_COMMENT_RE);
     }
 
     /**
@@ -215,13 +235,28 @@ class RuleParser extends Parser implements ArgumentParser {
             }
 
             // A top level statments is either..
+            // ..an explanation
+            if ($this->is_current_token_matched_by(self::EXPLANATION_RE)) {
+                $m = $this->current_match();
+                $this->last_explanation = $this->trim_explanation($m[1]);
+                $this->advance(self::EXPLANATION_RE);
+            }
+            // .. or some comment
+            elseif ($this->is_current_token_matched_by(self::SINGLE_LINE_COMMENT_RE)) {
+                $this->advance(self::SINGLE_LINE_COMMENT_RE);
+            }
+            elseif ($this->is_current_token_matched_by(self::MULTI_LINE_COMMENT_RE)) {
+                $this->advance(self::MULTI_LINE_COMMENT_RE);
+            }
             // ..an assignment to a variable.
-            if ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {
+            elseif ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {
                 $this->variable_assignment();
+                $this->last_explanation = null;
             }
             // ..or a rule declaration
             else {
                 $this->rule_declaration();
+                $this->last_explanation = null;
             }
 
             if ($this->is_end_of_file_reached()) {
@@ -231,6 +266,16 @@ class RuleParser extends Parser implements ArgumentParser {
         }
         $this->purge_predefined_variables();
         return new Ruleset($this->variables, $this->rules);
+    }
+
+    /**
+     * @param   string
+     * @return  string
+     */
+    protected function trim_explanation($content) {
+        return trim(
+            preg_replace("%\s*\n\s*([*]\s*)?%s", "\n", $content)
+        );
     }
 
     // EXPRESSION TYPES
@@ -317,6 +362,9 @@ class RuleParser extends Parser implements ArgumentParser {
         $m = $this->current_match(); 
         $this->fetch_next_token();
         $def = $this->variable();
+        if ($this->last_explanation !== null) {
+            $def = $def->withExplanation($this->last_explanation);
+        }
         $this->add_variable($m[1], $def);
     }
 
@@ -335,7 +383,11 @@ class RuleParser extends Parser implements ArgumentParser {
         $this->is_start_of_rule_arguments = true;
         $arguments = $schema->fetch_arguments($this);
         assert('is_array($arguments)');
-        $this->rules[] = new R\Rule($mode, $var, $schema, $arguments);
+        $rule = new R\Rule($mode, $var, $schema, $arguments);
+        if ($this->last_explanation !== null) {
+            $rule= $rule->withExplanation($this->last_explanation);
+        }
+        $this->rules[] = $rule;
     }
 
 
