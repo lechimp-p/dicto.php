@@ -305,6 +305,10 @@ class IndexDB extends DB implements Insert, Query {
     public function init_relation_table(S\Schema $schema, S\Table $name_table, S\Table $source_table) {
         $relation_table = $schema->createTable($this->relation_table());
         $relation_table->addColumn
+            ("id", "integer"
+            , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
+            );
+        $relation_table->addColumn
             ( "name_left", "integer"
             , array("notnull" => true)
             );
@@ -324,7 +328,8 @@ class IndexDB extends DB implements Insert, Query {
             ( "line", "integer"
             , array("notnull" => true)
             );
-        $relation_table->setPrimaryKey(array("name_left", "name_right", "which"));
+        $relation_table->setPrimaryKey(array("id"));
+        $relation_table->addUniqueIndex(array("name_left", "name_right", "which", "file", "line"));
         $relation_table->addForeignKeyConstraint
             ( $name_table
             , array("name_left")
