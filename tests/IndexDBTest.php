@@ -170,10 +170,57 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
         $this->assertEquals($id1, $id2);
     }
+
     public function test_retreive_file_of_source() {
         $id1 = $this->db->source("AClass.php", "");
         $id2 = $this->db->file("AClass.php");
         $this->assertInternalType("integer", $id1);
         $this->assertEquals($id1, $id2);
+    }
+
+    public function test_insert_two_method_definitions() {
+        $this->db->source("AClass.php", "FOO\nBAR");
+        $this->db->source("BClass.php", "FOO\nBAR");
+        $this->db->definition("a_method", Variable::METHOD_TYPE, "AClass.php", 1, 2);
+        $this->db->definition("a_method", Variable::METHOD_TYPE, "BClass.php", 1, 2);
+
+        $builder = $this->builder();
+        $b = $builder->expr();
+        $res = $builder
+            ->select
+                ( "n.name"
+                , "n.type"
+                , "f.path"
+                , "d.start_line"
+                , "d.end_line"
+                )
+            ->from($this->db->definition_table(), "d")
+            ->join
+                ( "d", $this->db->name_table(), "n"
+                , $b->eq("d.name", "n.id")
+                )
+            ->join
+                ( "d", $this->db->file_table(), "f"
+                , $b->eq("d.file", "f.id")
+                )
+            ->execute()
+            ->fetchAll();
+        $expected = array
+            ( array
+                ( "name" => "a_method"
+                , "type" => Variable::METHOD_TYPE
+                , "path" => "AClass.php"
+                , "start_line" => "1"
+                , "end_line" => "2"
+                )
+            , array
+                ( "name" => "a_method"
+                , "type" => Variable::METHOD_TYPE
+                , "path" => "BClass.php"
+                , "start_line" => "1"
+                , "end_line" => "2"
+                )
+            );
+        $this->assertEquals($expected, $res);
     }
 }

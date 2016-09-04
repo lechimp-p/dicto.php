@@ -260,6 +260,10 @@ class IndexDB extends DB implements Insert, Query {
     public function init_definition_table(S\Schema $schema, S\Table $name_table, S\Table $source_table) {
         $definition_table = $schema->createTable($this->definition_table());
         $definition_table->addColumn
+            ("id", "integer"
+            , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
+            );
+        $definition_table->addColumn
             ( "name", "integer"
             , array("notnull" => true)
             );
@@ -275,7 +279,7 @@ class IndexDB extends DB implements Insert, Query {
             ( "end_line", "integer"
             , array("notnull" => true)
             );
-        $definition_table->setPrimaryKey(array("name"));
+        $definition_table->setPrimaryKey(array("id"));
         $definition_table->addForeignKeyConstraint
             ( $name_table
             , array("name")
