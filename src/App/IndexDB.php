@@ -122,7 +122,7 @@ class IndexDB extends DB implements Insert, Query {
             ->setParameter(2, $start_line)
             ->setParameter(3, $end_line)
             ->execute();
-        return $name_id;
+        return array($name_id, 0);
     }
 
     /**

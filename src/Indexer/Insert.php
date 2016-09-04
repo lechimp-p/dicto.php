@@ -52,7 +52,7 @@ interface Insert {
      * @param   string      $file
      * @param   int         $start_line
      * @param   int         $end_line
-     * @return  int         id of name
+     * @return  int[]       (id of name, id of definition)
      */
     public function definition($name, $type, $file, $start_line, $end_line);
 

@@ -315,15 +315,15 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
 
         if ($this->is_definition($node)) {
             $type = $this->get_type_of($node);
-            $id = $this->insert->definition
+            list($name_id, $def_id) = $this->insert->definition
                 ( $node->name
                 , $type
                 , $this->file_path
                 , $start_line
                 , $end_line
                 );
-            $this->call_definition_listener("listeners_enter_definition",  $type, $id, $node);
-            $this->definition_stack[] = array($type, $id);
+            $this->call_definition_listener("listeners_enter_definition",  $type, $name_id, $node);
+            $this->definition_stack[] = array($type, $name_id);
         }
         else {
             $this->call_misc_listener("listeners_enter_misc", $node);

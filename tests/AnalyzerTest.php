@@ -127,7 +127,7 @@ foo
 CODE;
 
         $this->db->source("file", $code);
-        $id1 = $this->db->definition("a_function", Variable::FUNCTION_TYPE, "file", 1, 7);
+        list($id1,$_) = $this->db->definition("a_function", Variable::FUNCTION_TYPE, "file", 1, 7);
         $id2 = $this->db->name("a_method", Variable::METHOD_TYPE);
         $this->db->relation($id1, $id2, "depend on", "file", 4);
 

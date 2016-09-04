@@ -172,7 +172,7 @@ PHP;
         $insert_mock
             ->expects($this->exactly(2))
             ->method("definition")
-            ->willReturnOnConsecutiveCalls(1,2)
+            ->willReturnOnConsecutiveCalls(array(1,1),array(2,2))
             ->withConsecutive
                 ( array
                     ( $this->equalTo("AClass")
@@ -235,7 +235,7 @@ PHP;
         $insert_mock
             ->expects($this->once())
             ->method("definition")
-            ->willReturn(1)
+            ->willReturn(array(1,1))
             ->with
                 ( $this->equalTo("a_function")
                 , $this->equalTo(Variable::FUNCTION_TYPE)
@@ -282,7 +282,7 @@ PHP;
         $insert_mock
             ->expects($this->once())
             ->method("definition")
-            ->willReturn(1)
+            ->willReturn(array(1,1))
             ->with
                 ( $this->equalTo("a_function")
                 , $this->equalTo(Variable::FUNCTION_TYPE)
@@ -339,7 +339,7 @@ PHP;
         $insert_mock
             ->expects($this->once())
             ->method("definition")
-            ->willReturn(1)
+            ->willReturn(array(1,1))
             ->with
                 ( $this->equalTo("a_function")
                 , $this->equalTo(Variable::FUNCTION_TYPE)
@@ -395,7 +395,7 @@ PHP;
         $insert_mock
             ->expects($this->once())
             ->method("definition")
-            ->willReturn(1)
+            ->willReturn(array(1,1))
             ->with
                 ( $this->equalTo("a_function")
                 , $this->equalTo(Variable::FUNCTION_TYPE)
@@ -467,7 +467,7 @@ PHP;
         $insert_mock
             ->expects($this->once())
             ->method("definition")
-            ->willReturn(1)
+            ->willReturn(array(1,1))
             ->with
                 ( $this->equalTo("a_function")
                 , $this->equalTo(Variable::FUNCTION_TYPE)

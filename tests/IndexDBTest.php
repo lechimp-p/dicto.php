@@ -166,7 +166,7 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
 
     public function test_retreive_name_of_definition() {
         $this->db->source("AClass.php", "FOO\nBAR");
-        $id1 = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
+        list($id1,$_) = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
         $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
         $this->assertEquals($id1, $id2);
     }
@@ -226,7 +226,7 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
 
     public function test_insert_two_relations() {
         $this->db->source("AClass.php", "FOO\nBAR");
-        $id1 = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
+        list($id1,$_) = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
         $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 2);
@@ -270,7 +270,7 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
 
     public function test_insert_two_relations_same_line() {
         $this->db->source("AClass.php", "FOO\nBAR");
-        $id1 = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
+        list($id1,$_) = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
         $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
