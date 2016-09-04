@@ -128,6 +128,13 @@ class IndexDB extends DB implements Insert, Query {
     /**
      * @inheritdoc
      */
+    public function method_info($name_id, $class_name_id, $definition_id) {
+        return null;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function relation($name_left_id, $name_right_id, $which, $file, $line) {
         assert('is_int($name_left_id)');
         assert('is_int($name_right_id)');

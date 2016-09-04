@@ -57,6 +57,16 @@ interface Insert {
     public function definition($name, $type, $file, $start_line, $end_line);
 
     /**
+     * Store some info about a method.
+     *
+     * @param   int         $name_id
+     * @param   int         $class_name_id
+     * @param   int         $definition_id
+     * @return  null
+     */
+    public function method_info($name_id, $class_name_id, $definition_id);
+
+    /**
      * Store the fact, that two names have a relation, established at a
      * certain source code location.
      *

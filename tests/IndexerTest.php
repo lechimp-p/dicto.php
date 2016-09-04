@@ -45,7 +45,7 @@ class IndexerTest extends PHPUnit_Framework_TestCase {
 PHP;
         $insert_mock = $this
             ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
             ->getMock();
 
         $insert_mock
@@ -69,7 +69,7 @@ class AClass {
 PHP;
         $insert_mock = $this
             ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
             ->getMock();
 
         $insert_mock
@@ -98,7 +98,7 @@ class AClass {
 PHP;
         $insert_mock = $this
             ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
             ->getMock();
 
         $insert_mock
@@ -135,7 +135,7 @@ function a_function() {
 PHP;
         $insert_mock = $this
             ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
             ->getMock();
 
         $insert_mock
@@ -166,7 +166,7 @@ class AClass {
 PHP;
         $insert_mock = $this
             ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
             ->getMock();
 
         $insert_mock
@@ -229,7 +229,7 @@ function a_function() {
 PHP;
         $insert_mock = $this
             ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
             ->getMock();
 
         $insert_mock
@@ -276,7 +276,7 @@ function a_function() {
 PHP;
         $insert_mock = $this
             ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
             ->getMock();
 
         $insert_mock
@@ -332,7 +332,7 @@ function a_function() {
 PHP;
         $insert_mock = $this
             ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
             ->getMock();
 
 
@@ -389,7 +389,7 @@ function a_function() {
 PHP;
         $insert_mock = $this
             ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
             ->getMock();
 
         $insert_mock
@@ -461,7 +461,7 @@ function a_function() {
 PHP;
         $insert_mock = $this
             ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "relation"))
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
             ->getMock();
 
         $insert_mock

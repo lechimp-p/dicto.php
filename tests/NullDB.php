@@ -17,6 +17,7 @@ class NullDB implements Insert, Query {
     public function file($path) { return 0; }
     public function source($path, $content) { return 0; }
     public function definition($name, $type, $file, $start_line, $end_line) { return array(0,0); }
+    public function method_info($name_id, $class_name_id, $definition_id) { return null; }
     public function relation($name_left_id, $name_right_id, $which, $file, $line) { return 0; }
     // Query
     public function name_table() { return "names"; }
