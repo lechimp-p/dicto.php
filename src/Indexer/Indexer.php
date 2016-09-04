@@ -324,6 +324,8 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                 );
             $this->call_definition_listener("listeners_enter_definition",  $type, $name_id, $node);
             $this->definition_stack[] = array($type, $name_id);
+
+            $this->insert_custom_info($type, $name_id, $def_id);
         }
         else {
             $this->call_misc_listener("listeners_enter_misc", $node);
@@ -349,6 +351,18 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         return     $node instanceof N\Stmt\Class_
                 || $node instanceof N\Stmt\ClassMethod
                 || $node instanceof N\Stmt\Function_;
+    }
+
+    protected function insert_custom_info($type, $name_id, $def_id) {
+        if ($type == Variable::METHOD_TYPE) {
+            $this->insert_method_info($name_id, $def_id);
+        }
+    }
+
+    protected function insert_method_info($name_id, $def_id) {
+        list($_, $cls_name_id) = $this->definition_stack[count($this->definition_stack)-2];
+        assert('$_ == Lechimp\\Dicto\\Variables\\Variable::CLASS_TYPE');
+        $this->insert->method_info($name_id, $cls_name_id, $def_id);
     }
 
     /**

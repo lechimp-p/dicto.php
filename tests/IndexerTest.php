@@ -501,6 +501,56 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
+    public function test_method_info() {
+        $source = <<<PHP
+<?php
+
+class AClass {
+    public function a_method() {
+    }
+}
+PHP;
+
+        $insert_mock = $this
+            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
+            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
+            ->getMock();
+
+        $class_name_id = 1;
+        $method_name_id = 3;
+        $method_def_id = 4;
+
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("definition")
+            ->willReturnOnConsecutiveCalls
+                ( array($class_name_id,2)
+                , array($method_name_id,$method_def_id)
+                )
+            ->withConsecutive
+                ( array
+                    ( $this->equalTo("AClass")
+                    , $this->equalTo(Variable::CLASS_TYPE)
+                    )
+                , array
+                    ( $this->equalTo("a_method")
+                    , $this->equalTo(Variable::METHOD_TYPE)
+                    )
+                );
+
+        $insert_mock
+            ->expects($this->once())
+            ->method("method_info")
+            ->with
+                ( $this->equalTo($method_name_id)
+                , $this->equalTo($class_name_id)
+                , $this->equalTo($method_def_id)
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
 /*    public function test_entity_A1_class() {
         $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
 
