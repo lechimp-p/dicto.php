@@ -346,7 +346,7 @@ class IndexDB extends DB implements Insert, Query {
 
         $name_table = $this->init_name_table($schema);
         $file_table = $this->init_file_table($schema);
-        $source_table = $this->init_source_table($schema, $name_table);
+        $source_table = $this->init_source_table($schema, $file_table);
         $this->init_definition_table($schema, $name_table, $source_table);
         $this->init_relation_table($schema, $name_table, $source_table);
 
