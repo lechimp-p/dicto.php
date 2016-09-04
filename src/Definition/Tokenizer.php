@@ -49,7 +49,7 @@ class Tokenizer implements \Iterator {
      */
     protected $is_end_token_added;
 
-    static $UNPARSED_PREVIEW_FOR_ERROR = 10;
+    static protected $UNPARSED_PREVIEW_FOR_ERROR = 10;
 
     public function __construct(SymbolTable $symbol_table, $source) {
         assert('is_string($source)');
