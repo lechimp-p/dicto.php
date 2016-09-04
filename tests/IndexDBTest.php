@@ -267,4 +267,48 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($expected, $res);
     }
+
+    public function test_insert_two_relations_same_line() {
+        $this->db->source("AClass.php", "FOO\nBAR");
+        $id1 = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
+        $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
+        $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
+        $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
+
+        $builder = $this->builder();
+        $b = $builder->expr();
+        $res = $builder
+            ->select
+                ( "r.name_left"
+                , "r.name_right"
+                , "r.which"
+                , "f.path"
+                , "r.line"
+                )
+            ->from($this->db->relation_table(), "r")
+            ->join
+                ( "r", $this->db->file_table(), "f"
+                , $b->eq("r.file", "f.id")
+                )
+            ->execute()
+            ->fetchAll();
+        $expected = array
+            ( array
+                ( "name_left" => "$id1"
+                , "name_right" => "$id2"
+                , "which" => "some_relation"
+                , "path" => "AClass.php"
+                , "line" => "1"
+                )
+            , array
+                ( "name_left" => "$id1"
+                , "name_right" => "$id2"
+                , "which" => "some_relation"
+                , "path" => "AClass.php"
+                , "line" => "1"
+                )
+            );
+
+        $this->assertEquals($expected, $res);
+    }
 }

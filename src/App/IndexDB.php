@@ -329,7 +329,6 @@ class IndexDB extends DB implements Insert, Query {
             , array("notnull" => true)
             );
         $relation_table->setPrimaryKey(array("id"));
-        $relation_table->addUniqueIndex(array("name_left", "name_right", "which", "file", "line"));
         $relation_table->addForeignKeyConstraint
             ( $name_table
             , array("name_left")
