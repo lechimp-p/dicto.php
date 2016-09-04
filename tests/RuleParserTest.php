@@ -41,6 +41,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 )
             , array
                 ( new V\Name()
+                , new V\In()
                 )
             );
     }
@@ -153,6 +154,18 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
             );
         $this->assertEquals($expected, $res->variables());
 
+    }
+
+    public function test_methods_in_classes() {
+        $this->parser->which_expression = "variable";
+        $res = $this->parse("Methods in: Classes");
+
+        $expected = new V\WithProperty
+            ( new V\Methods()
+            , new V\In
+            , array(new V\Classes())
+            );
+        $this->assertEquals($expected, $res);
     }
 
     public function test_string() {
