@@ -19,7 +19,7 @@ use Doctrine\DBAL\DriverManager;
 use Psr\Log\LogLevel;
 
 require_once(__DIR__."/LoggerMock.php");
-require_once(__DIR__."/NullReportGenerator.php");
+require_once(__DIR__."/ReportGeneratorMock.php");
 
 // TODO: This seems to be a bad test, as it does not test Analyzer really.
 // instead it tests if the rule works. This should be tested too, but tests
@@ -37,7 +37,7 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
         $this->db->init_sqlite_regexp();
         $this->db->maybe_init_database_schema();
 
-        $this->rp = new NullReportGenerator();
+        $this->rp = new ReportGeneratorMock();
 
         $this->log = new LoggerMock();
    }
