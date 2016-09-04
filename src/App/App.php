@@ -44,6 +44,7 @@ class App {
 
         $rules_file = array_shift($params);
 
+        // the rest of the params are paths to configs
         $configs = $this->load_configs($params);
 
         $dic = $this->create_dic($rules_file, $configs);
