@@ -370,12 +370,12 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     public function leaveNode(\PhpParser\Node $node) {
         // Class
-/*        if($this->is_definition($node)) {
+        if($this->is_definition($node)) {
             list($type, $id) = array_pop($this->definition_stack);
             $this->call_definition_listener("listeners_leave_definition", $type, $id, $node);
         }
         else {
             $this->call_misc_listener("listeners_leave_misc", $node);
-        }*/
+        }
     }
 }
