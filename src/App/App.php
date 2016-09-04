@@ -23,33 +23,8 @@ use PhpParser\ParserFactory;
  * The App to be run from a script.
  */
 class App {
-    /**
-     * @var RuleLoader
-     */
-    protected $rule_loader;
-
     public function __construct() {
         ini_set('xdebug.max_nesting_level', 200);
-        $parser = new RuleParser
-            ( array
-                ( new V\Classes()
-                , new V\Functions()
-                , new V\Globals()
-                , new V\Files()
-                , new V\Methods()
-                , new V\LanguageConstruct("ErrorSuppressor", "@")
-                // TODO: Add some language constructs here...
-                )
-            , array
-                ( new R\ContainText()
-                , new R\DependOn()
-                , new R\Invoke()
-                )
-            , array
-                ( new V\Name()
-                )
-            );
-        $this->rule_loader = new RuleLoader($parser);
     }
 
     /**
@@ -59,70 +34,92 @@ class App {
      * @return  null
      */
     public function run(array $params) {
-        if (count($params) < 2) {
+        if (count($params) < 3) {
             throw new \RuntimeException(
-                "Expected path to rule-file as first parameter.");
+                "Expected path to rule-file as first parameter and path to config as second parameter.");
         }
 
-        $ruleset = $this->load_rules_file($params[1]);
-
-        // drop programm name and rule file path
-        array_shift($params);
+        // drop program name
         array_shift($params);
 
-        $configs = array();
-        $this->load_configs($params, $configs);
+        $rules_file = array_shift($params);
 
-        $dic = $this->create_dic($ruleset, $configs);
+        $configs = $this->load_configs($params);
+
+        $dic = $this->create_dic($rules_file, $configs);
 
         $dic["engine"]->run();
-    }
-
-    /**
-     * Load rules and initial config from a *.php-file.
-     *
-     * @param   string  $path
-     * @return  array   ($ruleset, $config)
-     */
-    protected function load_rules_file($path) {
-        if (!file_exists($path)) {
-            throw new \RuntimeException("Unknown rule-file '$path'");
-        }
-        $ruleset = $this->rule_loader->load_rules_from($path);
-        return $ruleset;
     }
 
     /**
      * Load extra configs from yaml files.
      *
      * @param   array   $config_file_paths
-     * @param   array   &$configs_array
-     * @return  null
+     * @return  array
      */
-    protected function load_configs(array $config_file_paths, array &$configs_array) {
+    protected function load_configs(array $config_file_paths) {
+        $configs_array = array();
         foreach ($config_file_paths as $config_file) {
             if (!file_exists($config_file)) {
                 throw new \RuntimeException("Unknown config-file '$config_file'");
             }
             $configs_array[] = Yaml::parse(file_get_contents($config_file));
         }
+        return $configs_array;
     }
 
     /**
      * Create and initialize the DI-container.
      *
-     * @param   RuleSet     $ruleset
+     * TODO: move rule_file_path to config?
+     *
+     * @param   string      $rule_file_path
      * @param   array       &$configs
      * @return  Container
      */
-    protected function create_dic(RuleSet $ruleset, array &$configs) {
+    protected function create_dic($rule_file_path, array &$configs) {
+        array('is_string($rule_file_path)');
+
         $container = new Container();
 
         $container["config"] = function () use (&$configs) {
             return new Config($configs);
         };
 
-        $container["ruleset"] = $ruleset;
+        $container["ruleset"] = function($c) use (&$rule_file_path) {
+            if (!file_exists($rule_file_path)) {
+                throw new \RuntimeException("Unknown rule-file '$rule_file_path'");
+            }
+            $ruleset = $c["rule_loader"]->load_rules_from($rule_file_path);
+            return $ruleset;
+        };
+
+        $container["rule_loader"] = function($c) {
+            return new RuleLoader($c["rule_parser"]);
+        };
+
+        $container["rule_parser"] = function() {
+            // TODO: Move this stuff to the config.
+            return new RuleParser
+                ( array
+                    ( new V\Classes()
+                    , new V\Functions()
+                    , new V\Globals()
+                    , new V\Files()
+                    , new V\Methods()
+                    , new V\LanguageConstruct("ErrorSuppressor", "@")
+                    // TODO: Add some language constructs here...
+                    )
+                , array
+                    ( new R\ContainText()
+                    , new R\DependOn()
+                    , new R\Invoke()
+                    )
+                , array
+                    ( new V\Name()
+                    )
+                );
+        };
 
         $container["engine"] = function($c) {
             return new Engine

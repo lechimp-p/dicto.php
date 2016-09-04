@@ -12,6 +12,7 @@ use Lechimp\Dicto\App\App;
 use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\App\Engine;
+use Lechimp\Dicto\App\RuleLoader;
 use Lechimp\Dicto\App\SourceStatus;
 use Lechimp\Dicto\Rules\Ruleset;
 
@@ -22,14 +23,9 @@ class _App extends App {
         return $this->create_dic($ruleset, $configs);
     }
 
-    public function _load_rules_file($path) {
-        return $this->load_rules_file($path);
-    }
-
     public function _load_configs($path) {
-        $arr = array();
-        $this->load_configs(array($path), $arr);
-        return $arr[0]; 
+        $c = $this->load_configs(array($path));
+        return $c[0];
     }
 }
 
@@ -38,41 +34,68 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $this->app = new _App();
     }
 
-    public function test_load_rules_file() {
-        $rs = $this->app->_load_rules_file(__DIR__."/data/rules");
-        $this->assertInstanceOf(Ruleset::class, $rs);
-    }
-
-    /**
-     * @depends test_load_rules_file
-     */
     public function test_dic_indexer_factory() {
-        $rs = $this->app->_load_rules_file(__DIR__."/data/rules");
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic($rs, array($c));
+        $dic = $this->app->_create_dic(__DIR__."/data/rules", array($c));
 
         $this->assertInstanceOf(IndexerFactory::class, $dic["indexer_factory"]);
     }
 
-    /**
-     * @depends test_load_rules_file
-     */
     public function test_dic_engine() {
-        $rs = $this->app->_load_rules_file(__DIR__."/data/rules");
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic($rs, array($c));
+        $dic = $this->app->_create_dic(__DIR__."/data/rules", array($c));
 
         $this->assertInstanceOf(Engine::class, $dic["engine"]);
     }
 
     public function test_source_status() {
-        $rs = $this->app->_load_rules_file(__DIR__."/data/rules");
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic($rs, array($c));
+        $dic = $this->app->_create_dic(__DIR__."/data/rules", array($c));
 
         $this->assertInstanceOf(SourceStatus::class, $dic["source_status"]);
+    }
+
+    public function test_run() {
+        $configs = array("a.yaml", "b.yaml", "c.yaml");
+        $rules_path = "rules.path";
+        $params = array_merge(array("program_name", $rules_path), $configs);
+
+        $app_mock = $this
+            ->getMockBuilder(App::class)
+            ->setMethods(array("load_configs", "load_rules_file", "create_dic"))
+            ->getMock();
+
+        $engine_mock = $this
+            ->getMockBuilder(Engine::class)
+            ->disableOriginalConstructor()
+            ->setMethods(array("run"))
+            ->getMock();
+
+        $cfg_return = array("some_config");
+        $app_mock
+            ->expects($this->at(0))
+            ->method("load_configs")
+            ->with
+                ( $this->equalTo($configs)
+                )
+            ->willReturn($cfg_return);
+
+        $app_mock
+            ->expects($this->at(1))
+            ->method("create_dic")
+            ->with
+                ( $this->equalTo($rules_path)
+                , $this->equalTo($cfg_return)
+                )
+            ->willReturn(array("engine" => $engine_mock));
+
+        $engine_mock
+            ->expects($this->at(0))
+            ->method("run");
+
+        $app_mock->run($params);
     }
 }
