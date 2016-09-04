@@ -227,8 +227,8 @@ class RuleParser extends Parser implements ArgumentParser {
     protected function root() {
         while (true) {
             // drop empty lines
-            while ($this->is_current_token_matched_by("\n")) {
-                $this->advance("\n");
+            while ($tok = $this->is_current_token_to_be_dropped()) {
+                $this->advance($tok);
             }
             if ($this->is_end_of_file_reached()) {
                 break;
@@ -240,13 +240,6 @@ class RuleParser extends Parser implements ArgumentParser {
                 $m = $this->current_match();
                 $this->last_explanation = $this->trim_explanation($m[1]);
                 $this->advance(self::EXPLANATION_RE);
-            }
-            // .. or some comment
-            elseif ($this->is_current_token_matched_by(self::SINGLE_LINE_COMMENT_RE)) {
-                $this->advance(self::SINGLE_LINE_COMMENT_RE);
-            }
-            elseif ($this->is_current_token_matched_by(self::MULTI_LINE_COMMENT_RE)) {
-                $this->advance(self::MULTI_LINE_COMMENT_RE);
             }
             // ..an assignment to a variable.
             elseif ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {
@@ -266,6 +259,24 @@ class RuleParser extends Parser implements ArgumentParser {
         }
         $this->purge_predefined_variables();
         return new Ruleset($this->variables, $this->rules);
+    }
+
+    /**
+     * Returns currently matched whitespace or comment token if there is any.
+     *
+     * @return string|null
+     */
+    public function is_current_token_to_be_dropped() {
+        if ($this->is_current_token_matched_by("\n")) {
+            return "\n";
+        }
+        if ($this->is_current_token_matched_by(self::SINGLE_LINE_COMMENT_RE)) {
+            return self::SINGLE_LINE_COMMENT_RE;
+        }
+        if ($this->is_current_token_matched_by(self::MULTI_LINE_COMMENT_RE)) {
+            return self::MULTI_LINE_COMMENT_RE;
+        }
+        return null;
     }
 
     /**
