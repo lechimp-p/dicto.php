@@ -161,7 +161,7 @@ class IndexDB extends DB implements Insert, Query {
      *
      * @param   string  $id
      * @param   string  $table
-     * @param   string  $id_colum
+     * @param   string  $id_column
      * @return  int|null
      */
     protected function get_int_id($id, $table, $id_column) {
