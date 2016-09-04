@@ -46,6 +46,11 @@ interface Query {
     public function definition_table();
 
     /**
+     * @return string
+     */
+    public function method_info_table();
+
+    /**
      * Get a builder to create queries.
      *
      * @return  QueryBuilder

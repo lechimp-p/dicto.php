@@ -129,6 +129,17 @@ class IndexDB extends DB implements Insert, Query {
      * @inheritdoc
      */
     public function method_info($name_id, $class_name_id, $definition_id) {
+        $this->builder()
+            ->insert($this->method_info_table())
+            ->values(array
+                ( "name" => "?"
+                , "class" => "?"
+                , "definition" => "?"
+                ))
+            ->setParameter(0, $name_id)
+            ->setParameter(1, $class_name_id)
+            ->setParameter(2, $definition_id)
+            ->execute();
         return null;
     }
 
@@ -305,6 +316,43 @@ class IndexDB extends DB implements Insert, Query {
         return $definition_table;
     }
 
+    public function method_info_table() {
+        return "method_info";
+    }
+
+    public function init_method_table(S\Schema $schema, S\Table $name_table, S\Table $definition_table) {
+        $method_info_table = $schema->createTable($this->method_info_table());
+        $method_info_table->addColumn
+            ( "name", "integer"
+            , array("notnull" => true)
+            );
+        $method_info_table->addColumn
+            ( "class", "integer"
+            , array("notnull" => true)
+            );
+        $method_info_table->addColumn
+            ( "definition", "string"
+            , array("notnull" => true)
+            );
+        $method_info_table->setPrimaryKey(array("name", "class"));
+        $method_info_table->addForeignKeyConstraint
+            ( $name_table
+            , array("name")
+            , array("id")
+            );
+        $method_info_table->addForeignKeyConstraint
+            ( $name_table
+            , array("class")
+            , array("id")
+            );
+        $method_info_table->addForeignKeyConstraint
+            ( $definition_table
+            , array("definition")
+            , array("id")
+            );
+        return $method_info_table;
+    }
+
     public function relation_table() {
         return "relations";
     }
@@ -362,7 +410,8 @@ class IndexDB extends DB implements Insert, Query {
         $name_table = $this->init_name_table($schema);
         $file_table = $this->init_file_table($schema);
         $source_table = $this->init_source_table($schema, $file_table);
-        $this->init_definition_table($schema, $name_table, $source_table);
+        $definition_table = $this->init_definition_table($schema, $name_table, $source_table);
+        $this->init_method_table($schema, $name_table, $definition_table);
         $this->init_relation_table($schema, $name_table, $source_table);
 
         $sync = new SingleDatabaseSynchronizer($this->connection);

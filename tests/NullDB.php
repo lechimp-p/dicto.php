@@ -24,6 +24,7 @@ class NullDB implements Insert, Query {
     public function file_table() { return "files"; }
     public function source_table() { return "source"; }
     public function definition_table() { return "definitions"; }
+    public function method_info_table() { return "method_info"; }
     public function relation_table() { return "relations"; }
     public function builder() { throw new \RuntimeException("PANIC!"); }
 }

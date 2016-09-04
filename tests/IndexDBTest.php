@@ -311,4 +311,32 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($expected, $res);
     }
+
+    public function test_method_info() {
+        $this->db->source("AClass.php", "FOO\nBAR");
+        list($cls_id, $_) = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
+        list($mtd_id, $def_id) = $this->db->definition("a_method", Variable::METHOD_TYPE, "AClass.php", 1, 2);
+        $this->db->method_info($mtd_id, $cls_id, $def_id);
+
+        $builder = $this->builder();
+        $b = $builder->expr();
+        $res = $builder
+            ->select
+                ( "name"
+                , "class"
+                , "definition"
+                )
+            ->from($this->db->method_info_table(), "d")
+            ->execute()
+            ->fetchAll();
+        $expected = array
+            ( array
+                ( "name"        => $mtd_id
+                , "class"       => $cls_id
+                , "definition"  => $def_id
+                )
+            );
+        $this->assertEquals($expected, $res);
+    }
+
 }
