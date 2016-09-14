@@ -18,9 +18,7 @@ use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
  */
 class In extends Property {
     /**
-     * Name of the property.
-     *
-     * @return  string
+     * @inheritdocs
      */
     public function name() {
         return "in";
@@ -34,10 +32,7 @@ class In extends Property {
     }
 
     /**
-     * Fetch arguments for the Property from a stream of tokens during parsing.
-     *
-     * @param   ArgumentParser  $parser
-     * @return  array
+     * @inheritdocs
      */
     public function fetch_arguments(ArgumentParser $parser) {
         $other = $parser->fetch_variable();
@@ -45,10 +40,7 @@ class In extends Property {
     }
 
     /**
-     * Check if the given arguments are valid for the property.
-     *
-     * @param   array   $arguments
-     * @return  bool 
+     * @inheritdocs
      */
     public function arguments_are_valid(array &$arguments) {
         if (count($arguments) != 1) {
@@ -58,15 +50,9 @@ class In extends Property {
     }
 
     /**
-     * Compile the property to an SQL expression.
-     *
-     * @param   array               $argument
-     * @param   ExpressionBuilder   $builder
-     * @param   string              $table_name
-     * @param   bool                $negate
-     * @return  string|CompositeExpression
+     * @inheritdocs
      */
-    public function compile(array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false) {
+    public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false) {
         assert('$this->arguments_are_valid($arguments)');
         return "1 = 1";
     }

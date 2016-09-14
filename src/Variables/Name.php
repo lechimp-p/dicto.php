@@ -18,19 +18,14 @@ use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
  */
 class Name extends Property {
     /**
-     * Name of the property.
-     *
-     * @return  string
+     * @inheritdocs
      */
     public function name() {
         return "name";
     }
 
     /**
-     * Fetch arguments for the Property from a stream of tokens during parsing.
-     *
-     * @param   ArgumentParser  $parser
-     * @return  array
+     * @inheritdocs
      */
     public function fetch_arguments(ArgumentParser $parser) {
         $regexp = $parser->fetch_string();
@@ -38,10 +33,7 @@ class Name extends Property {
     }
 
     /**
-     * Check if the given arguments are valid for the property.
-     *
-     * @param   array   $arguments
-     * @return  bool 
+     * @inheritdocs
      */
     public function arguments_are_valid(array &$arguments) {
         if (count($arguments) != 1) {
@@ -55,15 +47,9 @@ class Name extends Property {
     }
 
     /**
-     * Compile the property to an SQL expression.
-     *
-     * @param   array               $argument
-     * @param   ExpressionBuilder   $builder
-     * @param   string              $table_name
-     * @param   bool                $negate
-     * @return  string|CompositeExpression
+     * @inheritdocs
      */
-    public function compile(array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false) {
+    public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false) {
         assert('$this->arguments_are_valid($arguments)');
         if (!$negate) {
             return "$table_name.name REGEXP ".$builder->literal('^'.$arguments[0].'$');

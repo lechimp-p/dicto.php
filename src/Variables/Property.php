@@ -54,11 +54,12 @@ abstract class Property {
     /**
      * Compile the property to an SQL expression.
      *
+     * @param   Variable            $variable
      * @param   array               $argument
      * @param   ExpressionBuilder   $builder
      * @param   string              $table_name
      * @param   bool                $negate
      * @return  string|CompositeExpression
      */
-    abstract public function compile(array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false);
+    abstract public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false);
 }
