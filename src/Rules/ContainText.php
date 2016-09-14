@@ -93,7 +93,7 @@ class ContainText extends Schema {
                         )
                     )
                 ->where
-                    ( $checked_on->compile($b, "n")
+                    ( $checked_on->compile($b, "n", "mi")
                     )
                 ->setParameter(0, $regexp)
                 ->execute();
@@ -138,7 +138,7 @@ class ContainText extends Schema {
                         )
                     )
                 ->where
-                    ( $checked_on->compile($b, "n")
+                    ( $checked_on->compile($b, "n", "mi")
                     , "match.line IS NULL"
                     )
                 ->setParameter(0, $regexp)

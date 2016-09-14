@@ -102,8 +102,8 @@ abstract class Relation extends Schema {
                 // END HACK
                 ->where
                     ( $b->eq("rel.which", $b->literal($this->name()))
-                    , $name_left->compile($b, "nl")
-                    , $name_right->compile($b, "nr")
+                    , $name_left->compile($b, "nl", "mil")
+                    , $name_right->compile($b, "nr", "mir")
                     )
                 ->execute();
         }
@@ -146,7 +146,7 @@ abstract class Relation extends Schema {
                         )
                     )
                 ->where
-                    ( $name_left->compile($b, "n")
+                    ( $name_left->compile($b, "n", "mi")
                     , $b->isNull("rel.name_right")
                     )
                 ->execute();

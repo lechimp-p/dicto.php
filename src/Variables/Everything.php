@@ -23,7 +23,7 @@ class Everything extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
+    public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
         return $builder->eq 
             ( $builder->literal($negate ? 0 : 1)
             , $builder->literal(1)

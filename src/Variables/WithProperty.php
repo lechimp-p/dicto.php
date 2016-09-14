@@ -70,20 +70,20 @@ class WithProperty extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
+    public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
         // normal case : left_condition AND property 
         if (!$negate) {
             return $builder->andX
-                ( $this->variable()->compile($builder, $table_name)
-                , $this->property->compile($this->variable(), $this->arguments, $builder, $table_name, false)
+                ( $this->variable()->compile($builder, $name_table_name, $method_info_table_name)
+                , $this->property->compile($this->variable(), $this->arguments, $builder, $name_table_name, false)
                 );
         }
         // negated case: not (left_condition_left and property)
         //             = not left_condition or not property
         else {
             return $builder->orX
-                ( $this->variable()->compile($builder, $table_name, true)
-                , $this->property->compile($this->variable(), $this->arguments, $builder, $table_name, true)
+                ( $this->variable()->compile($builder, $name_table_name, $method_info_table_name, true)
+                , $this->property->compile($this->variable(), $this->arguments, $builder, $name_table_name, true)
                 );
         }
     }

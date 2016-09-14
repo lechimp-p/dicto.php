@@ -75,10 +75,11 @@ abstract class Variable extends Def\Definition {
      * Compile the variable to an sql expression.
      *
      * @param   ExpressionBuilder   $builder
-     * @param   string              $table_name
+     * @param   string              $name_table_name
+     * @param   string              $method_info_table_name
      * @param   bool                $negate
      * @return  string|CompositeExpression
      */
-    abstract public function compile(ExpressionBuilder $builder, $table_name, $negate = false);
+    abstract public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table, $negate = false);
 }
 

@@ -39,10 +39,10 @@ abstract class Entities extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
+    public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
         return $this->eq_op
             ( $builder
-            , "$table_name.type"
+            , "$name_table_name.type"
             , $builder->literal($this->id())
             , $negate);
     }

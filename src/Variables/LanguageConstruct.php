@@ -42,16 +42,16 @@ class LanguageConstruct extends Entities {
     /**
      * @inheritdocs
      */
-    public function compile(ExpressionBuilder $builder, $table_name, $negate = false) {
+    public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
         $type_expr = $this->eq_op
             ( $builder
-            , "$table_name.type"
+            , "$name_table_name.type"
             , $builder->literal(Variable::LANGUAGE_CONSTRUCT_TYPE)
             , $negate
             );
         $name_expr = $this->eq_op
             ( $builder
-            , "$table_name.name"
+            , "$name_table_name.name"
             , $builder->literal($this->construct_name())
             , $negate
             );
