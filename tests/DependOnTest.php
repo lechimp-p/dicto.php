@@ -22,6 +22,8 @@ class DependOnTest extends RuleTest {
         return new R\DependOn();
     }
 
+    // RULE 1
+
     protected function only_a_classes_can_depend_on_globals() {
         $a_classes = new V\WithProperty
                 ( new V\Classes()
@@ -103,4 +105,80 @@ CODE;
             );
         $this->assertEquals($expected, $violations);
     }
+
+    // RULE 2
+
+    protected function classes_must_depend_on_a_globals() {
+        return new R\Rule
+            ( R\Rule::MODE_MUST
+            , new V\Classes
+            , new R\DependOn()
+            , array(new V\WithProperty
+                ( new V\Globals()
+                , new V\Name()
+                , array("a_.*")
+                ))
+            );
+    }
+
+    public function test_rule2_no_violation_1() {
+        $rule = $this->classes_must_depend_on_a_globals();
+        $code = <<<CODE
+<?php
+
+class SomeClass {
+    public function a_method() {
+        global \$a_foo;
+    }
+}
+
+CODE;
+
+        $violations = $this->analyze($rule, $code);
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_rule2_no_violation_2() {
+        $rule = $this->classes_must_depend_on_a_globals();
+        $code = <<<CODE
+<?php
+
+class SomeClass {
+    public function a_method() {
+        global \$b_foo, \$a_foo;
+    }
+}
+
+CODE;
+
+        $violations = $this->analyze($rule, $code);
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_rule2_violation_1() {
+        $rule = $this->only_a_classes_can_depend_on_globals();
+        $code = <<<CODE
+<?php
+
+class SomeClass {
+    public function a_method() {
+        global \$b_foo;
+    }
+}
+
+CODE;
+
+        $violations = $this->analyze($rule, $code);
+        $expected = array
+            ( new Violation
+                ( $rule
+                , "source.php"
+                , 5
+                , "        global \$b_foo;"
+                )
+
+            );
+        $this->assertEquals($expected, $violations);
+    }
+
 }
