@@ -23,13 +23,19 @@ class DependOnTest extends RuleTest {
     }
 
     protected function only_a_classes_can_depend_on_globals() {
-        return new R\Rule
-            ( R\Rule::MODE_ONLY_CAN
-            , new V\WithProperty
+        $a_classes = new V\WithProperty
                 ( new V\Classes()
                 , new V\Name()
                 , array("A.*")
-                )
+                );
+        $methods_in_a_classes = new V\WithProperty
+                ( new V\Methods()
+                , new V\In()
+                , array($a_classes)
+                );
+        return new R\Rule
+            ( R\Rule::MODE_ONLY_CAN
+            , new V\Any(array($a_classes, $methods_in_a_classes))
             , new R\DependOn()
             , array(new V\Globals())
             );
