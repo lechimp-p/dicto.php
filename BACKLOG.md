@@ -15,10 +15,13 @@
 * Expose `everything` in definition language.
 * Make `language_construct` more pleasant to use.
 * Define known types of `language_construct`s.
+* In Variables\In::compile i introduced an exception for none methods. This should be checked while parsing already.
 
 # DB
 * Maybe make rules (and maybe vars) able to initialize their own tables.
 * Maybe move DBs to their own namespace.
+* Shit. I think i just found out i would really need a graph database to solve
+  the problem really elegantly.
 
 # Cleanup
 * Reorder tests to match the different rules better.

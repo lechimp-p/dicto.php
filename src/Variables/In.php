@@ -54,6 +54,15 @@ class In extends Property {
      */
     public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false) {
         assert('$this->arguments_are_valid($arguments)');
-        return "1 = 1";
+        if (!($variable instanceof Methods)) {
+            throw new \LogicException("Property 'in' only works with methods, but not with '".get_class($variable)."'.");
+        }
+
+        if (!$negate) {
+            return "1 = 1";
+        }
+        else {
+            return "1 = 1";
+        }
     }
 }
