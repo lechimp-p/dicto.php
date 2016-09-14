@@ -89,6 +89,17 @@ abstract class Relation extends Schema {
                         , $b->eq("src.file", "rel.file")
                         )
                     )
+                // TODO: This is a dirty hack, since i always join the method
+                // info table without knowing if the thing is a method.
+                ->leftJoin
+                    ( "rel", $query->method_info_table(), "mil"
+                    , $b->eq("rel.name_left", "mil.name")
+                    )
+                ->leftJoin
+                    ( "rel", $query->method_info_table(), "mir"
+                    , $b->eq("rel.name_right", "mir.name")
+                    )
+                // END HACK
                 ->where
                     ( $b->eq("rel.which", $b->literal($this->name()))
                     , $name_left->compile($b, "nl")
@@ -113,6 +124,13 @@ abstract class Relation extends Schema {
                     ( "d", $query->name_table(), "n"
                     , $b->eq("d.name", "n.id")
                     )
+                // TODO: This is a dirty hack, since i always join the method
+                // info table without knowing if the thing is a method.
+                ->leftJoin
+                    ( "d", $query->method_info_table(), "mi"
+                    , $b->eq("d.name", "mi.name")
+                    )
+                // END HACK
                 ->leftJoin
                     ("d", $query->relation_table(), "rel"
                     , $b->andX

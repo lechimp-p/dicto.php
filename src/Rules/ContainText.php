@@ -76,6 +76,13 @@ class ContainText extends Schema {
                     ( "d", $query->name_table(), "n"
                     , $b->eq("d.name", "n.id")
                     )
+                // TODO: This is a dirty hack, since i always join the method
+                // info table without knowing if the thing is a method.
+                ->leftJoin
+                    ( "d", $query->method_info_table(), "mi"
+                    , $b->eq("d.name", "mi.name")
+                    )
+                // END HACK
                 ->join
                     ( "d", $query->source_table(), "src"
                     , $b->andX
@@ -108,6 +115,13 @@ class ContainText extends Schema {
                     ( "d", $query->name_table(), "n"
                     , $b->eq("d.name", "n.id")
                     )
+                // TODO: This is a dirty hack, since i always join the method
+                // info table without knowing if the thing is a method.
+                ->leftJoin
+                    ( "d", $query->method_info_table(), "mi"
+                    , $b->eq("d.name", "mi.name")
+                    )
+                // END HACK
                 ->join
                     ( "d", $query->source_table(), "src"
                     , $b->andX
