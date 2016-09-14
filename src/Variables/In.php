@@ -52,7 +52,7 @@ class In extends Property {
     /**
      * @inheritdocs
      */
-    public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false) {
+    public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
         assert('$this->arguments_are_valid($arguments)');
         if (!($variable instanceof Methods)) {
             throw new \LogicException("Property 'in' only works with methods, but not with '".get_class($variable)."'.");

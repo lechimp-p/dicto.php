@@ -75,7 +75,7 @@ class WithProperty extends Variable {
         if (!$negate) {
             return $builder->andX
                 ( $this->variable()->compile($builder, $name_table_name, $method_info_table_name)
-                , $this->property->compile($this->variable(), $this->arguments, $builder, $name_table_name, false)
+                , $this->property->compile($this->variable(), $this->arguments, $builder, $name_table_name, $method_info_table_name, false)
                 );
         }
         // negated case: not (left_condition_left and property)
@@ -83,7 +83,7 @@ class WithProperty extends Variable {
         else {
             return $builder->orX
                 ( $this->variable()->compile($builder, $name_table_name, $method_info_table_name, true)
-                , $this->property->compile($this->variable(), $this->arguments, $builder, $name_table_name, true)
+                , $this->property->compile($this->variable(), $this->arguments, $builder, $name_table_name, $method_info_table_name, true)
                 );
         }
     }

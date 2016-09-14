@@ -49,13 +49,13 @@ class Name extends Property {
     /**
      * @inheritdocs
      */
-    public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false) {
+    public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
         assert('$this->arguments_are_valid($arguments)');
         if (!$negate) {
-            return "$table_name.name REGEXP ".$builder->literal('^'.$arguments[0].'$');
+            return "$name_table_name.name REGEXP ".$builder->literal('^'.$arguments[0].'$');
         }
         else {
-            return "$table_name.name NOT REGEXP ".$builder->literal('^'.$arguments[0].'$');
+            return "$name_table_name.name NOT REGEXP ".$builder->literal('^'.$arguments[0].'$');
         }
     }
 }

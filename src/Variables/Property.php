@@ -57,9 +57,10 @@ abstract class Property {
      * @param   Variable            $variable
      * @param   array               $argument
      * @param   ExpressionBuilder   $builder
-     * @param   string              $table_name
+     * @param   string              $name_table_name
+     * @param   string              $method_info_table_name
      * @param   bool                $negate
      * @return  string|CompositeExpression
      */
-    abstract public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $table_name, $negate = false);
+    abstract public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false);
 }
