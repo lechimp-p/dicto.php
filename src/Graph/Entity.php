@@ -18,12 +18,12 @@ abstract class Entity {
     /**
      * @var string
      */
-    protected $type;
+    private $type;
 
     /**
      * @var array<string,mixed>
      */
-    protected $properties = [];
+    private $properties = [];
 
     /**
      * @param   string              $type
@@ -54,7 +54,7 @@ abstract class Entity {
      * @throws  \InvalidArgumentException   if property is already set
      * @return  null
      */
-    protected function set_property($key, $value) {
+    private function set_property($key, $value) {
         assert('is_string($key)');
         if (array_key_exists($key, $this->properties)) {
             throw new \InvalidArgumentException("Property $key already set.");

@@ -18,12 +18,12 @@ class Node extends Entity {
     /**
      * @var int
      */
-    protected $id;
+    private $id;
 
     /**
      * @var Relation[]
      */
-    protected $relations = [];
+    private $relations = [];
 
     /**
      * @param   int                 $id

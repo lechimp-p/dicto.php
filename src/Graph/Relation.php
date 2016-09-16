@@ -15,6 +15,11 @@ namespace Lechimp\Dicto\Graph;
  */
 class Relation extends Entity {
     /**
+     * @var Node
+     */
+    private $target;
+
+    /**
      * @param   string              $type
      * @param   array<string,mixed> $properties
      * @param   Node                $target 
