@@ -51,11 +51,12 @@ class Node extends Entity {
      * @param   string              $type
      * @param   array<string,mixed> $properties
      * @param   Node                $other
-     * @return  null
+     * @return  Relation
      */
     public function add_relation($type, array $properties, Node $other) {
         $rel = $this->build_relation($type, $properties, $other);
         $this->relations[] = $rel;
+        return $rel;
     }
 
     protected function build_relation($type, array $properties, $other) {

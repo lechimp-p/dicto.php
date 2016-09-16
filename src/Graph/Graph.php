@@ -49,10 +49,10 @@ class Graph {
      * @param   string              $type
      * @param   array<string,mixed> $properties
      * @param   Node                $right
-     * @return  null
+     * @return  Relation
      */
     public function add_relation(Node $left, $type, array $properties, Node $right) {
-        $left->add_relation($type, $properties, $right);
+        return $left->add_relation($type, $properties, $right);
     }
 
     /**

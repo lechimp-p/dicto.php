@@ -54,18 +54,20 @@ class GraphTest extends PHPUnit_Framework_TestCase {
             [ "some" => "prop"
             , "some_oth" => "er_prop"
             ];
-        $this->g->add_relation($l, "rel_type", $props, $r);
-        $this->g->add_relation($l, "rel_type2", [], $l);
+        $rl1 = $this->g->add_relation($l, "rel_type", $props, $r);
+        $rl2 = $this->g->add_relation($l, "rel_type2", [], $l);
 
         $rels = $l->relations();
         $this->assertCount(2, $rels);
 
         $rel1 = $rels[0];
+        $this->assertSame($rl1, $rel1);
         $this->assertEquals("rel_type", $rel1->type());
         $this->assertEquals($props, $rel1->properties());
         $this->assertSame($r, $rel1->target());
 
         $rel2 = $rels[1];
+        $this->assertSame($rl2, $rel2);
         $this->assertEquals("rel_type2", $rel2->type());
         $this->assertEquals([], $rel2->properties());
         $this->assertSame($l, $rel2->target());
