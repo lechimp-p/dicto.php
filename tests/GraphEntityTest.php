@@ -16,11 +16,13 @@ class TestEntity extends Entity {
 class GraphEntityTest extends PHPUnit_Framework_TestCase {
     public function test_type() {
         $e = new TestEntity("a_type", array());
+
         $this->assertEquals("a_type", $e->type());
     }
 
     public function test_properties() {
         $e = new TestEntity("a_type", ["prop" => "value"]);
+
         $this->assertEquals(["prop" => "value"], $e->properties());
     }
 }
