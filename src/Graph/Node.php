@@ -16,7 +16,7 @@ namespace Lechimp\Dicto\Graph;
  */
 class Node extends Entity {
     /**
-     * @var int 
+     * @var int
      */
     protected $id;
 
