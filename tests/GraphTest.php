@@ -20,6 +20,7 @@ class GraphTest extends PHPUnit_Framework_TestCase {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
         $ns = $this->g->nodes();
+
         $this->assertCount(2, $ns);
         $this->assertSame($n1, $ns[0]); 
         $this->assertSame($n2, $ns[1]); 
@@ -33,6 +34,7 @@ class GraphTest extends PHPUnit_Framework_TestCase {
             , "some_oth" => "er_prop"
             ];
         $n1 = $this->g->create_node("a_type", $props);
+
         $this->assertEquals("a_type", $n1->type());
         $this->assertEquals($props, $n1->properties()); 
     }
@@ -40,7 +42,32 @@ class GraphTest extends PHPUnit_Framework_TestCase {
     public function test_node_ids() {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
+
         $this->assertEquals(0, $n1->id());
         $this->assertEquals(1, $n2->id());
     } 
+
+    public function test_relation() {
+        $l = $this->g->create_node("a_type", []);
+        $r = $this->g->create_node("b_type", []);
+        $props =
+            [ "some" => "prop"
+            , "some_oth" => "er_prop"
+            ];
+        $this->g->add_relation($l, "rel_type", $props, $r);
+        $this->g->add_relation($l, "rel_type2", [], $l);
+
+        $rels = $l->relations();
+        $this->assertCount(2, $rels);
+
+        $rel1 = $rels[0];
+        $this->assertEquals("rel_type", $rel1->type());
+        $this->assertEquals($props, $rel1->properties());
+        $this->assertSame($r, $rel1->target());
+
+        $rel2 = $rels[1];
+        $this->assertEquals("rel_type2", $rel2->type());
+        $this->assertEquals([], $rel2->properties());
+        $this->assertSame($l, $rel2->target());
+    }
 }

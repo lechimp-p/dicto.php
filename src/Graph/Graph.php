@@ -52,6 +52,7 @@ class Graph {
      * @return  null
      */
     public function add_relation(Node $left, $type, array $properties, Node $right) {
+        $left->add_relation($type, $properties, $right);
     }
 
     /**
