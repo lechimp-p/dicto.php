@@ -21,6 +21,11 @@ class Node extends Entity {
     protected $id;
 
     /**
+     * @var Relation[]
+     */
+    protected $relations = [];
+
+    /**
      * @param   int                 $id
      * @param   string              $type
      * @param   array<string,mixed> $properties
@@ -41,10 +46,28 @@ class Node extends Entity {
     }
 
     /**
+     * Add a relation from this graph to another.
+     *
+     * @param   string              $type
+     * @param   array<string,mixed> $properties
+     * @param   Node                $other
+     * @return  null
+     */
+    public function add_relation($type, array $properties, Node $other) {
+        $rel = $this->create_relation($type, $properties, $other);
+        $this->relations[] = $rel;
+    }
+
+    protected function create_relation($type, array $properties, $other) {
+        return new Relation($type, $properties, $other);
+    }
+
+    /**
      * Get the relations to other nodes.
      *
-     * @return  Relations[]
+     * @return  Relation[]
      */
     public function relations() {
+        return $this->relations;
     }
 }

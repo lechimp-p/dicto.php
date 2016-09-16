@@ -25,4 +25,16 @@ class GraphNodeTest extends PHPUnit_Framework_TestCase {
         $e = new Node(1, "a_type", ["prop" => "value"]);
         $this->assertEquals(["prop" => "value"], $e->properties());
     }
+
+    public function test_relations() {
+        $l = new Node(1, "a_type", ["prop" => "value"]);
+        $r = new Node(2, "a_type", ["prop" => "value"]);
+        $l->add_relation("rel_type", ["is" => "rel"], $r);
+        $rels = $l->relations();
+        $this->assertCount(1,$rels);
+        $rel = $rels[0];
+        $this->assertEquals("rel_type", $rel->type());
+        $this->assertEquals(["is" => "rel"], $rel->properties());
+        $this->assertSame($r, $rel->target());
+    }
 }
