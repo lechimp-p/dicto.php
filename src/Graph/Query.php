@@ -56,7 +56,7 @@ class Query {
      * @param   \Closure    $condition  Entity -> bool
      * @param   Query
      */
-    public function with_condition_on_next_entity(\Closure $condition) {
+    public function with_condition(\Closure $condition) {
         return $this->with_matcher(new Matcher($condition));
     }
 }

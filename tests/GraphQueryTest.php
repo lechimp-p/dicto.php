@@ -21,7 +21,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
         $n2 = $this->g->create_node("b_type", []);
 
         $query = (new Query())
-            ->with_condition_on_next_entity(function($_) {
+            ->with_condition(function($_) {
                 return true;
             });
         $res = $query->execute_on($this->g);
@@ -34,7 +34,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
         $n2 = $this->g->create_node("b_type", []);
 
         $query = (new Query())
-            ->with_condition_on_next_entity(function($_) {
+            ->with_condition(function($_) {
                 return false;
             });
         $res = $query->execute_on($this->g);
