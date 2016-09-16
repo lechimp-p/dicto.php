@@ -54,11 +54,11 @@ class Node extends Entity {
      * @return  null
      */
     public function add_relation($type, array $properties, Node $other) {
-        $rel = $this->create_relation($type, $properties, $other);
+        $rel = $this->build_relation($type, $properties, $other);
         $this->relations[] = $rel;
     }
 
-    protected function create_relation($type, array $properties, $other) {
+    protected function build_relation($type, array $properties, $other) {
         return new Relation($type, $properties, $other);
     }
 
