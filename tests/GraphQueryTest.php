@@ -41,4 +41,19 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals([], $res);
     }
+
+    public function test_path() {
+        $n1 = $this->g->create_node("a_type", []);
+        $n2 = $this->g->create_node("b_type", []);
+        $rel = $this->g->add_relation($n1, "rel_type", [], $n2);
+
+        $all = function($_) { return true; };
+
+        $query = (new Query())
+            ->with_condition($all)
+            ->with_condition($all)
+            ->with_condition($all);
+        $res = $query->execute_on($this->g);
+        $this->assertEquals([[$n1,$rel,$n2]], $res);
+    }
 }

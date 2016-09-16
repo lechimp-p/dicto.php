@@ -27,13 +27,55 @@ class Query {
      * @return  array[]
      */
     public function execute_on(Graph $graph) {
-        $res = array();
-        foreach ($graph->nodes() as $node) {
-            if ($this->matchers[0]->matches($node)) {
-                $res[] = [$node];
-            }
+        $num = count($this->matchers);
+        if ($num === 0) {
+            return [];
         }
-        return $res;
+
+        $i = 0;
+        $cur = array_map(function($n) { return [$n]; }, $graph->nodes());
+        $next = [];
+        while (true) {
+            $matcher = $this->matchers[$i];
+            $i++;
+
+            // remove entities that does not match
+            foreach ($cur as $key => $path) {
+                $e = end($path);
+                if (!$matcher->matches($e)) {
+                    unset($cur[$key]);
+                }
+            }
+
+            // this is were the end is, last matcher was checked.
+            if ($i === $num) {
+                return $cur;
+            }
+
+            // expand the current paths
+            foreach ($cur as $path) {
+                $e = end($path);
+                if ($e instanceof Node) {
+                    // expand relations
+                    foreach ($e->relations() as $rel) {
+                        $r = $path; // this _copies_ the path
+                        $r[] = $rel;
+                        $next[] = $r;
+                    }
+                }
+                elseif ($e instanceof Relation) {
+                    $r = $path;
+                    $r[] = $e->target();
+                    $next[] = $r;
+                }
+                else {
+                    throw new \LogicException("Unknown entity type: ".get_class($e));
+                }
+            }
+
+            $cur = $next;
+            $next = [];
+        }
     }
 
     /**
