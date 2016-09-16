@@ -29,7 +29,7 @@ abstract class Entity {
      * @param   string              $type
      * @param   array<string,mixed> $properties
      */
-    public function __construct($type, $properties) {
+    public function __construct($type, array $properties) {
         assert('is_string($type)');
         $this->type = $type;
         foreach ($properties as $key => $value) {

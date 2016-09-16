@@ -19,7 +19,7 @@ class Relation extends Entity {
      * @param   array<string,mixed> $properties
      * @param   Node                $target 
      */
-    public function __construct($type, $properties, Node $target) {
+    public function __construct($type, array $properties, Node $target) {
         parent::__construct($type, $properties);
         $this->target = $target;
     }

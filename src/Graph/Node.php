@@ -25,7 +25,7 @@ class Node extends Entity {
      * @param   string              $type
      * @param   array<string,mixed> $properties
      */
-    public function __construct($id, $type, $properties) {
+    public function __construct($id, $type, array $properties) {
         assert('is_int($id)');
         $this->id = $id;
         parent::__construct($type, $properties);
