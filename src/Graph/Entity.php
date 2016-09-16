@@ -33,7 +33,7 @@ abstract class Entity {
         assert('is_string($type)');
         $this->type = $type;
         foreach ($properties as $key => $value) {
-            $this->setProperty($key, $value);
+            $this->set_property($key, $value);
         }
     }
 
@@ -54,7 +54,7 @@ abstract class Entity {
      * @throws  \InvalidArgumentException   if property is already set
      * @return  null
      */
-    protected function setProperty($key, $value) {
+    protected function set_property($key, $value) {
         assert('is_string($key)');
         if (array_key_exists($key, $this->properties)) {
             throw new \InvalidArgumentException("Property $key already set.");
