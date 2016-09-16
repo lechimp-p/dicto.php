@@ -1,0 +1,46 @@
+<?php
+/******************************************************************************
+ * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
+ *
+ * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
+ *
+ * This software is licensed under The MIT License. You should have received
+ * a copy of the license along with the code.
+ */
+
+use Lechimp\Dicto\Graph\Graph;
+use Lechimp\Dicto\Graph\Node;
+
+class GraphTest extends PHPUnit_Framework_TestCase {
+    public function setUp() {
+        $this->g = new Graph(); 
+    }
+
+    public function test_add_nodes() {
+        $n1 = $this->g->create_node("a_type", []);
+        $n2 = $this->g->create_node("b_type", []);
+        $ns = $this->g->nodes();
+        $this->assertCount(2, $ns);
+        $this->assertSame($n1, $ns[0]); 
+        $this->assertSame($n2, $ns[1]); 
+        $this->assertInstanceOf(Node::class, $n1);
+        $this->assertInstanceOf(Node::class, $n2);
+    }
+
+    public function test_node_props() {
+        $props = 
+            [ "some" => "prop"
+            , "some_oth" => "er_prop"
+            ];
+        $n1 = $this->g->create_node("a_type", $props);
+        $this->assertEquals("a_type", $n1->type());
+        $this->assertEquals($props, $n1->properties()); 
+    }
+
+    public function test_node_ids() {
+        $n1 = $this->g->create_node("a_type", []);
+        $n2 = $this->g->create_node("b_type", []);
+        $this->assertEquals(0, $n1->id());
+        $this->assertEquals(1, $n2->id());
+    } 
+}
