@@ -10,6 +10,7 @@
 
 use Lechimp\Dicto\Graph\Graph;
 use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\Matcher;
 
 class GraphTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
@@ -71,5 +72,22 @@ class GraphTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("rel_type2", $rel2->type());
         $this->assertEquals([], $rel2->properties());
         $this->assertSame($l, $rel2->target());
+    }
+
+    public function test_nodes() {
+        $n1 = $this->g->create_node("a_type", []);
+        $n2 = $this->g->create_node("b_type", []);
+
+        $this->assertEquals([$n1,$n2], $this->g->nodes());
+    }
+
+    public function test_filtered_nodes() {
+        $n1 = $this->g->create_node("a_type", []);
+        $n2 = $this->g->create_node("b_type", []);
+        $matcher = new Matcher(function (Node $n) {
+            return $n->type() == "b_type";
+        });
+
+        $this->assertEquals([1 => $n2], $this->g->nodes($matcher));
     }
 }

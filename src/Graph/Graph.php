@@ -56,11 +56,17 @@ class Graph {
     }
 
     /**
-     * Get the nodes in the graph.
+     * Get nodes from the graph, maybe filtered by a matcher.
      *
+     * @param   Matcher|null    $matcher
      * @return  Node[]
      */
-    public function nodes() {
-        return $this->nodes;
+    public function nodes(Matcher $matcher = null) {
+        if ($matcher === null) {
+            return $this->nodes;
+        }
+        return array_filter($this->nodes, function(Node $n) use ($matcher) {
+            return $matcher->matches($n);
+        });
     }
 }
