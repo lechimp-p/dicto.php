@@ -33,7 +33,7 @@ class Query {
         }
 
         $i = 0;
-        $cur = array_map(function($n) { return [$n]; }, $graph->nodes());
+        $cur = array_map(function($n) { return new Path($n); }, $graph->nodes());
         $next = [];
         while (true) {
             $matcher = $this->matchers[$i];
@@ -41,7 +41,7 @@ class Query {
 
             // remove entities that does not match
             foreach ($cur as $key => $path) {
-                $e = end($path);
+                $e = $path->last();
                 if (!$matcher->matches($e)) {
                     unset($cur[$key]);
                 }
@@ -54,19 +54,18 @@ class Query {
 
             // expand the current paths
             foreach ($cur as $path) {
-                $e = end($path);
+                $e = $path->last();
                 if ($e instanceof Node) {
                     // expand relations
                     foreach ($e->relations() as $rel) {
-                        $r = $path; // this _copies_ the path
-                        $r[] = $rel;
+                        $r = clone $path; // this _copies_ the path
+                        $r->append($rel);
                         $next[] = $r;
                     }
                 }
                 elseif ($e instanceof Relation) {
-                    $r = $path;
-                    $r[] = $e->target();
-                    $next[] = $r;
+                    $path->append($e->target());
+                    $next[] = $path;
                 }
                 else {
                     throw new \LogicException("Unknown entity type: ".get_class($e));

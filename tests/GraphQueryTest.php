@@ -10,6 +10,7 @@
 
 use Lechimp\Dicto\Graph\Graph;
 use Lechimp\Dicto\Graph\Query;
+use Lechimp\Dicto\Graph\Path;
 
 class GraphQueryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
@@ -24,7 +25,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
             ->with_condition(function($_) {
                 return true;
             });
-        $res = $query->execute_on($this->g);
+        $res = $this->to_arrays($query->execute_on($this->g));
 
         $this->assertEquals([[$n1],[$n2]], $res);
     }
@@ -37,7 +38,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
             ->with_condition(function($_) {
                 return false;
             });
-        $res = $query->execute_on($this->g);
+        $res = $this->to_arrays($query->execute_on($this->g));
 
         $this->assertEquals([], $res);
     }
@@ -53,7 +54,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
             ->with_condition($all)
             ->with_condition($all)
             ->with_condition($all);
-        $res = $query->execute_on($this->g);
+        $res = $this->to_arrays($query->execute_on($this->g));
         $this->assertEquals([[$n1,$rel,$n2]], $res);
     }
 
@@ -72,7 +73,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
                 return $e->type() == "rel_B";
             })
             ->with_condition($all);
-        $res = $query->execute_on($this->g);
+        $res = $this->to_arrays($query->execute_on($this->g));
         $this->assertEquals([[$n2,$r2,$n3]], $res);
     }
 
@@ -89,7 +90,14 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
             ->with_condition($all)
             ->with_condition($all)
             ->with_condition($all);
-        $res = $query->execute_on($this->g);
+        $res = $this->to_arrays($query->execute_on($this->g));
         $this->assertEquals([[$n1,$r1,$n2],[$n2,$r2,$n3]], $res);
+    }
+
+    // HELPER
+    protected function to_arrays(array $paths) {
+        return array_map(function(Path $p) {
+            return $p->entities();
+        }, $paths);   
     }
 }
