@@ -79,7 +79,7 @@ class Query {
     }
 
     /**
-     * Get a new query with an additional matcher on an entity.
+     * Get a new query with an additional matcher on the next entity.
      *
      * @param   Matcher $matcher
      * @return  Query
