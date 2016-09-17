@@ -11,6 +11,7 @@
 use Lechimp\Dicto\Graph\Graph;
 use Lechimp\Dicto\Graph\Query;
 use Lechimp\Dicto\Graph\Path;
+use Lechimp\Dicto\Graph\PathCollection;
 
 class GraphQueryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
@@ -43,7 +44,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([], $res);
     }
 
-    public function test_path() {
+    public function test_path1() {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
         $rel = $this->g->add_relation($n1, "rel_type", [], $n2);
@@ -95,9 +96,9 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
     }
 
     // HELPER
-    protected function to_arrays(array $paths) {
+    protected function to_arrays(PathCollection $paths) {
         return array_map(function(Path $p) {
             return $p->entities();
-        }, $paths);   
+        }, $paths->paths());
     }
 }

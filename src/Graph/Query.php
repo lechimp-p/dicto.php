@@ -24,57 +24,43 @@ class Query {
      * query with the nodes and relations establishing the path.
      *
      * @param   Graph   $graph
-     * @return  array[]
+     * @return  PathCollection
      */
     public function execute_on(Graph $graph) {
         $num = count($this->matchers);
         if ($num === 0) {
-            return [];
+            return new PathCollection([]);
         }
 
-        $i = 0;
-        $cur = array_map(function($n) { return new Path($n); }, $graph->nodes());
-        $next = [];
-        while (true) {
+        $collection = new PathCollection
+            ( array_map(function($n) { return new Path($n); }
+            , $graph->nodes()
+            ));
+
+        for ($i = 0; $i < $num - 1; $i++) {
+            // early exit
+            if ($collection->is_empty()) {
+                return $collection;
+            }
+
             $matcher = $this->matchers[$i];
-            $i++;
-
-            // remove entities that does not match
-            foreach ($cur as $key => $path) {
-                $e = $path->last();
+            $collection->extend(function(Entity $e) use ($matcher) {
                 if (!$matcher->matches($e)) {
-                    unset($cur[$key]);
+                    return[];
                 }
-            }
-
-            // this is were the end is, last matcher was checked.
-            if ($i === $num) {
-                return $cur;
-            }
-
-            // expand the current paths
-            foreach ($cur as $path) {
-                $e = $path->last();
                 if ($e instanceof Node) {
-                    // expand relations
-                    foreach ($e->relations() as $rel) {
-                        $r = clone $path; // this _copies_ the path
-                        $r->append($rel);
-                        $next[] = $r;
-                    }
+                    return array_map(function($e) { return [$e]; }, $e->relations());
                 }
                 elseif ($e instanceof Relation) {
-                    $path->append($e->target());
-                    $next[] = $path;
+                    return [[$e->target()]];
                 }
                 else {
                     throw new \LogicException("Unknown entity type: ".get_class($e));
                 }
-            }
-
-            $cur = $next;
-            $next = [];
+            });
         }
+        $collection->filter_by_last_entity(end($this->matchers));
+        return $collection;
     }
 
     /**
