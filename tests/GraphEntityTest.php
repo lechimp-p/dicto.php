@@ -25,4 +25,22 @@ class GraphEntityTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(["prop" => "value"], $e->properties());
     }
+
+    public function test_property() {
+        $e = new TestEntity("a_type", ["prop" => "value"]);
+
+        $this->assertEquals("value", $e->property("prop"));
+        try {
+            $e->property("another_prop");
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\InvalidArgumentException $e) {}
+    }
+
+    public function test_has_property() {
+        $e = new TestEntity("a_type", ["prop" => "value"]);
+
+        $this->assertTrue($e->has_property("prop"));
+        $this->assertFalse($e->has_property("another_prop"));
+    }
 }

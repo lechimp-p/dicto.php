@@ -70,4 +70,28 @@ abstract class Entity {
     public function properties() {
         return $this->properties;
     }
+
+    /**
+     * Get one property.
+     *
+     * @param   string  $name
+     * @throws  \InvalidArgumentException   if named propery does not exist
+     * @return  mixed
+     */
+    public function property($name) {
+        if (!$this->has_property($name)) {
+            throw new \InvalidArgumentException("Unknown property '$name'");
+        }
+        return $this->properties[$name];
+    }
+
+    /**
+     * Check if entity has a property.
+     *
+     * @param   string  $name
+     * @return  bool
+     */
+    public function has_property($name) {
+        return array_key_exists($name, $this->properties);
+    }
 }
