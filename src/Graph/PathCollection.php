@@ -29,25 +29,18 @@ class PathCollection {
     }
 
     /**
-     * Expand the the last entity of every path by applying the given function
-     * and creating one new path for every entry in the returned array, where
-     * the contained entities are appended to the path. Discard paths that are
-     * not extended.
+     * Expand every path by applying the given function which creates new paths
+     * from it.
      *
-     * @param   \Closure    Entity -> Entity[][]
+     * @param   \Closure    Path -> Path[]
      * @return  null
      */
     public function extend(\Closure $extend) {
         $new_paths = []; 
         foreach ($this->paths as $path) {
-            $last = $path->last();
-            array_map(function(array $es) use (&$new_paths, $path) {
-                $clone = clone $path;
-                array_map(function(Entity $e) use ($clone) {
-                    $clone->append($e); 
-                }, $es);
-                $new_paths[] = $clone;
-            }, $extend($last)); 
+            array_map(function(Path $p) use (&$new_paths) { 
+                $new_paths[] = $p;
+            }, $extend($path));
         }
         $this->paths = $new_paths;
     }

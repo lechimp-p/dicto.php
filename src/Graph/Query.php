@@ -44,15 +44,21 @@ class Query {
             }
 
             $matcher = $this->matchers[$i];
-            $collection->extend(function(Entity $e) use ($matcher) {
+            $collection->extend(function(Path $p) use ($matcher) {
+                $e = $p->last();
                 if (!$matcher->matches($e)) {
-                    return[];
+                    return [];
                 }
                 if ($e instanceof Node) {
-                    return array_map(function($e) { return [$e]; }, $e->relations());
+                    return array_map(function(Relation $r) use ($p) {
+                        $p2 = clone $p;
+                        $p2->append($r);
+                        return $p2;
+                    }, $e->relations());
                 }
                 elseif ($e instanceof Relation) {
-                    return [[$e->target()]];
+                    $p->append($e->target());
+                    return [$p];
                 }
                 else {
                     throw new \LogicException("Unknown entity type: ".get_class($e));
