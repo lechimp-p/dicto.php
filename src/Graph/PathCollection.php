@@ -52,13 +52,12 @@ class PathCollection {
      * @return  null 
      */
     public function filter_by_last_entity(Matcher $matcher) {
-        $new_paths = [];
-        foreach ($this->paths as $path) {
-            if ($matcher->matches($path->last())) {
-                $new_paths[] = $path;
+        $this->extend(function(Path $p) use ($matcher) {
+            if ($matcher->matches($p->last())) {
+                return [$p];
             }
-        }
-        $this->paths = $new_paths;
+            return [];
+        });
     }
 
     /**
