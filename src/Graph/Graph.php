@@ -69,4 +69,19 @@ class Graph {
             return $matcher->matches($n);
         });
     }
+
+    /**
+     * Get the node with the given id.
+     *
+     * @param   int     $id
+     * @throws  \InvalidArgumentException   if $id is unknown
+     * @return  Node
+     */
+    public function node($id) {
+        assert('is_int($id)');
+        if (!array_key_exists($id, $this->nodes)) {
+            throw new \InvalidArgumentException("Unknown node id '$id'");
+        }
+        return $this->nodes[$id];
+    }
 }

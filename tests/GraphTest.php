@@ -90,4 +90,17 @@ class GraphTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals([1 => $n2], $this->g->nodes($matcher));
     }
+
+    public function test_node() {
+        $n1 = $this->g->create_node("a_type", []);
+        $n2 = $this->g->create_node("b_type", []);
+
+        $this->assertEquals($n1, $this->g->node($n1->id()));
+        $this->assertEquals($n2, $this->g->node($n2->id()));
+        try {
+            $this->g->node(42);
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\InvalidArgumentException $e) {}
+    }
 }
