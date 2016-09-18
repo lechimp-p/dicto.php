@@ -67,4 +67,14 @@ class Path {
     public function entities() {
         return $this->entities;
     }
+
+    /**
+     * Extract information from the path.
+     *
+     * @param   \Closure    $extractor  Entity (-> Entity ...) -> mixed
+     * @return  mixed
+     */
+    public function extract(\Closure $extractor) {
+        return call_user_func_array($extractor, $this->entities);
+    }
 }
