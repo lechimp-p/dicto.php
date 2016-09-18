@@ -77,4 +77,16 @@ class PathCollection {
     public function is_empty() {
         return count($this->paths) === 0;
     }
+
+    /**
+     * Extract information from each path.
+     *
+     * @param   \Closure    $extractor  Entity (-> Entity ...) -> mixed
+     * @return  [mixed]
+     */
+    public function extract(\Closure $extractor) {
+        return array_map(function($p) use ($extractor) {
+            return $p->extract($extractor);
+        }, $this->paths);
+    }
 }
