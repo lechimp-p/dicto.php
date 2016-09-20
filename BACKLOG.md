@@ -23,6 +23,10 @@
 * Shit. I think i just found out i would really need a graph database to solve
   the problem really elegantly.
 
+# Graph
+* Let Graph return a Query object instead of instantiating it, then replace execute_on
+  with execute.
+
 # Cleanup
 * Reorder tests to match the different rules better.
 * Every submodule could have its own Config, those could then be combined to the

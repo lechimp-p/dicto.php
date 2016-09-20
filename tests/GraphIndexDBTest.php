@@ -40,76 +40,87 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
                     , "source" => $l->property("source")
                     ];
             });
-        $expected = array
-            ( array
-                ( "path" => "foo.php"
+        $expected =
+            [
+                [ "path" => "foo.php"
                 , "line" => "1"
                 , "source" => "FOO"
-                )
-            , array
-                ( "path" => "foo.php"
+                ]
+            ,
+                [ "path" => "foo.php"
                 , "line" => "2"
                 , "source" => "BAR"
-                )
-            );
+                ]
+            ];
         $this->assertEquals($expected, $res);
     }
 
-/*    public function test_insert_definition() {
+    public function test_insert_definition() {
         $this->db->source("AClass.php", "FOO\nBAR");
         $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
 
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "n.name"
-                , "n.type"
-                , "f.path"
-                , "d.start_line"
-                , "d.end_line"
-                )
-            ->from($this->db->definition_table(), "d")
-            ->join
-                ( "d", $this->db->name_table(), "n"
-                , $b->eq("d.name", "n.id")
-                )
-            ->join
-                ( "d", $this->db->file_table(), "f"
-                , $b->eq("d.file", "f.id")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( "name" => "AClass"
-            , "type" => Variable::CLASS_TYPE
-            , "path" => "AClass.php"
-            , "start_line" => "1"
-            , "end_line" => "2"
-            );
-        $this->assertEquals(array($expected), $res);
+        $res = (new Query)
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name";
+            })
+            ->with_condition(function(Relation $r) {
+                return $r->type() == "has_definition";
+            })
+            ->with_condition(function(Node $n) {
+                return $n->type() == "definition";
+            })
+            ->with_condition(function(Relation $r) {
+                return $r->type("in_file");
+            })
+            ->with_condition(function(Node $n) {
+                return $n->type("file");
+            })
+            ->execute_on($this->db)
+            ->extract(function($n, $_1, $d, $_2, $f) {
+                return
+                    [ "name" => $n->property("name")
+                    , "type" => $n->property("type")
+                    , "path" => $f->property("path")
+                    , "start_line" => $d->property("start_line")
+                    , "end_line" => $d->property("end_line")
+                    ];
+            });
+
+        $expected =
+            [
+                [ "name" => "AClass"
+                , "type" => Variable::CLASS_TYPE
+                , "path" => "AClass.php"
+                , "start_line" => "1"
+                , "end_line" => "2"
+                ]
+            ];
+        $this->assertEquals($expected, $res);
     }
 
     public function test_insert_name() {
         $id = $this->db->name("AClass", Variable::CLASS_TYPE);
 
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "n.id"
-                , "n.name"
-                , "n.type"
-                )
-            ->from($this->db->name_table(), "n")
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( "id" => $id
-            , "name" => "AClass"
-            , "type" => Variable::CLASS_TYPE
-            );
-        $this->assertEquals(array($expected), $res);
+        $res = (new Query)
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name";
+            })
+            ->execute_on($this->db)
+            ->extract(function($n) {
+                return
+                    [ "id" => $n->id()
+                    , "name" => $n->property("name")
+                    , "type" => $n->property("type")
+                    ];
+            });
+        $expected =
+            [
+                [ "id" => $id
+                , "name" => "AClass"
+                , "type" => Variable::CLASS_TYPE
+                ]
+            ];
+        $this->assertEquals($expected, $res);
     }
 
     public function test_insert_some_relation() {
@@ -119,32 +130,37 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $id2 = $this->db->name("BClass", Variable::CLASS_TYPE);
         $this->db->relation($id1, $id2, "some_relation", "BClass.php", 1);
 
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "r.name_left"
-                , "r.name_right"
-                , "r.which"
-                , "f.path"
-                , "r.line"
-                )
-            ->from($this->db->relation_table(), "r")
-            ->join
-                ( "r", $this->db->file_table(), "f"
-                , $b->eq("r.file", "f.id")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( "name_left" => "$id1"
-            , "name_right" => "$id2"
-            , "which" => "some_relation"
-            , "path" => "BClass.php"
-            , "line" => "1"
-            );
+        $res = (new Query)
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name";
+            })
+            ->with_condition(function(Relation $n) {
+                return true;
+            })
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name";
+            })
+            ->execute_on($this->db)
+            ->extract(function($nl,$r,$nr) {
+                return
+                    [ "name_left" => $nl->id()
+                    , "name_right" => $nr->id()
+                    , "which" => $r->type()
+                    , "path" => $r->property("path")
+                    , "line" => $r->property("line")
+                    ];
+            });
+        $expected =
+            [
+                [ "name_left" => "$id1"
+                , "name_right" => "$id2"
+                , "which" => "some_relation"
+                , "path" => "BClass.php"
+                , "line" => "1"
+                ]
+            ];
 
-        $this->assertEquals(array($expected), $res);
+        $this->assertEquals($expected, $res);
     }
 
     public function test_retreive_name_id() {
@@ -181,43 +197,48 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->definition("a_method", Variable::METHOD_TYPE, "AClass.php", 1, 2);
         $this->db->definition("a_method", Variable::METHOD_TYPE, "BClass.php", 1, 2);
 
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "n.name"
-                , "n.type"
-                , "f.path"
-                , "d.start_line"
-                , "d.end_line"
-                )
-            ->from($this->db->definition_table(), "d")
-            ->join
-                ( "d", $this->db->name_table(), "n"
-                , $b->eq("d.name", "n.id")
-                )
-            ->join
-                ( "d", $this->db->file_table(), "f"
-                , $b->eq("d.file", "f.id")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( array
-                ( "name" => "a_method"
+        $res = (new Query)
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name";
+            })
+            ->with_condition(function(Relation $r) {
+                return $r->type() == "has_definition";
+            })
+            ->with_condition(function(Node $n) {
+                return $n->type() == "definition";
+            })
+            ->with_condition(function(Relation $r) {
+                return $r->type() == "in_file";
+            })
+            ->with_condition(function(Node $n) {
+                return $n->type() == "file";
+            })
+            ->execute_on($this->db)
+            ->extract(function($n, $_1, $d, $_2, $f) {
+                return
+                    [ "name" => $n->property("name")
+                    , "type" => $n->property("type")
+                    , "path" => $f->property("path")
+                    , "start_line" => $d->property("start_line")
+                    , "end_line" => $d->property("end_line")
+                    ];
+            });
+        $expected =
+            [
+                [ "name" => "a_method"
                 , "type" => Variable::METHOD_TYPE
                 , "path" => "AClass.php"
                 , "start_line" => "1"
                 , "end_line" => "2"
-                )
-            , array
-                ( "name" => "a_method"
+                ]
+            ,
+                [ "name" => "a_method"
                 , "type" => Variable::METHOD_TYPE
                 , "path" => "BClass.php"
                 , "start_line" => "1"
                 , "end_line" => "2"
-                )
-            );
+                ]
+            ];
         $this->assertEquals($expected, $res);
     }
 
@@ -228,39 +249,42 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 2);
 
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "r.name_left"
-                , "r.name_right"
-                , "r.which"
-                , "f.path"
-                , "r.line"
-                )
-            ->from($this->db->relation_table(), "r")
-            ->join
-                ( "r", $this->db->file_table(), "f"
-                , $b->eq("r.file", "f.id")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( array
-                ( "name_left" => "$id1"
+        $res = (new Query)
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name";
+            })
+            ->with_condition(function(Relation $n) {
+                return true;
+            })
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name";
+            })
+            ->execute_on($this->db)
+            ->extract(function($nl,$r,$nr) {
+                return
+                    [ "name_left" => $nl->id()
+                    , "name_right" => $nr->id()
+                    , "which" => $r->type()
+                    , "path" => $r->property("path")
+                    , "line" => $r->property("line")
+                    ];
+            });
+        $expected =
+            [
+                [ "name_left" => "$id1"
                 , "name_right" => "$id2"
                 , "which" => "some_relation"
                 , "path" => "AClass.php"
                 , "line" => "1"
-                )
-            , array
-                ( "name_left" => "$id1"
+                ]
+            ,
+                [ "name_left" => "$id1"
                 , "name_right" => "$id2"
                 , "which" => "some_relation"
                 , "path" => "AClass.php"
                 , "line" => "2"
-                )
-            );
+                ]
+            ];
 
         $this->assertEquals($expected, $res);
     }
@@ -272,39 +296,42 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
 
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "r.name_left"
-                , "r.name_right"
-                , "r.which"
-                , "f.path"
-                , "r.line"
-                )
-            ->from($this->db->relation_table(), "r")
-            ->join
-                ( "r", $this->db->file_table(), "f"
-                , $b->eq("r.file", "f.id")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( array
-                ( "name_left" => "$id1"
+        $res = (new Query)
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name";
+            })
+            ->with_condition(function(Relation $n) {
+                return true;
+            })
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name";
+            })
+            ->execute_on($this->db)
+            ->extract(function($nl,$r,$nr) {
+                return
+                    [ "name_left" => $nl->id()
+                    , "name_right" => $nr->id()
+                    , "which" => $r->type()
+                    , "path" => $r->property("path")
+                    , "line" => $r->property("line")
+                    ];
+            });
+        $expected =
+            [
+                [ "name_left" => "$id1"
                 , "name_right" => "$id2"
                 , "which" => "some_relation"
                 , "path" => "AClass.php"
                 , "line" => "1"
-                )
-            , array
-                ( "name_left" => "$id1"
+                ]
+            ,
+                [ "name_left" => "$id1"
                 , "name_right" => "$id2"
                 , "which" => "some_relation"
                 , "path" => "AClass.php"
                 , "line" => "1"
-                )
-            );
+                ]
+            ];
 
         $this->assertEquals($expected, $res);
     }
@@ -315,24 +342,33 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         list($mtd_id, $def_id) = $this->db->definition("a_method", Variable::METHOD_TYPE, "AClass.php", 1, 2);
         $this->db->method_info($mtd_id, $cls_id, $def_id);
 
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "name"
-                , "class"
-                , "definition"
-                )
-            ->from($this->db->method_info_table(), "d")
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( array
-                ( "name"        => $mtd_id
+        $res = (new Query)
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name"
+                    && $n->property("type") == "methods";
+            })
+            ->with_condition(function(Relation $r) {
+                return $r->type("in_class");
+            })
+            ->with_condition(function(Node $n) {
+                return $n->type() == "name"
+                    && $n->property("type") == "classes";
+            })
+            ->execute_on($this->db)
+            ->extract(function($m,$r,$c) {
+                return
+                    [ "name" => $m->id()
+                    , "class" => $c->id()
+                    , "definition" => $r->property("def_id")
+                    ];
+            });
+        $expected =
+            [
+                [ "name"        => $mtd_id
                 , "class"       => $cls_id
                 , "definition"  => $def_id
-                )
-            );
+                ]
+            ];
         $this->assertEquals($expected, $res);
-    }*/
+    }
 }
