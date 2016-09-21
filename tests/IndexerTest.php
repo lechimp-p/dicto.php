@@ -20,7 +20,7 @@ use Psr\Log\LogLevel;
 
 require_once(__DIR__."/LoggerMock.php");
 
-abstract class IndexerTest extends PHPUnit_Framework_TestCase {
+class IndexerTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
 
     }
@@ -33,9 +33,9 @@ abstract class IndexerTest extends PHPUnit_Framework_TestCase {
             , $parser
             , $insert_mock
             );
-        (new \Lechimp\Dicto\Rules\ContainText())->register_listeners($indexer);
-        (new \Lechimp\Dicto\Rules\DependOn())->register_listeners($indexer);
-        (new \Lechimp\Dicto\Rules\Invoke())->register_listeners($indexer);
+        //(new \Lechimp\Dicto\Rules\ContainText())->register_listeners($indexer);
+        //(new \Lechimp\Dicto\Rules\DependOn())->register_listeners($indexer);
+        //(new \Lechimp\Dicto\Rules\Invoke())->register_listeners($indexer);
         return $indexer;
     }
 
@@ -56,19 +56,61 @@ abstract class IndexerTest extends PHPUnit_Framework_TestCase {
             ->getMock();
     }
 
+    public function expect_file($insert_mock, $name, $source) {
+        return $insert_mock
+            ->expects($this->once())
+            ->method("_file")
+            ->with
+                ( $this->equalTo($name)
+                , $this->equalTo($source)
+                );
+    }
+
+    public function expect_class($insert_mock, $name, $file, $start_line, $end_line) {
+        return $insert_mock
+            ->expects($this->once())
+            ->method("_class")
+            ->with
+                ( $this->equalTo($name)
+                , $this->equalTo($file)
+                , $this->equalTo($start_line)
+                , $this->equalTo($end_line)
+                );
+    }
+
+    public function expect_method($insert_mock, $name, $class, $file, $start_line, $end_line) {
+        return $insert_mock
+            ->expects($this->once())
+            ->method("_method")
+            ->with
+                ( $this->equalTo($name)
+                , $this->equalTo($class)
+                , $this->equalTo($file)
+                , $this->equalTo($start_line)
+                , $this->equalTo($end_line)
+                );
+    }
+
+    public function expect_function($insert_mock, $name, $file, $start_line, $end_line) {
+        return $insert_mock
+            ->expects($this->once())
+            ->method("_function")
+            ->with
+                ( $this->equalTo($name)
+                , $this->equalTo($file)
+                , $this->equalTo($start_line)
+                , $this->equalTo($end_line)
+                );
+    }
+
     public function test_file_empty() {
         $source = <<<PHP
 <?php
 PHP;
         $insert_mock = $this->getInsertMock();
 
-        $insert_mock
-            ->expects($this->once())
-            ->method("source")
-            ->with
-                ( $this->equalTo("source.php")
-                , $this->equalTo($source)
-                );
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn(23);
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
@@ -83,16 +125,10 @@ class AClass {
 PHP;
         $insert_mock = $this->getInsertMock();
 
-        $insert_mock
-            ->expects($this->once())
-            ->method("definition")
-            ->with
-                ( $this->equalTo("AClass")
-                , $this->equalTo(Variable::CLASS_TYPE)
-                , $this->equalTo("source.php")
-                , $this->equalTo(3)
-                , $this->equalTo(4)
-                );
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn(23);
+        $this->expect_class($insert_mock, "AClass", 23, 3, 4)
+            ->willReturn(42);
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
@@ -109,25 +145,12 @@ class AClass {
 PHP;
         $insert_mock = $this->getInsertMock();
 
-        $insert_mock
-            ->expects($this->exactly(2))
-            ->method("definition")
-            ->withConsecutive
-                ( array
-                    ( $this->equalTo("AClass")
-                    , $this->equalTo(Variable::CLASS_TYPE)
-                    , $this->equalTo("source.php")
-                    , $this->equalTo(3)
-                    , $this->equalTo(6)
-                    )
-                , array
-                    ( $this->equalTo("a_method")
-                    , $this->equalTo(Variable::METHOD_TYPE)
-                    , $this->equalTo("source.php")
-                    , $this->equalTo(4)
-                    , $this->equalTo(5)
-                    )
-                );
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn(23);
+        $this->expect_class($insert_mock, "AClass", 23, 3, 6)
+            ->willReturn(42);
+        $this->expect_method($insert_mock, "a_method", 42, 23, 4, 5)
+            ->willReturn(1234);
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
@@ -143,23 +166,17 @@ function a_function() {
 PHP;
         $insert_mock = $this->getInsertMock();
 
-        $insert_mock
-            ->expects($this->once())
-            ->method("definition")
-            ->with
-                ( $this->equalTo("a_function")
-                , $this->equalTo(Variable::FUNCTION_TYPE)
-                , $this->equalTo("source.php")
-                , $this->equalTo(3)
-                , $this->equalTo(4)
-                );
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn(23);
+        $this->expect_function($insert_mock, "a_function", 23, 3, 4)
+            ->willReturn(42);
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
     }
 
 
-    public function test_method_uses_global() {
+/*    public function test_method_uses_global() {
         $source = <<<PHP
 <?php
 
@@ -219,9 +236,9 @@ PHP;
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
     }
+*/
 
-
-    public function test_function_uses_global() {
+/*    public function test_function_uses_global() {
         $source = <<<PHP
 <?php
 
@@ -263,9 +280,9 @@ PHP;
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
     }
+*/
 
-
-    public function test_function_invokes_function() {
+/*    public function test_function_invokes_function() {
         $source = <<<PHP
 <?php
 
@@ -316,9 +333,9 @@ PHP;
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
     }
+*/
 
-
-    public function test_function_invokes_method() {
+/*    public function test_function_invokes_method() {
         $source = <<<PHP
 <?php
 
@@ -370,9 +387,9 @@ PHP;
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
     }
+*/
 
-
-    public function test_function_use_error_suppressor() {
+/*    public function test_function_use_error_suppressor() {
         $source = <<<PHP
 <?php
 
@@ -440,8 +457,8 @@ PHP;
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
     }
-
-    public function test_function_use_global() {
+*/
+/*    public function test_function_use_global() {
         $source = <<<PHP
 <?php
 
@@ -487,54 +504,7 @@ PHP;
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
     }
-
-    public function test_method_info() {
-        $source = <<<PHP
-<?php
-
-class AClass {
-    public function a_method() {
-    }
-}
-PHP;
-
-        $insert_mock = $this->getInsertMock();
-
-        $class_name_id = 1;
-        $method_name_id = 3;
-        $method_def_id = 4;
-
-        $insert_mock
-            ->expects($this->exactly(2))
-            ->method("definition")
-            ->willReturnOnConsecutiveCalls
-                ( array($class_name_id,2)
-                , array($method_name_id,$method_def_id)
-                )
-            ->withConsecutive
-                ( array
-                    ( $this->equalTo("AClass")
-                    , $this->equalTo(Variable::CLASS_TYPE)
-                    )
-                , array
-                    ( $this->equalTo("a_method")
-                    , $this->equalTo(Variable::METHOD_TYPE)
-                    )
-                );
-
-        $insert_mock
-            ->expects($this->once())
-            ->method("method_info")
-            ->with
-                ( $this->equalTo($method_name_id)
-                , $this->equalTo($class_name_id)
-                , $this->equalTo($method_def_id)
-                );
-
-        $indexer = $this->indexer($insert_mock);
-        $indexer->index_content("source.php", $source);
-    }
-
+*/
 /*    public function test_entity_A1_class() {
         $this->indexer->index_file(IndexerTest::PATH_TO_SRC, "A1.php");
 

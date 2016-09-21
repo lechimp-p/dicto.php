@@ -292,18 +292,17 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function beforeTraverse(array $nodes) {
-        $id = $this->insert->source($this->file_path, $this->file_content);
+        $handle = $this->insert->_file($this->file_path, $this->file_content);
 
-        return null;
+        $this->definition_stack[] = [Variable::FILE_TYPE, $handle];
     }
 
     /**
      * @inheritdoc
      */
     public function afterTraverse(array $nodes) {
-        list($type, $id) = array_pop($this->definition_stack);
-
-        return null;
+        assert('count($this->definition_stack) == 1');
+        array_pop($this->definition_stack);
     }
 
     /**
@@ -313,56 +312,51 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $start_line = $node->getAttribute("startLine");
         $end_line = $node->getAttribute("endLine");
 
-        if ($this->is_definition($node)) {
-            $type = $this->get_type_of($node);
-            list($name_id, $def_id) = $this->insert->definition
+        $handle = null;
+        $type = null;
+        if ($node instanceof N\Stmt\Class_) {
+            assert('count($this->definition_stack) == 1');
+            $handle = $this->insert->_class
                 ( $node->name
-                , $type
-                , $this->file_path
+                , $this->definition_stack[0][1]
                 , $start_line
                 , $end_line
                 );
-            $this->call_definition_listener("listeners_enter_definition",  $type, $name_id, $node);
-            $this->definition_stack[] = array($type, $name_id);
+            $type = Variable::CLASS_TYPE;
+        }
+        else if ($node instanceof N\Stmt\ClassMethod) {
+            assert('count($this->definition_stack) == 2');
+            $handle = $this->insert->_method
+                ( $node->name
+                , $this->definition_stack[1][1]
+                , $this->definition_stack[0][1]
+                , $start_line
+                , $end_line
+                );
+            $type = Variable::METHOD_TYPE;
+        }
+        else if ($node instanceof N\Stmt\Function_) {
+            assert('count($this->definition_stack) == 1');
+            $handle = $this->insert->_function
+                ( $node->name
+                , $this->definition_stack[0][1]
+                , (int)$start_line
+                , (int)$end_line
+                );
+            $type = Variable::FUNCTION_TYPE;
+        }
 
-            $this->insert_custom_info($type, $name_id, $def_id);
+        if ($handle !== null) {
+            assert('$type !== null');
+            $this->call_definition_listener("listeners_enter_definition",  $type, $handle, $node);
+            $this->definition_stack[] = [$type, $handle];
+
         }
         else {
+            if ($type !== null) { echo "---\n"; print_r($type);echo "---\n";}
+            assert('$type === null');
             $this->call_misc_listener("listeners_enter_misc", $node);
         }
-    }
-
-    protected function get_type_of(\PhpParser\Node $node) {
-        // Class
-        if ($node instanceof N\Stmt\Class_) {
-            return Variable::CLASS_TYPE;
-        }
-        // Method or Function
-        elseif ($node instanceof N\Stmt\ClassMethod) {
-            return Variable::METHOD_TYPE;
-        }
-        elseif ($node instanceof N\Stmt\Function_) {
-            return Variable::FUNCTION_TYPE;
-        }
-        throw \InvalidArgumentException("'".get_class($node)."' has no type.");
-    }
-
-    protected function is_definition(\PhpParser\Node $node) {
-        return     $node instanceof N\Stmt\Class_
-                || $node instanceof N\Stmt\ClassMethod
-                || $node instanceof N\Stmt\Function_;
-    }
-
-    protected function insert_custom_info($type, $name_id, $def_id) {
-        if ($type == Variable::METHOD_TYPE) {
-            $this->insert_method_info($name_id, $def_id);
-        }
-    }
-
-    protected function insert_method_info($name_id, $def_id) {
-        list($_, $cls_name_id) = $this->definition_stack[count($this->definition_stack)-2];
-        assert('$_ == Lechimp\\Dicto\\Variables\\Variable::CLASS_TYPE');
-        $this->insert->method_info($name_id, $cls_name_id, $def_id);
     }
 
     /**
@@ -370,9 +364,12 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     public function leaveNode(\PhpParser\Node $node) {
         // Class
-        if($this->is_definition($node)) {
-            list($type, $id) = array_pop($this->definition_stack);
-            $this->call_definition_listener("listeners_leave_definition", $type, $id, $node);
+        if (  $node instanceof N\Stmt\Class_
+           || $node instanceof N\Stmt\ClassMethod
+           || $node instanceof N\Stmt\Function_) {
+
+            list($type, $handle) = array_pop($this->definition_stack);
+            $this->call_definition_listener("listeners_leave_definition", $type, $handle, $node);
         }
         else {
             $this->call_misc_listener("listeners_leave_misc", $node);
