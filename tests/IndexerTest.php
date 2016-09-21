@@ -39,14 +39,28 @@ abstract class IndexerTest extends PHPUnit_Framework_TestCase {
         return $indexer;
     }
 
+    public function getInsertMock() {
+        return $this
+            ->getMockBuilder(Lechimp\Dicto\Indexer\Insert::class)
+            ->setMethods(
+                [ "_file"
+                , "_class"
+                , "_method"
+                , "_function"
+                , "_global"
+                , "_language_construct"
+                , "_method_reference"
+                , "_function_reference"
+                , "relation"
+                ])
+            ->getMock();
+    }
+
     public function test_file_empty() {
         $source = <<<PHP
 <?php
 PHP;
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
         $insert_mock
             ->expects($this->once())
@@ -67,10 +81,7 @@ PHP;
 class AClass {
 }
 PHP;
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
         $insert_mock
             ->expects($this->once())
@@ -96,10 +107,7 @@ class AClass {
     }
 }
 PHP;
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
         $insert_mock
             ->expects($this->exactly(2))
@@ -133,10 +141,7 @@ PHP;
 function a_function() {
 }
 PHP;
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
         $insert_mock
             ->expects($this->once())
@@ -164,10 +169,7 @@ class AClass {
     }
 }
 PHP;
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
         $insert_mock
             ->expects($this->exactly(2))
@@ -227,10 +229,7 @@ function a_function() {
     global \$foo;
 }
 PHP;
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
         $insert_mock
             ->expects($this->once())
@@ -274,10 +273,7 @@ function a_function() {
     another_function();
 }
 PHP;
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
         $insert_mock
             ->expects($this->once())
@@ -330,10 +326,7 @@ function a_function() {
     \$foo->some_method();
 }
 PHP;
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
 
         $insert_mock
@@ -387,10 +380,7 @@ function a_function() {
     @\$foo->some_method();
 }
 PHP;
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
         $insert_mock
             ->expects($this->once())
@@ -459,10 +449,7 @@ function a_function() {
     return \$GLOBALS["foo"];
 }
 PHP;
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
         $insert_mock
             ->expects($this->once())
@@ -511,10 +498,7 @@ class AClass {
 }
 PHP;
 
-        $insert_mock = $this
-            ->getMockBuilder("Lechimp\Dicto\Indexer\Insert")
-            ->setMethods(array("name", "file", "source", "definition", "method_info", "relation"))
-            ->getMock();
+        $insert_mock = $this->getInsertMock();
 
         $class_name_id = 1;
         $method_name_id = 3;
