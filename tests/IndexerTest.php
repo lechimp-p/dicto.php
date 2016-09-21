@@ -9,99 +9,11 @@
  */
 
 use Lechimp\Dicto;
-use Lechimp\Dicto\Variables\Variable;
-use Lechimp\Dicto\Indexer\Insert;
-use Lechimp\Dicto\Indexer\Location;
-use Lechimp\Dicto\Indexer\Indexer;
-use Lechimp\Dicto\Indexer\CachesReferences;
-use PhpParser\ParserFactory;
-use PhpParser\Node as N;
-use Psr\Log\LogLevel;
 
-require_once(__DIR__."/LoggerMock.php");
+require_once(__DIR__."/IndexerExpectations.php");
 
 class IndexerTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
-
-    }
-
-    protected function indexer(Insert $insert_mock) {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
-        $logger_mock = new LoggerMock();
-        $indexer = new Indexer
-            ( $logger_mock
-            , $parser
-            , $insert_mock
-            );
-        //(new \Lechimp\Dicto\Rules\ContainText())->register_listeners($indexer);
-        //(new \Lechimp\Dicto\Rules\DependOn())->register_listeners($indexer);
-        //(new \Lechimp\Dicto\Rules\Invoke())->register_listeners($indexer);
-        return $indexer;
-    }
-
-    public function getInsertMock() {
-        return $this
-            ->getMockBuilder(Lechimp\Dicto\Indexer\Insert::class)
-            ->setMethods(
-                [ "_file"
-                , "_class"
-                , "_method"
-                , "_function"
-                , "_global"
-                , "_language_construct"
-                , "_method_reference"
-                , "_function_reference"
-                , "relation"
-                ])
-            ->getMock();
-    }
-
-    public function expect_file($insert_mock, $name, $source) {
-        return $insert_mock
-            ->expects($this->once())
-            ->method("_file")
-            ->with
-                ( $this->equalTo($name)
-                , $this->equalTo($source)
-                );
-    }
-
-    public function expect_class($insert_mock, $name, $file, $start_line, $end_line) {
-        return $insert_mock
-            ->expects($this->once())
-            ->method("_class")
-            ->with
-                ( $this->equalTo($name)
-                , $this->equalTo($file)
-                , $this->equalTo($start_line)
-                , $this->equalTo($end_line)
-                );
-    }
-
-    public function expect_method($insert_mock, $name, $class, $file, $start_line, $end_line) {
-        return $insert_mock
-            ->expects($this->once())
-            ->method("_method")
-            ->with
-                ( $this->equalTo($name)
-                , $this->equalTo($class)
-                , $this->equalTo($file)
-                , $this->equalTo($start_line)
-                , $this->equalTo($end_line)
-                );
-    }
-
-    public function expect_function($insert_mock, $name, $file, $start_line, $end_line) {
-        return $insert_mock
-            ->expects($this->once())
-            ->method("_function")
-            ->with
-                ( $this->equalTo($name)
-                , $this->equalTo($file)
-                , $this->equalTo($start_line)
-                , $this->equalTo($end_line)
-                );
-    }
+    use IndexerExpectations;
 
     public function test_file_empty() {
         $source = <<<PHP
