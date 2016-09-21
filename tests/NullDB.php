@@ -13,12 +13,15 @@ use Lechimp\Dicto\Indexer\Insert;
 
 class NullDB implements Insert, Query {
     // Insert
-    public function name($name, $type) { return 0; }
-    public function file($path) { return 0; }
-    public function source($path, $content) { return 0; }
-    public function definition($name, $type, $file, $start_line, $end_line) { return array(0,0); }
-    public function method_info($name_id, $class_name_id, $definition_id) { return null; }
-    public function relation($name_left_id, $name_right_id, $which, $file, $line) { return 0; }
+    public function _file($path, $source) { return 0; }
+    public function _class($name, $file, $start_line, $end_line) { return 0; }
+    public function _method($name, $class, $file, $start_line, $end_line) { return 0; }
+    public function _function($name, $file, $start_line, $end_line) { return 0; }
+    public function _global($name) { return 0; }
+    public function _language_construct($name, $file, $line) { return 0; }
+    public function _method_reference($name, $file, $line) { return 0; }
+    public function _function_reference() { return 0; }
+    public function relation($left_entity, $right_entity, $file, $line) { return 0; }
     // Query
     public function name_table() { return "names"; }
     public function file_table() { return "files"; }

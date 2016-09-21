@@ -17,13 +17,107 @@ use Lechimp\Dicto\Analysis\Variable;
  */
 interface Insert {
     /**
+     * Store a file in the database.
+     *
+     * @param   string  $path
+     * @param   string  $source
+     * @return  mixed   handle to the file
+     */
+    public function _file($path, $source);
+
+    /**
+     * Store a class in the database.
+     *
+     * @param   string  $name
+     * @param   mixed   $file   handle from _file
+     * @param   int     $start_line
+     * @param   int     $end_line
+     * @return  mixed   handle to the class
+     */
+    public function _class($name, $file, $start_line, $end_line);
+
+    /**
+     * Store a method in the database.
+     *
+     * @param   string  $name
+     * @param   mixed   $class  handle from _class
+     * @param   mixed   $file   handle from _file
+     * @param   int     $start_line
+     * @param   int     $end_line
+     * @return  null
+     */
+    public function _method($name, $class, $file, $start_line, $end_line);
+
+    /**
+     * Store a function in the database.
+     *
+     * @param   string  $name
+     * @param   mixed   $file   handle from _file
+     * @param   int     $start_line
+     * @param   int     $end_line
+     * @return  null
+     */
+    public function _function($name, $file, $start_line, $end_line);
+
+    /**
+     * Store information about the usage of a global to the database.
+     * If there already is such a global just returns the handle.
+     *
+     * @param   string  $name
+     * @return  mixed   handle to the global
+     */
+    public function _global($name);
+
+    /**
+     * Store information about the usage of a language construct to the database.
+     * If there already is such a language construct just returns the handle.
+     *
+     * @param   string  $name
+     * @return  mixed   handle to the language construct
+     */
+    public function _language_construct($name, $file, $line);
+
+    /**
+     * Store information about a reference to a method to the database.
+     * If there already is such a reference just returns the handle.
+     *
+     * @param   string  $name
+     * @return  mixed   handle to the method reference
+     */
+    public function _method_reference($name, $file, $line);
+
+    /**
+     * Store information about a reference to a function to the database.
+     * If there already is such a reference just returns the handle.
+     *
+     * @param   string  $name
+     * @return  mixed   handle to the function reference
+     */
+    public function _function_reference();
+
+    /**
+     * Store the fact, that two entity have a relation, established at a
+     * certain source code location.
+     *
+     * @param   mixed       $left_entity    handle from some other insert method
+     * @param   mixed       $right_entity   handle from some other insert method
+     * @param   mixed       $file           handle from _file
+     * @param   int         $line
+     * @return  null
+     */
+    public function relation($left_entity, $right_entity, $file, $line);
+
+    //interface
+    //namespace
+
+    /**
      * Store the name or just get the id if name already exists.
      *
      * @param   string      $name
      * @param   string      $type
      * @return  int
      */
-    public function name($name, $type);
+//    public function name($name, $type);
 
     /**
      * Store a filename or just get its id if the file is already stored.
@@ -31,7 +125,7 @@ interface Insert {
      * @param   string      $path
      * @return  int
      */
-    public function file($path);
+//    public function file($path);
 
     /**
      * Store some source code of file.
@@ -40,7 +134,7 @@ interface Insert {
      * @param   string      $content
      * @return  int         id of file 
      */
-    public function source($path, $content);
+//    public function source($path, $content);
 
     /**
      * Store the location of some name definition.
@@ -54,7 +148,7 @@ interface Insert {
      * @param   int         $end_line
      * @return  int[]       (id of name, id of definition)
      */
-    public function definition($name, $type, $file, $start_line, $end_line);
+//    public function definition($name, $type, $file, $start_line, $end_line);
 
     /**
      * Store some info about a method.
@@ -64,7 +158,7 @@ interface Insert {
      * @param   int         $definition_id
      * @return  null
      */
-    public function method_info($name_id, $class_name_id, $definition_id);
+//    public function method_info($name_id, $class_name_id, $definition_id);
 
     /**
      * Store the fact, that two names have a relation, established at a
@@ -80,5 +174,5 @@ interface Insert {
      * @param   int         $line
      * @return  null
      */
-     public function relation($name_left_id, $name_right_id, $which, $file, $line);
+//     public function relation($name_left_id, $name_right_id, $which, $file, $line);
 }

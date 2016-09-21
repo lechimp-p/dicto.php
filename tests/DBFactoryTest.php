@@ -14,7 +14,7 @@ use Lechimp\Dicto\App\ResultDB;
 
 require_once(__DIR__."/tempdir.php");
 
-class DBFactoryTest extends PHPUnit_Framework_TestCase {
+abstract class DBFactoryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->factory = new DBFactory();
     }

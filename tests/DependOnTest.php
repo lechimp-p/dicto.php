@@ -14,7 +14,7 @@ use Lechimp\Dicto\Analysis\Violation;
 
 require_once(__DIR__."/RuleTest.php");
 
-class DependOnTest extends RuleTest {
+abstract class DependOnTest extends RuleTest {
     /**
      * @return  R\Schema
      */

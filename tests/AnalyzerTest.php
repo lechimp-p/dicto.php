@@ -25,7 +25,7 @@ require_once(__DIR__."/ReportGeneratorMock.php");
 // instead it tests if the rule works. This should be tested too, but tests
 // need to be reorganized. This also might mean that Analyzer is not a good
 // class.
-class AnalyzerTest extends PHPUnit_Framework_TestCase {
+abstract class AnalyzerTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->connection = DriverManager::getConnection
             ( array

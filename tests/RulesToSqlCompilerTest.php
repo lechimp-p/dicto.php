@@ -19,7 +19,7 @@ use Lechimp\Dicto\App\IndexDB;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
-class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
+abstract class RulesToSqlCompilerTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->connection = DriverManager::getConnection
             ( array

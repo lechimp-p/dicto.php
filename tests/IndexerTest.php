@@ -20,7 +20,7 @@ use Psr\Log\LogLevel;
 
 require_once(__DIR__."/LoggerMock.php");
 
-class IndexerTest extends PHPUnit_Framework_TestCase {
+abstract class IndexerTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
 
     }
