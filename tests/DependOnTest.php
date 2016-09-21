@@ -180,5 +180,4 @@ CODE;
             );
         $this->assertEquals($expected, $violations);
     }
-
 }

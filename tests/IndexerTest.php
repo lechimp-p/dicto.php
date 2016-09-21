@@ -87,6 +87,7 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
+// TODO: Move these tests to their appropriate rules.
 
 /*    public function test_method_uses_global() {
         $source = <<<PHP

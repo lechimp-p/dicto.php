@@ -23,9 +23,6 @@ trait IndexerExpectations {
             , $parser
             , $insert_mock
             );
-        //(new \Lechimp\Dicto\Rules\ContainText())->register_listeners($indexer);
-        //(new \Lechimp\Dicto\Rules\DependOn())->register_listeners($indexer);
-        //(new \Lechimp\Dicto\Rules\Invoke())->register_listeners($indexer);
         return $indexer;
     }
 
