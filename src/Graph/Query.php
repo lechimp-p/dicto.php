@@ -15,9 +15,9 @@ namespace Lechimp\Dicto\Graph;
  */
 class Query {
     /**
-     * @var Matcher[]
+     * @var \Closure[]
      */
-    protected $matchers = [];
+    protected $filters = [];
 
     /**
      * Execute the query on a graph. Get a list of results of the
@@ -27,7 +27,7 @@ class Query {
      * @return  PathCollection
      */
     public function execute_on(Graph $graph) {
-        $num = count($this->matchers);
+        $num = count($this->filters);
         if ($num === 0) {
             return new PathCollection([]);
         }
@@ -43,10 +43,10 @@ class Query {
                 return $collection;
             }
 
-            $matcher = $this->matchers[$i];
+            $matcher = $this->filters[$i];
             $collection->extend(function(Path $p) use ($matcher) {
                 $e = $p->last();
-                if (!$matcher->matches($e)) {
+                if (!$matcher($e)) {
                     return [];
                 }
                 if ($e instanceof Node) {
@@ -65,31 +65,21 @@ class Query {
                 }
             });
         }
-        $collection->filter_by_last_entity(end($this->matchers));
+        $collection->filter_by_last_entity(end($this->filters));
         return $collection;
     }
 
     /**
-     * Get a new query with an additional matcher on the next entity.
+     * Get a query with the given filter on the next entity.
      *
-     * @param   Matcher $matcher
-     * @return  Query
-     */
-    public function with_matcher(Matcher $matcher) {
-        $clone = new Query;
-        $clone->matchers = $this->matchers;
-        $clone->matchers[] = $matcher;
-        assert('$this->matchers != $clone->matchers');
-        return $clone;
-    }
-
-    /**
-     * Get a query with the given condition on the next entity.
-     *
-     * @param   \Closure    $condition  Entity -> bool
+     * @param   \Closure    $filter  Entity -> bool
      * @param   Query
      */
-    public function with_condition(\Closure $condition) {
-        return $this->with_matcher(new Matcher($condition));
+    public function with_filter(\Closure $filter) {
+        $clone = new Query;
+        $clone->filters = $this->filters;
+        $clone->filters[] = $filter;
+        assert('$this->filters != $clone->filters');
+        return $clone;
     }
 }

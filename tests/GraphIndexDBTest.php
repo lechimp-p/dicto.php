@@ -23,13 +23,13 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->source("foo.php", "FOO\nBAR");
 
         $res = (new Query)
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "file";
             })
-            ->with_condition(function(Relation $r) {
+            ->with_filter(function(Relation $r) {
                 return $r->type() == "contains";
             })
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "line";
             })
             ->execute_on($this->db)
@@ -60,19 +60,19 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
 
         $res = (new Query)
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
-            ->with_condition(function(Relation $r) {
+            ->with_filter(function(Relation $r) {
                 return $r->type() == "has_definition";
             })
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "definition";
             })
-            ->with_condition(function(Relation $r) {
+            ->with_filter(function(Relation $r) {
                 return $r->type("in_file");
             })
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type("file");
             })
             ->execute_on($this->db)
@@ -102,7 +102,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $id = $this->db->name("AClass", Variable::CLASS_TYPE);
 
         $res = (new Query)
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
             ->execute_on($this->db)
@@ -131,13 +131,13 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->relation($id1, $id2, "some_relation", "BClass.php", 1);
 
         $res = (new Query)
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
-            ->with_condition(function(Relation $n) {
+            ->with_filter(function(Relation $n) {
                 return true;
             })
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
             ->execute_on($this->db)
@@ -198,19 +198,19 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->definition("a_method", Variable::METHOD_TYPE, "BClass.php", 1, 2);
 
         $res = (new Query)
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
-            ->with_condition(function(Relation $r) {
+            ->with_filter(function(Relation $r) {
                 return $r->type() == "has_definition";
             })
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "definition";
             })
-            ->with_condition(function(Relation $r) {
+            ->with_filter(function(Relation $r) {
                 return $r->type() == "in_file";
             })
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "file";
             })
             ->execute_on($this->db)
@@ -250,13 +250,13 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 2);
 
         $res = (new Query)
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
-            ->with_condition(function(Relation $n) {
+            ->with_filter(function(Relation $n) {
                 return true;
             })
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
             ->execute_on($this->db)
@@ -297,13 +297,13 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
 
         $res = (new Query)
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
-            ->with_condition(function(Relation $n) {
+            ->with_filter(function(Relation $n) {
                 return true;
             })
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
             ->execute_on($this->db)
@@ -343,14 +343,14 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->method_info($mtd_id, $cls_id, $def_id);
 
         $res = (new Query)
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name"
                     && $n->property("type") == "methods";
             })
-            ->with_condition(function(Relation $r) {
+            ->with_filter(function(Relation $r) {
                 return $r->type("in_class");
             })
-            ->with_condition(function(Node $n) {
+            ->with_filter(function(Node $n) {
                 return $n->type() == "name"
                     && $n->property("type") == "classes";
             })

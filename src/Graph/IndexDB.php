@@ -21,7 +21,7 @@ class IndexDB extends Graph implements Insert {
      */
     public function name($name, $type) {
         $res = (new Query)
-            ->with_condition(function(Node $n) use ($name) {
+            ->with_filter(function(Node $n) use ($name) {
                 return $n->type() == "name"
                     && $n->property("name") == $name;
             })
@@ -42,7 +42,7 @@ class IndexDB extends Graph implements Insert {
      */
     public function file($path) {
         $res = (new Query)
-            ->with_condition(function(Node $n) use ($path) {
+            ->with_filter(function(Node $n) use ($path) {
                 return $n->type() == "file"
                     && $n->property("path") == $path;
             })

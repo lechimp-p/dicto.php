@@ -46,14 +46,14 @@ class PathCollection {
     }
 
     /**
-     * Filter the contained paths by a matcher on the last entity.
+     * Filter the contained paths by a filter on the last entity.
      *
-     * @param   Matcher $matcher
+     * @param   \Closure    $filter
      * @return  null 
      */
-    public function filter_by_last_entity(Matcher $matcher) {
-        $this->extend(function(Path $p) use ($matcher) {
-            if ($matcher->matches($p->last())) {
+    public function filter_by_last_entity(\Closure $filter) {
+        $this->extend(function(Path $p) use ($filter) {
+            if ($filter($p->last())) {
                 return [$p];
             }
             return [];

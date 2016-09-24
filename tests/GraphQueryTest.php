@@ -23,7 +23,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
         $n2 = $this->g->create_node("b_type", []);
 
         $query = (new Query())
-            ->with_condition(function($_) {
+            ->with_filter(function($_) {
                 return true;
             });
         $res = $this->to_arrays($query->execute_on($this->g));
@@ -36,7 +36,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
         $n2 = $this->g->create_node("b_type", []);
 
         $query = (new Query())
-            ->with_condition(function($_) {
+            ->with_filter(function($_) {
                 return false;
             });
         $res = $this->to_arrays($query->execute_on($this->g));
@@ -52,9 +52,9 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
         $all = function($_) { return true; };
 
         $query = (new Query())
-            ->with_condition($all)
-            ->with_condition($all)
-            ->with_condition($all);
+            ->with_filter($all)
+            ->with_filter($all)
+            ->with_filter($all);
         $res = $this->to_arrays($query->execute_on($this->g));
         $this->assertEquals([[$n1,$rel,$n2]], $res);
     }
@@ -69,11 +69,11 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
         $all = function($_) { return true; };
 
         $query = (new Query())
-            ->with_condition($all)
-            ->with_condition(function($e) {
+            ->with_filter($all)
+            ->with_filter(function($e) {
                 return $e->type() == "rel_B";
             })
-            ->with_condition($all);
+            ->with_filter($all);
         $res = $this->to_arrays($query->execute_on($this->g));
         $this->assertEquals([[$n2,$r2,$n3]], $res);
     }
@@ -88,9 +88,9 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
         $all = function($_) { return true; };
 
         $query = (new Query())
-            ->with_condition($all)
-            ->with_condition($all)
-            ->with_condition($all);
+            ->with_filter($all)
+            ->with_filter($all)
+            ->with_filter($all);
         $res = $this->to_arrays($query->execute_on($this->g));
         $this->assertEquals([[$n1,$r1,$n2],[$n2,$r2,$n3]], $res);
     }
