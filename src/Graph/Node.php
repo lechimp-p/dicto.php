@@ -71,4 +71,21 @@ class Node extends Entity {
     public function relations() {
         return $this->relations;
     }
+
+    /**
+     * Get all related nodes, where relations might be filtered.
+     *
+     * @param   \Closure    $filter
+     * @return  Node[]
+     */
+    public function related_nodes(\Closure $filter = null) {
+        if ($filter !== null) {
+            $filtered = array_filter($this->relations, $filter);
+        }
+        else {
+            $filtered = $this->relations;
+        }
+        $get_node = function($r) { return $r->target(); };
+        return array_values(array_map($get_node, $filtered));
+    }
 }

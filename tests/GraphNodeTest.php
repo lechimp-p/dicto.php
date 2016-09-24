@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\Relation;
 
 class GraphNodeTest extends PHPUnit_Framework_TestCase {
     public function test_id() {
@@ -41,5 +42,61 @@ class GraphNodeTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("rel_type", $rel->type());
         $this->assertEquals(["is" => "rel"], $rel->properties());
         $this->assertSame($r, $rel->target());
+    }
+
+    public function test_related_nodes1() {
+        $a = new Node(1, "a_type", ["prop" => 1]);
+        $b = new Node(2, "a_type", ["prop" => 2]);
+        $c = new Node(3, "a_type", ["prop" => 3]);
+        $a->add_relation("rel_type_1", ["is" => "rel"], $b);
+        $a->add_relation("rel_type_2", ["is" => "rel"], $c);
+
+        $res = $a->related_nodes();
+        $this->assertCount(2, $res);
+        $this->assertSame($b, $res[0]);
+        $this->assertSame($c, $res[1]);
+    }
+
+    public function test_related_nodes2() {
+        $a = new Node(1, "a_type", ["prop" => 1]);
+        $b = new Node(2, "a_type", ["prop" => 2]);
+        $c = new Node(3, "a_type", ["prop" => 3]);
+        $a->add_relation("rel_type_1", ["is" => "rel"], $b);
+        $a->add_relation("rel_type_2", ["is" => "rel"], $c);
+
+        $res = $a->related_nodes(function(Relation $r) {
+            return $r->type() == "rel_type_1";
+        });
+        $this->assertCount(1, $res);
+        $this->assertSame($b, $res[0]);
+    }
+
+    public function test_related_nodes3() {
+        $a = new Node(1, "a_type", ["prop" => 1]);
+        $b = new Node(2, "a_type", ["prop" => 2]);
+        $c = new Node(3, "a_type", ["prop" => 3]);
+        $a->add_relation("rel_type_1", ["is" => "rel"], $b);
+        $a->add_relation("rel_type_2", ["is" => "rel"], $c);
+
+        $res = $a->related_nodes(function(Relation $r) {
+            return $r->type() == "rel_type_2";
+        });
+        $this->assertCount(1, $res);
+        $this->assertSame($c, $res[0]);
+    }
+
+
+    public function test_related_nodes4() {
+        $a = new Node(1, "a_type", ["prop" => 1]);
+        $b = new Node(2, "a_type", ["prop" => 2]);
+        $c = new Node(3, "a_type", ["prop" => 3]);
+        $a->add_relation("rel_type_1", ["is" => "good"], $b);
+        $a->add_relation("rel_type_1", ["is" => "bad"], $c);
+
+        $res = $a->related_nodes(function(Relation $r) {
+            return $r->property("is") == "good";
+        });
+        $this->assertCount(1, $res);
+        $this->assertSame($b, $res[0]);
     }
 }
