@@ -407,4 +407,60 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
             ->run([]);
         $this->assertEquals([[$f],[$c2],[$m]], $res);
     }
+
+    public function test_compile_methods_in_some_classes() {
+        $a_classes = new V\WithProperty
+            ( new V\Classes()
+            , new V\Name()
+            , array("AClass")
+            );
+        $var = new V\WithProperty
+            ( new V\Methods()
+            , new V\In()
+            , array($a_classes)
+            );
+        $compiled = $var->compile();
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $c1 = $this->db->_class("AClass", $f, 1,2);
+        $m1 = $this->db->_method("a_method", $c1, $f, 1, 2);
+        $c2 = $this->db->_class("BClass", $f, 1,2);
+        $m2 = $this->db->_method("a_method", $c2, $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$m1]], $res);
+    }
+
+    public function test_compile_methods_in_some_classes_negated() {
+        $a_classes = new V\WithProperty
+            ( new V\Classes()
+            , new V\Name()
+            , array("AClass")
+            );
+        $var = new V\WithProperty
+            ( new V\Methods()
+            , new V\In()
+            , array($a_classes)
+            );
+        $compiled = $var->compile(true);
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $c1 = $this->db->_class("AClass", $f, 1,2);
+        $m1 = $this->db->_method("a_method", $c1, $f, 1, 2);
+        $c2 = $this->db->_class("BClass", $f, 1,2);
+        $m2 = $this->db->_method("a_method", $c2, $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$f],[$c1],[$c2],[$m2]], $res);
+    }
 }

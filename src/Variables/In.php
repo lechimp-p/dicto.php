@@ -10,13 +10,16 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\Relation;
 use Lechimp\Dicto\Definition\ArgumentParser;
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
 /**
  * Name is a property, right?
  */
 class In extends Property {
+    static private $relations = ["contained in"];
+
     /**
      * @inheritdocs
      */
@@ -52,17 +55,33 @@ class In extends Property {
     /**
      * @inheritdocs
      */
-    public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
-        assert('$this->arguments_are_valid($arguments)');
-        if (!($variable instanceof Methods)) {
-            throw new \LogicException("Property 'in' only works with methods, but not with '".get_class($variable)."'.");
-        }
-
+    public function compile(array &$arguments, $negate = false) {
+        $condition = $arguments[0]->compile();
         if (!$negate) {
-            return "1 = 1";
+            return function (Node $n) use ($condition) {
+                $nodes = $n->related_nodes(function (Relation $r) use ($condition) {
+                    return in_array($r->type(), self::$relations);
+                });
+                foreach ($nodes as $node) {
+                    if ($condition($node)) {
+                        return true;
+                    }
+                }
+                return false;
+            };
         }
         else {
-            return "1 = 1";
+            return function (Node $n) use ($condition) {
+                $nodes = $n->related_nodes(function (Relation $r) use ($condition) {
+                    return in_array($r->type(), self::$relations);
+                });
+                foreach ($nodes as $node) {
+                    if ($condition($node)) {
+                        return false;
+                    }
+                }
+                return true;
+            };
         }
     }
 }
