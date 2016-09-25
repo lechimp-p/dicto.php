@@ -133,4 +133,14 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals([[$n1,$r1,$n2],[$n2,$r2,$n3]], $res);
     }
+
+    public function test_empty_result() {
+        $res = $this->g->query()
+            ->expand(function($n) { return $n->relations(); })
+            ->expand(function($n) { return [$n->target()]; })
+            ->extract(function($_,&$r) { $r["foo"] = "bar"; })
+            ->run([]);
+
+        $this->assertEquals([], $res);
+    }
 }

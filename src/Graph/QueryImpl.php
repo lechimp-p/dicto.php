@@ -63,6 +63,10 @@ class QueryImpl implements Query {
         $nodes = $this->add_result($this->graph->nodes(), $result);
 
         foreach ($this->steps as $step) {
+            if (count($nodes) == 0) {
+                return [];
+            }
+
             list($cmd,$clsr) = $step;
             if ($cmd == "expand") {
                 $nodes = $this->run_expand($nodes, $clsr);
@@ -88,6 +92,9 @@ class QueryImpl implements Query {
         foreach ($nodes as $r) {
             list($node, $result) = $r;
             $new_nodes[] = $this->add_result($clsr($node), $result);
+        }
+        if (count($new_nodes) == 0) {
+            return [];
         }
         return call_user_func_array("array_merge", $new_nodes);
     }
