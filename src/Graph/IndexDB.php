@@ -144,17 +144,39 @@ class IndexDB extends Graph implements Insert {
     /**
      * @inheritdocs
      */
-    public function _method_reference($name, $file, $line) {}
+    public function _method_reference($name, $file, $line) {
+        $method = $this->create_node("method reference", ["name" => $name]);
+        $this->add_relation($method, "referenced at", ["line" => $line], $file);
+        return $method;
+    }
 
     /**
      * @inheritdocs
      */
-    public function _function_reference($name, $file, $line) {}
+    public function _function_reference($name, $file, $line) {
+        $function = $this->create_node("function reference", ["name" => $name]);
+        $this->add_relation($function, "referenced at", ["line" => $line], $file);
+        return $function;
+    }
 
     /**
      * @inheritdocs
      */
-    public function _relation($left_entity, $right_entity, $file, $line) {}
+    public function _relation($left_entity, $relation, $right_entity, $file = null, $line = null) {
+        assert('$left_entity instanceof \\Lechimp\\Dicto\\Graph\\Node');
+        assert('$right_entity instanceof \\Lechimp\\Dicto\\Graph\\Node');
+        assert('is_string($relation)');
+        $props = [];
+        if ($file !== null) {
+            assert('$file->type() == "file"');
+            $props["file"] = $file;
+        }
+        if ($line !== null) {
+            assert('is_int($line)');
+            $props["line"] = $line;
+        }
+        $this->add_relation($left_entity, $relation, $props, $right_entity);
+    }
 
     /**
      * Build a query on the index.

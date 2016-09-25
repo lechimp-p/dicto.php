@@ -15,6 +15,14 @@ namespace Lechimp\Dicto\Graph;
  */
 interface IndexQuery extends Query {
     /**
+     * Get nodes of some specific type.
+     *
+     * @param   string  $type
+     * @return  IndexQuery
+     */
+    public function filter_by_type($type);
+
+    /**
      * Get files only.
      *
      * @return Query
@@ -41,20 +49,6 @@ interface IndexQuery extends Query {
      * @return Query
      */
     public function functions();
-
-    /**
-     * Get globals only.
-     *
-     * @return Query
-     */
-    public function globals();
-
-    /**
-     * Get language constructs only.
-     *
-     * @return Query
-     */
-    public function language_constructs();
 
     /**
      * Expand to relations with given types.

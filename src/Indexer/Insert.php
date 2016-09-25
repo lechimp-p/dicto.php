@@ -79,7 +79,6 @@ interface Insert {
 
     /**
      * Store information about a reference to a method to the database.
-     * If there already is such a reference just returns the handle.
      *
      * @param   string  $name
      * @param   mixed   $file   handle from _file
@@ -90,7 +89,6 @@ interface Insert {
 
     /**
      * Store information about a reference to a function to the database.
-     * If there already is such a reference just returns the handle.
      *
      * @param   string  $name
      * @param   mixed   $file   handle from _file
@@ -104,12 +102,13 @@ interface Insert {
      * certain source code location.
      *
      * @param   mixed       $left_entity    handle from some other insert method
+     * @param   string      $relation
      * @param   mixed       $right_entity   handle from some other insert method
      * @param   mixed       $file           handle from _file
      * @param   int         $line
      * @return  null
      */
-    public function _relation($left_entity, $right_entity, $file, $line);
+    public function _relation($left_entity, $relation, $right_entity, $file, $line);
 
     //interface
     //namespace

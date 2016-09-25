@@ -21,7 +21,7 @@ class NullDB implements Insert, Query {
     public function _language_construct($name) { return 0; }
     public function _method_reference($name, $file, $line) { return 0; }
     public function _function_reference($name, $file, $line) { return 0; }
-    public function _relation($left_entity, $right_entity, $file, $line) { return 0; }
+    public function _relation($left_entity, $relation, $right_entity, $file, $line) { return 0; }
     // Query
     public function name_table() { return "names"; }
     public function file_table() { return "files"; }

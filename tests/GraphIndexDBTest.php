@@ -158,7 +158,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_global("some_global");
 
         $res = $this->db->query()
-            ->globals()
+            ->filter_by_type("global")
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
@@ -176,7 +176,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $gb = $this->db->_global("some_global");
 
         $res = $this->db->query()
-            ->globals()
+            ->filter_by_type("global")
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
@@ -194,7 +194,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_language_construct("die");
 
         $res = $this->db->query()
-            ->language_constructs()
+            ->filter_by_type("language construct")
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
@@ -212,7 +212,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $lb = $this->db->_language_construct("die");
 
         $res = $this->db->query()
-            ->language_constructs()
+            ->filter_by_type("language construct")
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
@@ -227,12 +227,92 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_method_reference() {
+        $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
+        $this->db->_method_reference("some_method", $file, 2);
+
+        $res = $this->db->query()
+            ->filter_by_type("method reference")
+            ->extract(function($n,&$r) {
+                $r["name"] = $n->property("name");
+            })
+            ->expand_relation(["referenced at"])
+            ->extract(function($n,&$r) {
+                $r["line"] = $n->property("line");
+            })
+            ->expand_target()
+            ->extract(function($n,&$r) {
+                $r["file"] = $n;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "name" => "some_method"
+                , "line" => 2
+                , "file" => $file
+                ]
+            ];
+        $this->assertEquals($expected, $res);
     }
 
     public function test_function_reference() {
+        $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
+        $this->db->_function_reference("some_function", $file, 2);
+
+        $res = $this->db->query()
+            ->filter_by_type("function reference")
+            ->extract(function($n,&$r) {
+                $r["name"] = $n->property("name");
+            })
+            ->expand_relation(["referenced at"])
+            ->extract(function($n,&$r) {
+                $r["line"] = $n->property("line");
+            })
+            ->expand_target()
+            ->extract(function($n,&$r) {
+                $r["file"] = $n;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "name" => "some_function"
+                , "line" => 2
+                , "file" => $file
+                ]
+            ];
+        $this->assertEquals($expected, $res);
     }
 
     public function test_relation() {
+        $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
+        $l = $this->db->_function("a_function", $file, 2, 3);
+        $r = $this->db->_function_reference("some_function", $file, 2);
+        $this->db->_relation($l, "related to", $r, $file, 3);
+
+        $res = $this->db->query()
+            ->functions()
+            ->extract(function($n, &$r) {
+                $r["l"] = $n;
+            })
+            ->expand_relation(["related to"])
+            ->extract(function($e,&$r) {
+                $r["line"] = $e->property("line");
+                $r["file"] = $e->property("file");
+            })
+            ->expand_target()
+            ->extract(function($e,&$r) {
+                $r["r"] = $e;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "l" => $l
+                , "line" => 3
+                , "file" => $file
+                , "r" => $r
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+
     }
 
 /*    public function test_insert_source() {

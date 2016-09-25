@@ -14,7 +14,8 @@ namespace Lechimp\Dicto\Graph;
  * A query on the IndexDB.
  */
 class IndexQueryImpl extends QueryImpl implements IndexQuery {
-    protected function type_filter($type) {
+    public function filter_by_type($type) {
+        assert('is_string($type)');
         return $this->filter(function(Node $n) use ($type) {
             return $n->type() == $type;
         });
@@ -23,42 +24,28 @@ class IndexQueryImpl extends QueryImpl implements IndexQuery {
     /**
      */
     public function files() {
-        return $this->type_filter("file");
+        return $this->filter_by_type("file");
     }
 
     /**
      * @inheritdocs
      */
     public function classes() {
-        return $this->type_filter("class");
+        return $this->filter_by_type("class");
     }
 
     /**
      * @inheritdocs
      */
     public function methods() {
-        return $this->type_filter("method");
+        return $this->filter_by_type("method");
     }
 
     /**
      * @inheritdocs
      */
     public function functions() {
-        return $this->type_filter("function");
-    }
-
-    /**
-     * @inheritdocs
-     */
-    public function globals() {
-        return $this->type_filter("global");
-    }
-
-    /**
-     * @inheritdocs
-     */
-    public function language_constructs() {
-        return $this->type_filter("language construct");
+        return $this->filter_by_type("function");
     }
 
     /**
