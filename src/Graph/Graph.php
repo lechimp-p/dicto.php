@@ -89,5 +89,6 @@ class Graph {
      * @return  Query
      */
     public function query() {
+        return new QueryImpl($this);
     }
 }

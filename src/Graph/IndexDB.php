@@ -20,7 +20,7 @@ class IndexDB extends Graph implements Insert {
      * @inheritdocs
      */
     public function name($name, $type) {
-        $res = (new _Query)
+        $res = (new QueryImpl)
             ->with_filter(function(Node $n) use ($name) {
                 return $n->type() == "name"
                     && $n->property("name") == $name;
@@ -41,7 +41,7 @@ class IndexDB extends Graph implements Insert {
      * @inheritdocs
      */
     public function file($path) {
-        $res = (new _Query)
+        $res = (new QueryImpl)
             ->with_filter(function(Node $n) use ($path) {
                 return $n->type() == "file"
                     && $n->property("path") == $path;

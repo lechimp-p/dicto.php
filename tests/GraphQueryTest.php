@@ -9,9 +9,7 @@
  */
 
 use Lechimp\Dicto\Graph\Graph;
-use Lechimp\Dicto\Graph\_Query;
-use Lechimp\Dicto\Graph\Path;
-use Lechimp\Dicto\Graph\PathCollection;
+use Lechimp\Dicto\Graph\Node;
 
 class Graph_QueryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
@@ -22,11 +20,11 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
-        $query = (new _Query())
-            ->with_filter(function($_) {
-                return true;
-            });
-        $res = $this->to_arrays($query->execute_on($this->g));
+        $res = $this->g->query()
+            ->extract(function(Node $n, array &$result) {
+                $result[] = $n;
+            })
+            ->run([]);
 
         $this->assertEquals([[$n1],[$n2]], $res);
     }
@@ -35,23 +33,26 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
-        $query = (new _Query())
-            ->with_filter(function($_) {
-                return false;
-            });
-        $res = $this->to_arrays($query->execute_on($this->g));
+        $res = $this->g->query()
+            ->expand(function(Node $n) {
+                return [];
+            })
+            ->extract(function(Node $n, array &$result) {
+                $result[] = $n;
+            })
+            ->run([]);
 
         $this->assertEquals([], $res);
     }
 
-    public function test_path1() {
+/*    public function test_path1() {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
         $rel = $this->g->add_relation($n1, "rel_type", [], $n2);
 
         $all = function($_) { return true; };
 
-        $query = (new _Query())
+        $query = $this->g->query()
             ->with_filter($all)
             ->with_filter($all)
             ->with_filter($all);
@@ -68,7 +69,7 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
 
         $all = function($_) { return true; };
 
-        $query = (new _Query())
+        $query = $this->g->query()
             ->with_filter($all)
             ->with_filter(function($e) {
                 return $e->type() == "rel_B";
@@ -87,18 +88,11 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
 
         $all = function($_) { return true; };
 
-        $query = (new _Query())
+        $query = $this->g->query()
             ->with_filter($all)
             ->with_filter($all)
             ->with_filter($all);
         $res = $this->to_arrays($query->execute_on($this->g));
         $this->assertEquals([[$n1,$r1,$n2],[$n2,$r2,$n3]], $res);
-    }
-
-    // HELPER
-    protected function to_arrays(PathCollection $paths) {
-        return array_map(function(Path $p) {
-            return $p->entities();
-        }, $paths->paths());
-    }
+    }*/
 }

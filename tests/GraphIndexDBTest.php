@@ -14,7 +14,7 @@ use Lechimp\Dicto\Graph\_Query;
 use Lechimp\Dicto\Graph\Node;
 use Lechimp\Dicto\Graph\Relation;
 
-class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
+abstract class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->db = new IndexDB();
     }
