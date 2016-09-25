@@ -9,11 +9,11 @@
  */
 
 use Lechimp\Dicto\Graph\Graph;
-use Lechimp\Dicto\Graph\Query;
+use Lechimp\Dicto\Graph\_Query;
 use Lechimp\Dicto\Graph\Path;
 use Lechimp\Dicto\Graph\PathCollection;
 
-class GraphQueryTest extends PHPUnit_Framework_TestCase {
+class Graph_QueryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->g = new Graph(); 
     }
@@ -22,7 +22,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
-        $query = (new Query())
+        $query = (new _Query())
             ->with_filter(function($_) {
                 return true;
             });
@@ -35,7 +35,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
-        $query = (new Query())
+        $query = (new _Query())
             ->with_filter(function($_) {
                 return false;
             });
@@ -51,7 +51,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
 
         $all = function($_) { return true; };
 
-        $query = (new Query())
+        $query = (new _Query())
             ->with_filter($all)
             ->with_filter($all)
             ->with_filter($all);
@@ -68,7 +68,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
 
         $all = function($_) { return true; };
 
-        $query = (new Query())
+        $query = (new _Query())
             ->with_filter($all)
             ->with_filter(function($e) {
                 return $e->type() == "rel_B";
@@ -87,7 +87,7 @@ class GraphQueryTest extends PHPUnit_Framework_TestCase {
 
         $all = function($_) { return true; };
 
-        $query = (new Query())
+        $query = (new _Query())
             ->with_filter($all)
             ->with_filter($all)
             ->with_filter($all);

@@ -13,7 +13,7 @@ namespace Lechimp\Dicto\Graph;
 /**
  * A query on the graph. Finds specific paths in the graph.
  */
-class Query {
+class _Query {
     /**
      * @var \Closure[]
      */
@@ -76,7 +76,7 @@ class Query {
      * @param   Query
      */
     public function with_filter(\Closure $filter) {
-        $clone = new Query;
+        $clone = new _Query;
         $clone->filters = $this->filters;
         $clone->filters[] = $filter;
         assert('$this->filters != $clone->filters');

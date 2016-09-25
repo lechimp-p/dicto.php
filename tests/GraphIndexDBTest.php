@@ -10,7 +10,7 @@
 
 use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Graph\IndexDB;
-use Lechimp\Dicto\Graph\Query;
+use Lechimp\Dicto\Graph\_Query;
 use Lechimp\Dicto\Graph\Node;
 use Lechimp\Dicto\Graph\Relation;
 
@@ -22,7 +22,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
     public function test_insert_source() {
         $this->db->source("foo.php", "FOO\nBAR");
 
-        $res = (new Query)
+        $res = (new _Query)
             ->with_filter(function(Node $n) {
                 return $n->type() == "file";
             })
@@ -59,7 +59,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->source("AClass.php", "FOO\nBAR");
         $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
 
-        $res = (new Query)
+        $res = (new _Query)
             ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
@@ -101,7 +101,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
     public function test_insert_name() {
         $id = $this->db->name("AClass", Variable::CLASS_TYPE);
 
-        $res = (new Query)
+        $res = (new _Query)
             ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
@@ -130,7 +130,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $id2 = $this->db->name("BClass", Variable::CLASS_TYPE);
         $this->db->relation($id1, $id2, "some_relation", "BClass.php", 1);
 
-        $res = (new Query)
+        $res = (new _Query)
             ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
@@ -197,7 +197,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->definition("a_method", Variable::METHOD_TYPE, "AClass.php", 1, 2);
         $this->db->definition("a_method", Variable::METHOD_TYPE, "BClass.php", 1, 2);
 
-        $res = (new Query)
+        $res = (new _Query)
             ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
@@ -249,7 +249,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 2);
 
-        $res = (new Query)
+        $res = (new _Query)
             ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
@@ -296,7 +296,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
         $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
 
-        $res = (new Query)
+        $res = (new _Query)
             ->with_filter(function(Node $n) {
                 return $n->type() == "name";
             })
@@ -342,7 +342,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         list($mtd_id, $def_id) = $this->db->definition("a_method", Variable::METHOD_TYPE, "AClass.php", 1, 2);
         $this->db->method_info($mtd_id, $cls_id, $def_id);
 
-        $res = (new Query)
+        $res = (new _Query)
             ->with_filter(function(Node $n) {
                 return $n->type() == "name"
                     && $n->property("type") == "methods";

@@ -82,4 +82,12 @@ class Graph {
         }
         return $this->nodes[$id];
     }
+
+    /**
+     * Build a query on the graph.
+     *
+     * @return  Query
+     */
+    public function query() {
+    }
 }
