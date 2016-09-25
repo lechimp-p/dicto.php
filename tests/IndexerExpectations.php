@@ -38,7 +38,7 @@ trait IndexerExpectations {
                 , "_language_construct"
                 , "_method_reference"
                 , "_function_reference"
-                , "relation"
+                , "_relation"
                 ])
             ->getMock();
     }

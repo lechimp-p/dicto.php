@@ -105,7 +105,7 @@ interface Insert {
      * @param   int         $line
      * @return  null
      */
-    public function relation($left_entity, $right_entity, $file, $line);
+    public function _relation($left_entity, $right_entity, $file, $line);
 
     //interface
     //namespace
