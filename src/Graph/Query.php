@@ -21,19 +21,18 @@ interface Query {
     /**
      * Expand the entities currently matched by the query.
      *
-     * @param   Entity  $match
-     * @return  Entity[]
+     * @param   \Closure    $expander   Entity -> Entity[]
+     * @return  Query
      */
-    public function expand(Entity $entity);
+    public function expand(\Closure $expander);
 
     /**
      * Extract information from the currently matched query.
      *
-     * @param   Entity  $match
-     * @param   mixed   $result
-     * @return  null
+     * @param   \Closure    $extractor  Entity -> &Result -> null
+     * @return  Query
      */
-    public function extract(Entity $entity);
+    public function extract(\Closure $extractor);
 
     /**
      * Run the query. The current result will be cloned in every expansion.
@@ -41,5 +40,5 @@ interface Query {
      * @param   mixed   $result
      * @return  mixed[]
      */
-    public function run($result = new StdObject());
+    public function run($result);
 }
