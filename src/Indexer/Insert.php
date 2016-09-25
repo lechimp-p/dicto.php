@@ -93,7 +93,7 @@ interface Insert {
      * @param   string  $name
      * @return  mixed   handle to the function reference
      */
-    public function _function_reference();
+    public function _function_reference($name, $file, $line);
 
     /**
      * Store the fact, that two entity have a relation, established at a

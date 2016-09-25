@@ -20,7 +20,7 @@ class NullDB implements Insert, Query {
     public function _global($name) { return 0; }
     public function _language_construct($name, $file, $line) { return 0; }
     public function _method_reference($name, $file, $line) { return 0; }
-    public function _function_reference() { return 0; }
+    public function _function_reference($name, $file, $line) { return 0; }
     public function _relation($left_entity, $right_entity, $file, $line) { return 0; }
     // Query
     public function name_table() { return "names"; }
