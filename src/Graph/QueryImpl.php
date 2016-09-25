@@ -27,10 +27,7 @@ class QueryImpl implements Query {
     }
 
     /**
-     * Expand the entities currently matched by the query.
-     *
-     * @param   \Closure    $expander   Entity -> Entity[]
-     * @return  Query
+     * @inheritdocs
      */
     public function expand(\Closure $expander) {
         $clone = clone $this;
@@ -40,10 +37,7 @@ class QueryImpl implements Query {
     }
 
     /**
-     * Extract information from the currently matched query.
-     *
-     * @param   \Closure    $extractor  Entity -> &Result -> null
-     * @return  Query
+     * @inheritdocs
      */
     public function extract(\Closure $extractor) {
         $clone = clone $this;
@@ -53,10 +47,17 @@ class QueryImpl implements Query {
     }
 
     /**
-     * Run the query. The current result will be cloned in every expansion.
-     *
-     * @param   mixed   $result
-     * @return  mixed[]
+     * @inheritdocs
+     */
+    public function filter(\Closure $filter) {
+        $clone = clone $this;
+        $clone->steps[] = ["filter", $filter];
+        assert('$this->steps != $clone->steps');
+        return $clone;
+    }
+
+    /**
+     * @inheritdocs
      */
     public function run($result) {
         $nodes = $this->add_result($this->graph->nodes(), $result);
@@ -68,6 +69,9 @@ class QueryImpl implements Query {
             }
             elseif ($cmd == "extract") {
                 $this->run_extract($nodes, $clsr);
+            }
+            elseif ($cmd == "filter") {
+                $nodes = $this->run_filter($nodes, $clsr);
             }
             else {
                 throw new \LogicException("Unknown command: $cmd");
@@ -100,6 +104,18 @@ class QueryImpl implements Query {
             $nodes[$i][1] = $result;
         }
     }
+
+    protected function run_filter(array &$nodes, \Closure $clsr) {
+        $res = [];
+        foreach ($nodes as $r) {
+            list($node, $result) = $r;
+            if ($clsr($node, $result)) {
+                $res[] = $r;
+            }
+        }
+        return $res;
+    }
+
 
 
     protected function add_result(array $nodes, &$result) {

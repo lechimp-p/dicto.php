@@ -18,6 +18,22 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
         $this->g = new Graph(); 
     }
 
+    public function test_filter() {
+        $n1 = $this->g->create_node("a_type", []);
+        $n2 = $this->g->create_node("b_type", []);
+
+        $res = $this->g->query()
+            ->filter(function(Node $n, &$_) {
+                return $n->type() == "a_type";
+            })
+            ->extract(function(Node $n, array &$result) {
+                $result[] = $n;
+            })
+            ->run([]);
+
+        $this->assertEquals([[$n1]], $res);
+    }
+
     public function test_match_all() {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);

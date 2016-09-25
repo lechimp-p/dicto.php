@@ -29,10 +29,18 @@ interface Query {
     /**
      * Extract information from the currently matched query.
      *
-     * @param   \Closure    $extractor  Entity -> &Result -> null
+     * @param   \Closure    $extractor  [Entity, &mixed] -> null
      * @return  Query
      */
     public function extract(\Closure $extractor);
+
+    /**
+     * Filter the current nodes and results.
+     *
+     * @param   \Closure    $filter     [Entity, &mixed] -> bool
+     * @return  Query
+     */
+    public function filter(\Closure $filter);
 
     /**
      * Run the query. The current result will be cloned in every expansion.
