@@ -12,6 +12,8 @@ namespace Lechimp\Dicto\Variables;
 
 use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
+use Lechimp\Dicto\Graph\Node;
+
 /**
  * Variable matching any of the sub variables.
  */
@@ -37,23 +39,33 @@ class Any extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
+    public function compile($negate = false) {
+        $conditions = array_map(function(Variable $v) use ($negate) {
+            return $v->compile($negate);
+        }, $this->variables);
+
         // normal case: 1 or 2 or 3 ...
         if (!$negate) {
-            $orX = $builder->orX();
-            foreach ($this->variables as $variable) {
-                $orX->add($variable->compile($builder, $name_table_name, $method_info_table_name));
-            }
-            return $orX;
+            return function(Node $n) use (&$conditions) {
+                foreach ($conditions as $condition) {
+                    if ($condition($n)) {
+                        return true;
+                    }
+                }
+                return false;
+            };
         }
         // negated case: not (left_condition or right_condition)
         //             = not left_condition and not right_condition
         if ($negate) {
-            $andX = $builder->andX();
-            foreach ($this->variables as $variable) {
-                $andX->add($variable->compile($builder, $name_table_name, $method_info_table_name, true));
-            }
-            return $andX;
+            return function(Node $n) use (&$conditions) {
+                foreach ($conditions as $condition) {
+                    if (!$condition($n)) {
+                        return false;
+                    }
+                }
+                return true;
+            };
         }
     }
 }

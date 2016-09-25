@@ -73,6 +73,8 @@ abstract class Variable extends Def\Definition {
     /**
      * Compile the variable to a condition on a graph node.
      *
+     * TODO: Maybe negate can go away.
+     *
      * @param   bool        $negate
      * @return  \Closure    Node -> bool
      */

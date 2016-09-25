@@ -257,4 +257,44 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
             ->run([]);
         $this->assertEquals([[$f],[$c]], $res);
     }
+
+    public function test_compile_any() {
+        $var = new V\Any([new V\Classes, new V\Methods()]);
+        $compiled = $var->compile();
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $c = $this->db->_class("AClass", $f, 1,2);
+        $m1 = $this->db->_method("a_method", $c, $f, 1, 2);
+        $m2 = $this->db->_method_reference("another_method", $f, 1);
+        $g = $this->db->_global("a_global", $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$c],[$m1],[$m2]], $res);
+    }
+
+    public function test_compile_any_negated() {
+        $var = new V\Any([new V\Classes, new V\Methods()]);
+        $compiled = $var->compile(true);
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $c = $this->db->_class("AClass", $f, 1,2);
+        $m1 = $this->db->_method("a_method", $c, $f, 1, 2);
+        $m2 = $this->db->_method_reference("another_method", $f, 1);
+        $g = $this->db->_global("a_global", $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$f],[$g]], $res);
+    }
+
+
 }
