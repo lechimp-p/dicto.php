@@ -32,6 +32,7 @@ class IndexDB extends Graph implements Insert {
     public function _file($path, $source) {
         assert('is_string($path)');
         assert('is_string($source)');
+
         return $this->create_node
             ( "file"
             ,   [ "path" => $path
@@ -48,19 +49,13 @@ class IndexDB extends Graph implements Insert {
         assert('$file->type() == "file"');
         assert('is_int($start_line)');
         assert('is_int($end_line)');
+
         $class = $this->create_node
             ( "class"
             ,   [ "name" => $name
                 ]
             );
-        $this->add_relation
-            ( $class
-            , "defined in"
-            ,   [ "start_line" => $start_line
-                , "end_line" => $end_line
-                ]
-            , $file
-            );
+        $this->add_definition($class, $file, $start_line, $end_line);
         return $class;
     }
 
@@ -73,19 +68,13 @@ class IndexDB extends Graph implements Insert {
         assert('$file->type() == "file"');
         assert('is_int($start_line)');
         assert('is_int($end_line)');
+
         $method = $this->create_node
             ( "method"
             ,   [ "name" => $name
                 ]
             );
-        $this->add_relation
-            ( $method
-            , "defined in"
-            ,   [ "start_line" => $start_line
-                , "end_line" => $end_line
-                ]
-            , $file
-            );
+        $this->add_definition($method, $file, $start_line, $end_line);
         $this->add_relation($method, "contained in", [], $class);
         $this->add_relation($class, "contains", [], $method);
 
@@ -100,32 +89,30 @@ class IndexDB extends Graph implements Insert {
         assert('$file->type() == "file"');
         assert('is_int($start_line)');
         assert('is_int($end_line)');
-        $method = $this->create_node
+
+        $function = $this->create_node
             ( "function"
             ,   [ "name" => $name
                 ]
             );
-        $this->add_relation
-            ( $method
-            , "defined in"
-            ,   [ "start_line" => $start_line
-                , "end_line" => $end_line
-                ]
-            , $file
-            );
+        $this->add_definition($function, $file, $start_line, $end_line);
 
-        return $method;
+        return $function;
     }
 
     /**
      * @inheritdocs
      */
     public function _global($name) {
+        assert('is_string($name)');
+
         if (array_key_exists($name, $this->globals)) {
             return $this->globals[$name];
         }
+
         $global = $this->create_node("global", ["name" => $name]);
         $this->globals[$name] = $global;
+
         return $global;
     }
 
@@ -133,11 +120,15 @@ class IndexDB extends Graph implements Insert {
      * @inheritdocs
      */
     public function _language_construct($name) {
+        assert('is_string($name)');
+
         if (array_key_exists($name, $this->language_constructs)) {
             return $this->language_constructs[$name];
         }
+
         $language_construct = $this->create_node("language construct", ["name" => $name]);
         $this->language_constructs[$name] = $language_construct;
+
         return $language_construct;
     }
 
@@ -145,8 +136,13 @@ class IndexDB extends Graph implements Insert {
      * @inheritdocs
      */
     public function _method_reference($name, $file, $line) {
+        assert('is_string($name)');
+        assert('$file->type() == "file"');
+        assert('is_int($line)');
+
         $method = $this->create_node("method reference", ["name" => $name]);
         $this->add_relation($method, "referenced at", ["line" => $line], $file);
+
         return $method;
     }
 
@@ -154,8 +150,13 @@ class IndexDB extends Graph implements Insert {
      * @inheritdocs
      */
     public function _function_reference($name, $file, $line) {
+        assert('is_string($name)');
+        assert('$file->type() == "file"');
+        assert('is_int($line)');
+
         $function = $this->create_node("function reference", ["name" => $name]);
         $this->add_relation($function, "referenced at", ["line" => $line], $file);
+
         return $function;
     }
 
@@ -166,6 +167,7 @@ class IndexDB extends Graph implements Insert {
         assert('$left_entity instanceof \\Lechimp\\Dicto\\Graph\\Node');
         assert('$right_entity instanceof \\Lechimp\\Dicto\\Graph\\Node');
         assert('is_string($relation)');
+
         $props = [];
         if ($file !== null) {
             assert('$file->type() == "file"');
@@ -175,6 +177,7 @@ class IndexDB extends Graph implements Insert {
             assert('is_int($line)');
             $props["line"] = $line;
         }
+
         $this->add_relation($left_entity, $relation, $props, $right_entity);
     }
 
@@ -185,5 +188,18 @@ class IndexDB extends Graph implements Insert {
      */
     public function query() {
         return new IndexQueryImpl($this);
+    }
+
+    // Helper
+
+    protected function add_definition(Node $n, Node $file, $start_line, $end_line) {
+        $this->add_relation
+            ( $n
+            , "defined in"
+            ,   [ "start_line" => $start_line
+                , "end_line" => $end_line
+                ]
+            , $file
+            );
     }
 }
