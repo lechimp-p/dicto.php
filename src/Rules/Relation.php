@@ -10,11 +10,12 @@
 
 namespace Lechimp\Dicto\Rules;
 
-use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\Location;
 use Lechimp\Dicto\Variables\Variable;
+use Lechimp\Dicto\Graph\IndexDB;
+use Lechimp\Dicto\Graph\Node;
 
 /**
  * This is a rule that checks a relation between two entities
@@ -54,7 +55,10 @@ abstract class Relation extends Schema {
     /**
      * @inheritdoc
      */
-    public function compile(Query $query, Rule $rule) {
+    public function compile(IndexDB $db, Rule $rule) {
+        return $db->query();
+    }
+/*    public function compile(Query $query, Rule $rule) {
         $builder = $query->builder();
         $b = $builder->expr();
         $mode = $rule->mode();
@@ -152,7 +156,7 @@ abstract class Relation extends Schema {
                 ->execute();
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
-    }
+    }*/
 
     /**
      * Insert this relation somewhere, where it is recorded for all
@@ -160,18 +164,20 @@ abstract class Relation extends Schema {
      *
      * @param   Insert      $insert
      * @param   Location    $location
-     * @param   int         $name_id
+     * @param   mixed       $other
      * @return  null
      */
-    protected function insert_relation_into(Insert $insert, Location $location, $name_id, $line) {
-        assert('is_int($name_id)');
+    protected function insert_relation_into(Insert $insert, Location $location, $other, $line) {
         assert('is_int($line)');
         foreach ($location->in_entities() as $entity) {
-            $insert->relation
+            if ($entity[0] == Variable::FILE_TYPE) {
+                continue;
+            }
+            $insert->_relation
                 ( $entity[1]
-                , $name_id
-                , $this->name()
-                , $location->file_path()
+                , "depends on"
+                , $other
+                , $location->file()
                 , $line
                 );
         }

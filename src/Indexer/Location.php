@@ -15,9 +15,9 @@ namespace Lechimp\Dicto\Indexer;
  */
 interface Location {
     /**
-     * @return string
+     * @return mixed
      */
-    public function file_path();
+    public function file();
 
     /**
      * @return  array[]     List of ($entity_type, $entity_id)

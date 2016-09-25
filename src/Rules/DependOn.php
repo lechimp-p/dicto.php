@@ -93,14 +93,11 @@ class DependOn extends Relation {
                         throw new \RuntimeException(
                             "Expected Variable with string name, found: ".print_r($var, true));
                     }
-                    $name_id = $insert->name
-                        ( $var->name
-                        , Variable::GLOBAL_TYPE
-                        );
+                    $global = $insert->_global($var->name);
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $name_id
+                        , $global
                         , $node->getAttribute("startLine")
                         );
                 }

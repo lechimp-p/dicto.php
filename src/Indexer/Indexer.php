@@ -275,8 +275,8 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     /**
      * @inheritdoc
      */
-    public function file_path() {
-        return $this->file_path;
+    public function file() {
+        return $this->definition_stack[0][1];
     }
 
     /**
@@ -353,7 +353,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
 
         }
         else {
-            if ($type !== null) { echo "---\n"; print_r($type);echo "---\n";}
             assert('$type === null');
             $this->call_misc_listener("listeners_enter_misc", $node);
         }

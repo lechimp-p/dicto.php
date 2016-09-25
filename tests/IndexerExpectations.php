@@ -89,5 +89,4 @@ trait IndexerExpectations {
                 , $this->equalTo($end_line)
                 );
     }
-
 }

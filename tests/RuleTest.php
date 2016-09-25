@@ -11,32 +11,39 @@
 use Lechimp\Dicto as Dicto;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
-use Lechimp\Dicto\App\IndexDB;
+use Lechimp\Dicto\Graph\IndexDB;
 use Lechimp\Dicto\Analysis\Violation;
-use Lechimp\Dicto\Indexer\Indexer;
-use Doctrine\DBAL\DriverManager;
-use PhpParser\ParserFactory;
 use Psr\Log\LogLevel;
+use Lechimp\Dicto\Indexer\Insert;
+use Lechimp\Dicto\Indexer\Indexer;
+use PhpParser\ParserFactory;
 
 require_once(__DIR__."/LoggerMock.php");
 require_once(__DIR__."/ReportGeneratorMock.php");
+require_once(__DIR__."/IndexerExpectations.php");
 
 abstract class RuleTest extends PHPUnit_Framework_TestCase {
+    use IndexerExpectations;
+
     /**
      * @return  R\Schema
      */
     abstract public function schema();
 
-    public function setUp() {
-        $this->connection = DriverManager::getConnection
-            ( array
-                ( "driver" => "pdo_sqlite"
-                , "memory" => true
-                )
+    protected function indexer(Insert $insert_mock) {
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $logger_mock = new LoggerMock();
+        $indexer = new Indexer
+            ( $logger_mock
+            , $parser
+            , $insert_mock
             );
-        $this->db = new IndexDB($this->connection);
-        $this->db->init_sqlite_regexp();
-        $this->db->maybe_init_database_schema();
+        $this->schema()->register_listeners($indexer);
+        return $indexer;
+    }
+
+    public function setUp() {
+        $this->db = new IndexDB();
 
         $this->rp = new ReportGeneratorMock();
         $this->log = new LoggerMock();

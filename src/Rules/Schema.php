@@ -10,12 +10,12 @@
 
 namespace Lechimp\Dicto\Rules;
 
-use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Variables\Variable;
-use Doctrine\DBAL\Driver\Statement;
+use Lechimp\Dicto\Graph\IndexDB;
+use Lechimp\Dicto\Graph\Query;
 
 /**
  * This is what every rule needs to define.
@@ -55,11 +55,11 @@ abstract class Schema {
     /**
      * Compile a given rule into an sql statement using a query interface.
      *
-     * @param   Query       $query
+     * @param   IndexDB     $db
      * @param   Rule        $rule
-     * @return  Statement
+     * @return  Query
      */
-    abstract public function compile(Query $query, Rule $rule);
+    abstract public function compile(IndexDB $db, Rule $rule);
 
     /**
      * Turn a query result into a violation. Could be used 
