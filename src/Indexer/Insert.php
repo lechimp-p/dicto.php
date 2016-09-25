@@ -75,6 +75,7 @@ interface Insert {
      * @param   string  $name
      * @return  mixed   handle to the language construct
      */
+    // TODO: $file and $line is wrong here.
     public function _language_construct($name, $file, $line);
 
     /**
@@ -82,6 +83,8 @@ interface Insert {
      * If there already is such a reference just returns the handle.
      *
      * @param   string  $name
+     * @param   mixed   $file   handle from _file
+     * @param   int     $line
      * @return  mixed   handle to the method reference
      */
     public function _method_reference($name, $file, $line);
@@ -91,6 +94,8 @@ interface Insert {
      * If there already is such a reference just returns the handle.
      *
      * @param   string  $name
+     * @param   mixed   $file   handle from _file
+     * @param   int     $line
      * @return  mixed   handle to the function reference
      */
     public function _function_reference($name, $file, $line);
