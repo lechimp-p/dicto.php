@@ -9,7 +9,9 @@
  */
 
 use Lechimp\Dicto\Graph\Graph;
+use Lechimp\Dicto\Graph\Entity;
 use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\Relation;
 
 class Graph_QueryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
@@ -45,18 +47,23 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([], $res);
     }
 
-/*    public function test_path1() {
+    public function test_path1() {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
         $rel = $this->g->add_relation($n1, "rel_type", [], $n2);
 
-        $all = function($_) { return true; };
+        $extract_self = function(Entity $e, array &$res) { $res[] = $e; };
+        $all_relations = function(Node $n) { return $n->relations(); };
+        $target = function(Relation $r) { return [$r->target()]; };
 
-        $query = $this->g->query()
-            ->with_filter($all)
-            ->with_filter($all)
-            ->with_filter($all);
-        $res = $this->to_arrays($query->execute_on($this->g));
+        $res = $this->g->query()
+            ->extract($extract_self)
+            ->expand($all_relations)
+            ->extract($extract_self)
+            ->expand($target)
+            ->extract($extract_self)
+            ->run([]);
+
         $this->assertEquals([[$n1,$rel,$n2]], $res);
     }
 
@@ -67,15 +74,25 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
         $r1 = $this->g->add_relation($n1, "rel_A", [], $n2);
         $r2 = $this->g->add_relation($n2, "rel_B", [], $n3);
 
-        $all = function($_) { return true; };
+        $extract_self = function(Entity $e, array &$res) { $res[] = $e; };
+        $all_relations = function(Node $n) { return $n->relations(); };
+        $target = function(Relation $r) { return [$r->target()]; };
 
-        $query = $this->g->query()
-            ->with_filter($all)
-            ->with_filter(function($e) {
-                return $e->type() == "rel_B";
+        $res = $this->g->query()
+            ->extract($extract_self)
+            ->expand($all_relations)
+            ->extract($extract_self)
+            ->expand(function($r) {
+                if ($r->type() == "rel_B") {
+                    return [$r->target()];
+                }
+                else {
+                    return [];
+                }
             })
-            ->with_filter($all);
-        $res = $this->to_arrays($query->execute_on($this->g));
+            ->extract($extract_self)
+            ->run([]);
+
         $this->assertEquals([[$n2,$r2,$n3]], $res);
     }
 
@@ -86,13 +103,18 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
         $r1 = $this->g->add_relation($n1, "rel_A", [], $n2);
         $r2 = $this->g->add_relation($n2, "rel_A", [], $n3);
 
-        $all = function($_) { return true; };
+        $extract_self = function(Entity $e, array &$res) { $res[] = $e; };
+        $all_relations = function(Node $n) { return $n->relations(); };
+        $target = function(Relation $r) { return [$r->target()]; };
 
-        $query = $this->g->query()
-            ->with_filter($all)
-            ->with_filter($all)
-            ->with_filter($all);
-        $res = $this->to_arrays($query->execute_on($this->g));
+        $res = $this->g->query()
+            ->extract($extract_self)
+            ->expand($all_relations)
+            ->extract($extract_self)
+            ->expand($target)
+            ->extract($extract_self)
+            ->run([]);
+
         $this->assertEquals([[$n1,$r1,$n2],[$n2,$r2,$n3]], $res);
-    }*/
+    }
 }
