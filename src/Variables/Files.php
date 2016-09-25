@@ -17,5 +17,12 @@ class Files extends Entities {
     public function id() {
         return Variable::FILE_TYPE;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function entity_name() {
+        return "files";
+    }
 }
 

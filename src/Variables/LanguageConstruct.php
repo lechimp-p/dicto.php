@@ -36,6 +36,13 @@ class LanguageConstruct extends Entities {
     /**
      * @inheritdoc
      */
+    public function entity_name() {
+        return $this->construct_name();
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function id() {
         return Variable::LANGUAGE_CONSTRUCT_TYPE;
     }

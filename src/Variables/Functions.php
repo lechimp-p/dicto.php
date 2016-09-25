@@ -17,5 +17,12 @@ class Functions extends Entities {
     public function id() {
         return Variable::FUNCTION_TYPE;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function entity_name() {
+        return "functions";
+    }
 }
 

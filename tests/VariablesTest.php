@@ -32,7 +32,7 @@ class VariablesTest extends PHPUnit_Framework_TestCase {
      * @dataProvider    var_entities_provider
      */
     public function test_entity_name($var) {
-        $this->assertEquals(ucfirst($var->id()), $var->name());
+        $this->assertEquals(ucfirst($var->entity_name()), $var->name());
     }
 
     /**

@@ -17,5 +17,12 @@ class Methods extends Entities {
     public function id() {
         return Variable::METHOD_TYPE;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function entity_name() {
+        return "methods";
+    }
 }
 

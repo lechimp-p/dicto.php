@@ -17,5 +17,12 @@ class Classes extends Entities {
     public function id() {
         return Variable::CLASS_TYPE;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function entity_name() {
+        return "classes";
+    }
 }
 
