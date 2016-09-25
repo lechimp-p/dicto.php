@@ -10,8 +10,6 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
-
 class Methods extends Entities {
     /**
      * @inheritdoc
