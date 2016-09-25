@@ -30,6 +30,8 @@ abstract class Entities extends Variable {
     /**
      * Get the name of the entity.
      *
+     * TODO: Check, if that is really necessary.
+     *
      * @return string
      */
     abstract public function entity_name();
