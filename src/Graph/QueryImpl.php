@@ -64,24 +64,10 @@ class QueryImpl implements Query {
         foreach ($this->steps as $step) {
             list($cmd,$clsr) = $step;
             if ($cmd == "expand") {
-                $new_nodes = [];
-                foreach ($nodes as $r) {
-                    list($node, $result) = $r;
-                    $new_nodes[] = $this->add_result($clsr($node), $result);
-                }
-                $nodes = call_user_func_array("array_merge", $new_nodes);
+                $nodes = $this->run_expand($nodes, $clsr);
             }
             elseif ($cmd == "extract") {
-                foreach ($nodes as $i => $r) {
-                    list($node, $result) = $r;
-                    if (is_object($result)) {
-                        $clsr($node, clone $result);
-                    }
-                    else {
-                        $clsr($node, $result);
-                    }
-                    $nodes[$i][1] = $result;
-                }
+                $this->run_extract($nodes, $clsr);
             }
             else {
                 throw new \LogicException("Unknown command: $cmd");
@@ -93,80 +79,34 @@ class QueryImpl implements Query {
         }, $nodes));
     }
 
+    protected function run_expand(array &$nodes, \Closure $clsr) {
+        $new_nodes = [];
+        foreach ($nodes as $r) {
+            list($node, $result) = $r;
+            $new_nodes[] = $this->add_result($clsr($node), $result);
+        }
+        return call_user_func_array("array_merge", $new_nodes);
+    }
+
+    protected function run_extract(array &$nodes, \Closure $clsr) {
+        foreach ($nodes as $i => $r) {
+            list($node, $result) = $r;
+            if (is_object($result)) {
+                $clsr($node, clone $result);
+            }
+            else {
+                $clsr($node, $result);
+            }
+            $nodes[$i][1] = $result;
+        }
+    }
+
+
     protected function add_result(array $nodes, &$result) {
         $res = [];
         foreach ($nodes as $node) {
             $res[] = [$node, $result];
         }
         return $res;
-    }
-
-    /**
-     * @var \Closure[]
-     */
-    protected $filters = [];
-
-    /**
-     * Execute the query on a graph. Get a list of results of the
-     * query with the nodes and relations establishing the path.
-     *
-     * @param   Graph   $graph
-     * @return  PathCollection
-     */
-    public function execute_on(Graph $graph) {
-        $num = count($this->filters);
-        if ($num === 0) {
-            return new PathCollection([]);
-        }
-
-        $collection = new PathCollection
-            ( array_map(function($n) { return new Path($n); }
-            , $graph->nodes()
-            ));
-
-        for ($i = 0; $i < $num - 1; $i++) {
-            // early exit
-            if ($collection->is_empty()) {
-                return $collection;
-            }
-
-            $matcher = $this->filters[$i];
-            $collection->extend(function(Path $p) use ($matcher) {
-                $e = $p->last();
-                if (!$matcher($e)) {
-                    return [];
-                }
-                if ($e instanceof Node) {
-                    return array_map(function(Relation $r) use ($p) {
-                        $p2 = clone $p;
-                        $p2->append($r);
-                        return $p2;
-                    }, $e->relations());
-                }
-                elseif ($e instanceof Relation) {
-                    $p->append($e->target());
-                    return [$p];
-                }
-                else {
-                    throw new \LogicException("Unknown entity type: ".get_class($e));
-                }
-            });
-        }
-        $collection->filter_by_last_entity(end($this->filters));
-        return $collection;
-    }
-
-    /**
-     * Get a query with the given filter on the next entity.
-     *
-     * @param   \Closure    $filter  Entity -> bool
-     * @param   Query
-     */
-    public function with_filter(\Closure $filter) {
-        $clone = new _Query;
-        $clone->filters = $this->filters;
-        $clone->filters[] = $filter;
-        assert('$this->filters != $clone->filters');
-        return $clone;
     }
 }
