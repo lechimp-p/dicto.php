@@ -72,14 +72,11 @@ abstract class Variable extends Def\Definition {
     abstract public function meaning();
 
     /**
-     * Compile the variable to an sql expression.
+     * Compile the variable to a condition on a graph node.
      *
-     * @param   ExpressionBuilder   $builder
-     * @param   string              $name_table_name
-     * @param   string              $method_info_table_name
-     * @param   bool                $negate
-     * @return  string|CompositeExpression
+     * @param   bool        $negate
+     * @return  \Closure    Node -> bool
      */
-    abstract public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table, $negate = false);
+    abstract public function compile($negate = false);
 }
 

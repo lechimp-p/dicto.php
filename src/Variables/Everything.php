@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+use Lechimp\Dicto\Graph\Node;
 
 class Everything extends Variable {
     /**
@@ -23,11 +23,9 @@ class Everything extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
-        return $builder->eq 
-            ( $builder->literal($negate ? 0 : 1)
-            , $builder->literal(1)
-            );
+
+    public function compile($negate = false) {
+        return function(Node $n) use ($negate) { return !$negate; };
     }
 }
 
