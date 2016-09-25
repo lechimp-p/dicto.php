@@ -296,5 +296,69 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([[$f],[$g]], $res);
     }
 
+    public function test_compile_name1() {
+        $var = new V\WithProperty
+            ( new V\Classes()
+            , new V\Name()
+            , array("AClass")
+            );
+        $compiled = $var->compile();
 
+        $f = $this->db->_file("source.php", "A\nB");
+        $c1 = $this->db->_class("AClass", $f, 1,2);
+        $c2 = $this->db->_class("BClass", $f, 1,2);
+        $m = $this->db->_method("a_method", $c1, $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$c1]], $res);
+    }
+
+    public function test_compile_name2() {
+        $var = new V\WithProperty
+            ( new V\Classes()
+            , new V\Name()
+            , array(".Class")
+            );
+        $compiled = $var->compile();
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $c1 = $this->db->_class("AClass", $f, 1,2);
+        $c2 = $this->db->_class("BClass", $f, 1,2);
+        $m = $this->db->_method("a_method", $c1, $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$c1],[$c2]], $res);
+    }
+
+    public function test_compile_name_negated() {
+        $var = new V\WithProperty
+            ( new V\Classes()
+            , new V\Name()
+            , array("AClass")
+            );
+        $compiled = $var->compile(true);
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $c1 = $this->db->_class("AClass", $f, 1,2);
+        $c2 = $this->db->_class("BClass", $f, 1,2);
+        $m = $this->db->_method("a_method", $c1, $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$f],[$c2],[$m]], $res);
+    }
 }

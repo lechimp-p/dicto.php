@@ -10,8 +10,8 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Lechimp\Dicto\Graph\Node;
 use Lechimp\Dicto\Definition\ArgumentParser;
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
 /**
  * Defines the property of some variable.
@@ -52,15 +52,13 @@ abstract class Property {
     abstract public function arguments_are_valid(array &$arguments);
 
     /**
-     * Compile the property to an SQL expression.
+     * Compile the property to a condition on a graph node.
      *
-     * @param   Variable            $variable
-     * @param   array               $argument
-     * @param   ExpressionBuilder   $builder
-     * @param   string              $name_table_name
-     * @param   string              $method_info_table_name
-     * @param   bool                $negate
-     * @return  string|CompositeExpression
+     * TODO: Maybe negate can go away.
+     *
+     * @param   array       &$arguments
+     * @param   bool        $negate
+     * @return  \Closure    Node -> bool
      */
-    abstract public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false);
+    abstract public function compile(array &$arguments, $negate = false);
 }

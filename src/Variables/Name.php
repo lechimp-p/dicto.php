@@ -10,8 +10,8 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Lechimp\Dicto\Graph\Node;
 use Lechimp\Dicto\Definition\ArgumentParser;
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
 
 /**
  * Name is a property, right?
@@ -40,7 +40,7 @@ class Name extends Property {
             return false;
         }
         $regexp = $arguments[0];
-        if (!is_string($regexp) || @preg_match("%$regexp%", "") === false) {
+        if (!is_string($regexp) || @preg_match("%^$regexp\$%", "") === false) {
             return false;
         }
         return true;
@@ -49,13 +49,20 @@ class Name extends Property {
     /**
      * @inheritdocs
      */
-    public function compile(Variable $variable, array &$arguments, ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
+    public function compile(array &$arguments, $negate = false) {
         assert('$this->arguments_are_valid($arguments)');
+        $regexp = $arguments[0];
         if (!$negate) {
-            return "$name_table_name.name REGEXP ".$builder->literal('^'.$arguments[0].'$');
+            return function (Node $n) use ($regexp) {
+                return $n->has_property("name")
+                    && preg_match("%^$regexp\$%", $n->property("name")) == 1;
+            };
         }
         else {
-            return "$name_table_name.name NOT REGEXP ".$builder->literal('^'.$arguments[0].'$');
+            return function (Node $n) use ($regexp) {
+                return !$n->has_property("name")
+                    || preg_match("%^$regexp\$%", $n->property("name")) == 0;
+            };
         }
     }
 }

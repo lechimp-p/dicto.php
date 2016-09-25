@@ -20,13 +20,10 @@ class Except extends Combinator {
         return "except";
     }
 
-    public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
-        if ($negate) {
-            throw \LogicException("NYI!");
-        }
-        return $builder->andX
-            ( $this->left()->compile($builder, $name_table_name, $method_info_table_name)
-            , $this->right()->compile($builder, $name_table_name, $method_info_table_name, true)
-            );
+    /**
+     * @inheritdocs
+     */
+    public function compile($negate = false, $foo) {
+        throw new \LogicException("NYI!");
     }
 }

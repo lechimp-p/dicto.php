@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+use Lechimp\Dicto\Graph\Node;
 
 /**
  * A variable with a certain property.
@@ -70,21 +70,24 @@ class WithProperty extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
+    public function compile($negate = false) {
+        $left_condition = $this->other->compile($negate);
+        $property_condition = $this->property->compile($this->arguments, $negate);
+
         // normal case : left_condition AND property 
         if (!$negate) {
-            return $builder->andX
-                ( $this->variable()->compile($builder, $name_table_name, $method_info_table_name)
-                , $this->property->compile($this->variable(), $this->arguments, $builder, $name_table_name, $method_info_table_name, false)
-                );
+            return function(Node $n) use ($left_condition, $property_condition) {
+                return $left_condition($n)
+                    && $property_condition($n);
+            };
         }
         // negated case: not (left_condition_left and property)
         //             = not left_condition or not property
         else {
-            return $builder->orX
-                ( $this->variable()->compile($builder, $name_table_name, $method_info_table_name, true)
-                , $this->property->compile($this->variable(), $this->arguments, $builder, $name_table_name, $method_info_table_name, true)
-                );
+            return function(Node $n) use ($left_condition, $property_condition) {
+                return $left_condition($n)
+                    || $property_condition($n);
+            };
         }
     }
 }
