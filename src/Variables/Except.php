@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+use Lechimp\Dicto\Graph\Node;
 
 class Except extends Combinator {
     /**
@@ -23,7 +23,24 @@ class Except extends Combinator {
     /**
      * @inheritdocs
      */
-    public function compile($negate = false, $foo) {
-        throw new \LogicException("NYI!");
+    public function compile($negate = false) {
+        $left_condition = $this->left()->compile($negate);
+        $right_condition = $this->right()->compile($negate);
+
+        // normal case: left_condition and not right_condition
+        if (!$negate) {
+            return function(Node $n) use ($left_condition, $right_condition) {
+                return $left_condition($n)
+                    && !$right_condition($n);
+            };
+        }
+        // negated case: not (left_condition and not right_condition)
+        //             = not left_condition or right_condition
+        else {
+            return function(Node $n) use ($left_condition, $right_condition) {
+                return $left_condition($n)
+                    || !$right_condition($n);
+            };
+        }
     }
 }

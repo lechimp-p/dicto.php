@@ -296,6 +296,52 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([[$f],[$g]], $res);
     }
 
+    public function test_compile_except() {
+        $var = new V\WithProperty
+            ( new V\Classes()
+            , new V\Name()
+            , array("AClass")
+            );
+        $var = new V\Except(new V\Classes, $var);
+        $compiled = $var->compile();
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $c1 = $this->db->_class("AClass", $f, 1, 2);
+        $c2 = $this->db->_class("BClass", $f, 1, 2);
+        $g = $this->db->_global("a_global", $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$c2]], $res);
+    }
+
+    public function test_compile_except_negated() {
+        $var = new V\WithProperty
+            ( new V\Classes()
+            , new V\Name()
+            , array("AClass")
+            );
+        $var = new V\Except(new V\Classes, $var);
+        $compiled = $var->compile(true);
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $c1 = $this->db->_class("AClass", $f, 1, 2);
+        $c2 = $this->db->_class("BClass", $f, 1, 2);
+        $g = $this->db->_global("a_global", $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$f],[$c1],[$g]], $res);
+    }
+
     public function test_compile_name1() {
         $var = new V\WithProperty
             ( new V\Classes()
@@ -305,8 +351,8 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $compiled = $var->compile();
 
         $f = $this->db->_file("source.php", "A\nB");
-        $c1 = $this->db->_class("AClass", $f, 1,2);
-        $c2 = $this->db->_class("BClass", $f, 1,2);
+        $c1 = $this->db->_class("AClass", $f, 1, 2);
+        $c2 = $this->db->_class("BClass", $f, 1, 2);
         $m = $this->db->_method("a_method", $c1, $f, 1, 2);
 
         $res = $this->db->query()
@@ -327,8 +373,8 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $compiled = $var->compile();
 
         $f = $this->db->_file("source.php", "A\nB");
-        $c1 = $this->db->_class("AClass", $f, 1,2);
-        $c2 = $this->db->_class("BClass", $f, 1,2);
+        $c1 = $this->db->_class("AClass", $f, 1, 2);
+        $c2 = $this->db->_class("BClass", $f, 1, 2);
         $m = $this->db->_method("a_method", $c1, $f, 1, 2);
 
         $res = $this->db->query()
@@ -349,8 +395,8 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $compiled = $var->compile(true);
 
         $f = $this->db->_file("source.php", "A\nB");
-        $c1 = $this->db->_class("AClass", $f, 1,2);
-        $c2 = $this->db->_class("BClass", $f, 1,2);
+        $c1 = $this->db->_class("AClass", $f, 1, 2);
+        $c2 = $this->db->_class("BClass", $f, 1, 2);
         $m = $this->db->_method("a_method", $c1, $f, 1, 2);
 
         $res = $this->db->query()
