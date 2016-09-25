@@ -10,15 +10,16 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+use Lechimp\Dicto\Graph\Node;
 
+// TODO: Maybe this should not extend Entities
 class LanguageConstruct extends Entities {
     /**
      * @var string
      */
     private $construct_name;
 
-    public function __construct($name, $construct_name) {
+    public function __construct($construct_name, $name = null) {
         parent::__construct($name);
         assert('is_string($construct_name)');
         // TODO: Restrict the possible construct_names (like @, unset, echo, ...)
@@ -42,29 +43,20 @@ class LanguageConstruct extends Entities {
     /**
      * @inheritdocs
      */
-    public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
-        $type_expr = $this->eq_op
-            ( $builder
-            , "$name_table_name.type"
-            , $builder->literal(Variable::LANGUAGE_CONSTRUCT_TYPE)
-            , $negate
-            );
-        $name_expr = $this->eq_op
-            ( $builder
-            , "$name_table_name.name"
-            , $builder->literal($this->construct_name())
-            , $negate
-            );
-
-        // normal case : language construct and name matches
+    public function compile($negate = false) {
         if (!$negate) {
-            return $builder->andX($type_expr, $name_expr);
+            return function(Node $n) {
+                return $n->type() == Variable::LANGUAGE_CONSTRUCT_TYPE
+                    && $n->property("name") == $this->construct_name();
+            };
         }
-        // negated case: not (language construct and name matches)
-        //             = not language construct or not name matches
         else {
-            return $builder->orX($type_expr, $name_expr);
+            return function(Node $n) {
+                return $n->type() != Variable::LANGUAGE_CONSTRUCT_TYPE
+                    || $n->property("name") != $this->construct_name();
+            };
         }
+
     }
 }
 

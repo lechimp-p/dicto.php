@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
+use Lechimp\Dicto\Graph\Node;
 
 abstract class Entities extends Variable {
     public function __construct($name= null) {
@@ -39,20 +39,18 @@ abstract class Entities extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile(ExpressionBuilder $builder, $name_table_name, $method_info_table_name, $negate = false) {
-        return $this->eq_op
-            ( $builder
-            , "$name_table_name.type"
-            , $builder->literal($this->id())
-            , $negate);
-    }
-
-    protected function eq_op(ExpressionBuilder $builder, $l, $r, $negate) {
+    public function compile($negate = false) {
         if (!$negate) {
-            return $builder->eq($l, $r);
+            return function(Node $n) {
+                return $n->type() == $this->id()
+                    || $n->type() == $this->id()." reference";
+            };
         }
         else {
-            return $builder->neq($l, $r);
+            return function(Node $n) {
+                return $n->type() != $this->id()
+                    && $n->type() != $this->id()." reference";
+            };
         }
     }
 }

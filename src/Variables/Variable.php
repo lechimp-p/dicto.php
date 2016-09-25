@@ -11,25 +11,24 @@
 namespace Lechimp\Dicto\Variables;
 
 use Lechimp\Dicto\Definition as Def;
-use Doctrine\DBAL\Query\Expression\ExpressionBuilder;
-use Doctrine\DBAL\Query\Expression\CompositeExpression;
 
 abstract class Variable extends Def\Definition {
-    const CLASS_TYPE = "classes";
-    const FILE_TYPE = "files";
-    const GLOBAL_TYPE = "globals";
-    const FUNCTION_TYPE = "functions";
-    const METHOD_TYPE = "methods";
-    const LANGUAGE_CONSTRUCT_TYPE = "language_construct";
+    // TODO: Use these in Graph/IndexDB.
+    const CLASS_TYPE = "class";
+    const FILE_TYPE = "file";
+    const GLOBAL_TYPE = "global";
+    const FUNCTION_TYPE = "function";
+    const METHOD_TYPE = "method";
+    const LANGUAGE_CONSTRUCT_TYPE = "language construct";
 
     static public function is_type($t) {
         static $types = array
-            ( "classes"
-            , "files"
-            , "globals"
-            , "functions"
-            , "methods"
-            , "language_construct"
+            ( "class"
+            , "file"
+            , "global"
+            , "function"
+            , "method"
+            , "language construct"
             );
         return in_array($t, $types);
     }
