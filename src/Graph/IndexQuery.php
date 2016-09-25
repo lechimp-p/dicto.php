@@ -50,6 +50,13 @@ interface IndexQuery extends Query {
     public function globals();
 
     /**
+     * Get language constructs only.
+     *
+     * @return Query
+     */
+    public function language_constructs();
+
+    /**
      * Expand to relations with given types.
      *
      * @param   string[]    $types

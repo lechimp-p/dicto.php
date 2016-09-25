@@ -15,43 +15,50 @@ namespace Lechimp\Dicto\Graph;
  */
 class IndexQueryImpl extends QueryImpl implements IndexQuery {
     protected function type_filter($type) {
-        return function(Node $n) use ($type) {
+        return $this->filter(function(Node $n) use ($type) {
             return $n->type() == $type;
-        };
+        });
     }
 
     /**
      */
     public function files() {
-        return $this->filter($this->type_filter("file"));
+        return $this->type_filter("file");
     }
 
     /**
      * @inheritdocs
      */
     public function classes() {
-        return $this->filter($this->type_filter("class"));
+        return $this->type_filter("class");
     }
 
     /**
      * @inheritdocs
      */
     public function methods() {
-        return $this->filter($this->type_filter("method"));
+        return $this->type_filter("method");
     }
 
     /**
      * @inheritdocs
      */
     public function functions() {
-        return $this->filter($this->type_filter("function"));
+        return $this->type_filter("function");
     }
 
     /**
      * @inheritdocs
      */
     public function globals() {
-        return $this->filter($this->type_filter("global"));
+        return $this->type_filter("global");
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function language_constructs() {
+        return $this->type_filter("language construct");
     }
 
     /**

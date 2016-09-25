@@ -191,7 +191,39 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_language_construct() {
-        // TODO: implement this
+        $this->db->_language_construct("die");
+
+        $res = $this->db->query()
+            ->language_constructs()
+            ->extract(function($n,&$r) {
+                $r["name"] = $n->property("name");
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "name" => "die"
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_insert_language_construct_twice() {
+        $la = $this->db->_language_construct("die");
+        $lb = $this->db->_language_construct("die");
+
+        $res = $this->db->query()
+            ->language_constructs()
+            ->extract(function($n,&$r) {
+                $r["name"] = $n->property("name");
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "name" => "die"
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+        $this->assertSame($la, $lb);
     }
 
     public function test_method_reference() {

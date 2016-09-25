@@ -75,8 +75,7 @@ interface Insert {
      * @param   string  $name
      * @return  mixed   handle to the language construct
      */
-    // TODO: $file and $line is wrong here.
-    public function _language_construct($name, $file, $line);
+    public function _language_construct($name);
 
     /**
      * Store information about a reference to a method to the database.

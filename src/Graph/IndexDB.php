@@ -22,6 +22,11 @@ class IndexDB extends Graph implements Insert {
     protected $globals = array();
 
     /**
+     * @var array<string,Node>
+     */
+    protected $language_constructs = array();
+
+    /**
      * @inheritdocs
      */
     public function _file($path, $source) {
@@ -127,7 +132,14 @@ class IndexDB extends Graph implements Insert {
     /**
      * @inheritdocs
      */
-    public function _language_construct($name, $file, $line) {}
+    public function _language_construct($name) {
+        if (array_key_exists($name, $this->language_constructs)) {
+            return $this->language_constructs[$name];
+        }
+        $language_construct = $this->create_node("language construct", ["name" => $name]);
+        $this->language_constructs[$name] = $language_construct;
+        return $language_construct;
+    }
 
     /**
      * @inheritdocs
