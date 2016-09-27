@@ -459,7 +459,12 @@ CODE;
                 , 5
                 , "        global \$b_foo;"
                 )
-
+            , new Violation
+                ( $rule
+                , "source.php"
+                , 5
+                , "        global \$b_foo;"
+                )
             );
         $this->assertEquals($expected, $violations);
     }

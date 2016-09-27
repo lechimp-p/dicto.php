@@ -56,118 +56,65 @@ abstract class Relation extends Schema {
      * @inheritdoc
      */
     public function compile(IndexDB $index, Rule $rule) {
-        return $index->query()
-            ->filter_by_types(["class", "method", "function"])
-            ->expand_relation([$this->name()])
-            ->extract(function($e,&$r) use ($index, $rule) {
-                $file = $e->property("file");
-                assert('$file->type() == "file"');
-                $r["rule"] = $rule;
-                $r["file"] = $file->property("path");
-                $line = $e->property("line");
-                $r["line"] = $line;
-                $r["source"] = $file->property("source")[$line - 1];
-            });
-    }
-/*    public function compile(Query $query, Rule $rule) {
-        $builder = $query->builder();
-        $b = $builder->expr();
         $mode = $rule->mode();
-        $name_left = $rule->checked_on();
-        $name_right = $rule->argument(0);
+        $var_left = $rule->checked_on();
+        $var_right = $rule->argument(0);
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
-            return $builder
-                ->select
-                    ( "rel.name_left"
-                    , "rel.name_right"
-                    , "f.path as file"
-                    , "rel.line as line"
-                    , "src.source as source"
-                    )
-                ->from($query->relation_table(), "rel")
-                ->join
-                    ( "rel", $query->file_table(), "f"
-                    , $b->eq("rel.file", "f.id")
-                    )
-                ->join
-                    ( "rel", $query->name_table(), "nl"
-                    , $b->eq("rel.name_left", "nl.id")
-                    )
-                ->join
-                    ( "rel", $query->name_table(), "nr"
-                    , $b->eq("rel.name_right", "nr.id")
-                    )
-                ->join
-                    ( "rel", $query->source_table(), "src"
-                    , $b->andX
-                        ( $b->eq("src.line", "rel.line")
-                        , $b->eq("src.file", "rel.file")
-                        )
-                    )
-                // TODO: This is a dirty hack, since i always join the method
-                // info table without knowing if the thing is a method.
-                ->leftJoin
-                    ( "rel", $query->method_info_table(), "mil"
-                    , $b->eq("rel.name_left", "mil.name")
-                    )
-                ->leftJoin
-                    ( "rel", $query->method_info_table(), "mir"
-                    , $b->eq("rel.name_right", "mir.name")
-                    )
-                // END HACK
-                ->where
-                    ( $b->eq("rel.which", $b->literal($this->name()))
-                    , $name_left->compile($b, "nl", "mil")
-                    , $name_right->compile($b, "nr", "mir")
-                    )
-                ->execute();
+            $filter_left = $var_left->compile();
+            $filter_right = $var_right->compile();
+            return $index->query()
+                ->filter($filter_left)
+                ->expand_relation([$this->name()])
+                ->extract(function($e,&$r) use ($index, $rule) {
+                    $file = $e->property("file");
+                    assert('$file->type() == "file"');
+                    $r["rule"] = $rule;
+                    $r["file"] = $file->property("path");
+                    $line = $e->property("line");
+                    $r["line"] = $line;
+                    $r["source"] = $file->property("source")[$line - 1];
+                })
+                ->expand_target()
+                ->filter($filter_right)
+                ;
         }
         if ($mode == Rule::MODE_MUST) {
-            return $builder
-                ->select
-                    ( "d.name"
-                    , "f.path as file"
-                    , "d.start_line as line"
-                    , "src.source as source"
-                    )
-                ->from($query->definition_table(), "d")
-                ->join
-                    ( "d", $query->file_table(), "f"
-                    , $b->eq("d.file", "f.id")
-                    )
-                ->join
-                    ( "d", $query->name_table(), "n"
-                    , $b->eq("d.name", "n.id")
-                    )
-                // TODO: This is a dirty hack, since i always join the method
-                // info table without knowing if the thing is a method.
-                ->leftJoin
-                    ( "d", $query->method_info_table(), "mi"
-                    , $b->eq("d.name", "mi.name")
-                    )
-                // END HACK
-                ->leftJoin
-                    ("d", $query->relation_table(), "rel"
-                    , $b->andX
-                        ( $b->eq("rel.which", $b->literal($this->name()))
-                        , $b->eq("rel.name_left", "d.name")
-                        )
-                    )
-                ->innerJoin
-                    ( "d", $query->source_table(), "src"
-                    , $b->andX
-                        ( $b->eq("src.line", "d.start_line")
-                        , $b->eq("src.file", "d.file")
-                        )
-                    )
-                ->where
-                    ( $name_left->compile($b, "n", "mi")
-                    , $b->isNull("rel.name_right")
-                    )
-                ->execute();
+            $filter_left = $var_left->compile();
+            $filter_right = $var_right->compile();
+            return $index->query()
+                ->filter($filter_left)
+                ->filter(function(Node $n) use ($filter_right) {
+                    $rels = $n->relations(function($r) {
+                        return $r->type() == $this->name();
+                    });
+                    if (count($rels) == 0) {
+                        return true;
+                    }
+                    foreach ($rels as $rel) {
+                        if ($filter_right($rel->target())) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
+                ->extract(function($e,&$r) use ($index, $rule) {
+                    print_r($e);
+                    $rels = $e->relations(function($r) {
+                        return $r->type() == "defined in";
+                    });
+                    assert('count($rels) == 1');
+                    $file = $rels[0]->target();
+                    assert('$file->type() == "file"');
+                    $r["rule"] = $rule;
+                    $r["file"] = $file->property("path");
+                    $line = $rels[0]->property("start_line");
+                    $r["line"] = $line;
+                    $r["source"] = $file->property("source")[$line - 1];
+                })
+                ;
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
-    }*/
+    }
 
     /**
      * Insert this relation somewhere, where it is recorded for all
