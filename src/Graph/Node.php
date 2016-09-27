@@ -66,25 +66,26 @@ class Node extends Entity {
     /**
      * Get the relations to other nodes.
      *
+     * @param   \Closure|null   $filter
      * @return  Relation[]
      */
-    public function relations() {
-        return $this->relations;
+    public function relations(\Closure $filter = null) {
+        if ($filter !== null) {
+            return array_values(array_filter($this->relations, $filter));
+        }
+        else {
+            return $this->relations;
+        }
     }
 
     /**
      * Get all related nodes, where relations might be filtered.
      *
-     * @param   \Closure    $filter
+     * @param   \Closure|null   $filter
      * @return  Node[]
      */
     public function related_nodes(\Closure $filter = null) {
-        if ($filter !== null) {
-            $filtered = array_filter($this->relations, $filter);
-        }
-        else {
-            $filtered = $this->relations;
-        }
+        $filtered = $this->relations($filter);
         $get_node = function($r) { return $r->target(); };
         return array_values(array_map($get_node, $filtered));
     }

@@ -30,7 +30,7 @@ class GraphNodeTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(["prop" => "value"], $e->properties());
     }
 
-    public function test_relations() {
+    public function test_relations1() {
         $l = new Node(1, "a_type", ["prop" => "value"]);
         $r = new Node(2, "a_type", ["prop" => "value"]);
         $rl = $l->add_relation("rel_type", ["is" => "rel"], $r);
@@ -42,6 +42,24 @@ class GraphNodeTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("rel_type", $rel->type());
         $this->assertEquals(["is" => "rel"], $rel->properties());
         $this->assertSame($r, $rel->target());
+    }
+
+    public function test_relations2() {
+        $a = new Node(1, "a_type", ["prop" => "value"]);
+        $b = new Node(2, "a_type", ["prop" => "value"]);
+        $c = new Node(3, "a_type", ["prop" => "value"]);
+        $r1 = $a->add_relation("rel_type", ["is" => "rel"], $b);
+        $r2 = $a->add_relation("rel_type2", ["is" => "rel2"], $c);
+        $rels = $a->relations(function(Relation $r) {
+            return $r->type() == "rel_type2";
+        });
+
+        $this->assertCount(1,$rels);
+        $rel = $rels[0];
+        $this->assertSame($r2, $rel);
+        $this->assertEquals("rel_type2", $rel->type());
+        $this->assertEquals(["is" => "rel2"], $rel->properties());
+        $this->assertSame($c, $rel->target());
     }
 
     public function test_related_nodes1() {
