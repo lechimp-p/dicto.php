@@ -55,11 +55,11 @@ abstract class Schema {
     /**
      * Compile a given rule into an sql statement using a query interface.
      *
-     * @param   IndexDB     $db
+     * @param   IndexDB     $index
      * @param   Rule        $rule
      * @return  Query
      */
-    abstract public function compile(IndexDB $db, Rule $rule);
+    abstract public function compile(IndexDB $index, Rule $rule);
 
     /**
      * Turn a query result into a violation. Could be used 

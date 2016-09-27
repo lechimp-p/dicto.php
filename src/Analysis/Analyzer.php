@@ -12,6 +12,7 @@ namespace Lechimp\Dicto\Analysis;
 
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables\Variable;
+use Lechimp\Dicto\Graph\IndexDB;
 use Psr\Log\LoggerInterface as Log;
 
 /**
@@ -30,9 +31,9 @@ class Analyzer {
     protected $ruleset;
 
     /**
-     * @var Query
+     * @var IndexDB
      */
-    protected $query;
+    protected $index;
 
     /**
      * @var ReportGenerator
@@ -42,12 +43,12 @@ class Analyzer {
     public function __construct
                         ( Log $log
                         , Ruleset $ruleset
-                        , Query $query
+                        , IndexDB $index
                         , ReportGenerator $generator
                         ) {
         $this->log = $log;
         $this->ruleset = $ruleset;
-        $this->query = $query;
+        $this->index = $index;
         $this->generator = $generator;
     }
 
@@ -61,8 +62,9 @@ class Analyzer {
         foreach ($this->ruleset->rules() as $rule) {
             $this->log->info("checking: ".$rule->pprint());
             $this->generator->begin_rule($rule);
-            $stmt = $rule->compile($this->query);
-            while ($row = $stmt->fetch()) {
+            $query = $rule->compile($this->index);
+            $results = $query->run([]);
+            foreach ($results as $row) {
                 $this->generator->report_violation($rule->to_violation($row));
             }
             $this->generator->end_rule($rule);

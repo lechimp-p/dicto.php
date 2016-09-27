@@ -55,8 +55,19 @@ abstract class Relation extends Schema {
     /**
      * @inheritdoc
      */
-    public function compile(IndexDB $db, Rule $rule) {
-        return $db->query();
+    public function compile(IndexDB $index, Rule $rule) {
+        return $index->query()
+            ->filter_by_types(["class", "method", "function"])
+            ->expand_relation([$this->name()])
+            ->extract(function($e,&$r) use ($index, $rule) {
+                $file = $e->property("file");
+                assert('$file->type() == "file"');
+                $r["rule"] = $rule;
+                $r["file"] = $file->property("path");
+                $line = $e->property("line");
+                $r["line"] = $line;
+                $r["source"] = $file->property("source")[$line - 1];
+            });
     }
 /*    public function compile(Query $query, Rule $rule) {
         $builder = $query->builder();
@@ -175,7 +186,7 @@ abstract class Relation extends Schema {
             }
             $insert->_relation
                 ( $entity[1]
-                , "depends on"
+                , $this->name()
                 , $other
                 , $location->file()
                 , $line

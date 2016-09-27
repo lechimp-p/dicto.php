@@ -14,7 +14,7 @@ use Lechimp\Dicto\Definition\Definition;
 use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Variables\Except;
 use Lechimp\Dicto\Variables\Everything;
-use Lechimp\Dicto\Analysis\Query;
+use Lechimp\Dicto\Graph\IndexDB;
 use Doctrine\DBAL\Driver\Statement;
 
 class Rule extends Definition {
@@ -141,11 +141,11 @@ class Rule extends Definition {
     /**
      * Compile the rule to SQL.
      *
-     * @param   Query       $query
-     * @return Statement
+     * @param   IndexDB     $index
+     * @return  Query
      */
-    public function compile(Query $query) {
-        return $this->schema->compile($query, $this);
+    public function compile(IndexDB $index) {
+        return $this->schema->compile($index, $this);
     }
 
     /**

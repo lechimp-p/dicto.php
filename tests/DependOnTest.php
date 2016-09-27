@@ -55,14 +55,14 @@ CODE;
             ->withConsecutive
                 ( array
                     ( "class"
-                    , "depends on"
+                    , "depend on"
                     , "global"
                     , "file"
                     , 5
                     )
                 , array
                     ( "method"
-                    , "depends on"
+                    , "depend on"
                     , "global"
                     , "file"
                     , 5
@@ -106,14 +106,14 @@ CODE;
             ->withConsecutive
                 ( array
                     ( "class"
-                    , "depends on"
+                    , "depend on"
                     , "global"
                     , "file"
                     , 5
                     )
                 , array
                     ( "method"
-                    , "depends on"
+                    , "depend on"
                     , "global"
                     , "file"
                     , 5
@@ -159,14 +159,14 @@ CODE;
             ->withConsecutive
                 ( array
                     ( "class"
-                    , "depends on"
+                    , "depend on"
                     , "method_reference"
                     , "file"
                     , 5
                     )
                 , array
                     ( "method"
-                    , "depends on"
+                    , "depend on"
                     , "method_reference"
                     , "file"
                     , 5
@@ -212,14 +212,14 @@ CODE;
             ->withConsecutive
                 ( array
                     ( "class"
-                    , "depends on"
+                    , "depend on"
                     , "function_reference"
                     , "file"
                     , 5
                     )
                 , array
                     ( "method"
-                    , "depends on"
+                    , "depend on"
                     , "function_reference"
                     , "file"
                     , 5
@@ -272,28 +272,28 @@ CODE;
             ->withConsecutive
                 ( array
                     ( "class"
-                    , "depends on"
+                    , "depend on"
                     , "error_suppressor"
                     , "file"
                     , 5
                     )
                 , array
                     ( "method"
-                    , "depends on"
+                    , "depend on"
                     , "error_suppressor"
                     , "file"
                     , 5
                     )
                 , array
                     ( "class"
-                    , "depends on"
+                    , "depend on"
                     , "function_reference"
                     , "file"
                     , 5
                     )
                 , array
                     ( "method"
-                    , "depends on"
+                    , "depend on"
                     , "function_reference"
                     , "file"
                     , 5
@@ -304,7 +304,7 @@ CODE;
         $indexer->index_content("source.php", $code);
     }
 
-/*
+
     // RULE 1
 
     protected function only_a_classes_can_depend_on_globals() {
@@ -463,5 +463,4 @@ CODE;
             );
         $this->assertEquals($expected, $violations);
     }
-*/
 }

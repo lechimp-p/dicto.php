@@ -17,10 +17,10 @@ interface IndexQuery extends Query {
     /**
      * Get nodes of some specific type.
      *
-     * @param   string  $type
+     * @param   string[] $type
      * @return  IndexQuery
      */
-    public function filter_by_type($type);
+    public function filter_by_types($types);
 
     /**
      * Get files only.

@@ -14,10 +14,10 @@ namespace Lechimp\Dicto\Graph;
  * A query on the IndexDB.
  */
 class IndexQueryImpl extends QueryImpl implements IndexQuery {
-    public function filter_by_type($type) {
-        assert('is_string($type)');
-        return $this->filter(function(Node $n) use ($type) {
-            return $n->type() == $type;
+    public function filter_by_types($types) {
+        assert('is_array($types)');
+        return $this->filter(function(Node $n) use ($types) {
+            return in_array($n->type(), $types);
         });
     }
 
