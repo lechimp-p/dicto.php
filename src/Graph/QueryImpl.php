@@ -123,8 +123,6 @@ class QueryImpl implements Query {
         return $res;
     }
 
-
-
     protected function add_result(array $nodes, &$result) {
         $res = [];
         foreach ($nodes as $node) {
