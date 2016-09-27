@@ -46,14 +46,15 @@ class DependOn extends Relation {
             , function(Insert $insert, Location $location, N\Expr\MethodCall $node) {
                 // The 'name' could also be a variable like in $this->$method();
                 if (is_string($node->name)) {
-                    $name_id = $insert->name
+                    $method_reference = $insert->_method_reference
                         ( $node->name
-                        , Variable::METHOD_TYPE
+                        , $location->in_entities()[0][1]
+                        , $node->getAttribute("startLine")
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $name_id
+                        , $method_reference
                         , $node->getAttribute("startLine")
                         );
                 }
@@ -70,14 +71,15 @@ class DependOn extends Relation {
                 // analyze them anyway atm.
                 if (!($node->name instanceof N\Expr\Variable ||
                       $node->name instanceof N\Expr\ArrayDimFetch)) {
-                    $name_id = $insert->name
+                    $function_reference = $insert->_function_reference
                         ( $node->name->parts[0]
-                        , Variable::FUNCTION_TYPE
+                        , $location->in_entities()[0][1]
+                        , $node->getAttribute("startLine")
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $name_id
+                        , $function_reference
                         , $node->getAttribute("startLine")
                         );
                 }
@@ -112,14 +114,11 @@ class DependOn extends Relation {
                 &&  $node->var->name == "GLOBALS"
                 // Ignore usage of $GLOBALS with variable index.
                 && !($node->dim instanceof N\Expr\Variable)) {
-                    $name_id = $insert->name
-                        ( $node->dim->value
-                        , Variable::GLOBAL_TYPE
-                        );
+                    $global = $insert->_global($node->dim->value);
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $name_id
+                        , $global
                         , $node->getAttribute("startLine")
                         );
                 }
@@ -130,14 +129,11 @@ class DependOn extends Relation {
         $registry->on_enter_misc
             ( array(N\Expr\ErrorSuppress::class)
             , function(Insert $insert, Location $location, N\Expr\ErrorSuppress $node) {
-                $name_id = $insert->name
-                    ( "@"
-                    , Variable::LANGUAGE_CONSTRUCT_TYPE
-                    );
+                $language_construct = $insert->_language_construct("@");
                 $this->insert_relation_into
                     ( $insert
                     , $location
-                    , $name_id
+                    , $language_construct
                     , $node->getAttribute("startLine")
                     );
             });

@@ -22,7 +22,7 @@ class DependOnTest extends RuleTest {
         return new R\DependOn();
     }
 
-    public function test_index_global() {
+    public function test_index_global1() {
         $code = <<<CODE
 <?php
 
@@ -37,34 +37,34 @@ CODE;
         $insert_mock = $this->getInsertMock();
 
         $this->expect_file($insert_mock, "source.php", $code)
-            ->willReturn(1234);
-        $this->expect_class($insert_mock, "AClass", 1234, 3, 7)
-            ->willReturn(4321);
-        $this->expect_method($insert_mock, "a_method", 4321, 1234, 4, 6)
-            ->willReturn(23);
+            ->willReturn("file");
+        $this->expect_class($insert_mock, "AClass", "file", 3, 7)
+            ->willReturn("class");
+        $this->expect_method($insert_mock, "a_method", "class", "file", 4, 6)
+            ->willReturn("method");
         $insert_mock
             ->expects($this->once())
             ->method("_global")
             ->with
                 ( "foo"
                 )
-            ->willReturn(42);
+            ->willReturn("global");
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_relation")
             ->withConsecutive
                 ( array
-                    ( 4321
+                    ( "class"
                     , "depends on"
-                    , 42
-                    , 1234
+                    , "global"
+                    , "file"
                     , 5
                     )
                 , array
-                    ( 23
+                    ( "method"
                     , "depends on"
-                    , 42
-                    , 1234
+                    , "global"
+                    , "file"
                     , 5
                     )
                 );
@@ -72,6 +72,238 @@ CODE;
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $code);
     }
+
+    public function test_index_global2() {
+        $code = <<<CODE
+<?php
+
+class AClass {
+    public function a_method() {
+        \$bar = \$GLOBALS["foo"];
+    }
+}
+
+CODE;
+
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $code)
+            ->willReturn("file");
+        $this->expect_class($insert_mock, "AClass", "file", 3, 7)
+            ->willReturn("class");
+        $this->expect_method($insert_mock, "a_method", "class", "file", 4, 6)
+            ->willReturn("method");
+        $insert_mock
+            ->expects($this->once())
+            ->method("_global")
+            ->with
+                ( "foo"
+                )
+            ->willReturn("global");
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("_relation")
+            ->withConsecutive
+                ( array
+                    ( "class"
+                    , "depends on"
+                    , "global"
+                    , "file"
+                    , 5
+                    )
+                , array
+                    ( "method"
+                    , "depends on"
+                    , "global"
+                    , "file"
+                    , 5
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $code);
+    }
+
+    public function test_index_method_call() {
+        $code = <<<CODE
+<?php
+
+class AClass {
+    public function a_method() {
+        \$foo->bar();
+    }
+}
+
+CODE;
+
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $code)
+            ->willReturn("file");
+        $this->expect_class($insert_mock, "AClass", "file", 3, 7)
+            ->willReturn("class");
+        $this->expect_method($insert_mock, "a_method", "class", "file", 4, 6)
+            ->willReturn("method");
+        $insert_mock
+            ->expects($this->once())
+            ->method("_method_reference")
+            ->with
+                ( "bar"
+                , "file"
+                , 5
+                )
+            ->willReturn("method_reference");
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("_relation")
+            ->withConsecutive
+                ( array
+                    ( "class"
+                    , "depends on"
+                    , "method_reference"
+                    , "file"
+                    , 5
+                    )
+                , array
+                    ( "method"
+                    , "depends on"
+                    , "method_reference"
+                    , "file"
+                    , 5
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $code);
+    }
+
+    public function test_index_function_call() {
+        $code = <<<CODE
+<?php
+
+class AClass {
+    public function a_method() {
+        foobar();
+    }
+}
+
+CODE;
+
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $code)
+            ->willReturn("file");
+        $this->expect_class($insert_mock, "AClass", "file", 3, 7)
+            ->willReturn("class");
+        $this->expect_method($insert_mock, "a_method", "class", "file", 4, 6)
+            ->willReturn("method");
+        $insert_mock
+            ->expects($this->once())
+            ->method("_function_reference")
+            ->with
+                ( "foobar"
+                , "file"
+                , 5
+                )
+            ->willReturn("function_reference");
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("_relation")
+            ->withConsecutive
+                ( array
+                    ( "class"
+                    , "depends on"
+                    , "function_reference"
+                    , "file"
+                    , 5
+                    )
+                , array
+                    ( "method"
+                    , "depends on"
+                    , "function_reference"
+                    , "file"
+                    , 5
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $code);
+    }
+
+    public function test_index_error_suppressor() {
+        $code = <<<CODE
+<?php
+
+class AClass {
+    public function a_method() {
+        @foobar();
+    }
+}
+
+CODE;
+
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $code)
+            ->willReturn("file");
+        $this->expect_class($insert_mock, "AClass", "file", 3, 7)
+            ->willReturn("class");
+        $this->expect_method($insert_mock, "a_method", "class", "file", 4, 6)
+            ->willReturn("method");
+        $insert_mock
+            ->expects($this->once())
+            ->method("_language_construct")
+            ->with
+                ( "@"
+                )
+            ->willReturn("error_suppressor");
+        $insert_mock
+            ->expects($this->once())
+            ->method("_function_reference")
+            ->with
+                ( "foobar"
+                , "file"
+                , 5
+                )
+            ->willReturn("function_reference");
+        $insert_mock
+            ->expects($this->exactly(4))
+            ->method("_relation")
+            ->withConsecutive
+                ( array
+                    ( "class"
+                    , "depends on"
+                    , "error_suppressor"
+                    , "file"
+                    , 5
+                    )
+                , array
+                    ( "method"
+                    , "depends on"
+                    , "error_suppressor"
+                    , "file"
+                    , 5
+                    )
+                , array
+                    ( "class"
+                    , "depends on"
+                    , "function_reference"
+                    , "file"
+                    , 5
+                    )
+                , array
+                    ( "method"
+                    , "depends on"
+                    , "function_reference"
+                    , "file"
+                    , 5
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $code);
+    }
+
 /*
     // RULE 1
 
