@@ -98,7 +98,6 @@ abstract class Relation extends Schema {
                     return true;
                 })
                 ->extract(function($e,&$r) use ($index, $rule) {
-                    print_r($e);
                     $rels = $e->relations(function($r) {
                         return $r->type() == "defined in";
                     });
