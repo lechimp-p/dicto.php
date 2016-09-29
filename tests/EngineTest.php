@@ -10,7 +10,7 @@
 
 use Lechimp\Dicto\Analysis\Analyzer;
 use Lechimp\Dicto\Analysis\AnalyzerFactory;
-use Lechimp\Dicto\Analysis\Query;
+use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Analysis\ReportGenerator;
 use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\App\DBFactory;
@@ -31,7 +31,7 @@ require_once(__DIR__."/NullDB.php");
 class AnalyzerFactoryMock extends AnalyzerFactory {
     public $analyzer_mocks = array();
     public function __construct() {}
-    public function build(Query $query, ReportGenerator $report_generator) {
+    public function build(Index $index, ReportGenerator $report_generator) {
         $analyzer_mock = new AnalyzerMock();
         $this->analyzer_mocks[] = $analyzer_mock;
         return $analyzer_mock;

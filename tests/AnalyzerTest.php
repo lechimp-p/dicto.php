@@ -8,142 +8,75 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto as Dicto;
-use Lechimp\Dicto\Definition as Def;
-use Lechimp\Dicto\Rules;
-use Lechimp\Dicto\Variables as Vars;
-use Lechimp\Dicto\Variables\Variable;
-use Lechimp\Dicto\App\IndexDB;
-use Lechimp\Dicto\Analysis\Violation;
-use Doctrine\DBAL\DriverManager;
+use Lechimp\Dicto\Analysis\Analyzer;
+use Lechimp\Dicto\Analysis\Index;
+use Lechimp\Dicto\Graph\IndexQuery;
+use Lechimp\Dicto\Rules as R;
+use Lechimp\Dicto\Variables as V;
 use Psr\Log\LogLevel;
 
+require_once(__DIR__."/NullDB.php");
 require_once(__DIR__."/LoggerMock.php");
 require_once(__DIR__."/ReportGeneratorMock.php");
 
-// TODO: This seems to be a bad test, as it does not test Analyzer really.
-// instead it tests if the rule works. This should be tested too, but tests
-// need to be reorganized. This also might mean that Analyzer is not a good
-// class.
-abstract class AnalyzerTest extends PHPUnit_Framework_TestCase {
+class AnalyzerTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
-        $this->connection = DriverManager::getConnection
-            ( array
-                ( "driver" => "pdo_sqlite"
-                , "memory" => true
-                )
-            );
-        $this->db = new IndexDB($this->connection);
-        $this->db->init_sqlite_regexp();
-        $this->db->maybe_init_database_schema();
-
         $this->rp = new ReportGeneratorMock();
-
         $this->log = new LoggerMock();
-   }
-
-    public function analyzer(Rules\Rule $rule) {
-        $ruleset = new Rules\Ruleset($rule->variables(), array($rule));
-        return new Dicto\Analysis\Analyzer($this->log, $ruleset, $this->db, $this->rp);
-    }
-
-
-    // All classes cannot contain text "foo".
-
-    public function all_classes_cannot_contain_text_foo() {
-        return new Rules\Rule
-            ( Rules\Rule::MODE_CANNOT
-            , new Vars\Classes("allClasses")
-            , new Rules\ContainText()
-            , array("foo")
-            );
-    }
-
-    public function test_all_classes_cannot_contain_text_foo_1() {
-        $rule = $this->all_classes_cannot_contain_text_foo();
-        $analyzer = $this->analyzer($rule);
-
-        $code = <<<CODE
-1
-2
-3
-foo
-4
-5
-6
-CODE;
-
-        $this->db->source("file", $code);
-        $this->db->definition("AClass", Variable::CLASS_TYPE, "file", 1, 7);
-
-        $analyzer->run();
-        $expected = array(new Violation
-            ( $rule
-            , "file"
-            , 4
-            , "foo"
-            ));
-        $this->assertEquals($expected, $this->rp->violations);
-    }
-
-
-    // All functions cannot depend on methods.
-
-    public function all_functions_cannot_depend_on_methods() {
-        return new Rules\Rule
-            ( Rules\Rule::MODE_CANNOT
-            , new Vars\Functions("allFunctions")
-            , new Rules\DependOn()
-            , array(new Vars\Methods("allMethods"))
-            );
-    }
-
-    public function test_all_functions_cannot_depend_on_methods() {
-        $rule = $this->all_functions_cannot_depend_on_methods();
-        $analyzer = $this->analyzer($rule);
-
-        $code = <<<CODE
-1
-2
-3
-foo
-4
-5
-6
-CODE;
-
-        $this->db->source("file", $code);
-        list($id1,$_) = $this->db->definition("a_function", Variable::FUNCTION_TYPE, "file", 1, 7);
-        $id2 = $this->db->name("a_method", Variable::METHOD_TYPE);
-        $this->db->relation($id1, $id2, "depend on", "file", 4);
-
-        $analyzer->run();
-        $expected = array(new Violation
-            ( $rule
-            , "file"
-            , 4
-            , "foo"
-            ));
-        $this->assertEquals($expected, $this->rp->violations);
+        $this->query_mocks = [];
+        $this->index = $this
+            ->getMockBuilder(Index::class)
+            ->setMethods(["query"])
+            ->getMock();
+        $this->index
+            ->method("query")
+            ->will($this->returnCallback(function() {
+                $methods =
+                    [ "expand"
+                    , "extract"
+                    , "filter"
+                    , "run"
+                    , "filter_by_types"
+                    , "files"
+                    , "classes"
+                    , "methods"
+                    , "functions"
+                    , "expand_relation"
+                    , "expand_target"
+                    ];
+                $mock = $this
+                    ->getMockBuilder(IndexQuery::class)
+                    ->setMethods($methods)
+                    ->getMock();
+                foreach ($methods as $method) {
+                    if ($method == "run") {
+                        continue;
+                    }
+                    $mock->method($method)->willReturn($mock);
+                }
+                $mock->method("run")->willReturn([]);
+                $this->query_mocks[] = $mock;
+                return $mock;
+            }));
     }
 
     public function test_logging() {
-        $rule1 = new Rules\Rule
-            ( Rules\Rule::MODE_CANNOT
-            , new Vars\Classes("allClasses")
-            , new Rules\ContainText()
+        $rule1 = new R\Rule
+            ( R\Rule::MODE_CANNOT
+            , new V\Classes("allClasses")
+            , new R\ContainText()
             , array("foo")
             );
-        $rule2 = new Rules\Rule
-            ( Rules\Rule::MODE_CANNOT
-            , new Vars\Functions("allFunctions")
-            , new Rules\DependOn()
-            , array(new Vars\Methods("allMethods"))
+        $rule2 = new R\Rule
+            ( R\Rule::MODE_CANNOT
+            , new V\Functions("allFunctions")
+            , new R\DependOn()
+            , array(new V\Methods("allMethods"))
             );
         $vars = array_merge($rule1->variables(), $rule2->variables());
 
-        $ruleset = new Rules\Ruleset($vars, array($rule1, $rule2));
-        $analyzer = new Dicto\Analysis\Analyzer($this->log, $ruleset, $this->db, $this->rp);
+        $ruleset = new R\Ruleset($vars, array($rule1, $rule2));
+        $analyzer = new Analyzer($this->log, $ruleset, $this->index, $this->rp);
         $analyzer->run();
 
         $expected = array(LogLevel::INFO, "checking: ".$rule1->pprint(), array());

@@ -12,7 +12,6 @@ namespace Lechimp\Dicto\Analysis;
 
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables\Variable;
-use Lechimp\Dicto\Graph\IndexDB;
 use Psr\Log\LoggerInterface as Log;
 
 /**
@@ -31,7 +30,7 @@ class Analyzer {
     protected $ruleset;
 
     /**
-     * @var IndexDB
+     * @var Index
      */
     protected $index;
 
@@ -43,7 +42,7 @@ class Analyzer {
     public function __construct
                         ( Log $log
                         , Ruleset $ruleset
-                        , IndexDB $index
+                        , Index $index
                         , ReportGenerator $generator
                         ) {
         $this->log = $log;

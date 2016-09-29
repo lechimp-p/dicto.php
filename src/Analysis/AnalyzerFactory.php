@@ -37,11 +37,11 @@ class AnalyzerFactory {
     }
 
     /**
-     * @param   Query               $query
+     * @param   Index               $index
      * @param   ReportGenerator     $report_generator
      * @return  Analyzer
      */
-    public function build(Query $query, ReportGenerator $report_generator) {
-        return new Analyzer($this->log, $this->ruleset, $query, $report_generator);
+    public function build(Index $index, ReportGenerator $report_generator) {
+        return new Analyzer($this->log, $this->ruleset, $index, $report_generator);
     }
 } 
