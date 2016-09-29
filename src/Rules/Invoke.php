@@ -42,14 +42,15 @@ class Invoke extends Relation {
             , function(Insert $insert, Location $location, N\Expr\MethodCall $node) {
                 // The 'name' could also be a variable like in $this->$method();
                 if (is_string($node->name)) {
-                    $name_id = $insert->name
+                    $method_reference = $insert->_method_reference
                         ( $node->name
-                        , Variable::METHOD_TYPE
+                        , $location->in_entities()[0][1]
+                        , $node->getAttribute("startLine")
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $name_id
+                        , $method_reference
                         , $node->getAttribute("startLine")
                         );
                 }
@@ -66,18 +67,18 @@ class Invoke extends Relation {
                 // analyze them anyway atm.
                 if (!($node->name instanceof N\Expr\Variable ||
                       $node->name instanceof N\Expr\ArrayDimFetch)) {
-                    $name_id = $insert->name
+                    $function_reference = $insert->_function_reference
                         ( $node->name->parts[0]
-                        , Variable::FUNCTION_TYPE
+                        , $location->in_entities()[0][1]
+                        , $node->getAttribute("startLine")
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
-                        , $name_id
+                        , $function_reference
                         , $node->getAttribute("startLine")
                         );
                 }
             });
     }
-
 }
