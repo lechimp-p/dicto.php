@@ -439,7 +439,7 @@ CODE;
     }
 
     public function test_rule2_violation_1() {
-        $rule = $this->only_a_classes_can_depend_on_globals();
+        $rule = $this->classes_must_depend_on_a_globals();
         $code = <<<CODE
 <?php
 
@@ -456,14 +456,8 @@ CODE;
             ( new Violation
                 ( $rule
                 , "source.php"
-                , 5
-                , "        global \$b_foo;"
-                )
-            , new Violation
-                ( $rule
-                , "source.php"
-                , 5
-                , "        global \$b_foo;"
+                , 3
+                , "class SomeClass {"
                 )
             );
         $this->assertEquals($expected, $violations);
