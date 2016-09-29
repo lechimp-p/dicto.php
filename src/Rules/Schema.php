@@ -64,6 +64,8 @@ abstract class Schema {
     /**
      * Turn a query result into a violation. Could be used 
      *
+     * TODO: This might go away.
+     *
      * @param   Rule    $rule
      * @param   array   $row
      * @return  Violation

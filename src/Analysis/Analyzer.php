@@ -63,6 +63,8 @@ class Analyzer {
             $this->log->info("checking: ".$rule->pprint());
             $this->generator->begin_rule($rule);
             $query = $rule->compile($this->index);
+            // TODO: set rule here directly so the schemas don't need
+            // to take care about that.
             $results = $query->run([]);
             foreach ($results as $row) {
                 $this->generator->report_violation($rule->to_violation($row));
