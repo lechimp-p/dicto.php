@@ -19,12 +19,12 @@ class IndexDB extends Graph implements Insert {
     /**
      * @var array<string,Node>
      */
-    protected $globals = array();
+    protected $globals = [];
 
     /**
      * @var array<string,Node>
      */
-    protected $language_constructs = array();
+    protected $language_constructs = []; 
 
     /**
      * @inheritdocs
