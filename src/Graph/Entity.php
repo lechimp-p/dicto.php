@@ -80,7 +80,9 @@ abstract class Entity {
      */
     public function property($name) {
         if (!$this->has_property($name)) {
-            throw new \InvalidArgumentException("Unknown property '$name'");
+            $type = $this->type;
+            throw new \InvalidArgumentException(
+                "Unknown property '$name' for entity with type '$type'");
         }
         return $this->properties[$name];
     }
