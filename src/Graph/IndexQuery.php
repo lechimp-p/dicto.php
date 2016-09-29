@@ -17,6 +17,8 @@ interface IndexQuery extends Query {
     /**
      * Get nodes of some specific type.
      *
+     * TODO: This could go to Query.
+     *
      * @param   string[] $type
      * @return  IndexQuery
      */
@@ -25,12 +27,16 @@ interface IndexQuery extends Query {
     /**
      * Get files only.
      *
+     * TODO: Remove this, for testing only.
+     *
      * @return Query
      */
     public function files();
 
     /**
      * Get classes only.
+     *
+     * TODO: Remove this, for testing only.
      *
      * @return Query
      */
@@ -39,12 +45,16 @@ interface IndexQuery extends Query {
     /**
      * Get methods only.
      *
+     * TODO: Remove this, for testing only.
+     *
      * @return Query
      */
     public function methods();
 
     /**
      * Get functions only.
+     *
+     * TODO: Remove this, for testing only.
      *
      * @return Query
      */
@@ -54,6 +64,7 @@ interface IndexQuery extends Query {
      * Expand to relations with given types.
      *
      * TODO: rename to expand_relations
+     * TODO: This could go to query
      *
      * @param   string[]    $types
      * @return  Query
@@ -62,6 +73,8 @@ interface IndexQuery extends Query {
 
     /**
      * Expand to the targets of the relations.
+     *
+     * TODO: This could go to query
      *
      * @return  Query
      */
