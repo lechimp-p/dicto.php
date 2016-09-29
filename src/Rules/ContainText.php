@@ -14,6 +14,9 @@ use Lechimp\Dicto\Analysis\Query;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
+use Lechimp\Dicto\Graph\IndexDB;
+use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\Relation;
 
 /**
  * This checks wheather there is some text in some entity.
@@ -53,98 +56,89 @@ class ContainText extends Schema {
     /**
      * @inheritdoc
      */
-    public function compile(Query $query, Rule $rule) {
-        $builder = $query->builder();
-        $b = $builder->expr();
+    public function compile(IndexDB $index, Rule $rule) {
         $mode = $rule->mode();
-        $checked_on = $rule->checked_on();
+        $filter = $rule->checked_on()->compile();
         $regexp = $rule->argument(0);
+        $regexp_filter = function(Relation $r) use ($regexp) {
+            $start_line = $r->property("start_line");
+            $end_line = $r->property("end_line");
+            $source = implode
+                ( "\n"
+                , array_slice
+                    ( $r->target()->property("source")
+                    , $start_line - 1
+                    , $end_line - $start_line
+                    )
+                );
+            return preg_match("%$regexp%", $source) == 1;
+        };
+
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
-            return $builder
-                ->select
-                    ( "d.name"
-                    , "f.path as file"
-                    , "src.line"
-                    , "src.source"
-                    )
-                ->from($query->definition_table(), "d")
-                ->join
-                    ( "d", $query->file_table(), "f"
-                    , $b->eq("d.file", "f.id")
-                    )
-                ->join
-                    ( "d", $query->name_table(), "n"
-                    , $b->eq("d.name", "n.id")
-                    )
-                // TODO: This is a dirty hack, since i always join the method
-                // info table without knowing if the thing is a method.
-                ->leftJoin
-                    ( "d", $query->method_info_table(), "mi"
-                    , $b->eq("d.name", "mi.name")
-                    )
-                // END HACK
-                ->join
-                    ( "d", $query->source_table(), "src"
-                    , $b->andX
-                        ( $b->gte("src.line", "d.start_line")
-                        , $b->lte("src.line", "d.end_line")
-                        , $b->eq("src.file", "d.file")
-                        , "src.source REGEXP ?"
-                        )
-                    )
-                ->where
-                    ( $checked_on->compile($b, "n", "mi")
-                    )
-                ->setParameter(0, $regexp)
-                ->execute();
+            return $index->query()
+                ->filter($filter)
+                ->expand_relation(["defined in"])
+                ->filter($this->regexp_source_filter($regexp, false))
+                ->extract(function($e,&$r) use ($rule, $regexp) {
+                    $matches = [];
+                    $source = $this->get_source_for($e);
+                    preg_match("%(.*)$regexp%", $source, $matches);
+
+                    $file = $e->target();
+                    $r["rule"] = $rule;
+                    $r["file"] = $file->property("path");
+                    $start_line = $e->property("start_line");
+                    $found_at_line = substr_count($matches[0], "\n") + 1;
+                    $line = $start_line + $found_at_line;
+                    $r["line"] = $line + 1;
+                    $r["source"] = $file->property("source")[$line];
+                });
         }
         if ($mode == Rule::MODE_MUST) {
-            return $builder
-                ->select
-                    ( "d.name"
-                    , "f.path as file"
-                    , "d.start_line as line"
-                    , "src.source"
-                    )
-                ->from($query->definition_table(), "d")
-                ->join
-                    ( "d", $query->file_table(), "f"
-                    , $b->eq("d.file", "f.id")
-                    )
-                ->join
-                    ( "d", $query->name_table(), "n"
-                    , $b->eq("d.name", "n.id")
-                    )
-                // TODO: This is a dirty hack, since i always join the method
-                // info table without knowing if the thing is a method.
-                ->leftJoin
-                    ( "d", $query->method_info_table(), "mi"
-                    , $b->eq("d.name", "mi.name")
-                    )
-                // END HACK
-                ->join
-                    ( "d", $query->source_table(), "src"
-                    , $b->andX
-                        ( $b->eq("src.file", "d.file")
-                        , $b->eq("src.line", "d.start_line")
-                        )
-                    )
-                ->leftJoin
-                    ( "d", $query->source_table(), "match"
-                    , $b->andX
-                        ( $b->eq("match.file", "d.file")
-                        , $b->eq("match.line", "d.start_line")
-                        , "match.source REGEXP ?"
-                        )
-                    )
-                ->where
-                    ( $checked_on->compile($b, "n", "mi")
-                    , "match.line IS NULL"
-                    )
-                ->setParameter(0, $regexp)
-                ->execute();
+            return $index->query()
+                ->filter($filter)
+                ->expand_relation(["defined in"])
+                ->filter($this->regexp_source_filter($regexp, true))
+                ->extract(function($e,&$r) use ($rule) {
+                    $file = $e->target();
+                    $r["rule"] = $rule;
+                    $r["file"] = $file->property("path");
+                    $line = $e->property("start_line");
+                    $r["line"] = $line;
+                    $r["source"] = $file->property("source")[$line - 1];
+                });
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
+    }
+
+    // Helpers for compile
+
+    protected function get_source_for(Relation $r) {
+        assert('$r->type() == "defined in"');
+        $start_line = $r->property("start_line");
+        $end_line = $r->property("end_line");
+        return implode
+            ( "\n"
+            , array_slice
+                ( $r->target()->property("source")
+                , $start_line - 1
+                , $end_line - $start_line
+                )
+            );
+    }
+
+    protected function regexp_source_filter($regexp, $negate) {
+        assert('is_string($regexp)');
+        assert('is_bool($negate)');
+        return function(Relation $r) use ($regexp, $negate) {
+            $source = $this->get_source_for($r);
+            if(!$negate) {
+                return preg_match("%$regexp%", $source) == 1;
+            }
+            else {
+                return preg_match("%$regexp%", $source) == 0;
+            }
+        };
     }
 
     /**
