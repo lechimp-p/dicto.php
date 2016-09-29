@@ -158,7 +158,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_global("some_global");
 
         $res = $this->db->query()
-            ->filter_by_type("global")
+            ->filter_by_types(["global"])
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
@@ -176,7 +176,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $gb = $this->db->_global("some_global");
 
         $res = $this->db->query()
-            ->filter_by_type("global")
+            ->filter_by_types(["global"])
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
@@ -194,7 +194,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_language_construct("die");
 
         $res = $this->db->query()
-            ->filter_by_type("language construct")
+            ->filter_by_types(["language construct"])
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
@@ -212,7 +212,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $lb = $this->db->_language_construct("die");
 
         $res = $this->db->query()
-            ->filter_by_type("language construct")
+            ->filter_by_types(["language construct"])
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
@@ -231,7 +231,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_method_reference("some_method", $file, 2);
 
         $res = $this->db->query()
-            ->filter_by_type("method reference")
+            ->filter_by_types(["method reference"])
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
@@ -259,7 +259,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_function_reference("some_function", $file, 2);
 
         $res = $this->db->query()
-            ->filter_by_type("function reference")
+            ->filter_by_types(["function reference"])
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
@@ -312,6 +312,5 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
                 ]
             ];
         $this->assertEquals($expected, $res);
-
     }
 }

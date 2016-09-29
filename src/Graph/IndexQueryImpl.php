@@ -24,28 +24,28 @@ class IndexQueryImpl extends QueryImpl implements IndexQuery {
     /**
      */
     public function files() {
-        return $this->filter_by_type("file");
+        return $this->filter_by_types(["file"]);
     }
 
     /**
      * @inheritdocs
      */
     public function classes() {
-        return $this->filter_by_type("class");
+        return $this->filter_by_types(["class"]);
     }
 
     /**
      * @inheritdocs
      */
     public function methods() {
-        return $this->filter_by_type("method");
+        return $this->filter_by_types(["method"]);
     }
 
     /**
      * @inheritdocs
      */
     public function functions() {
-        return $this->filter_by_type("function");
+        return $this->filter_by_types(["function"]);
     }
 
     /**
