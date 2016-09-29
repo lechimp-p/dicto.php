@@ -53,6 +53,8 @@ interface IndexQuery extends Query {
     /**
      * Expand to relations with given types.
      *
+     * TODO: rename to expand_relations
+     *
      * @param   string[]    $types
      * @return  Query
      */
