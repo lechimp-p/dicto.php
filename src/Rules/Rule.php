@@ -10,12 +10,11 @@
 
 namespace Lechimp\Dicto\Rules;
 
+use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Definition\Definition;
 use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Variables\Except;
 use Lechimp\Dicto\Variables\Everything;
-use Lechimp\Dicto\Graph\IndexDB;
-use Doctrine\DBAL\Driver\Statement;
 
 class Rule extends Definition {
     const MODE_CANNOT   = "CANNOT";
@@ -141,10 +140,10 @@ class Rule extends Definition {
     /**
      * Compile the rule to SQL.
      *
-     * @param   IndexDB     $index
+     * @param   Index   $index
      * @return  Query
      */
-    public function compile(IndexDB $index) {
+    public function compile(Index $index) {
         return $this->schema->compile($index, $this);
     }
 

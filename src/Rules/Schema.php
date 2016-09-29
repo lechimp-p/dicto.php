@@ -14,7 +14,7 @@ use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Variables\Variable;
-use Lechimp\Dicto\Graph\IndexDB;
+use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Graph\Query;
 
 /**
@@ -55,11 +55,11 @@ abstract class Schema {
     /**
      * Compile a given rule into an sql statement using a query interface.
      *
-     * @param   IndexDB     $index
+     * @param   Index       $index
      * @param   Rule        $rule
      * @return  Query
      */
-    abstract public function compile(IndexDB $index, Rule $rule);
+    abstract public function compile(Index $index, Rule $rule);
 
     /**
      * Turn a query result into a violation. Could be used 

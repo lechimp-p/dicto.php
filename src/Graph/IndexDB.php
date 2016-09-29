@@ -11,11 +11,12 @@
 namespace Lechimp\Dicto\Graph;
 
 use Lechimp\Dicto\Indexer\Insert;
+use Lechimp\Dicto\Analysis\Index;
 
 /**
  * A database for the indexer based on graph.
  */
-class IndexDB extends Graph implements Insert {
+class IndexDB extends Graph implements Insert, Index {
     /**
      * @var array<string,Node>
      */

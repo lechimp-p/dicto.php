@@ -8,10 +8,10 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Analysis\Query;
+use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Indexer\Insert;
 
-class NullDB implements Insert, Query {
+class NullDB implements Insert, Index {
     // Insert
     public function _file($path, $source) { return 0; }
     public function _class($name, $file, $start_line, $end_line) { return 0; }
@@ -23,11 +23,5 @@ class NullDB implements Insert, Query {
     public function _function_reference($name, $file, $line) { return 0; }
     public function _relation($left_entity, $relation, $right_entity, $file, $line) { return 0; }
     // Query
-    public function name_table() { return "names"; }
-    public function file_table() { return "files"; }
-    public function source_table() { return "source"; }
-    public function definition_table() { return "definitions"; }
-    public function method_info_table() { return "method_info"; }
-    public function relation_table() { return "relations"; }
-    public function builder() { throw new \RuntimeException("PANIC!"); }
+    public function query() { return null; }
 }

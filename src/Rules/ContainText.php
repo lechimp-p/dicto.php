@@ -10,11 +10,10 @@
 
 namespace Lechimp\Dicto\Rules;
 
-use Lechimp\Dicto\Analysis\Query;
+use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
-use Lechimp\Dicto\Graph\IndexDB;
 use Lechimp\Dicto\Graph\Node;
 use Lechimp\Dicto\Graph\Relation;
 
@@ -56,7 +55,7 @@ class ContainText extends Schema {
     /**
      * @inheritdoc
      */
-    public function compile(IndexDB $index, Rule $rule) {
+    public function compile(Index $index, Rule $rule) {
         $mode = $rule->mode();
         $filter = $rule->checked_on()->compile();
         $regexp = $rule->argument(0);

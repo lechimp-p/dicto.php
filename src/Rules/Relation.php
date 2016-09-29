@@ -10,11 +10,11 @@
 
 namespace Lechimp\Dicto\Rules;
 
+use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\Location;
 use Lechimp\Dicto\Variables\Variable;
-use Lechimp\Dicto\Graph\IndexDB;
 use Lechimp\Dicto\Graph\Node;
 
 /**
@@ -55,7 +55,7 @@ abstract class Relation extends Schema {
     /**
      * @inheritdoc
      */
-    public function compile(IndexDB $index, Rule $rule) {
+    public function compile(Index $index, Rule $rule) {
         $mode = $rule->mode();
         $var_left = $rule->checked_on();
         $var_right = $rule->argument(0);
