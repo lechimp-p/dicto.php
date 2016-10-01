@@ -49,4 +49,29 @@ interface Query {
      * @return  mixed[]
      */
     public function run($result);
+
+    // Convenience Functions
+
+    /**
+     * Get nodes of some specific type.
+     *
+     * @param   string[] $types
+     * @return  Query
+     */
+    public function filter_by_types(array $types);
+
+    /**
+     * Expand to relations with given types.
+     *
+     * @param   string[]    $types
+     * @return  Query
+     */
+    public function expand_relations(array $types);
+
+    /**
+     * Expand to the targets of the relations.
+     *
+     * @return  Query
+     */
+    public function expand_target();
 }

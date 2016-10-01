@@ -130,4 +130,37 @@ class QueryImpl implements Query {
         }
         return $res;
     }
+
+    // Convenience Functions
+
+    /**
+     * @inheritdocs
+     */
+    public function filter_by_types(array $types) {
+        return $this->filter(function(Node $n) use ($types) {
+            return in_array($n->type(), $types);
+        });
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function expand_relations(array $types) {
+        return $this->expand(function(Node $n) use (&$types) {
+            return array_filter
+                ( $n->relations()
+                , function(Relation $r) use (&$types) {
+                    return in_array($r->type(), $types);
+                });
+        });
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function expand_target() {
+        return $this->expand(function(Relation $r) {
+            return [$r->target()];
+        });
+    }
 }

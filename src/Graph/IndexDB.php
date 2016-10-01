@@ -182,15 +182,6 @@ class IndexDB extends Graph implements Insert, Index {
         $this->add_relation($left_entity, $relation, $props, $right_entity);
     }
 
-    /**
-     * Build a query on the index.
-     *
-     * @return  IndexQuery
-     */
-    public function query() {
-        return new IndexQueryImpl($this);
-    }
-
     // Helper
 
     protected function add_definition(Node $n, Node $file, $start_line, $end_line) {

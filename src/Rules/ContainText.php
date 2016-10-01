@@ -76,7 +76,7 @@ class ContainText extends Schema {
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             return $index->query()
                 ->filter($filter)
-                ->expand_relation(["defined in"])
+                ->expand_relations(["defined in"])
                 ->filter($this->regexp_source_filter($regexp, false))
                 ->extract(function($e,&$r) use ($rule, $regexp) {
                     $matches = [];
@@ -96,7 +96,7 @@ class ContainText extends Schema {
         if ($mode == Rule::MODE_MUST) {
             return $index->query()
                 ->filter($filter)
-                ->expand_relation(["defined in"])
+                ->expand_relations(["defined in"])
                 ->filter($this->regexp_source_filter($regexp, true))
                 ->extract(function($e,&$r) use ($rule) {
                     $file = $e->target();

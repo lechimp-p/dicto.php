@@ -64,7 +64,7 @@ abstract class Relation extends Schema {
             $filter_right = $var_right->compile();
             return $index->query()
                 ->filter($filter_left)
-                ->expand_relation([$this->name()])
+                ->expand_relations([$this->name()])
                 ->extract(function($e,&$r) use ($rule) {
                     $file = $e->property("file");
                     assert('$file->type() == "file"');

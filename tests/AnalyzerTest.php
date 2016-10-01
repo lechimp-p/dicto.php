@@ -41,7 +41,7 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
                     , "classes"
                     , "methods"
                     , "functions"
-                    , "expand_relation"
+                    , "expand_relations"
                     , "expand_target"
                     ];
                 $mock = $this

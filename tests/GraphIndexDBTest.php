@@ -23,7 +23,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_file("some_path.php", "A\nB");
 
         $res = $this->db->query()
-            ->files()
+            ->filter_by_types(["file"])
             ->extract(function($n, &$r) {
                 $r["path"] = $n->property("path");
                 $r["source"] = $n->property("source");
@@ -43,11 +43,11 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_class("AClass", $file, 1, 2);
 
         $res = $this->db->query()
-            ->classes()
+            ->filter_by_types(["class"])
             ->extract(function($n, &$r) {
                 $r["name"] = $n->property("name");
             })
-            ->expand_relation(["defined in"])
+            ->expand_relations(["defined in"])
             ->extract(function($e,&$r) {
                 $r["start_line"] = $e->property("start_line");
                 $r["end_line"] = $e->property("end_line");
@@ -74,14 +74,14 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_method("a_method", $class, $file, 2, 3);
 
         $res = $this->db->query()
-            ->methods()
+            ->filter_by_types(["method"])
             ->extract(function($n, &$r) {
                 $r["name"] = $n->property("name");
                 $r["class"] = $n->related_nodes(function($r) {
                     return $r->type() == "contained in";
                 });
             })
-            ->expand_relation(["defined in"])
+            ->expand_relations(["defined in"])
             ->extract(function($e,&$r) {
                 $r["start_line"] = $e->property("start_line");
                 $r["end_line"] = $e->property("end_line");
@@ -109,8 +109,8 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $method = $this->db->_method("a_method", $class, $file, 2, 3);
 
         $res = $this->db->query()
-            ->classes()
-            ->expand_relation(["contains"])
+            ->filter_by_types(["class"])
+            ->expand_relations(["contains"])
             ->expand_target()
             ->extract(function($n, &$r) {
                 $r["method"] = $n;
@@ -129,11 +129,11 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_function("a_function", $file, 2, 3);
 
         $res = $this->db->query()
-            ->functions()
+            ->filter_by_types(["function"])
             ->extract(function($n, &$r) {
                 $r["name"] = $n->property("name");
             })
-            ->expand_relation(["defined in"])
+            ->expand_relations(["defined in"])
             ->extract(function($e,&$r) {
                 $r["start_line"] = $e->property("start_line");
                 $r["end_line"] = $e->property("end_line");
@@ -235,7 +235,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
-            ->expand_relation(["referenced at"])
+            ->expand_relations(["referenced at"])
             ->extract(function($n,&$r) {
                 $r["line"] = $n->property("line");
             })
@@ -263,7 +263,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
             ->extract(function($n,&$r) {
                 $r["name"] = $n->property("name");
             })
-            ->expand_relation(["referenced at"])
+            ->expand_relations(["referenced at"])
             ->extract(function($n,&$r) {
                 $r["line"] = $n->property("line");
             })
@@ -289,11 +289,11 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->db->_relation($l, "related to", $r, $file, 3);
 
         $res = $this->db->query()
-            ->functions()
+            ->filter_by_types(["function"])
             ->extract(function($n, &$r) {
                 $r["l"] = $n;
             })
-            ->expand_relation(["related to"])
+            ->expand_relations(["related to"])
             ->extract(function($e,&$r) {
                 $r["line"] = $e->property("line");
                 $r["file"] = $e->property("file");

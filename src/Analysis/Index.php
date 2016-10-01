@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Analysis;
 
-use Lechimp\Dicto\Graph\IndexQuery;
+use Lechimp\Dicto\Graph\Query;
 
 /**
  * Interface to an Index of the codebase.
@@ -19,7 +19,7 @@ interface Index {
     /**
      * Get a builder to create queries.
      *
-     * @return  IndexQuery
+     * @return  Query
      */
     public function query();
 }
