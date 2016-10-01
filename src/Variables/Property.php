@@ -54,11 +54,8 @@ abstract class Property {
     /**
      * Compile the property to a condition on a graph node.
      *
-     * TODO: Maybe negate can go away.
-     *
      * @param   array       &$arguments
-     * @param   bool        $negate
      * @return  \Closure    Node -> bool
      */
-    abstract public function compile(array &$arguments, $negate = false);
+    abstract public function compile(array &$arguments);
 }

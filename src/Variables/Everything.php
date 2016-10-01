@@ -24,8 +24,10 @@ class Everything extends Variable {
      * @inheritdocs
      */
 
-    public function compile($negate = false) {
-        return function(Node $n) use ($negate) { return !$negate; };
+    public function compile() {
+        return function(Node $n) { 
+            return true; 
+        };
     }
 }
 

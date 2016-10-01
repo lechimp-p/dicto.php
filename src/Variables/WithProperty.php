@@ -70,24 +70,13 @@ class WithProperty extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile($negate = false) {
-        $left_condition = $this->other->compile($negate);
-        $property_condition = $this->property->compile($this->arguments, $negate);
+    public function compile() {
+        $left_condition = $this->other->compile();
+        $property_condition = $this->property->compile($this->arguments);
 
-        // normal case : left_condition AND property 
-        if (!$negate) {
-            return function(Node $n) use ($left_condition, $property_condition) {
-                return $left_condition($n)
-                    && $property_condition($n);
-            };
-        }
-        // negated case: not (left_condition_left and property)
-        //             = not left_condition or not property
-        else {
-            return function(Node $n) use ($left_condition, $property_condition) {
-                return $left_condition($n)
-                    || $property_condition($n);
-            };
-        }
+        return function(Node $n) use ($left_condition, $property_condition) {
+            return $left_condition($n)
+                && $property_condition($n);
+        };
     }
 }

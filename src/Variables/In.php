@@ -55,33 +55,18 @@ class In extends Property {
     /**
      * @inheritdocs
      */
-    public function compile(array &$arguments, $negate = false) {
+    public function compile(array &$arguments) {
         $condition = $arguments[0]->compile();
-        if (!$negate) {
-            return function (Node $n) use ($condition) {
-                $nodes = $n->related_nodes(function (Relation $r) use ($condition) {
-                    return in_array($r->type(), self::$relations);
-                });
-                foreach ($nodes as $node) {
-                    if ($condition($node)) {
-                        return true;
-                    }
+        return function (Node $n) use ($condition) {
+            $nodes = $n->related_nodes(function (Relation $r) use ($condition) {
+                return in_array($r->type(), self::$relations);
+            });
+            foreach ($nodes as $node) {
+                if ($condition($node)) {
+                    return true;
                 }
-                return false;
-            };
-        }
-        else {
-            return function (Node $n) use ($condition) {
-                $nodes = $n->related_nodes(function (Relation $r) use ($condition) {
-                    return in_array($r->type(), self::$relations);
-                });
-                foreach ($nodes as $node) {
-                    if ($condition($node)) {
-                        return false;
-                    }
-                }
-                return true;
-            };
-        }
+            }
+            return false;
+        };
     }
 }

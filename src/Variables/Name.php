@@ -49,20 +49,12 @@ class Name extends Property {
     /**
      * @inheritdocs
      */
-    public function compile(array &$arguments, $negate = false) {
+    public function compile(array &$arguments) {
         assert('$this->arguments_are_valid($arguments)');
         $regexp = $arguments[0];
-        if (!$negate) {
-            return function (Node $n) use ($regexp) {
-                return $n->has_property("name")
-                    && preg_match("%^$regexp\$%", $n->property("name")) == 1;
-            };
-        }
-        else {
-            return function (Node $n) use ($regexp) {
-                return !$n->has_property("name")
-                    || preg_match("%^$regexp\$%", $n->property("name")) == 0;
-            };
-        }
+        return function (Node $n) use ($regexp) {
+            return $n->has_property("name")
+                && preg_match("%^$regexp\$%", $n->property("name")) == 1;
+        };
     }
 }

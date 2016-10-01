@@ -37,34 +37,19 @@ class Any extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile($negate = false) {
-        $conditions = array_map(function(Variable $v) use ($negate) {
-            return $v->compile($negate);
+    public function compile() {
+        $conditions = array_map(function(Variable $v) {
+            return $v->compile();
         }, $this->variables);
 
-        // normal case: 1 or 2 or 3 ...
-        if (!$negate) {
-            return function(Node $n) use (&$conditions) {
-                foreach ($conditions as $condition) {
-                    if ($condition($n)) {
-                        return true;
-                    }
+        return function(Node $n) use (&$conditions) {
+            foreach ($conditions as $condition) {
+                if ($condition($n)) {
+                    return true;
                 }
-                return false;
-            };
-        }
-        // negated case: not (left_condition or right_condition)
-        //             = not left_condition and not right_condition
-        if ($negate) {
-            return function(Node $n) use (&$conditions) {
-                foreach ($conditions as $condition) {
-                    if (!$condition($n)) {
-                        return false;
-                    }
-                }
-                return true;
-            };
-        }
+            }
+            return false;
+        };
     }
 }
 

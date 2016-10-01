@@ -46,19 +46,11 @@ abstract class Entities extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile($negate = false) {
-        if (!$negate) {
-            return function(Node $n) {
-                return $n->type() == $this->id()
-                    || $n->type() == $this->id()." reference";
-            };
-        }
-        else {
-            return function(Node $n) {
-                return $n->type() != $this->id()
-                    && $n->type() != $this->id()." reference";
-            };
-        }
+    public function compile() {
+        return function(Node $n) {
+            return $n->type() == $this->id()
+                || $n->type() == $this->id()." reference";
+        };
     }
 }
 
