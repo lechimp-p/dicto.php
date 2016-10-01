@@ -15,7 +15,7 @@ use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Graph\Node;
-use Lechimp\Dicto\Graph\Relation;
+use Lechimp\Dicto\Graph;
 
 /**
  * This checks wheather there is some text in some entity.
@@ -59,7 +59,7 @@ class ContainText extends Schema {
         $mode = $rule->mode();
         $filter = $rule->checked_on()->compile();
         $regexp = $rule->argument(0);
-        $regexp_filter = function(Relation $r) use ($regexp) {
+        $regexp_filter = function(Graph\Relation $r) use ($regexp) {
             $start_line = $r->property("start_line");
             $end_line = $r->property("end_line");
             $source = implode
@@ -112,7 +112,7 @@ class ContainText extends Schema {
 
     // Helpers for compile
 
-    protected function get_source_for(Relation $r) {
+    protected function get_source_for(Graph\Relation $r) {
         assert('$r->type() == "defined in"');
         $start_line = $r->property("start_line");
         $end_line = $r->property("end_line");
@@ -129,7 +129,7 @@ class ContainText extends Schema {
     protected function regexp_source_filter($regexp, $negate) {
         assert('is_string($regexp)');
         assert('is_bool($negate)');
-        return function(Relation $r) use ($regexp, $negate) {
+        return function(Graph\Relation $r) use ($regexp, $negate) {
             $source = $this->get_source_for($r);
             if(!$negate) {
                 return preg_match("%$regexp%", $source) == 1;

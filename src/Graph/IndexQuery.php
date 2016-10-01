@@ -19,7 +19,7 @@ interface IndexQuery extends Query {
      *
      * TODO: This could go to Query.
      *
-     * @param   string[] $type
+     * @param   string[] $types
      * @return  IndexQuery
      */
     public function filter_by_types($types);

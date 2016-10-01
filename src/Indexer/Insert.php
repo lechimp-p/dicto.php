@@ -44,7 +44,7 @@ interface Insert {
      * @param   mixed   $file   handle from _file
      * @param   int     $start_line
      * @param   int     $end_line
-     * @return  null
+     * @return  mixed   handle to the method
      */
     public function _method($name, $class, $file, $start_line, $end_line);
 
@@ -55,7 +55,7 @@ interface Insert {
      * @param   mixed   $file   handle from _file
      * @param   int     $start_line
      * @param   int     $end_line
-     * @return  null
+     * @return  mixed   handle to the function
      */
     public function _function($name, $file, $start_line, $end_line);
 
