@@ -31,6 +31,18 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("/the/path", $config->path());
     }
 
+    public function test_defaults() {
+        $config = new Config("/the/path", [
+            [ "project" =>
+                [ "root"    => "/root/dir"
+                , "storage" => "/data"
+                , "rules" => "/rules"
+                ]
+            ]]);
+
+        $this->assertEquals([], $config->analysis_ignore());
+    }
+
     public function test_merge() {
         $config = new Config("/the/path",
             [

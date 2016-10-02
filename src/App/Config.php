@@ -29,6 +29,15 @@ class Config implements ConfigurationInterface {
     protected $values;
 
     /**
+     * @var array
+     */
+    protected $defaults =
+        [ "analysis" =>
+            [ "ignore"  => []
+            ]
+        ];
+
+    /**
      * Build the configuration from nested arrays using a processor.
      *
      * @param   string  $path
@@ -40,6 +49,7 @@ class Config implements ConfigurationInterface {
         }
         $this->path = $path;
         $processor = new \Symfony\Component\Config\Definition\Processor();
+        $values = array_merge([$this->defaults], $values);
         $this->values = $processor->processConfiguration($this, $values);
     }
 
@@ -70,11 +80,9 @@ class Config implements ConfigurationInterface {
                     ->children()
                         ->arrayNode("ignore")
                             ->prototype("scalar")
-                            ->end()
-                            ->defaultValue(array())
+                            ->isRequired()
                         ->end()
                     ->end()
-                    ->addDefaultsIfNotSet()
                 ->end()
             ->end()
         ->end();
