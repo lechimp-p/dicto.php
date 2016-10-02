@@ -17,6 +17,8 @@ use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 use Doctrine\DBAL\Statement;
 
 class IndexDB extends DB {
+    protected $insert_per_transaction = 100;
+
     /**
      * Write the index to the database.
      *
@@ -49,24 +51,40 @@ class IndexDB extends DB {
 
     protected function serialize_nodes(Graph\IndexDB $index) {
         $max_id = 0;
+        $this->connection->beginTransaction();
+        $count = 0;
         foreach ($index->nodes() as $node) {
+            $count++;
             $id = $node->id();
             $this->insert_entity_stmt->execute([$node->id(), $node->type()]);
             $max_id = max($max_id, $id);
             $this->insert_properties($id, $node);
+            if ($count >= $this->insert_per_transaction) {
+                $this->connection->commit();
+                $this->connection->beginTransaction();
+            }
         }
+        $this->connection->commit();
         return $max_id;
     }
 
     protected function serialize_relations(Graph\IndexDB $index, $id) {
+        $this->connection->beginTransaction();
+        $count = 0;
         foreach ($index->nodes() as $node) {
             foreach ($node->relations() as $relation) {
+                $count++;
                 $id++;
                 $this->insert_entity_stmt->execute([$id, $relation->type()]);
                 $this->insert_properties($id, $relation);
                 $this->insert_relation_stmt->execute([$node->id(), $id, $relation->target()->id()]);
+                if ($count >= $this->insert_per_transaction) {
+                    $this->connection->commit();
+                    $this->connection->beginTransaction();
+                }
             }
         }
+        $this->connection->commit();
     }
 
     protected $insert_entity_stmt;
