@@ -125,6 +125,7 @@ class App {
                     )
                 , array
                     ( new V\Name()
+                    , new V\In()
                     )
                 );
         };
