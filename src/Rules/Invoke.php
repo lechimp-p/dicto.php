@@ -38,7 +38,7 @@ class Invoke extends Relation {
 
     protected function register_func_call_listener(ListenerRegistry $registry) {
         $registry->on_enter_misc
-            ( array(N\Expr\MethodCall::class)
+            ( [N\Expr\MethodCall::class]
             , function(Insert $insert, Location $location, N\Expr\MethodCall $node) {
                 // The 'name' could also be a variable like in $this->$method();
                 if (is_string($node->name)) {
@@ -59,7 +59,7 @@ class Invoke extends Relation {
 
     protected function register_method_call_listener(ListenerRegistry $registry) {
         $registry->on_enter_misc
-            ( array(N\Expr\FuncCall::class)
+            ( [N\Expr\FuncCall::class]
             , function(Insert $insert, Location $location, N\Expr\FuncCall $node) {
                 // Omit calls to closures, we would not be able to
                 // analyze them anyway atm.
