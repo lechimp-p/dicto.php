@@ -42,12 +42,10 @@ class App {
         // drop program name
         array_shift($params);
 
-        $rules_file = array_shift($params);
-
         // the rest of the params are paths to configs
         list($config_file_path, $configs) = $this->load_configs($params);
 
-        $dic = $this->create_dic($config_file_path, $rules_file, $configs);
+        $dic = $this->create_dic($config_file_path, $configs);
 
         $dic["engine"]->run();
     }
@@ -76,14 +74,11 @@ class App {
     /**
      * Create and initialize the DI-container.
      *
-     * TODO: move rule_file_path to config?
-     *
      * @param   string      $config_file_path
-     * @param   string      $rule_file_path
      * @param   array       &$configs
      * @return  Container
      */
-    protected function create_dic($config_file_path, $rule_file_path, array &$configs) {
+    protected function create_dic($config_file_path, array &$configs) {
         array('is_string($rule_file_path)');
 
         $container = new Container();
@@ -92,7 +87,8 @@ class App {
             return new Config($config_file_path, $configs);
         };
 
-        $container["ruleset"] = function($c) use (&$rule_file_path) {
+        $container["ruleset"] = function($c) {
+            $rule_file_path = $c["config"]->project_rules();
             if (!file_exists($rule_file_path)) {
                 throw new \RuntimeException("Unknown rule-file '$rule_file_path'");
             }

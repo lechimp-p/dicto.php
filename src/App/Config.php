@@ -61,6 +61,9 @@ class Config implements ConfigurationInterface {
                         ->scalarNode("storage")
                             ->isRequired()
                         ->end()
+                        ->scalarNode("rules")
+                            ->isRequired()
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode("analysis")
@@ -92,6 +95,13 @@ class Config implements ConfigurationInterface {
             return $this->path()."/".substr($path, 2);
         }
         return $path;
+    }
+
+    /**
+     * @return  string
+     */
+    public function project_rules() {
+        return $this->maybe_prepend_path($this->values["project"]["rules"]);
     }
 
     /**

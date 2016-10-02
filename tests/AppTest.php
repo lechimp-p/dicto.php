@@ -19,8 +19,8 @@ use Lechimp\Dicto\Rules\Ruleset;
 require_once(__DIR__."/tempdir.php");
 
 class _App extends App {
-    public function _create_dic($config_file_path, $rule_file_path, $configs) {
-        return $this->create_dic($config_file_path, $rule_file_path, $configs);
+    public function _create_dic($config_file_path, $configs) {
+        return $this->create_dic($config_file_path, $configs);
     }
 
     public function _load_configs($path) {
@@ -37,7 +37,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     public function test_dic_indexer_factory() {
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic("/the/path", __DIR__."/data/rules", array($c));
+        $dic = $this->app->_create_dic("/the/path", array($c));
 
         $this->assertInstanceOf(IndexerFactory::class, $dic["indexer_factory"]);
     }
@@ -45,7 +45,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     public function test_dic_engine() {
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic("/the/path", __DIR__."/data/rules", array($c));
+        $dic = $this->app->_create_dic(__DIR__."/data", array($c));
 
         $this->assertInstanceOf(Engine::class, $dic["engine"]);
     }
@@ -53,7 +53,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     public function test_source_status() {
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic("/the/path", __DIR__."/data/rules", array($c));
+        $dic = $this->app->_create_dic("/the/path", array($c));
 
         $this->assertInstanceOf(SourceStatus::class, $dic["source_status"]);
     }
@@ -62,7 +62,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $config_file_path = "/foo";
         $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
         $rules_path = "rules.path";
-        $params = array_merge(array("program_name", $rules_path), $configs);
+        $params = array_merge(array("program_name"), $configs);
 
         $app_mock = $this
             ->getMockBuilder(App::class)
@@ -75,7 +75,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
             ->setMethods(array("run"))
             ->getMock();
 
-        $cfg_return = array("some_config");
+        $cfg_return = array("some_config", "project" => array("rules" => $rules_path));
         $app_mock
             ->expects($this->at(0))
             ->method("load_configs")
@@ -89,7 +89,6 @@ class AppTest extends PHPUnit_Framework_TestCase {
             ->method("create_dic")
             ->with
                 ( $this->equalTo($config_file_path)
-                , $this->equalTo($rules_path)
                 , $this->equalTo($cfg_return)
                 )
             ->willReturn(array("engine" => $engine_mock));

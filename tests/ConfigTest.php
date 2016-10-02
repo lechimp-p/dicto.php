@@ -16,6 +16,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             [ "project" =>
                 [ "root"    => "/root/dir"
                 , "storage" => "/data"
+                , "rules" => "/rules"
                 ]
             , "analysis" =>
                 [ "ignore" =>
@@ -23,6 +24,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
                     ]
                 ]
             ]]);
+        $this->assertEquals("/rules", $config->project_rules());
         $this->assertEquals("/root/dir", $config->project_root());
         $this->assertEquals("/data", $config->project_storage());
         $this->assertEquals([".*\\.omit_me"], $config->analysis_ignore());
@@ -34,11 +36,13 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             [
                 [ "project" =>
                     [ "storage" => "/data"
+                    , "rules" => "/rules"
                     ]
                 ]
             , 
                 [ "project" =>
                     [ "root" => "/root/dir"
+                    , "rules" => "/other_rules"
                     ]
                 , "analysis" =>
                     [ "ignore" =>
@@ -47,6 +51,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
                     ]
                 ]
             ]);
+        $this->assertEquals("/other_rules", $config->project_rules());
         $this->assertEquals("/root/dir", $config->project_root());
         $this->assertEquals("/data", $config->project_storage());
         $this->assertEquals([".*\\.omit_me"], $config->analysis_ignore());
@@ -57,6 +62,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             [ "project" =>
                 [ "root"    => "./root/dir"
                 , "storage" => "./data"
+                , "rules" => "./rules"
                 ]
             , "analysis" =>
                 [ "ignore" =>
@@ -65,6 +71,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
                 ]
             ]]);
         $this->assertEquals("/the/path", $config->path());
+        $this->assertEquals("/the/path/rules", $config->project_rules());
         $this->assertEquals("/the/path/root/dir", $config->project_root());
         $this->assertEquals("/the/path/data", $config->project_storage());
     }
