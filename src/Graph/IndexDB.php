@@ -164,7 +164,7 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _relation($left_entity, $relation, $right_entity, $file = null, $line = null) {
+    public function _relation($left_entity, $relation, $right_entity, $file, $line) {
         assert('$left_entity instanceof \\Lechimp\\Dicto\\Graph\\Node');
         assert('$right_entity instanceof \\Lechimp\\Dicto\\Graph\\Node');
         assert('is_string($relation)');
