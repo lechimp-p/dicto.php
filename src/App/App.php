@@ -111,6 +111,24 @@ class App {
     }
 
     /**
+     * Loads the variables defined in the config.
+     *
+     * @param   array   $variable_classes
+     * @return  R\Schema[]
+     */
+    protected function load_variables(array $variable_classes) {
+        $variables = array();
+        foreach ($variable_classes as $variable_class) {
+            $variable = new $variable_class;
+            if (!($variable instanceof V\Variable)) {
+                throw new \RuntimeException("'$variable_class' is not a Schema-class.");
+            }
+            $variables[] = $variable;
+        }
+        return $variables;
+    }
+
+    /**
      * Create and initialize the DI-container.
      *
      * @param   string      $config_file_path
@@ -140,18 +158,8 @@ class App {
         };
 
         $container["rule_parser"] = function($c) {
-            // TODO: Move this stuff to the config.
             return new RuleParser
-                ( array
-                    ( new V\Classes()
-                    , new V\Functions()
-                    , new V\Globals()
-                    , new V\Files()
-                    , new V\Methods()
-                    , new V\LanguageConstruct("@", "ErrorSuppressor")
-                    , new V\LanguageConstruct("exit", "Exit")
-                    , new V\LanguageConstruct("die", "Die")
-                    )
+                ( $c["variables"]
                 , $c["schemas"]
                 , $c["properties"]
                 );
@@ -213,6 +221,10 @@ class App {
 
         $container["properties"] = function($c) {
             return $this->load_properties($c["config"]->rules_properties());
+        };
+
+        $container["variables"] = function($c) {
+            return $this->load_variables($c["config"]->rules_variables());
         };
 
         return $container;

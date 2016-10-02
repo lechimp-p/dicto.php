@@ -45,6 +45,16 @@ class Config implements ConfigurationInterface {
                 [ \Lechimp\Dicto\Variables\Name::class
                 , \Lechimp\Dicto\Variables\In::class
                 ]
+            , "variables" =>
+                [ \Lechimp\Dicto\Variables\Classes::class
+                , \Lechimp\Dicto\Variables\Functions::class
+                , \Lechimp\Dicto\Variables\Globals::class
+                , \Lechimp\Dicto\Variables\Files::class
+                , \Lechimp\Dicto\Variables\Methods::class
+                , \Lechimp\Dicto\Variables\ErrorSuppressor::class
+                , \Lechimp\Dicto\Variables\Exit_::class
+                , \Lechimp\Dicto\Variables\Die_::class
+                ]
             ]
         ];
 
@@ -70,6 +80,8 @@ class Config implements ConfigurationInterface {
      * @inheritdocs
      */
     public function getConfigTreeBuilder() {
+        // TODO: maybe change definition in a way that does not append
+        //       to rules.*-arrays
         $tree_builder = new TreeBuilder();
         $root = $tree_builder->root("dicto");
         $root
@@ -104,6 +116,11 @@ class Config implements ConfigurationInterface {
                             ->isRequired()
                         ->end()
                         ->arrayNode("properties")
+                            ->prototype("scalar")
+                            ->end()
+                            ->isRequired()
+                        ->end()
+                        ->arrayNode("variables")
                             ->prototype("scalar")
                             ->end()
                             ->isRequired()
@@ -171,5 +188,12 @@ class Config implements ConfigurationInterface {
      */
     public function rules_properties() {
         return $this->values["rules"]["properties"];
+    }
+
+    /**
+     * @return  string[]
+     */
+    public function rules_variables() {
+        return $this->values["rules"]["variables"];
     }
 }

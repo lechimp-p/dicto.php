@@ -35,6 +35,10 @@ class _App extends App {
     public function _load_properties(array $property_classes) {
         return $this->load_properties($property_classes);
     }
+
+    public function _load_variables(array $variable_classes) {
+        return $this->load_variables($variable_classes);
+    }
 }
 
 class AppTest extends PHPUnit_Framework_TestCase {
@@ -117,6 +121,49 @@ class AppTest extends PHPUnit_Framework_TestCase {
             , new \Lechimp\Dicto\Variables\In
             ];
         $this->assertEquals($expected_properties, $properties);
+    }
+
+    public function test_variables() {
+        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
+        $c["project"]["storage"] = tempdir();
+        $dic = $this->app->_create_dic("/the/path", array($c));
+
+        $expected_variables = array
+            ( new \Lechimp\Dicto\Variables\Classes()
+            , new \Lechimp\Dicto\Variables\Functions()
+            , new \Lechimp\Dicto\Variables\Globals()
+            , new \Lechimp\Dicto\Variables\Files()
+            , new \Lechimp\Dicto\Variables\Methods()
+            , new \Lechimp\Dicto\Variables\ErrorSuppressor()
+            , new \Lechimp\Dicto\Variables\Exit_()
+            , new \Lechimp\Dicto\Variables\Die_()
+            );
+        $this->assertEquals($expected_variables, $dic["variables"]);
+    }
+
+    public function test_load_variables() {
+        $default_variables = array
+            ( \Lechimp\Dicto\Variables\Classes::class
+            , \Lechimp\Dicto\Variables\Functions::class
+            , \Lechimp\Dicto\Variables\Globals::class
+            , \Lechimp\Dicto\Variables\Files::class
+            , \Lechimp\Dicto\Variables\Methods::class
+            , \Lechimp\Dicto\Variables\ErrorSuppressor::class
+            , \Lechimp\Dicto\Variables\Exit_::class
+            , \Lechimp\Dicto\Variables\Die_::class
+            );
+        $variables = $this->app->_load_variables($default_variables);
+        $expected_variables = array
+            ( new \Lechimp\Dicto\Variables\Classes()
+            , new \Lechimp\Dicto\Variables\Functions()
+            , new \Lechimp\Dicto\Variables\Globals()
+            , new \Lechimp\Dicto\Variables\Files()
+            , new \Lechimp\Dicto\Variables\Methods()
+            , new \Lechimp\Dicto\Variables\ErrorSuppressor()
+            , new \Lechimp\Dicto\Variables\Exit_()
+            , new \Lechimp\Dicto\Variables\Die_()
+            );
+        $this->assertEquals($expected_variables, $variables);
     }
 
     public function test_run() {

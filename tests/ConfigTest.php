@@ -52,6 +52,17 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             , \Lechimp\Dicto\Variables\In::class
             ];
         $this->assertEquals($default_properties, $config->rules_properties());
+        $default_variables =
+            [ \Lechimp\Dicto\Variables\Classes::class
+            , \Lechimp\Dicto\Variables\Functions::class
+            , \Lechimp\Dicto\Variables\Globals::class
+            , \Lechimp\Dicto\Variables\Files::class
+            , \Lechimp\Dicto\Variables\Methods::class
+            , \Lechimp\Dicto\Variables\ErrorSuppressor::class
+            , \Lechimp\Dicto\Variables\Exit_::class
+            , \Lechimp\Dicto\Variables\Die_::class
+            ];
+        $this->assertEquals($default_variables, $config->rules_variables());
     }
 
     public function test_merge() {
