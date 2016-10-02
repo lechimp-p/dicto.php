@@ -56,8 +56,6 @@ class RuleParser extends Parser implements ArgumentParser {
     protected $last_explanation = null;
 
     /**
-     * TODO: make arrays passed by reference as they get copied anyway.
-     *
      * @param   V\Variable[]    $predefined_variables
      * @param   R\Schema[]      $schemas
      * @param   V\Property[]    $properties
