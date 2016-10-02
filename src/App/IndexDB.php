@@ -17,7 +17,7 @@ use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 use Doctrine\DBAL\Statement;
 
 class IndexDB extends DB {
-    protected $insert_per_transaction = 100;
+    protected $insert_per_transaction = 1000;
 
     /**
      * Write the index to the database.
