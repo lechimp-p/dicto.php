@@ -96,6 +96,7 @@ class Engine {
     }
 
     protected function run_indexing(Insert $index) {
+        $this->log->notice("Starting to build index...");
         $indexer = $this->indexer_factory->build($index);
         $indexer->index_directory
             ( $this->config->project_root()
@@ -104,6 +105,7 @@ class Engine {
     }
 
     protected function run_analysis(Index $index) {
+        $this->log->notice("Running analysis...");
         $commit_hash = $this->source_status->commit_hash();
         $result_db = $this->db_factory->get_result_db($this->result_database_path());
         $result_db->begin_new_run($commit_hash);
@@ -113,5 +115,15 @@ class Engine {
 
     protected function build_index() {
         return new Graph\IndexDB;
+    }
+
+    protected function write_index_to(Graph\IndexDB $index, IndexDB $db) {
+        $this->log->notice("Writing index to database '$index_db_path'...");
+        $db->write_index($index);
+    }
+
+    protected function read_index_from(IndexDB $db) {
+        $this->log->notice("Reading index from database '$index_db_path'...");
+        return $db->read_index();
     }
 }

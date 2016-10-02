@@ -102,10 +102,10 @@ class _Engine extends Engine {
         return parent::read_index_from($db);
     }
     public $write_index_to_called = false;
-    public function write_index_to(Index $index, IndexDB $db) {
+    public function write_index_to(Graph\IndexDB $index, IndexDB $db) {
         $this->write_index_to_called = true;
     }
-    public function _write_index_to(Index $index, IndexDB $db) {
+    public function _write_index_to(Graph\IndexDB $index, IndexDB $db) {
         parent::write_index_to($index, $db);
     }
 }
