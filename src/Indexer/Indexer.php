@@ -324,6 +324,16 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                 );
             $type = Variable::CLASS_TYPE;
         }
+        else if ($node instanceof N\Stmt\Interface_) {
+            assert('count($this->definition_stack) == 1');
+            $handle = $this->insert->_interface
+                ( $node->name
+                , $this->definition_stack[0][1]
+                , $start_line
+                , $end_line
+                );
+            $type = Variable::INTERFACE_TYPE;
+        }
         else if ($node instanceof N\Stmt\ClassMethod) {
             assert('count($this->definition_stack) == 2');
             $handle = $this->insert->_method
@@ -364,6 +374,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     public function leaveNode(\PhpParser\Node $node) {
         // Class
         if (  $node instanceof N\Stmt\Class_
+           || $node instanceof N\Stmt\Interface_
            || $node instanceof N\Stmt\ClassMethod
            || $node instanceof N\Stmt\Function_) {
 

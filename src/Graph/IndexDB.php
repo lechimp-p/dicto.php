@@ -63,9 +63,27 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
+    public function _interface($name, $file, $start_line, $end_line) {
+        assert('is_string($name)');
+        assert('$file->type() == "file"');
+        assert('is_int($start_line)');
+        assert('is_int($end_line)');
+
+        $interface = $this->create_node
+            ( "interface"
+            ,   [ "name" => $name
+                ]
+            );
+        $this->add_definition($interface, $file, $start_line, $end_line);
+        return $interface;
+    }
+
+    /**
+     * @inheritdocs
+     */
     public function _method($name, $class, $file, $start_line, $end_line) {
         assert('is_string($name)');
-        assert('$class->type() == "class"');
+        assert('in_array($class->type(), ["class", "interface"])');
         assert('$file->type() == "file"');
         assert('is_int($start_line)');
         assert('is_int($end_line)');

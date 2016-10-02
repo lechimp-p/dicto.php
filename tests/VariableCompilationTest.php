@@ -67,6 +67,23 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([[$c]], $res);
     }
 
+    public function test_compile_interfaces() {
+        $var = new V\Interfaces();
+        $compiled = $var->compile();
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $i = $this->db->_interface("AnInterface", $f, 1,2);
+        $m = $this->db->_method("a_method", $i, $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$i]], $res);
+    }
+
     public function test_compile_methods() {
         $var = new V\Methods();
         $compiled = $var->compile();

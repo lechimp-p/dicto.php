@@ -42,7 +42,9 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         $db1 = new _GraphIndexDB();
         $file = $db1->_file("source.php", "<?php echo \"Hello World!\";");
         $class = $db1->_class("AClass", $file, 1,1);
+        $interface = $db1->_class("AnInterface", $file, 1,1);
         $db1->_method("a_method", $class, $file, 1,1);
+        $db1->_method("another_method", $interface, $file, 1,1);
         $db1->_function("a_function", $file, 1,1);
         $db1->_global("a_global");
         $db1->_language_construct("@");

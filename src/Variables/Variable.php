@@ -15,6 +15,7 @@ use Lechimp\Dicto\Definition as Def;
 abstract class Variable extends Def\Definition {
     // TODO: Use these in Graph/IndexDB.
     const CLASS_TYPE = "class";
+    const INTERFACE_TYPE = "interface";
     const FILE_TYPE = "file";
     const GLOBAL_TYPE = "global";
     const FUNCTION_TYPE = "function";

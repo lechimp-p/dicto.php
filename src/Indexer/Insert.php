@@ -37,6 +37,17 @@ interface Insert {
     public function _class($name, $file, $start_line, $end_line);
 
     /**
+     * Store an interface in the database.
+     *
+     * @param   string  $name
+     * @param   mixed   $file   handle from _file
+     * @param   int     $start_line
+     * @param   int     $end_line
+     * @return  mixed   handle to the class
+     */
+    public function _interface($name, $file, $start_line, $end_line);
+
+    /**
      * Store a method in the database.
      *
      * @param   string  $name

@@ -27,11 +27,12 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $this->parser = new _RuleParser
             ( array
                 ( new V\Classes()
+                , new V\Interfaces()
                 , new V\Functions()
                 , new V\Globals()
                 , new V\Files()
                 , new V\Methods()
-                , new V\LanguageConstruct("ErrorSuppressor", "@")
+                , new V\LanguageConstruct("@", "ErrorSuppressor")
                 // TODO: Add some language constructs here...
                 )
             , array
@@ -60,6 +61,18 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
 
         $expected = array
             ( "AllClasses" => new V\Classes("AllClasses")
+            );
+
+        $this->assertEquals($expected, $res->variables());
+    }
+
+    // TODO: add test on error suppressor
+
+    public function test_interface_variable() {
+        $res = $this->parse("AllInterfaces = Interfaces");
+
+        $expected = array
+            ( "AllInterfaces" => new V\Interfaces("AllInterfaces")
             );
 
         $this->assertEquals($expected, $res->variables());

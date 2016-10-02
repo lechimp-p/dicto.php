@@ -47,6 +47,7 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
     public function explainable_provider() {
         $base = array
             ( new Vars\Classes("CLASSES")
+            , new Vars\Interfaces("INTERFACES")
             , new Vars\Functions("FUNCTIONS")
             , new Vars\Globals("GLOBALS")
             , new Vars\Files("FILES")
@@ -65,7 +66,7 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
                 $explainable[] = array((new Vars\Except($b, $b2))
                                         ->withName("BUT_NOT"));
             }
-        } 
+        }
 
         $explainable[] = array
             ( new Rules\Rule

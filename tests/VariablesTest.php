@@ -66,6 +66,7 @@ class VariablesTest extends PHPUnit_Framework_TestCase {
     public function var_entities_provider() {
         return array
             ( array(new V\Classes())
+            , array(new V\Interfaces())
             , array(new V\Functions())
             , array(new V\Globals())
             , array(new V\Files())
