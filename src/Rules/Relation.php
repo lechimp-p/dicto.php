@@ -20,8 +20,6 @@ use Lechimp\Dicto\Graph\Node;
 /**
  * This is a rule that checks a relation between two entities
  * in the code.
- *
- * TODO: Test if relation can be used for files.
  */
 abstract class Relation extends Schema {
     /**
