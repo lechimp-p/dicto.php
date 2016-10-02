@@ -54,81 +54,6 @@ class App {
     }
 
     /**
-     * Load extra configs from yaml files.
-     *
-     * @param   array   $config_file_paths
-     * @return  array
-     */
-    protected function load_configs(array $config_file_paths) {
-        $configs_array = array();
-        $config_file_path = null;
-        foreach ($config_file_paths as $config_file) {
-            if (!file_exists($config_file)) {
-                throw new \RuntimeException("Unknown config-file '$config_file'");
-            }
-            if ($config_file_path === null) {
-                $config_file_path = $config_file;
-            }
-            $configs_array[] = Yaml::parse(file_get_contents($config_file));
-        }
-        return array($config_file_path, $configs_array);
-    }
-
-    /**
-     * Loads the schemas defined in the config.
-     *
-     * @param   array   $schema_classes
-     * @return  R\Schema[]
-     */
-    protected function load_schemas(array $schema_classes) {
-        $schemas = array();
-        foreach ($schema_classes as $schema_class) {
-            $schema = new $schema_class;
-            if (!($schema instanceof R\Schema)) {
-                throw new \RuntimeException("'$schema_class' is not a Schema-class.");
-            }
-            $schemas[] = $schema;
-        }
-        return $schemas;
-    }
-
-    /**
-     * Loads the properties defined in the config.
-     *
-     * @param   array   $property_classes
-     * @return  R\Schema[]
-     */
-    protected function load_properties(array $property_classes) {
-        $properties = array();
-        foreach ($property_classes as $property_class) {
-            $property = new $property_class;
-            if (!($property instanceof V\Property)) {
-                throw new \RuntimeException("'$property_class' is not a Schema-class.");
-            }
-            $properties[] = $property;
-        }
-        return $properties;
-    }
-
-    /**
-     * Loads the variables defined in the config.
-     *
-     * @param   array   $variable_classes
-     * @return  R\Schema[]
-     */
-    protected function load_variables(array $variable_classes) {
-        $variables = array();
-        foreach ($variable_classes as $variable_class) {
-            $variable = new $variable_class;
-            if (!($variable instanceof V\Variable)) {
-                throw new \RuntimeException("'$variable_class' is not a Schema-class.");
-            }
-            $variables[] = $variable;
-        }
-        return $variables;
-    }
-
-    /**
      * Create and initialize the DI-container.
      *
      * @param   string      $config_file_path
@@ -228,5 +153,80 @@ class App {
         };
 
         return $container;
+    }
+
+    /**
+     * Load extra configs from yaml files.
+     *
+     * @param   array   $config_file_paths
+     * @return  array
+     */
+    protected function load_configs(array $config_file_paths) {
+        $configs_array = array();
+        $config_file_path = null;
+        foreach ($config_file_paths as $config_file) {
+            if (!file_exists($config_file)) {
+                throw new \RuntimeException("Unknown config-file '$config_file'");
+            }
+            if ($config_file_path === null) {
+                $config_file_path = $config_file;
+            }
+            $configs_array[] = Yaml::parse(file_get_contents($config_file));
+        }
+        return array($config_file_path, $configs_array);
+    }
+
+    /**
+     * Loads the schemas defined in the config.
+     *
+     * @param   array   $schema_classes
+     * @return  R\Schema[]
+     */
+    protected function load_schemas(array $schema_classes) {
+        $schemas = array();
+        foreach ($schema_classes as $schema_class) {
+            $schema = new $schema_class;
+            if (!($schema instanceof R\Schema)) {
+                throw new \RuntimeException("'$schema_class' is not a Schema-class.");
+            }
+            $schemas[] = $schema;
+        }
+        return $schemas;
+    }
+
+    /**
+     * Loads the properties defined in the config.
+     *
+     * @param   array   $property_classes
+     * @return  R\Schema[]
+     */
+    protected function load_properties(array $property_classes) {
+        $properties = array();
+        foreach ($property_classes as $property_class) {
+            $property = new $property_class;
+            if (!($property instanceof V\Property)) {
+                throw new \RuntimeException("'$property_class' is not a Schema-class.");
+            }
+            $properties[] = $property;
+        }
+        return $properties;
+    }
+
+    /**
+     * Loads the variables defined in the config.
+     *
+     * @param   array   $variable_classes
+     * @return  R\Schema[]
+     */
+    protected function load_variables(array $variable_classes) {
+        $variables = array();
+        foreach ($variable_classes as $variable_class) {
+            $variable = new $variable_class;
+            if (!($variable instanceof V\Variable)) {
+                throw new \RuntimeException("'$variable_class' is not a Schema-class.");
+            }
+            $variables[] = $variable;
+        }
+        return $variables;
     }
 }
