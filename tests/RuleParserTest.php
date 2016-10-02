@@ -66,7 +66,15 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res->variables());
     }
 
-    // TODO: add test on error suppressor
+    public function test_error_suppressor() {
+        $res = $this->parse("TheErrorSuppressor = ErrorSuppressor");
+
+        $expected = array
+            ( "TheErrorSuppressor" => new V\LanguageConstruct("@", "TheErrorSuppressor")
+            );
+
+        $this->assertEquals($expected, $res->variables());
+    }
 
     public function test_interface_variable() {
         $res = $this->parse("AllInterfaces = Interfaces");
