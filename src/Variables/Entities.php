@@ -15,7 +15,7 @@ use Lechimp\Dicto\Graph\Node;
 abstract class Entities extends Variable {
     public function __construct($name= null) {
         if ($name === null) {
-            $name = ucfirst($this->entity_name());
+            $name = ucfirst($this->meaning());
         }
         parent::__construct($name);
     }
@@ -26,22 +26,6 @@ abstract class Entities extends Variable {
      * @return  string
      */
     abstract public function id();
-
-    /**
-     * Get the name of the entity.
-     *
-     * TODO: Check, if that is really necessary.
-     *
-     * @return string
-     */
-    abstract public function entity_name();
-
-    /**
-     * @inheritdocs
-     */
-    public function meaning() {
-        return $this->entity_name();
-    }
 
     /**
      * @inheritdocs

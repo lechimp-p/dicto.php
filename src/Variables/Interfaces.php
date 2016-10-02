@@ -10,19 +10,19 @@
 
 namespace Lechimp\Dicto\Variables;
 
-class Classes extends Entities {
+class Interfaces extends Entities {
     /**
      * @inheritdoc
      */
     public function id() {
-        return Variable::CLASS_TYPE;
+        return Variable::INTERFACE_TYPE;
     }
 
     /**
      * @inheritdoc
      */
     public function meaning() {
-        return "classes";
+        return "interfaces";
     }
 }
 

@@ -29,13 +29,6 @@ class VariablesTest extends PHPUnit_Framework_TestCase {
     }
 
     /**
-     * @dataProvider    var_entities_provider
-     */
-    public function test_entity_name($var) {
-        $this->assertEquals(ucfirst($var->entity_name()), $var->name());
-    }
-
-    /**
      * @dataProvider    var_test_cases_provider
      */
     public function test_meaning($var, $_, $meaning) {

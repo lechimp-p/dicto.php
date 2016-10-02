@@ -36,7 +36,7 @@ class LanguageConstruct extends Entities {
     /**
      * @inheritdoc
      */
-    public function entity_name() {
+    public function meaning() {
         return $this->construct_name();
     }
 

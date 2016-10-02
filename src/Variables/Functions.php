@@ -21,7 +21,7 @@ class Functions extends Entities {
     /**
      * @inheritdoc
      */
-    public function entity_name() {
+    public function meaning() {
         return "functions";
     }
 }
