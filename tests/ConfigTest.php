@@ -12,7 +12,7 @@ use Lechimp\Dicto\App\Config;
 
 class ConfigClassTest extends PHPUnit_Framework_TestCase {
     public function test_smoke() {
-        $config = new Config([
+        $config = new Config("/the/path", [
             [ "project" =>
                 [ "root"    => "/root/dir"
                 , "storage" => "/data"
@@ -26,10 +26,11 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("/root/dir", $config->project_root());
         $this->assertEquals("/data", $config->project_storage());
         $this->assertEquals([".*\\.omit_me"], $config->analysis_ignore());
+        $this->assertEquals("/the/path", $config->path());
     }
 
     public function test_merge() {
-        $config = new Config(
+        $config = new Config("/the/path",
             [
                 [ "project" =>
                     [ "storage" => "/data"
@@ -51,4 +52,20 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([".*\\.omit_me"], $config->analysis_ignore());
     }
 
+    public function test_path_resolution() {
+        $config = new Config("/the/path/", [
+            [ "project" =>
+                [ "root"    => "./root/dir"
+                , "storage" => "./data"
+                ]
+            , "analysis" =>
+                [ "ignore" =>
+                    [ ".*\\.omit_me"
+                    ]
+                ]
+            ]]);
+        $this->assertEquals("/the/path", $config->path());
+        $this->assertEquals("/the/path/root/dir", $config->project_root());
+        $this->assertEquals("/the/path/data", $config->project_storage());
+    }
 }

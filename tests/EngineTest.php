@@ -113,7 +113,7 @@ class _Engine extends Engine {
 class EngineTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->root = __DIR__."/data/src";
-        $this->config = new Config(array(array
+        $this->config = new Config(__DIR__."/data/src", array(array
             ( "project" => array
                 ( "root" => $this->root
                 , "storage" => tempdir()

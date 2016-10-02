@@ -45,9 +45,9 @@ class App {
         $rules_file = array_shift($params);
 
         // the rest of the params are paths to configs
-        $configs = $this->load_configs($params);
+        list($config_file_path, $configs) = $this->load_configs($params);
 
-        $dic = $this->create_dic($rules_file, $configs);
+        $dic = $this->create_dic($config_file_path, $rules_file, $configs);
 
         $dic["engine"]->run();
     }
@@ -60,13 +60,17 @@ class App {
      */
     protected function load_configs(array $config_file_paths) {
         $configs_array = array();
+        $config_file_path = null;
         foreach ($config_file_paths as $config_file) {
             if (!file_exists($config_file)) {
                 throw new \RuntimeException("Unknown config-file '$config_file'");
             }
+            if ($config_file_path === null) {
+                $config_file_path = $config_file;
+            }
             $configs_array[] = Yaml::parse(file_get_contents($config_file));
         }
-        return $configs_array;
+        return array($config_file_path, $configs_array);
     }
 
     /**
@@ -74,17 +78,18 @@ class App {
      *
      * TODO: move rule_file_path to config?
      *
+     * @param   string      $config_file_path
      * @param   string      $rule_file_path
      * @param   array       &$configs
      * @return  Container
      */
-    protected function create_dic($rule_file_path, array &$configs) {
+    protected function create_dic($config_file_path, $rule_file_path, array &$configs) {
         array('is_string($rule_file_path)');
 
         $container = new Container();
 
-        $container["config"] = function () use (&$configs) {
-            return new Config($configs);
+        $container["config"] = function () use ($config_file_path, &$configs) {
+            return new Config($config_file_path, $configs);
         };
 
         $container["ruleset"] = function($c) use (&$rule_file_path) {

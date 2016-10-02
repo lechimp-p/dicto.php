@@ -19,14 +19,26 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
  */
 class Config implements ConfigurationInterface {
     /**
+     * @var string
+     */
+    protected $path;
+
+    /**
      * @var array
      */
     protected $values;
 
     /**
      * Build the configuration from nested arrays using a processor.
+     *
+     * @param   string  $path
      */
-    public function __construct(array $values) {
+    public function __construct($path, array $values) {
+        assert('is_string($path)');
+        if (substr($path, strlen($path) - 1, 1) == "/") {
+            $path = substr($path, 0, strlen($path) - 1);
+        }
+        $this->path = $path;
         $processor = new \Symfony\Component\Config\Definition\Processor();
         $this->values = $processor->processConfiguration($this, $values);
     }
@@ -70,15 +82,30 @@ class Config implements ConfigurationInterface {
     /**
      * @return  string
      */
+    public function path() {
+        return $this->path;
+    }
+
+    protected function maybe_prepend_path($path) {
+        assert('is_string($path)');
+        if (substr($path, 0, 2) === "./") {
+            return $this->path()."/".substr($path, 2);
+        }
+        return $path;
+    }
+
+    /**
+     * @return  string
+     */
     public function project_root() {
-        return $this->values["project"]["root"];
+        return $this->maybe_prepend_path($this->values["project"]["root"]);
     }
 
     /**
      * @return  string
      */
     public function project_storage() {
-        return $this->values["project"]["storage"];
+        return $this->maybe_prepend_path($this->values["project"]["storage"]);
     }
 
     /**

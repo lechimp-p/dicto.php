@@ -19,12 +19,12 @@ use Lechimp\Dicto\Rules\Ruleset;
 require_once(__DIR__."/tempdir.php");
 
 class _App extends App {
-    public function _create_dic($ruleset, $configs) {
-        return $this->create_dic($ruleset, $configs);
+    public function _create_dic($config_file_path, $rule_file_path, $configs) {
+        return $this->create_dic($config_file_path, $rule_file_path, $configs);
     }
 
     public function _load_configs($path) {
-        $c = $this->load_configs(array($path));
+        list($_, $c) = $this->load_configs(array($path));
         return $c[0];
     }
 }
@@ -37,7 +37,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     public function test_dic_indexer_factory() {
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic(__DIR__."/data/rules", array($c));
+        $dic = $this->app->_create_dic("/the/path", __DIR__."/data/rules", array($c));
 
         $this->assertInstanceOf(IndexerFactory::class, $dic["indexer_factory"]);
     }
@@ -45,7 +45,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     public function test_dic_engine() {
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic(__DIR__."/data/rules", array($c));
+        $dic = $this->app->_create_dic("/the/path", __DIR__."/data/rules", array($c));
 
         $this->assertInstanceOf(Engine::class, $dic["engine"]);
     }
@@ -53,13 +53,14 @@ class AppTest extends PHPUnit_Framework_TestCase {
     public function test_source_status() {
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic(__DIR__."/data/rules", array($c));
+        $dic = $this->app->_create_dic("/the/path", __DIR__."/data/rules", array($c));
 
         $this->assertInstanceOf(SourceStatus::class, $dic["source_status"]);
     }
 
     public function test_run() {
-        $configs = array("a.yaml", "b.yaml", "c.yaml");
+        $config_file_path = "/foo";
+        $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
         $rules_path = "rules.path";
         $params = array_merge(array("program_name", $rules_path), $configs);
 
@@ -81,13 +82,14 @@ class AppTest extends PHPUnit_Framework_TestCase {
             ->with
                 ( $this->equalTo($configs)
                 )
-            ->willReturn($cfg_return);
+            ->willReturn(array($config_file_path, $cfg_return));
 
         $app_mock
             ->expects($this->at(1))
             ->method("create_dic")
             ->with
-                ( $this->equalTo($rules_path)
+                ( $this->equalTo($config_file_path)
+                , $this->equalTo($rules_path)
                 , $this->equalTo($cfg_return)
                 )
             ->willReturn(array("engine" => $engine_mock));
