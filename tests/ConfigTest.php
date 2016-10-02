@@ -12,45 +12,43 @@ use Lechimp\Dicto\App\Config;
 
 class ConfigClassTest extends PHPUnit_Framework_TestCase {
     public function test_smoke() {
-        $config = new Config(array(array
-            ( "project" => array
-                ( "root"    => "/root/dir"
+        $config = new Config([
+            [ "project" =>
+                [ "root"    => "/root/dir"
                 , "storage" => "/data"
-                )
-            , "analysis" => array
-                ( "ignore" => array
-                    ( ".*\\.omit_me"
-                    )
-                )
-            )
-        ));
+                ]
+            , "analysis" =>
+                [ "ignore" =>
+                    [ ".*\\.omit_me"
+                    ]
+                ]
+            ]]);
         $this->assertEquals("/root/dir", $config->project_root());
         $this->assertEquals("/data", $config->project_storage());
-        $this->assertEquals(array(".*\\.omit_me"), $config->analysis_ignore());
+        $this->assertEquals([".*\\.omit_me"], $config->analysis_ignore());
     }
 
     public function test_merge() {
-        $config = new Config(array
-            ( array
-                ( "project" => array
-                    ( "storage" => "/data"
-                    )
-                )
-            , array
-                ( "project" => array
-                    ( "root" => "/root/dir"
-                    )
-                , "analysis" => array
-                    ( "ignore" => array
-                        ( ".*\\.omit_me"
-                        )
-                    )
-                )
-            )
-        );
+        $config = new Config(
+            [
+                [ "project" =>
+                    [ "storage" => "/data"
+                    ]
+                ]
+            , 
+                [ "project" =>
+                    [ "root" => "/root/dir"
+                    ]
+                , "analysis" =>
+                    [ "ignore" =>
+                        [ ".*\\.omit_me"
+                        ]
+                    ]
+                ]
+            ]);
         $this->assertEquals("/root/dir", $config->project_root());
         $this->assertEquals("/data", $config->project_storage());
-        $this->assertEquals(array(".*\\.omit_me"), $config->analysis_ignore());
+        $this->assertEquals([".*\\.omit_me"], $config->analysis_ignore());
     }
 
 }
