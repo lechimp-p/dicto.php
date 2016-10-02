@@ -115,7 +115,6 @@ class App {
                     , new V\LanguageConstruct("@", "ErrorSuppressor")
                     , new V\LanguageConstruct("exit", "Exit")
                     , new V\LanguageConstruct("die", "Die")
-                    // TODO: Add some language constructs here...
                     )
                 , array
                     ( new R\ContainText()
