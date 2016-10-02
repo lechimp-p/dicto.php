@@ -63,7 +63,24 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             , \Lechimp\Dicto\Variables\Die_::class
             ];
         $this->assertEquals($default_variables, $config->rules_variables());
+        $this->assertEquals(false, $config->runtime_check_assertions());
     }
+
+    public function test_runtime_config() {
+        $config = new Config("/the/path", [
+            [ "project" =>
+                [ "root"    => "/root/dir"
+                , "storage" => "/data"
+                , "rules" => "/rules"
+                ]
+            , "runtime" =>
+                [ "check_assertions"  => true
+                ]
+            ]]);
+
+        $this->assertEquals(true, $config->runtime_check_assertions());
+    }
+
 
     public function test_merge() {
         $config = new Config("/the/path",

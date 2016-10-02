@@ -56,6 +56,9 @@ class Config implements ConfigurationInterface {
                 , \Lechimp\Dicto\Variables\Die_::class
                 ]
             ]
+        , "runtime" =>
+            [ "check_assertions" => false
+            ]
         ];
 
     /**
@@ -123,6 +126,13 @@ class Config implements ConfigurationInterface {
                         ->arrayNode("variables")
                             ->prototype("scalar")
                             ->end()
+                            ->isRequired()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode("runtime")
+                    ->children()
+                        ->booleanNode("check_assertions")
                             ->isRequired()
                         ->end()
                     ->end()
@@ -195,5 +205,12 @@ class Config implements ConfigurationInterface {
      */
     public function rules_variables() {
         return $this->values["rules"]["variables"];
+    }
+
+    /**
+     * @return  bool
+     */
+    public function runtime_check_assertions() {
+        return $this->values["runtime"]["check_assertions"];
     }
 }
