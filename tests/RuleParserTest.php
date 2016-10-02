@@ -259,6 +259,44 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res->rules());
     }
 
+    public function test_only_classes_and_methods_can_contain_text() {
+        $res = $this->parser->parse("only {Classes, Methods} can contain text \"foo\"");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_ONLY_CAN
+                , new V\Any(array
+                    ( new V\Classes()
+                    , new V\Methods()
+                    ))
+                , new R\ContainText
+                , array("foo")
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
+    }
+
+    public function test_only_classes_and_methods_in_classes_can_contain_text() {
+        $res = $this->parser->parse("only {Classes, Methods in: Classes} can contain text \"foo\"");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_ONLY_CAN
+                , new V\Any(array
+                    ( new V\Classes()
+                    , new V\WithProperty
+                        ( new V\Methods()
+                        , new V\In()
+                        , array(new V\Classes())
+                        )
+                    ))
+                , new R\ContainText
+                , array("foo")
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
+    }
+
     public function test_classes_with_name_must_contain_text() {
         $res = $this->parser->parse("Classes with name: \"foo\" must contain text \"foo\"");
 
