@@ -75,6 +75,20 @@ class App {
     }
 
     /**
+     * Loads the rule schemas defined in the config.
+     *
+     * @param   array   $schema_classes
+     * @return  R\Schema[]
+     */
+    protected function load_schemas(array $schema_classes) {
+        $schemas = array();
+        foreach ($schema_classes as $schema_class) {
+            $schemas[] = new $schema_class;
+        }
+        return $schemas;
+    }
+
+    /**
      * Create and initialize the DI-container.
      *
      * @param   string      $config_file_path
@@ -103,7 +117,7 @@ class App {
             return new RuleLoader($c["rule_parser"]);
         };
 
-        $container["rule_parser"] = function() {
+        $container["rule_parser"] = function($c) {
             // TODO: Move this stuff to the config.
             return new RuleParser
                 ( array
@@ -116,11 +130,7 @@ class App {
                     , new V\LanguageConstruct("exit", "Exit")
                     , new V\LanguageConstruct("die", "Die")
                     )
-                , array
-                    ( new R\ContainText()
-                    , new R\DependOn()
-                    , new R\Invoke()
-                    )
+                , $c["schemas"]
                 , array
                     ( new V\Name()
                     , new V\In()
@@ -176,6 +186,10 @@ class App {
 
         $container["source_status"] = function($c) {
             return new SourceStatusGit($c["config"]->project_root());
+        };
+
+        $container["schemas"] = function($c) {
+            return $this->load_schemas($c["config"]->rules_schemas());
         };
 
         return $container;

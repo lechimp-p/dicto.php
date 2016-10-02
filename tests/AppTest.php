@@ -27,6 +27,10 @@ class _App extends App {
         list($_, $c) = $this->load_configs(array($path));
         return $c[0];
     }
+
+    public function _load_schemas(array $schema_classes) {
+        return $this->load_schemas($schema_classes);
+    }
 }
 
 class AppTest extends PHPUnit_Framework_TestCase {
@@ -58,15 +62,48 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf(SourceStatus::class, $dic["source_status"]);
     }
 
+    public function test_schemas() {
+        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
+        $c["project"]["storage"] = tempdir();
+        $dic = $this->app->_create_dic("/the/path", array($c));
+
+        $expected_schemas = array
+            ( new \Lechimp\Dicto\Rules\DependOn
+            , new \Lechimp\Dicto\Rules\Invoke
+            , new \Lechimp\Dicto\Rules\ContainText
+            );
+        $this->assertEquals($expected_schemas, $dic["schemas"]);
+    }
+
+    public function test_load_schemas() {
+        $default_schemas =
+            [ "Lechimp\\Dicto\\Rules\\DependOn"
+            , "Lechimp\\Dicto\\Rules\\Invoke"
+            , "Lechimp\\Dicto\\Rules\\ContainText"
+            ];
+        $schemas = $this->app->_load_schemas($default_schemas);
+        $expected_schemas = array
+            ( new \Lechimp\Dicto\Rules\DependOn
+            , new \Lechimp\Dicto\Rules\Invoke
+            , new \Lechimp\Dicto\Rules\ContainText
+            );
+        $this->assertEquals($expected_schemas, $schemas);
+    }
+
     public function test_run() {
         $config_file_path = "/foo";
         $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
         $rules_path = "rules.path";
         $params = array_merge(array("program_name"), $configs);
+        $default_schemas =
+            [ "Lechimp\\Dicto\\Rules\\DependOn"
+            , "Lechimp\\Dicto\\Rules\\Invoke"
+            , "Lechimp\\Dicto\\Rules\\ContainText"
+            ];
 
         $app_mock = $this
             ->getMockBuilder(App::class)
-            ->setMethods(array("load_configs", "load_rules_file", "create_dic"))
+            ->setMethods(array("load_configs", "load_rules_file", "create_dic", "load_schemas"))
             ->getMock();
 
         $engine_mock = $this
