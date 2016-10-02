@@ -404,8 +404,8 @@ CODE;
             , new V\Classes
             , new R\Invoke()
             , array(new V\Any(
-                [ new V\LanguageConstruct("exit", "Exit")
-                , new V\LanguageConstruct("die", "Die")
+                [ new V\Exit_()
+                , new V\Die_()
                 ]))
             );
     }

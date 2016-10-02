@@ -52,7 +52,9 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
             , new Vars\Globals("GLOBALS")
             , new Vars\Files("FILES")
             , new Vars\Methods("METHODS")
-            , new Vars\LanguageConstruct("LNG_CONSTRUCT", "@")
+            , new Vars\Exit_("EXIT_")
+            , new Vars\Die_("DIE_")
+            , new Vars\ErrorSuppressor("ERROR_SUPPRESSOR")
             , new Vars\Everything("EVERYTHING")
             );
 
@@ -89,7 +91,7 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
                 ( Rules\Rule::MODE_ONLY_CAN
                 , new Vars\Globals("GLOBALS")
                 , new Rules\Invoke()
-                , array(new Vars\LanguageConstruct("LNG_CONSTRUCT", "@"))
+                , array(new Vars\ErrorSuppressor("ERROR_SUPPRESSOR"))
                 )
             );
 

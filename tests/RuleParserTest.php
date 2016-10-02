@@ -32,9 +32,9 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 , new V\Globals()
                 , new V\Files()
                 , new V\Methods()
-                , new V\LanguageConstruct("@", "ErrorSuppressor")
-                , new V\LanguageConstruct("exit", "Exit")
-                , new V\LanguageConstruct("die", "Die")
+                , new V\ErrorSuppressor()
+                , new V\Exit_()
+                , new V\Die_()
                 )
             , array
                 ( new R\ContainText()
@@ -71,7 +71,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $res = $this->parse("TheErrorSuppressor = ErrorSuppressor");
 
         $expected = array
-            ( "TheErrorSuppressor" => new V\LanguageConstruct("@", "TheErrorSuppressor")
+            ( "TheErrorSuppressor" => new V\ErrorSuppressor("TheErrorSuppressor")
             );
 
         $this->assertEquals($expected, $res->variables());

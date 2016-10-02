@@ -138,7 +138,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_compile_language_constructs() {
-        $var = new V\LanguageConstruct("die");
+        $var = new V\Die_();
         $compiled = $var->compile();
 
         $f = $this->db->_file("source.php", "A\nB");
