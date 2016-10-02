@@ -20,7 +20,7 @@
         "psr-4" : { "Lechimp\\Dicto\\" : "src" }
     },
     "require": {
-        "nikic/php-parser" : "2.0.*",
+        "nikic/php-parser" : "2.1.*",
         "pimple/pimple" : "3.0.*",
         "doctrine/dbal" : "2.5.*",
         "lechimp-p/flightcontrol" : "0.12.0",
