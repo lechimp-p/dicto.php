@@ -137,7 +137,8 @@ abstract class Parser {
         assert('is_array($this->token)');
         assert('$this->tokenizer !== null');
         if (!$this->is_current_token_matched_by($regexp)) {
-            throw new ParserException("Syntax Error: Expected '$regexp'");
+            $match = $this->current_match()[0];
+            throw new ParserException("Syntax Error: Expected '$regexp', found '$match'");
         }
         $this->tokenizer->next();
         $this->token = $this->tokenizer->current();
