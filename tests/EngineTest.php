@@ -15,7 +15,9 @@ use Lechimp\Dicto\Analysis\ReportGenerator;
 use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\App\DBFactory;
 use Lechimp\Dicto\App\Engine;
+use Lechimp\Dicto\App\IndexDB;
 use Lechimp\Dicto\App\SourceStatus;
+use Lechimp\Dicto\Graph;
 use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\Indexer\Insert;
@@ -90,6 +92,24 @@ class SourceStatusMock implements SourceStatus {
     }
 }
 
+class _Engine extends Engine {
+    public $read_index_from_called = false;
+    public function read_index_from(IndexDB $db) {
+        $this->read_index_from_called = true;
+        return new Graph\IndexDB();
+    }
+    public function _read_index_from(IndexDB $db) {
+        return parent::read_index_from($db);
+    }
+    public $write_index_to_called = false;
+    public function write_index_to(Index $index, IndexDB $db) {
+        $this->write_index_to_called = true;
+    }
+    public function _write_index_to(Index $index, IndexDB $db) {
+        parent::write_index_to($index, $db);
+    }
+}
+
 class EngineTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->root = __DIR__."/data/src";
@@ -109,7 +129,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->indexer_factory = new IndexerFactoryMock();
         $this->analyzer_factory = new AnalyzerFactoryMock();
         $this->source_status = new SourceStatusMock();
-        $this->engine = new Engine
+        $this->engine = new _Engine
             ( $this->log
             , $this->config
             , $this->db_factory
@@ -138,6 +158,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $expected = array($this->config->project_storage()."/$commit_hash.sqlite");
         $this->assertEquals($expected, $this->db_factory->build_paths);
         $this->assertEquals(array(), $this->db_factory->load_paths);
+        $this->assertTrue($this->engine->write_index_to_called);
     }
 
     public function test_no_reindex_on_existing_index_db() {
@@ -151,5 +172,6 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $expected = array($this->config->project_storage()."/$commit_hash.sqlite");
         $this->assertEquals($expected, $this->db_factory->load_paths); 
         $this->assertEquals(array(), $this->indexer_factory->indexer_mocks);
+        $this->assertTrue($this->engine->read_index_from_called);
     }
 }

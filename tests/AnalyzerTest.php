@@ -15,7 +15,6 @@ use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Psr\Log\LogLevel;
 
-require_once(__DIR__."/NullDB.php");
 require_once(__DIR__."/LoggerMock.php");
 require_once(__DIR__."/ReportGeneratorMock.php");
 

@@ -12,7 +12,9 @@ namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\Analysis\AnalyzerFactory;
-use Doctrine\DBAL\DriverManager;
+use Lechimp\Dicto\Analysis\Index;
+use Lechimp\Dicto\Indexer\Insert;
+use Lechimp\Dicto\Graph;
 use Psr\Log\LoggerInterface as Log;
 
 /**
@@ -72,13 +74,16 @@ class Engine {
     public function run() {
         $index_db_path = $this->index_database_path();
         if (!$this->db_factory->index_db_exists($index_db_path)) {
+            $index = $this->build_index();
+            $this->run_indexing($index);
             $index_db = $this->db_factory->build_index_db($index_db_path);
-            $this->run_indexing($index_db);
+            $this->write_index_to($index, $index_db);
         }
         else {
             $index_db = $this->db_factory->load_index_db($index_db_path);
+            $index = $this->read_index_from($index_db);
         }
-        $this->run_analysis($index_db);
+        $this->run_analysis($index);
     }
 
     protected function index_database_path() {
@@ -90,19 +95,23 @@ class Engine {
         return $this->config->project_storage()."/results.sqlite";
     }
 
-    protected function run_indexing($db) {
-        $indexer = $this->indexer_factory->build($db);
+    protected function run_indexing(Insert $index) {
+        $indexer = $this->indexer_factory->build($index);
         $indexer->index_directory
             ( $this->config->project_root()
             , $this->config->analysis_ignore()
             );
     }
 
-    protected function run_analysis($index_db) {
+    protected function run_analysis(Index $index) {
         $commit_hash = $this->source_status->commit_hash();
         $result_db = $this->db_factory->get_result_db($this->result_database_path());
         $result_db->begin_new_run($commit_hash);
-        $analyzer = $this->analyzer_factory->build($index_db, $result_db);
+        $analyzer = $this->analyzer_factory->build($index, $result_db);
         $analyzer->run();
+    }
+
+    protected function build_index() {
+        return new Graph\IndexDB;
     }
 }
