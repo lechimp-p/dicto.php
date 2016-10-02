@@ -77,10 +77,12 @@ class Engine {
             $index = $this->build_index();
             $this->run_indexing($index);
             $index_db = $this->db_factory->build_index_db($index_db_path);
+            $this->log->notice("Writing index to database '$index_db_path'...");
             $this->write_index_to($index, $index_db);
         }
         else {
             $index_db = $this->db_factory->load_index_db($index_db_path);
+            $this->log->notice("Reading index from database '$index_db_path'...");
             $index = $this->read_index_from($index_db);
         }
         $this->run_analysis($index);
@@ -118,12 +120,10 @@ class Engine {
     }
 
     protected function write_index_to(Graph\IndexDB $index, IndexDB $db) {
-        $this->log->notice("Writing index to database '$index_db_path'...");
         $db->write_index($index);
     }
 
     protected function read_index_from(IndexDB $db) {
-        $this->log->notice("Reading index from database '$index_db_path'...");
         return $db->read_index();
     }
 }
