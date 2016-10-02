@@ -346,7 +346,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
             $type = Variable::METHOD_TYPE;
         }
         else if ($node instanceof N\Stmt\Function_) {
-            assert('count($this->definition_stack) == 1');
+            assert('count($this->definition_stack) >= 1');
             $handle = $this->insert->_function
                 ( $node->name
                 , $this->definition_stack[0][1]
