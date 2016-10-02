@@ -128,7 +128,107 @@ CODE;
         $indexer->index_content("source.php", $code);
     }
 
-    // TODO: Test indexing of exit and die
+    public function test_index_exit() {
+        $code = <<<CODE
+<?php
+
+class AClass {
+    public function a_method() {
+        exit;
+    }
+}
+
+CODE;
+
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $code)
+            ->willReturn("file");
+        $this->expect_class($insert_mock, "AClass", "file", 3, 7)
+            ->willReturn("class");
+        $this->expect_method($insert_mock, "a_method", "class", "file", 4, 6)
+            ->willReturn("method");
+        $insert_mock
+            ->expects($this->once())
+            ->method("_language_construct")
+            ->with
+                ( "exit"
+                )
+            ->willReturn("exit");
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("_relation")
+            ->withConsecutive
+                ( array
+                    ( "class"
+                    , "invoke"
+                    , "exit"
+                    , "file"
+                    , 5
+                    )
+                , array
+                    ( "method"
+                    , "invoke"
+                    , "exit"
+                    , "file"
+                    , 5
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $code);
+    }
+
+    public function test_index_die() {
+        $code = <<<CODE
+<?php
+
+class AClass {
+    public function a_method() {
+        die("foo");
+    }
+}
+
+CODE;
+
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $code)
+            ->willReturn("file");
+        $this->expect_class($insert_mock, "AClass", "file", 3, 7)
+            ->willReturn("class");
+        $this->expect_method($insert_mock, "a_method", "class", "file", 4, 6)
+            ->willReturn("method");
+        $insert_mock
+            ->expects($this->once())
+            ->method("_language_construct")
+            ->with
+                ( "die"
+                )
+            ->willReturn("die");
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("_relation")
+            ->withConsecutive
+                ( array
+                    ( "class"
+                    , "invoke"
+                    , "die"
+                    , "file"
+                    , 5
+                    )
+                , array
+                    ( "method"
+                    , "invoke"
+                    , "die"
+                    , "file"
+                    , 5
+                    )
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $code);
+    }
 
     // RULE 1
 
@@ -291,6 +391,87 @@ CODE;
                 , "source.php"
                 , 3
                 , "class SomeClass {"
+                )
+            );
+        $this->assertEquals($expected, $violations);
+    }
+
+    // RULE 3
+
+    protected function classes_cannot_invoke_exit_or_die() {
+        return new R\Rule
+            ( R\Rule::MODE_CANNOT
+            , new V\Classes
+            , new R\Invoke()
+            , array(new V\Any(
+                [ new V\LanguageConstruct("exit", "Exit")
+                , new V\LanguageConstruct("die", "Die")
+                ]))
+            );
+    }
+
+    public function test_rule3_no_violation_1() {
+        $rule = $this->classes_cannot_invoke_exit_or_die();
+        $code = <<<CODE
+<?php
+
+class SomeClass {
+    public function a_method() {
+        a_function();
+    }
+}
+
+CODE;
+
+        $violations = $this->analyze($rule, $code);
+        $this->assertCount(0, $violations);
+    }
+
+    public function test_rule3_violation_1() {
+        $rule = $this->classes_cannot_invoke_exit_or_die();
+        $code = <<<CODE
+<?php
+
+class SomeClass {
+    public function a_method() {
+        exit("foo");
+    }
+}
+
+CODE;
+
+        $violations = $this->analyze($rule, $code);
+        $expected = array
+            ( new Violation
+                ( $rule
+                , "source.php"
+                , 5
+                , "        exit(\"foo\");"
+                )
+            );
+        $this->assertEquals($expected, $violations);
+    }
+
+    public function test_rule3_violation_2() {
+        $rule = $this->classes_cannot_invoke_exit_or_die();
+        $code = <<<CODE
+<?php
+
+class SomeClass {
+    public function a_method() {
+        die;
+    }
+}
+
+CODE;
+
+        $violations = $this->analyze($rule, $code);
+        $expected = array
+            ( new Violation
+                ( $rule
+                , "source.php"
+                , 5
+                , "        die;"
                 )
             );
         $this->assertEquals($expected, $violations);
