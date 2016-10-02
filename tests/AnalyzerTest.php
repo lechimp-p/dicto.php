@@ -36,10 +36,6 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
                     , "filter"
                     , "run"
                     , "filter_by_types"
-                    , "files"
-                    , "classes"
-                    , "methods"
-                    , "functions"
                     , "expand_relations"
                     , "expand_target"
                     ];
