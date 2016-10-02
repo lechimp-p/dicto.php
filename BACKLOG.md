@@ -26,6 +26,11 @@
 * Introduce a RegExp class to put checking for validity in one place.
 * Use custom rules in indexer test.
 
+# Issues
+* It is inconsistent, that Invoke makes invocations in methods of classes related
+  to the class itself, but `only XYZClasses can invoke` also flags the methods in
+  XYZClasses.
+
 # Execution plan for introducing git (and further improvements)
 * The engine then somehow needs to figure out what to do based on the last run and
   the current state of the source.
