@@ -8,335 +8,52 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\App\IndexDB;
+use Lechimp\Dicto\Graph;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
-abstract class IndexDBTest extends PHPUnit_Framework_TestCase {
+class _GraphIndexDB extends Graph\IndexDB {
+    public function flush_caches() {
+        $this->globals = [];
+        $this->language_constructs = [];
+    }
+}
+
+class _IndexDB extends IndexDB {
+    protected function build_graph_index_db() {
+        return new _GraphIndexDB();
+    }
+}
+
+class IndexDBTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
-        $this->connection = DriverManager::getConnection
-            ( array
-                ( "driver" => "pdo_sqlite"
-                , "memory" => true
-                )
-            ); 
-        $this->db = new IndexDB($this->connection);
-        $this->db->init_database_schema();
+        $this->connection = DriverManager::getConnection(
+            [ "driver" => "pdo_sqlite"
+            , "memory" => true
+            ]);
+        $this->db1 = new _IndexDB($this->connection);
+        $this->db1->init_database_schema();
+        $this->db2 = new _IndexDB($this->connection);
     }
 
-    public function builder() {
-        return $this->connection->createQueryBuilder();
+    public function test_read_write_db() {
+        $db1 = new _GraphIndexDB();
+        $file = $db1->_file("source.php", "<?php echo \"Hello World!\";");
+        $class = $db1->_class("AClass", $file, 1,1);
+        $db1->_method("a_method", $class, $file, 1,1);
+        $db1->_function("a_function", $file, 1,1);
+        $db1->_global("a_global");
+        $db1->_language_construct("@");
+        $method_reference = $db1->_method_reference("a_method", $file, 1);
+        $db1->_function_reference("a_function", $file, 1);
+        $db1->_relation($class, "relates to", $method_reference, $file, 1);
+
+        $this->db1->write_index($db1);
+        $db1->flush_caches();
+        $db2 = $this->db2->read_index();
+
+        $this->assertEquals($db1, $db2);
     }
-
-    public function test_insert_source() {
-        $this->db->source("foo.php", "FOO\nBAR");
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select("f.path", "s.line", "s.source")
-            ->from($this->db->file_table(), "f")
-            ->join
-                ( "f", $this->db->source_table(), "s"
-                , $b->eq("f.id", "s.file")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( array
-                ( "path" => "foo.php"
-                , "line" => "1"
-                , "source" => "FOO"
-                )
-            , array
-                ( "path" => "foo.php"
-                , "line" => "2"
-                , "source" => "BAR"
-                )
-            );
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_insert_definition() {
-        $this->db->source("AClass.php", "FOO\nBAR");
-        $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
-
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "n.name"
-                , "n.type"
-                , "f.path"
-                , "d.start_line"
-                , "d.end_line"
-                )
-            ->from($this->db->definition_table(), "d")
-            ->join
-                ( "d", $this->db->name_table(), "n"
-                , $b->eq("d.name", "n.id")
-                )
-            ->join
-                ( "d", $this->db->file_table(), "f"
-                , $b->eq("d.file", "f.id")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( "name" => "AClass"
-            , "type" => Variable::CLASS_TYPE
-            , "path" => "AClass.php"
-            , "start_line" => "1"
-            , "end_line" => "2"
-            );
-        $this->assertEquals(array($expected), $res);
-    }
-
-    public function test_insert_name() {
-        $id = $this->db->name("AClass", Variable::CLASS_TYPE);
-
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "n.id"
-                , "n.name"
-                , "n.type"
-                )
-            ->from($this->db->name_table(), "n")
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( "id" => $id
-            , "name" => "AClass"
-            , "type" => Variable::CLASS_TYPE
-            );
-        $this->assertEquals(array($expected), $res);
-    }
-
-    public function test_insert_some_relation() {
-        $this->db->source("AClass.php", "FOO\nBAR");
-        $this->db->source("BClass.php", "FOO\nBAR");
-        $id1 = $this->db->name("AClass", Variable::CLASS_TYPE);
-        $id2 = $this->db->name("BClass", Variable::CLASS_TYPE);
-        $this->db->relation($id1, $id2, "some_relation", "BClass.php", 1);
-
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "r.name_left"
-                , "r.name_right"
-                , "r.which"
-                , "f.path"
-                , "r.line"
-                )
-            ->from($this->db->relation_table(), "r")
-            ->join
-                ( "r", $this->db->file_table(), "f"
-                , $b->eq("r.file", "f.id")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( "name_left" => "$id1"
-            , "name_right" => "$id2"
-            , "which" => "some_relation"
-            , "path" => "BClass.php"
-            , "line" => "1"
-            );
-
-        $this->assertEquals(array($expected), $res);
-    }
-
-    public function test_retreive_name_id() {
-        $id1 = $this->db->name("AClass", Variable::CLASS_TYPE);
-        $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
-        $this->assertInternalType("integer", $id1);
-        $this->assertEquals($id1, $id2);
-    }
-
-    public function test_retreive_file_id() {
-        $id1 = $this->db->file("AClass.php");
-        $id2 = $this->db->file("AClass.php");
-        $this->assertInternalType("integer", $id1);
-        $this->assertEquals($id1, $id2);
-    }
-
-    public function test_retreive_name_of_definition() {
-        $this->db->source("AClass.php", "FOO\nBAR");
-        list($id1,$_) = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
-        $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
-        $this->assertEquals($id1, $id2);
-    }
-
-    public function test_retreive_file_of_source() {
-        $id1 = $this->db->source("AClass.php", "");
-        $id2 = $this->db->file("AClass.php");
-        $this->assertInternalType("integer", $id1);
-        $this->assertEquals($id1, $id2);
-    }
-
-    public function test_insert_two_method_definitions() {
-        $this->db->source("AClass.php", "FOO\nBAR");
-        $this->db->source("BClass.php", "FOO\nBAR");
-        $this->db->definition("a_method", Variable::METHOD_TYPE, "AClass.php", 1, 2);
-        $this->db->definition("a_method", Variable::METHOD_TYPE, "BClass.php", 1, 2);
-
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "n.name"
-                , "n.type"
-                , "f.path"
-                , "d.start_line"
-                , "d.end_line"
-                )
-            ->from($this->db->definition_table(), "d")
-            ->join
-                ( "d", $this->db->name_table(), "n"
-                , $b->eq("d.name", "n.id")
-                )
-            ->join
-                ( "d", $this->db->file_table(), "f"
-                , $b->eq("d.file", "f.id")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( array
-                ( "name" => "a_method"
-                , "type" => Variable::METHOD_TYPE
-                , "path" => "AClass.php"
-                , "start_line" => "1"
-                , "end_line" => "2"
-                )
-            , array
-                ( "name" => "a_method"
-                , "type" => Variable::METHOD_TYPE
-                , "path" => "BClass.php"
-                , "start_line" => "1"
-                , "end_line" => "2"
-                )
-            );
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_insert_two_relations() {
-        $this->db->source("AClass.php", "FOO\nBAR");
-        list($id1,$_) = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
-        $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
-        $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
-        $this->db->relation($id1, $id2, "some_relation", "AClass.php", 2);
-
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "r.name_left"
-                , "r.name_right"
-                , "r.which"
-                , "f.path"
-                , "r.line"
-                )
-            ->from($this->db->relation_table(), "r")
-            ->join
-                ( "r", $this->db->file_table(), "f"
-                , $b->eq("r.file", "f.id")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( array
-                ( "name_left" => "$id1"
-                , "name_right" => "$id2"
-                , "which" => "some_relation"
-                , "path" => "AClass.php"
-                , "line" => "1"
-                )
-            , array
-                ( "name_left" => "$id1"
-                , "name_right" => "$id2"
-                , "which" => "some_relation"
-                , "path" => "AClass.php"
-                , "line" => "2"
-                )
-            );
-
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_insert_two_relations_same_line() {
-        $this->db->source("AClass.php", "FOO\nBAR");
-        list($id1,$_) = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
-        $id2 = $this->db->name("AClass", Variable::CLASS_TYPE);
-        $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
-        $this->db->relation($id1, $id2, "some_relation", "AClass.php", 1);
-
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "r.name_left"
-                , "r.name_right"
-                , "r.which"
-                , "f.path"
-                , "r.line"
-                )
-            ->from($this->db->relation_table(), "r")
-            ->join
-                ( "r", $this->db->file_table(), "f"
-                , $b->eq("r.file", "f.id")
-                )
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( array
-                ( "name_left" => "$id1"
-                , "name_right" => "$id2"
-                , "which" => "some_relation"
-                , "path" => "AClass.php"
-                , "line" => "1"
-                )
-            , array
-                ( "name_left" => "$id1"
-                , "name_right" => "$id2"
-                , "which" => "some_relation"
-                , "path" => "AClass.php"
-                , "line" => "1"
-                )
-            );
-
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_method_info() {
-        $this->db->source("AClass.php", "FOO\nBAR");
-        list($cls_id, $_) = $this->db->definition("AClass", Variable::CLASS_TYPE, "AClass.php", 1, 2);
-        list($mtd_id, $def_id) = $this->db->definition("a_method", Variable::METHOD_TYPE, "AClass.php", 1, 2);
-        $this->db->method_info($mtd_id, $cls_id, $def_id);
-
-        $builder = $this->builder();
-        $b = $builder->expr();
-        $res = $builder
-            ->select
-                ( "name"
-                , "class"
-                , "definition"
-                )
-            ->from($this->db->method_info_table(), "d")
-            ->execute()
-            ->fetchAll();
-        $expected = array
-            ( array
-                ( "name"        => $mtd_id
-                , "class"       => $cls_id
-                , "definition"  => $def_id
-                )
-            );
-        $this->assertEquals($expected, $res);
-    }
-
 }
