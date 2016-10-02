@@ -123,7 +123,6 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
                     $this->log->error("in ".$file->path().": ".$e->getMessage());
                 }
             });
-
     }
 
     /**
