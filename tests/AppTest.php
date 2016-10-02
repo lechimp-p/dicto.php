@@ -39,6 +39,14 @@ class _App extends App {
     public function _load_variables(array $variable_classes) {
         return $this->load_variables($variable_classes);
     }
+
+    public function _configure_runtime($config) {
+        return $this->configure_runtime($config);
+    }
+}
+
+class _Config extends Config {
+    public function __construct() {}
 }
 
 class AppTest extends PHPUnit_Framework_TestCase {
@@ -166,10 +174,57 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected_variables, $variables);
     }
 
+    public function test_configure_runtime_1() {
+        $active = assert_options(ASSERT_ACTIVE);
+        $warning = assert_options(ASSERT_WARNING);
+        $bail = assert_options(ASSERT_BAIL);
+
+        $config = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->setMethods(["runtime_check_assertions"])
+            ->getMock();
+        $config->expects($this->once())
+            ->method("runtime_check_assertions")
+            ->willReturn(true);
+
+        $this->app->_configure_runtime($config);
+
+        $this->assertEquals(true, assert_options(ASSERT_ACTIVE));
+        $this->assertEquals(true, assert_options(ASSERT_WARNING));
+        $this->assertEquals(false, assert_options(ASSERT_BAIL));
+
+        assert_options(ASSERT_ACTIVE, $active);
+        assert_options(ASSERT_WARNING, $warning);
+        assert_options(ASSERT_BAIL, $bail);
+    }
+
+    public function test_configure_runtime_2() {
+        $active = assert_options(ASSERT_ACTIVE);
+        $warning = assert_options(ASSERT_WARNING);
+        $bail = assert_options(ASSERT_BAIL);
+
+        $config = $this->getMockBuilder(Config::class)
+            ->disableOriginalConstructor()
+            ->setMethods(["runtime_check_assertions"])
+            ->getMock();
+        $config->expects($this->once())
+            ->method("runtime_check_assertions")
+            ->willReturn(false);
+
+        $this->app->_configure_runtime($config);
+
+        $this->assertEquals(false, assert_options(ASSERT_ACTIVE));
+        $this->assertEquals(false, assert_options(ASSERT_WARNING));
+        $this->assertEquals(false, assert_options(ASSERT_BAIL));
+
+        assert_options(ASSERT_ACTIVE, $active);
+        assert_options(ASSERT_WARNING, $warning);
+        assert_options(ASSERT_BAIL, $bail);
+    }
+
     public function test_run() {
         $config_file_path = "/foo";
         $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
-        $rules_path = "rules.path";
         $params = array_merge(array("program_name"), $configs);
         $default_schemas =
             [ "Lechimp\\Dicto\\Rules\\DependOn"
@@ -179,7 +234,13 @@ class AppTest extends PHPUnit_Framework_TestCase {
 
         $app_mock = $this
             ->getMockBuilder(App::class)
-            ->setMethods(array("load_configs", "load_rules_file", "create_dic", "load_schemas"))
+            ->setMethods(array
+                ("load_configs"
+                , "load_rules_file"
+                , "create_dic"
+                , "load_schemas"
+                , "configure_runtime"
+                ))
             ->getMock();
 
         $engine_mock = $this
@@ -188,7 +249,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
             ->setMethods(array("run"))
             ->getMock();
 
-        $cfg_return = array("some_config", "project" => array("rules" => $rules_path));
+        $cfg_return = ["some_config"];
         $app_mock
             ->expects($this->at(0))
             ->method("load_configs")
@@ -204,7 +265,14 @@ class AppTest extends PHPUnit_Framework_TestCase {
                 ( $this->equalTo($config_file_path)
                 , $this->equalTo($cfg_return)
                 )
-            ->willReturn(array("engine" => $engine_mock));
+            ->willReturn(array("engine" => $engine_mock, "config" => new _Config()));
+
+        $app_mock
+            ->expects($this->at(2))
+            ->method("configure_runtime")
+            ->with
+                ( $this->equalTo(new _Config())
+                );
 
         $engine_mock
             ->expects($this->at(0))

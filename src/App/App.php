@@ -50,6 +50,8 @@ class App {
 
         $dic = $this->create_dic($config_file_path, $configs);
 
+        $this->configure_runtime($dic["config"]);
+
         $dic["engine"]->run();
     }
 
@@ -153,6 +155,25 @@ class App {
         };
 
         return $container;
+    }
+
+    /**
+     * Configure php runtime.
+     *
+     * @param   Config  $config
+     * @return  null
+     */
+    protected function configure_runtime(Config $config) {
+        if ($config->runtime_check_assertions()) {
+            assert_options(ASSERT_ACTIVE, true);
+            assert_options(ASSERT_WARNING, true);
+            assert_options(ASSERT_BAIL, false);
+        }
+        else {
+            assert_options(ASSERT_ACTIVE, false);
+            assert_options(ASSERT_WARNING, false);
+            assert_options(ASSERT_BAIL, false);
+        }
     }
 
     /**
