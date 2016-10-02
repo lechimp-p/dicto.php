@@ -34,9 +34,9 @@ class App {
      * @return  null
      */
     public function run(array $params) {
-        if (count($params) < 3) {
+        if (count($params) < 2) {
             throw new \RuntimeException(
-                "Expected path to rule-file as first parameter and path to config as second parameter.");
+                "Expected path to config-file as first parameter.");
         }
 
         // drop program name
@@ -44,6 +44,9 @@ class App {
 
         // the rest of the params are paths to configs
         list($config_file_path, $configs) = $this->load_configs($params);
+        $t = explode("/", $config_file_path);
+        array_pop($t);
+        $config_file_path = implode("/", $t);
 
         $dic = $this->create_dic($config_file_path, $configs);
 
