@@ -35,6 +35,13 @@ class Config implements ConfigurationInterface {
         [ "analysis" =>
             [ "ignore"  => []
             ]
+        , "rules" =>
+            [ "schemas" =>
+                [ \Lechimp\Dicto\Rules\DependOn::class
+                , \Lechimp\Dicto\Rules\Invoke::class
+                , \Lechimp\Dicto\Rules\ContainText::class
+                ]
+            ]
         ];
 
     /**
@@ -80,6 +87,16 @@ class Config implements ConfigurationInterface {
                     ->children()
                         ->arrayNode("ignore")
                             ->prototype("scalar")
+                            ->end()
+                            ->isRequired()
+                        ->end()
+                    ->end()
+                ->end()
+                ->arrayNode("rules")
+                    ->children()
+                        ->arrayNode("schemas")
+                            ->prototype("scalar")
+                            ->end()
                             ->isRequired()
                         ->end()
                     ->end()
@@ -131,5 +148,12 @@ class Config implements ConfigurationInterface {
      */
     public function analysis_ignore() {
         return $this->values["analysis"]["ignore"];
+    }
+
+    /**
+     * @return  string[]
+     */
+    public function rules_schemas() {
+        return $this->values["rules"]["schemas"];
     }
 }
