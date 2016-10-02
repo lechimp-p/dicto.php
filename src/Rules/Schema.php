@@ -62,24 +62,6 @@ abstract class Schema {
     abstract public function compile(Index $index, Rule $rule);
 
     /**
-     * Turn a query result into a violation. Could be used 
-     *
-     * TODO: This might go away.
-     *
-     * @param   Rule    $rule
-     * @param   array   $row
-     * @return  Violation
-     */
-    public function to_violation(Rule $rule, array $row) {
-        return new Violation
-            ( $rule
-            , $row["file"]
-            , (int)$row["line"]
-            , $row["source"]
-            );
-    }
-
-    /**
      * Register listeners to the indexer that are required to detect information
      * for the rule.
      *

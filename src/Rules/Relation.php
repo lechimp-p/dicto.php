@@ -68,7 +68,6 @@ abstract class Relation extends Schema {
                 ->extract(function($e,&$r) use ($rule) {
                     $file = $e->property("file");
                     assert('$file->type() == "file"');
-                    $r["rule"] = $rule;
                     $r["file"] = $file->property("path");
                     $line = $e->property("line");
                     $r["line"] = $line;
@@ -104,7 +103,6 @@ abstract class Relation extends Schema {
                     assert('count($rels) == 1');
                     $file = $rels[0]->target();
                     assert('$file->type() == "file"');
-                    $r["rule"] = $rule;
                     $r["file"] = $file->property("path");
                     $line = $rels[0]->property("start_line");
                     $r["line"] = $line;

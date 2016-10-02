@@ -148,16 +148,6 @@ class Rule extends Definition {
     }
 
     /**
-     * Turn a query result into a violation.
-     *
-     * @param   array   $row
-     * @return  \Lechimp\Dicto\Analysis\Violation
-     */
-    public function to_violation(array $row) {
-        return $this->schema->to_violation($this, $row);
-    }
-
-    /**
      * Get the argument at the index.
      *
      * @throws  \OutOfRangeException

@@ -62,14 +62,29 @@ class Analyzer {
             $this->log->info("checking: ".$rule->pprint());
             $this->generator->begin_rule($rule);
             $query = $rule->compile($this->index);
-            // TODO: set rule here directly so the schemas don't need
-            // to take care about that.
-            $results = $query->run([]);
+            $results = $query->run(["rule" => $rule]);
             foreach ($results as $row) {
-                $this->generator->report_violation($rule->to_violation($row));
+                $this->generator->report_violation($this->build_violation($row));
             }
             $this->generator->end_rule($rule);
         }
         $this->generator->end_ruleset($this->ruleset);
+    }
+
+    public function build_violation($info) {
+        assert('array_key_exists("rule", $info)');
+        assert('$info["rule"] instanceof \\Lechimp\\Dicto\\Rules\\Rule');
+        assert('array_key_exists("file", $info)');
+        assert('is_string($info["file"])');
+        assert('array_key_exists("line", $info)');
+        assert('is_int($info["line"])');
+        assert('array_key_exists("source", $info)');
+        assert('is_string($info["source"])');
+        return new Violation
+            ( $info["rule"]
+            , $info["file"]
+            , $info["line"]
+            , $info["source"]
+            );
     }
 } 

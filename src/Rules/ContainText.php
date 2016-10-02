@@ -84,7 +84,6 @@ class ContainText extends Schema {
                     preg_match("%(.*)$regexp%", $source, $matches);
 
                     $file = $e->target();
-                    $r["rule"] = $rule;
                     $r["file"] = $file->property("path");
                     $start_line = $e->property("start_line");
                     $found_at_line = substr_count($matches[0], "\n") + 1;
@@ -100,7 +99,6 @@ class ContainText extends Schema {
                 ->filter($this->regexp_source_filter($regexp, true))
                 ->extract(function($e,&$r) use ($rule) {
                     $file = $e->target();
-                    $r["rule"] = $rule;
                     $r["file"] = $file->property("path");
                     $line = $e->property("start_line");
                     $r["line"] = $line;
