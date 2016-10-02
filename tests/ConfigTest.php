@@ -23,24 +23,12 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
                     [ ".*\\.omit_me"
                     ]
                 ]
-            , "rules" =>
-                [ "schemas" =>
-                    [ "SomeSchema"
-                    ]
-                ]
             ]]);
         $this->assertEquals("/rules", $config->project_rules());
         $this->assertEquals("/root/dir", $config->project_root());
         $this->assertEquals("/data", $config->project_storage());
         $this->assertEquals([".*\\.omit_me"], $config->analysis_ignore());
         $this->assertEquals("/the/path", $config->path());
-        $expected_schemas =
-            [ "Lechimp\\Dicto\\Rules\\DependOn"
-            , "Lechimp\\Dicto\\Rules\\Invoke"
-            , "Lechimp\\Dicto\\Rules\\ContainText"
-            , "SomeSchema"
-            ];
-        $this->assertEquals($expected_schemas, $config->rules_schemas());
     }
 
     public function test_defaults() {
@@ -54,11 +42,16 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals([], $config->analysis_ignore());
         $default_schemas =
-            [ "Lechimp\\Dicto\\Rules\\DependOn"
-            , "Lechimp\\Dicto\\Rules\\Invoke"
-            , "Lechimp\\Dicto\\Rules\\ContainText"
+            [ \Lechimp\Dicto\Rules\DependOn::class
+            , \Lechimp\Dicto\Rules\Invoke::class
+            , \Lechimp\Dicto\Rules\ContainText::class
             ];
         $this->assertEquals($default_schemas, $config->rules_schemas());
+        $default_properties =
+            [ \Lechimp\Dicto\Variables\Name::class
+            , \Lechimp\Dicto\Variables\In::class
+            ];
+        $this->assertEquals($default_properties, $config->rules_properties());
     }
 
     public function test_merge() {

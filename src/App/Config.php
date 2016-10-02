@@ -41,6 +41,10 @@ class Config implements ConfigurationInterface {
                 , \Lechimp\Dicto\Rules\Invoke::class
                 , \Lechimp\Dicto\Rules\ContainText::class
                 ]
+            , "properties" =>
+                [ \Lechimp\Dicto\Variables\Name::class
+                , \Lechimp\Dicto\Variables\In::class
+                ]
             ]
         ];
 
@@ -95,6 +99,11 @@ class Config implements ConfigurationInterface {
                 ->arrayNode("rules")
                     ->children()
                         ->arrayNode("schemas")
+                            ->prototype("scalar")
+                            ->end()
+                            ->isRequired()
+                        ->end()
+                        ->arrayNode("properties")
                             ->prototype("scalar")
                             ->end()
                             ->isRequired()
@@ -155,5 +164,12 @@ class Config implements ConfigurationInterface {
      */
     public function rules_schemas() {
         return $this->values["rules"]["schemas"];
+    }
+
+    /**
+     * @return  string[]
+     */
+    public function rules_properties() {
+        return $this->values["rules"]["properties"];
     }
 }

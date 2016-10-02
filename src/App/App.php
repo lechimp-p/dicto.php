@@ -75,7 +75,7 @@ class App {
     }
 
     /**
-     * Loads the rule schemas defined in the config.
+     * Loads the schemas defined in the config.
      *
      * @param   array   $schema_classes
      * @return  R\Schema[]
@@ -83,9 +83,31 @@ class App {
     protected function load_schemas(array $schema_classes) {
         $schemas = array();
         foreach ($schema_classes as $schema_class) {
-            $schemas[] = new $schema_class;
+            $schema = new $schema_class;
+            if (!($schema instanceof R\Schema)) {
+                throw new \RuntimeException("'$schema_class' is not a Schema-class.");
+            }
+            $schemas[] = $schema;
         }
         return $schemas;
+    }
+
+    /**
+     * Loads the properties defined in the config.
+     *
+     * @param   array   $property_classes
+     * @return  R\Schema[]
+     */
+    protected function load_properties(array $property_classes) {
+        $properties = array();
+        foreach ($property_classes as $property_class) {
+            $property = new $property_class;
+            if (!($property instanceof V\Property)) {
+                throw new \RuntimeException("'$property_class' is not a Schema-class.");
+            }
+            $properties[] = $property;
+        }
+        return $properties;
     }
 
     /**
@@ -131,10 +153,7 @@ class App {
                     , new V\LanguageConstruct("die", "Die")
                     )
                 , $c["schemas"]
-                , array
-                    ( new V\Name()
-                    , new V\In()
-                    )
+                , $c["properties"]
                 );
         };
 
@@ -190,6 +209,10 @@ class App {
 
         $container["schemas"] = function($c) {
             return $this->load_schemas($c["config"]->rules_schemas());
+        };
+
+        $container["properties"] = function($c) {
+            return $this->load_properties($c["config"]->rules_properties());
         };
 
         return $container;

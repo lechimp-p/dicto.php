@@ -31,6 +31,10 @@ class _App extends App {
     public function _load_schemas(array $schema_classes) {
         return $this->load_schemas($schema_classes);
     }
+
+    public function _load_properties(array $property_classes) {
+        return $this->load_properties($property_classes);
+    }
 }
 
 class AppTest extends PHPUnit_Framework_TestCase {
@@ -77,9 +81,9 @@ class AppTest extends PHPUnit_Framework_TestCase {
 
     public function test_load_schemas() {
         $default_schemas =
-            [ "Lechimp\\Dicto\\Rules\\DependOn"
-            , "Lechimp\\Dicto\\Rules\\Invoke"
-            , "Lechimp\\Dicto\\Rules\\ContainText"
+            [ \Lechimp\Dicto\Rules\DependOn::class
+            , \Lechimp\Dicto\Rules\Invoke::class
+            , \Lechimp\Dicto\Rules\ContainText::class
             ];
         $schemas = $this->app->_load_schemas($default_schemas);
         $expected_schemas = array
@@ -88,6 +92,31 @@ class AppTest extends PHPUnit_Framework_TestCase {
             , new \Lechimp\Dicto\Rules\ContainText
             );
         $this->assertEquals($expected_schemas, $schemas);
+    }
+
+    public function test_properties() {
+        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
+        $c["project"]["storage"] = tempdir();
+        $dic = $this->app->_create_dic("/the/path", array($c));
+
+        $expected_properties =
+            [ new \Lechimp\Dicto\Variables\Name
+            , new \Lechimp\Dicto\Variables\In
+            ];
+        $this->assertEquals($expected_properties, $dic["properties"]);
+    }
+
+    public function test_load_properties() {
+        $default_properties =
+            [ \Lechimp\Dicto\Variables\Name::class
+            , \Lechimp\Dicto\Variables\In::class
+            ];
+        $properties = $this->app->_load_properties($default_properties);
+        $expected_properties =
+            [ new \Lechimp\Dicto\Variables\Name
+            , new \Lechimp\Dicto\Variables\In
+            ];
+        $this->assertEquals($expected_properties, $properties);
     }
 
     public function test_run() {
