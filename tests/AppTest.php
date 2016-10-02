@@ -82,7 +82,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
             ->with
                 ( $this->equalTo($configs)
                 )
-            ->willReturn(array($config_file_path, $cfg_return));
+            ->willReturn(array($config_file_path."/a.yaml", $cfg_return));
 
         $app_mock
             ->expects($this->at(1))
