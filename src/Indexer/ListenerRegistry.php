@@ -34,17 +34,6 @@ interface ListenerRegistry {
     public function on_enter_definition($types, \Closure $listener);
 
     /**
-     * Add a listener for entities that are left.
-     *
-     * Works like on_enter_definition.
-     *
-     * @param   array|null  $types
-     * @param   \Closure    $listener
-     * @return  self
-     */
-    public function on_leave_definition($types, \Closure $listener);
-
-    /**
      * Add a listener for nodes in the AST that get entered.
      *
      * The provided closure gets the following arguments:
@@ -60,16 +49,5 @@ interface ListenerRegistry {
      * @return  self
      */
     public function on_enter_misc($classes, \Closure $listener);
-
-    /**
-     * Add a listener for nodes that are left.
-     *
-     * Works like on_enter_misc.
-     *
-     * @param   array|null  $classes
-     * @param   \Closure    $listener
-     * @return  self
-     */
-    public function on_leave_misc($classes, \Closure $listener);
 }
 
