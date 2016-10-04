@@ -50,7 +50,7 @@ class WithProperty extends Variable {
      * @inheritdocs
      */
     public function meaning() {
-        return $this->variable()->meaning()." with ".$this->property->name().": ".$this->argument_list();
+        return $this->variable()->meaning()." ".$this->property->parse_as().": ".$this->argument_list();
     }
 
     protected function argument_list() {
@@ -58,6 +58,15 @@ class WithProperty extends Variable {
         foreach ($this->arguments as $argument) {
             if (is_string($argument)) {
                 $args[] = "\"$argument\"";
+            }
+            else if ($argument instanceof Variable) {
+                $name = $argument->name();
+                if ($name !== null) {
+                    $args[] = $name;
+                }
+                else {
+                    $args[] = "(".$argument->meaning().")";
+                }
             }
             else {
                 throw new \LogicException("Unknown arg type: ".gettype($argument));

@@ -47,9 +47,19 @@ class VariablesTest extends PHPUnit_Framework_TestCase {
                     ( new V\Classes()
                     , new V\Name()
                     , array(".*GUI")
-                    ) 
+                    )
                 , null
                 , "classes with name: \".*GUI\""
+                )
+            , array
+                ( new V\WithProperty
+                    ( new V\Classes()
+                    , new V\In()
+                    , array(new V\Files)
+                    )
+                , null
+                  // TODO: this is really inconsitent...
+                , "classes in: Files" 
                 )
             // TODO: add more TestCases here, that cover all
             //       types of variables.
