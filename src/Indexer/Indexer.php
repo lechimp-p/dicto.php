@@ -46,17 +46,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     /**
      * @var array   string => array()
      */
-    protected $listeners_leave_definition;
-
-    /**
-     * @var array   string => array()
-     */
     protected $listeners_enter_misc;
-
-    /**
-     * @var array   string => array()
-     */
-    protected $listeners_leave_misc;
 
     // state for parsing a file
 
@@ -85,13 +75,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $this->listeners_enter_definition = array
             ( 0 => array()
             );
-        $this->listeners_leave_definition = array
-            ( 0 => array()
-            );
         $this->listeners_enter_misc = array
-            ( 0 => array()
-            );
-        $this->listeners_leave_misc = array
             ( 0 => array()
             );
     }
@@ -182,15 +166,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function on_enter_definition($types, \Closure $listener) {
-        $this->on_enter_or_leave_something("listeners_enter_definition", $types, $listener);
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function on_leave_definition($types, \Closure $listener) {
-        $this->on_enter_or_leave_something("listeners_leave_definition", $types, $listener);
+        $this->on_enter_something("listeners_enter_definition", $types, $listener);
         return $this;
     }
 
@@ -198,25 +174,19 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function on_enter_misc($classes, \Closure $listener) {
-        $this->on_enter_or_leave_something("listeners_enter_misc", $classes, $listener);
+        $this->on_enter_something("listeners_enter_misc", $classes, $listener);
         return $this;
     }
 
-    /**
-     * @inheritdoc
-     */
-    public function on_leave_misc($classes, \Closure $listener) {
-        $this->on_enter_or_leave_something("listeners_leave_misc", $classes, $listener);
-        return $this;
-    }
-
-    // generalizes over over on_enter/leave_xx
+    // generalizes over over on_enter
 
     /**
+     * TODO: Maybe remove this in favour of duplicates.
+     *
      * @param   string      $what
      * @param   array|null  $things
      */
-    protected function on_enter_or_leave_something($what, $things, \Closure $listener) {
+    protected function on_enter_something($what, $things, \Closure $listener) {
         $loc = &$this->$what;
         if ($things === null) {
             $loc[0][] = $listener;
@@ -377,11 +347,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
            || $node instanceof N\Stmt\ClassMethod
            || $node instanceof N\Stmt\Function_) {
 
-            list($type, $handle) = array_pop($this->definition_stack);
-            $this->call_definition_listener("listeners_leave_definition", $type, $handle, $node);
-        }
-        else {
-            $this->call_misc_listener("listeners_leave_misc", $node);
+            array_pop($this->definition_stack);
         }
     }
 }
