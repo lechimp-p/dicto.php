@@ -27,18 +27,18 @@ class Graph {
     /**
      * Create a new node in the graph.
      *
-     * @param   string              $type
-     * @param   array<string,mixed> $properties
+     * @param   string                      $type
+     * @param   array<string,mixed>|null    $properties
      * @return  Node
      */
-    public function create_node($type, array $properties) {
+    public function create_node($type, array $properties = null) {
         $node = $this->build_node($this->id_counter, $type, $properties);
         $this->nodes[] = $node;
         $this->id_counter++;
         return $node;
     }
 
-    protected function build_node($id, $type, array $properties) {
+    protected function build_node($id, $type, array $properties = null) {
         return new Node($id, $type, $properties);
     }
 

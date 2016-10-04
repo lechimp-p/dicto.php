@@ -21,19 +21,21 @@ abstract class Entity {
     private $type;
 
     /**
-     * @var array<string,mixed>
+     * @var array<string,mixed>|null
      */
     private $properties = [];
 
     /**
-     * @param   string              $type
-     * @param   array<string,mixed> $properties
+     * @param   string                      $type
+     * @param   array<string,mixed>|null    $properties
      */
-    public function __construct($type, array $properties) {
+    public function __construct($type, array $properties = null) {
         assert('is_string($type)');
         $this->type = $type;
-        foreach ($properties as $key => $value) {
-            $this->set_property($key, $value);
+        if ($properties !== null) {
+            foreach ($properties as $key => $value) {
+                $this->set_property($key, $value);
+            }
         }
     }
 
@@ -47,18 +49,14 @@ abstract class Entity {
     }
 
     /**
-     * Set a new property.
+     * Set a property.
      *
      * @param   string  $key
      * @param   mixed   $value
-     * @throws  \InvalidArgumentException   if property is already set
      * @return  null
      */
     private function set_property($key, $value) {
         assert('is_string($key)');
-        if (array_key_exists($key, $this->properties)) {
-            throw new \InvalidArgumentException("Property $key already set.");
-        }
         $this->properties[$key] = $value;
     }
 
@@ -68,6 +66,9 @@ abstract class Entity {
      * @return  array<string,mixed>
      */
     public function properties() {
+        if ($this->properties === null) {
+            return [];
+        }
         return $this->properties;
     }
 

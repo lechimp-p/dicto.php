@@ -102,4 +102,10 @@ class GraphTest extends PHPUnit_Framework_TestCase {
         }
         catch (\InvalidArgumentException $e) {}
     }
+
+    public function test_no_initial_props() {
+        $n1 = $this->g->create_node("a_type");
+
+        $this->assertInstanceOf(Node::class, $n1);
+    }
 }
