@@ -26,11 +26,11 @@ class Node extends Entity {
     private $relations = [];
 
     /**
-     * @param   int                 $id
-     * @param   string              $type
-     * @param   array<string,mixed> $properties
+     * @param   int                         $id
+     * @param   string                      $type
+     * @param   array<string,mixed>|null    $properties
      */
-    public function __construct($id, $type, array $properties) {
+    public function __construct($id, $type, array $properties = null) {
         assert('is_int($id)');
         $this->id = $id;
         parent::__construct($type, $properties);
