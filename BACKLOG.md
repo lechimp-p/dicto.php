@@ -30,6 +30,13 @@
 * It is inconsistent, that Invoke makes invocations in methods of classes related
   to the class itself, but `only XYZClasses can invoke` also flags the methods in
   XYZClasses.
+* The graph that is used to store the parsed code for analysis heavily uses classes,
+  which have a horrible memory footprint with the PHP 5.* runtime. HHVM makes things
+  a lot better.
+* The language for rules currently is more powerful than the analysis. I can say
+  something like `Classes cannot relate to Methods in OtherClasses` but i would
+  not be able to analyse that rule correctly, as method_references are not related
+  to a class.
 
 # Execution plan for introducing git (and further improvements)
 * The engine then somehow needs to figure out what to do based on the last run and
