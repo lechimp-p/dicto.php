@@ -60,31 +60,39 @@ class QueryImpl implements Query {
      * @inheritdocs
      */
     public function run($result) {
-        $nodes = $this->add_result($this->graph->nodes(), $result);
+        $nodes = $this->add_result($this->initial_nodes(), $result);
 
         foreach ($this->steps as $step) {
             if (count($nodes) == 0) {
                 return [];
             }
 
-            list($cmd,$clsr) = $step;
-            if ($cmd == "expand") {
-                $nodes = $this->run_expand($nodes, $clsr);
-            }
-            elseif ($cmd == "extract") {
-                $this->run_extract($nodes, $clsr);
-            }
-            elseif ($cmd == "filter") {
-                $nodes = $this->run_filter($nodes, $clsr);
-            }
-            else {
-                throw new \LogicException("Unknown command: $cmd");
-            }
+            $this->switch_run_command($nodes, $step);
         }
 
         return array_values(array_map(function($r) {
             return $r[1];
         }, $nodes));
+    }
+
+    protected function initial_nodes() {
+        return $this->graph->nodes();
+    }
+
+    protected function switch_run_command(array &$nodes, $step) {
+        list($cmd,$clsr) = $step;
+        if ($cmd == "expand") {
+            $nodes = $this->run_expand($nodes, $clsr);
+        }
+        elseif ($cmd == "extract") {
+            $this->run_extract($nodes, $clsr);
+        }
+        elseif ($cmd == "filter") {
+            $nodes = $this->run_filter($nodes, $clsr);
+        }
+        else {
+            throw new \LogicException("Unknown command: $cmd");
+        }
     }
 
     protected function run_expand(array &$nodes, \Closure $clsr) {
