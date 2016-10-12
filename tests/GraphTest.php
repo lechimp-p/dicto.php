@@ -19,7 +19,7 @@ class GraphTest extends PHPUnit_Framework_TestCase {
     public function test_add_nodes() {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
-        $ns = $this->g->nodes();
+        $ns = iterator_to_array($this->g->nodes());
 
         $this->assertCount(2, $ns);
         $this->assertSame($n1, $ns[0]); 
@@ -77,7 +77,7 @@ class GraphTest extends PHPUnit_Framework_TestCase {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
-        $this->assertEquals([$n1,$n2], $this->g->nodes());
+        $this->assertEquals([$n1,$n2], iterator_to_array($this->g->nodes()));
     }
 
     public function test_filtered_nodes() {
@@ -87,7 +87,7 @@ class GraphTest extends PHPUnit_Framework_TestCase {
             return $n->type() == "b_type";
         };
 
-        $this->assertEquals([1 => $n2], $this->g->nodes($matcher));
+        $this->assertEquals([$n2], iterator_to_array($this->g->nodes($matcher)));
     }
 
     public function test_node() {
