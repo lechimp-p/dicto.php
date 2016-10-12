@@ -59,13 +59,25 @@ class Graph {
      * Get nodes from the graph, maybe filtered by a filter.
      *
      * @param   \Closure|null    $filter
-     * @return  Node[]
+     * @return  Iterator<Node>
      */
     public function nodes(\Closure $filter = null) {
         if ($filter === null) {
-            return $this->nodes;
+            // TODO: This could be more performant with some duplication,
+            // i.e. using two branches for with and without filter.
+            $filter = function($_) { return true; };
         }
-        return array_filter($this->nodes, $filter);
+        reset($this->nodes);
+        $val = current($this->nodes);
+        while ( next($this->nodes)) {
+            if ($filter($val)) {
+                yield $val;
+            }
+            $val = current($this->nodes);
+        }
+        if ($val) {
+            yield $val;
+        }
     }
 
     /**

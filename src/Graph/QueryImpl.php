@@ -63,80 +63,96 @@ class QueryImpl implements Query {
         $nodes = $this->add_result($this->initial_nodes(), $result);
 
         foreach ($this->steps as $step) {
-            if (count($nodes) == 0) {
-                return [];
-            }
-
-            $this->switch_run_command($nodes, $step);
+            $nodes = $this->switch_run_command($nodes, $step);
         }
 
-        return array_values(array_map(function($r) {
-            return $r[1];
-        }, $nodes));
+        $res = array();
+        while ($nodes->valid()) {
+            $val = $nodes->current();
+            $res[] = $val[1];
+            $nodes->next();
+        }
+        return $res;
     }
 
+    /**
+     * @return  Iterator<[Node,mixed]>
+     */
     protected function initial_nodes() {
         return $this->graph->nodes();
     }
 
-    protected function switch_run_command(array &$nodes, $step) {
+    /**
+     * @return  Iterator<[Node,mixed]>
+     */
+    protected function switch_run_command(\Iterator $nodes, $step) {
         list($cmd,$clsr) = $step;
         if ($cmd == "expand") {
-            $nodes = $this->run_expand($nodes, $clsr);
+            return $this->run_expand($nodes, $clsr);
         }
         elseif ($cmd == "extract") {
-            $this->run_extract($nodes, $clsr);
+            return $this->run_extract($nodes, $clsr);
         }
         elseif ($cmd == "filter") {
-            $nodes = $this->run_filter($nodes, $clsr);
+            return $this->run_filter($nodes, $clsr);
         }
         else {
             throw new \LogicException("Unknown command: $cmd");
         }
     }
 
-    protected function run_expand(array &$nodes, \Closure $clsr) {
-        $new_nodes = [];
-        foreach ($nodes as $r) {
-            list($node, $result) = $r;
-            $new_nodes[] = $this->add_result($clsr($node), $result);
+    /**
+     * @return  Iterator<[Node,mixed]>
+     */
+    protected function run_expand(\Iterator $nodes, \Closure $clsr) {
+        while ($nodes->valid()) {
+            list($node, $result) = $nodes->current();
+            // TODO: let closure return an Iterator too.
+            foreach($clsr($node) as $new_node) {
+                yield [$new_node, $result];
+            }
+            $nodes->next();
         }
-        if (count($new_nodes) == 0) {
-            return [];
-        }
-        return call_user_func_array("array_merge", $new_nodes);
     }
 
-    protected function run_extract(array &$nodes, \Closure $clsr) {
-        foreach ($nodes as $i => $r) {
-            list($node, $result) = $r;
+    /**
+     * @return  Iterator<[Node,mixed]>
+     */
+    protected function run_extract(\Iterator $nodes, \Closure $clsr) {
+        while ($nodes->valid()) {
+            list($node, $result) = $nodes->current();
             if (is_object($result)) {
-                $clsr($node, clone $result);
+                $result = clone($result);
             }
-            else {
-                $clsr($node, $result);
-            }
-            $nodes[$i][1] = $result;
+            $clsr($node, $result);
+            yield [$node, $result];
+            $nodes->next();
         }
     }
 
-    protected function run_filter(array &$nodes, \Closure $clsr) {
-        $res = [];
-        foreach ($nodes as $r) {
-            list($node, $result) = $r;
+    /**
+     * @return  Iterator<[Node,mixed]>
+     */
+    protected function run_filter(\Iterator $nodes, \Closure $clsr) {
+        while ($nodes->valid()) {
+            $val = $nodes->current();
+            list($node, $result) = $val;
             if ($clsr($node, $result)) {
-                $res[] = $r;
+                yield $val;
             }
+            $nodes->next();
         }
-        return $res;
     }
 
-    protected function add_result(array $nodes, &$result) {
-        $res = [];
-        foreach ($nodes as $node) {
-            $res[] = [$node, $result];
+    /**
+     * @return  Iterator<[Node,mixed]>
+     */
+    protected function add_result(\Iterator $nodes, &$result) {
+        while ($nodes->valid()) {
+            $node = $nodes->current();
+            yield [$node, $result];
+            $nodes->next();
         }
-        return $res;
     }
 
     // Convenience Functions
