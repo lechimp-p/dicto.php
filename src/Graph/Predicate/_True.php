@@ -8,16 +8,19 @@
  * a copy of the license along with the code.
  */
 
-namespace Lechimp\Dicto\Graph;
+namespace Lechimp\Dicto\Graph\Predicate;
+
+use Lechimp\Dicto\Graph\Predicate;
+use Lechimp\Dicto\Graph\Entity;
 
 /**
- * Some predicate over an entity.
+ * A predicate that is always true.
  */
-abstract class Predicate {
+class _True extends Predicate {
     /**
-     * Compile the predicate to a function on an entity.
-     *
-     * @return  \Closure    Entity -> bool
+     * @inheritdocs
      */
-    abstract public function compile();
+    public function compile() {
+        return function(Entity $e) { return true; };
+    }
 }

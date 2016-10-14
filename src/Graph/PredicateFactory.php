@@ -20,7 +20,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _true() {
-        return new Predicate();
+        return new Predicate\_True();
     }
 
     /**
@@ -29,7 +29,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _false() {
-        return new Predicate();
+        return new Predicate\_True();
     }
 
     /**
@@ -39,7 +39,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _and(array $predicates) {
-        return new Predicate();
+        return new Predicate\_True();
     }
 
     /**
@@ -49,7 +49,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _or(array $predicates) {
-        return new Predicate();
+        return new Predicate\_True();
     }
 
     /**
@@ -59,7 +59,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _not(Predicate $predicate) {
-        return new Predicate();
+        return new Predicate\_True();
     }
 
     /**
@@ -69,7 +69,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _type_is($type) {
-        return new Predicate();
+        return new Predicate\_True();
     }
 
     /**

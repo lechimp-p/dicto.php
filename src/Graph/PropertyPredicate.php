@@ -21,6 +21,6 @@ class PropertyPredicate {
      * @return  Predicate
      */
     public function _matches($regex) {
-        return new Predicate();
+        return new Predicate\_True();
     } 
 }
