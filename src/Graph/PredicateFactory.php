@@ -29,7 +29,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _false() {
-        return new Predicate\_True();
+        return new Predicate\_False();
     }
 
     /**

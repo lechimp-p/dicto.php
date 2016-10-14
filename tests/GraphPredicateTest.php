@@ -43,4 +43,17 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($compiled($n2));
         $this->assertTrue($compiled($r));
     }
+
+    public function test_compile_false() {
+        $n1 = $this->g->create_node("some_type", []);
+        $n2 = $this->g->create_node("some_other_type", []);
+        $r = $n1->add_relation("rel", [], $n2);
+
+        $true = $this->f->_false();
+        $compiled = $true->compile();
+
+        $this->assertFalse($compiled($n1));
+        $this->assertFalse($compiled($n2));
+        $this->assertFalse($compiled($r));
+    }
 }
