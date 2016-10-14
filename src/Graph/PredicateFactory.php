@@ -49,7 +49,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _or(array $predicates) {
-        return new Predicate\_True();
+        return new Predicate\_Or($predicates);
     }
 
     /**

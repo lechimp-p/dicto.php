@@ -56,4 +56,46 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($compiled($n2));
         $this->assertFalse($compiled($r));
     }
+
+    public function test_compile_true_or_false() {
+        $n1 = $this->g->create_node("some_type", []);
+        $n2 = $this->g->create_node("some_other_type", []);
+        $r = $n1->add_relation("rel", [], $n2);
+
+        $f = $this->f;
+        $or = $f->_or([$f->_true(), $f->_false()]);
+        $compiled = $or->compile();
+
+        $this->assertTrue($compiled($n1));
+        $this->assertTrue($compiled($n2));
+        $this->assertTrue($compiled($r));
+    }
+
+    public function test_compile_false_or_true() {
+        $n1 = $this->g->create_node("some_type", []);
+        $n2 = $this->g->create_node("some_other_type", []);
+        $r = $n1->add_relation("rel", [], $n2);
+
+        $f = $this->f;
+        $or = $f->_or([$f->_false(), $f->_true()]);
+        $compiled = $or->compile();
+
+        $this->assertTrue($compiled($n1));
+        $this->assertTrue($compiled($n2));
+        $this->assertTrue($compiled($r));
+    }
+
+    public function test_compile_false_or_false() {
+        $n1 = $this->g->create_node("some_type", []);
+        $n2 = $this->g->create_node("some_other_type", []);
+        $r = $n1->add_relation("rel", [], $n2);
+
+        $f = $this->f;
+        $or = $f->_or([$f->_false(), $f->_false()]);
+        $compiled = $or->compile();
+
+        $this->assertFalse($compiled($n1));
+        $this->assertFalse($compiled($n2));
+        $this->assertFalse($compiled($r));
+    }
 }
