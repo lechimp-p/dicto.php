@@ -14,4 +14,12 @@ namespace Lechimp\Dicto\Graph;
  * Some predicate over an entity.
  */
 class Predicate {
+    /**
+     * Compile the predicate to a function on an entity.
+     *
+     * @return  \Closure    Entity -> bool
+     */
+    public function compile() {
+        return function(Entity $e) { return true; };
+    }
 }

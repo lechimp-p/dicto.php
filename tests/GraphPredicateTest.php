@@ -9,10 +9,13 @@
  */
 
 use Lechimp\Dicto\Graph\PredicateFactory;
+use Lechimp\Dicto\Graph\Predicate;
+use Lechimp\Dicto\Graph\Graph;
 
 class GraphPredicateTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->f = new PredicateFactory();
+        $this->g = new Graph();
     }
 
     public function test_creation() {
@@ -25,6 +28,19 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
              , $f->_true()
              , $f->_property("bar")->_matches(".*")
             ]);
-        $this->assertInstanceOf(Lechimp\Dicto\Graph\Predicate::class, $pred);
+        $this->assertInstanceOf(Predicate::class, $pred);
+    }
+
+    public function test_compile_true() {
+        $n1 = $this->g->create_node("some_type", []);
+        $n2 = $this->g->create_node("some_other_type", []);
+        $r = $n1->add_relation("rel", [], $n2);
+
+        $true = $this->f->_true();
+        $compiled = $true->compile();
+
+        $this->assertTrue($compiled($n1));
+        $this->assertTrue($compiled($n2));
+        $this->assertTrue($compiled($r));
     }
 }
