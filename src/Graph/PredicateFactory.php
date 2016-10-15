@@ -79,6 +79,6 @@ class PredicateFactory {
      * @return  PropertyPredicate
      */
     public function _property($name) {
-        return new PropertyPredicate();
+        return new PropertyPredicateFactory($name);
     }
 }

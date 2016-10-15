@@ -155,4 +155,23 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($compiled($r1));
         $this->assertTrue($compiled($r2));
     }
+
+    public function test_compile_property_matches() {
+        $n1 = $this->g->create_node("some_type", ["foo"=>"bar"]);
+        $n2 = $this->g->create_node("some_other_type", ["foo"=>"foo"]);
+        $n3 = $this->g->create_node("some_other_type", ["bar"=>"foo"]);
+        $r1 = $n1->add_relation("rel", ["foo"=>"foo"], $n2);
+        $r2 = $n1->add_relation("some_type", ["foo"=>"bar"], $n2);
+        $r3 = $n1->add_relation("some_type", [], $n2);
+
+        $property = $this->f->_property("foo")->_matches("bar");
+        $compiled = $property->compile();
+
+        $this->assertTrue($compiled($n1));
+        $this->assertFalse($compiled($n2));
+        $this->assertFalse($compiled($n3));
+        $this->assertFalse($compiled($r1));
+        $this->assertTrue($compiled($r2));
+        $this->assertFalse($compiled($r3));
+    }
 }

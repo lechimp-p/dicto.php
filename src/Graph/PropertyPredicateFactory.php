@@ -11,9 +11,19 @@
 namespace Lechimp\Dicto\Graph;
 
 /**
- * Some predicate over a property.
+ * Create some predicate over a property.
  */
-class PropertyPredicate {
+class PropertyPredicateFactory {
+    /**
+     * @var string
+     */
+    protected $name;
+
+    public function __construct($name) {
+        assert('is_string($name)');
+        $this->name = $name;
+    }
+
     /**
      * Is true when the property matches the given regex.
      *
@@ -21,6 +31,6 @@ class PropertyPredicate {
      * @return  Predicate
      */
     public function _matches($regex) {
-        return new Predicate\_True();
+        return new Predicate\_PropertyMatches($this->name, $regex);
     } 
 }
