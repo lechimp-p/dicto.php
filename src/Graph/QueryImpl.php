@@ -21,6 +21,11 @@ class QueryImpl implements Query {
      */
     protected $steps;
 
+    /**
+     * @var PredicateFactory
+     */
+    protected $predicate_factory;
+
     public function __construct(Graph $graph) {
         $this->graph = $graph;
         $this->steps = [];
