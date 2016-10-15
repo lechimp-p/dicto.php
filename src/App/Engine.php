@@ -127,6 +127,7 @@ class Engine {
         //$gen = new CLIReportGenerator();
         $analyzer = $this->analyzer_factory->build($index, $this->report_generator);
         $analyzer->run();
+        $this->report_generator->end_run();
     }
 
     protected function build_index() {

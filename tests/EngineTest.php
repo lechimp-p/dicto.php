@@ -204,4 +204,10 @@ class EngineTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals($commit_hash, $this->report_generator->begin_run_called_with);
     }
+
+    public function test_call_end_run_on_report_generator() {
+        $this->engine->run();
+
+        $this->assertTrue($this->report_generator->end_run_called);
+    }
 }
