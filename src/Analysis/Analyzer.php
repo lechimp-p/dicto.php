@@ -66,9 +66,9 @@ class Analyzer {
             foreach ($results as $row) {
                 $this->generator->report_violation($this->build_violation($row));
             }
-            $this->generator->end_rule($rule);
+            $this->generator->end_rule();
         }
-        $this->generator->end_ruleset($this->ruleset);
+        $this->generator->end_ruleset();
     }
 
     public function build_violation($info) {
