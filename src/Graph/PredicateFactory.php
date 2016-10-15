@@ -39,7 +39,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _and(array $predicates) {
-        return new Predicate\_True();
+        return new Predicate\_And($predicates);
     }
 
     /**
