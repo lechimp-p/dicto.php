@@ -57,6 +57,7 @@ class Config implements ConfigurationInterface {
                 , \Lechimp\Dicto\Variables\ErrorSuppressor::class
                 , \Lechimp\Dicto\Variables\Exit_::class
                 , \Lechimp\Dicto\Variables\Die_::class
+                , \Lechimp\Dicto\Variables\Eval_::class
                 ]
             ]
         , "runtime" =>

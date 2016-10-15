@@ -35,6 +35,7 @@ class Invoke extends Relation {
         $this->register_func_call_listener($registry);
         $this->register_method_call_listener($registry);
         $this->register_exit_or_die_listener($registry);
+        $this->register_eval_listener($registry);
     }
 
     protected function register_func_call_listener(ListenerRegistry $registry) {
@@ -100,6 +101,20 @@ class Invoke extends Relation {
                     ( $insert
                     , $location
                     , $exit_or_die
+                    , $node->getAttribute("startLine")
+                    );
+            });
+    }
+
+    protected function register_eval_listener(ListenerRegistry $registry) {
+        $registry->on_enter_misc
+            ( [N\Expr\Eval_::class]
+            , function(Insert $insert, Location $location, N\Expr\Eval_ $node) {
+                $eval_ = $insert->_language_construct("eval");
+                $this->insert_relation_into
+                    ( $insert
+                    , $location
+                    , $eval_
                     , $node->getAttribute("startLine")
                     );
             });

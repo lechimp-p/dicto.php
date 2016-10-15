@@ -29,8 +29,6 @@
   would mean to introduce the possibility to add custom classes to the config. 
 
 # Issues
-* `eval()` does not get recognized, since PHPParser does not treat it as an ordinary
-  function.
 * `GUIClasses cannot depend on ilDB` finds some locations twice on ILIAS. Seems to
   be related to the `global` keyword.
 * It is inconsistent, that Invoke makes invocations in methods of classes related
@@ -43,6 +41,7 @@
   something like `Classes cannot relate to Methods in OtherClasses` but i would
   not be able to analyse that rule correctly, as method_references are not related
   to a class.
+* It seems as everything that "invokes" should also "depend on".
 
 # Execution plan for introducing git (and further improvements)
 * The engine then somehow needs to figure out what to do based on the last run and

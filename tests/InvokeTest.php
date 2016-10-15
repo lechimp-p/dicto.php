@@ -476,4 +476,40 @@ CODE;
             );
         $this->assertEquals($expected, $violations);
     }
+
+    // RULE 4
+
+    protected function classes_cannot_invoke_eval() {
+        return new R\Rule
+            ( R\Rule::MODE_CANNOT
+            , new V\Classes
+            , new R\Invoke()
+            , array(new V\Eval_())
+            );
+    }
+
+    public function test_rule4_violation_1() {
+        $rule = $this->classes_cannot_invoke_eval();
+        $code = <<<CODE
+<?php
+
+class SomeClass {
+    public function a_method() {
+        eval("echo foo;");
+    }
+}
+
+CODE;
+
+        $violations = $this->analyze($rule, $code);
+        $expected = array
+            ( new Violation
+                ( $rule
+                , "source.php"
+                , 5
+                , '        eval("echo foo;");'
+                )
+            );
+        $this->assertEquals($expected, $violations);
+    }
 }
