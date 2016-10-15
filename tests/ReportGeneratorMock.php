@@ -19,16 +19,34 @@ class ReportGeneratorMock implements ReportGenerator {
     public function report_violation(Violation $violation) {
         $this->violations[] = $violation;
     }
+
     public $begin_run_called_with = false;
     public function begin_run($commit_hash) {
         $this->begin_run_called_with = $commit_hash;
     }
+
     public $end_run_called = false;
     public function end_run() {
         $this->end_run_called = true;
     }
-    public function begin_ruleset(Ruleset $rule) {}
-    public function end_ruleset() {}
-    public function begin_rule(Rule $rule) {}
-    public function end_rule() {}
+
+    public $begin_ruleset_called_with = false;
+    public function begin_ruleset(Ruleset $ruleset) {
+        $this->begin_ruleset_called_with = $ruleset;
+    }
+
+    public $end_ruleset_called = false;
+    public function end_ruleset() {
+        $this->end_ruleset_called = true;
+    }
+
+    public $begin_rule_called_with = false;
+    public function begin_rule(Rule $rule) {
+        $this->begin_rule_called_with = $rule;
+    }
+
+    public $end_rule_called = false;
+    public function end_rule() {
+        $this->end_rule_called = true;
+    }
 }
