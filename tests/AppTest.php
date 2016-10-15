@@ -207,6 +207,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
             , new \Lechimp\Dicto\Variables\ErrorSuppressor()
             , new \Lechimp\Dicto\Variables\Exit_()
             , new \Lechimp\Dicto\Variables\Die_()
+            , new \Lechimp\Dicto\Variables\Eval_()
             );
         $this->assertEquals($expected_variables, $dic["variables"]);
     }
@@ -221,6 +222,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
             , \Lechimp\Dicto\Variables\ErrorSuppressor::class
             , \Lechimp\Dicto\Variables\Exit_::class
             , \Lechimp\Dicto\Variables\Die_::class
+            , \Lechimp\Dicto\Variables\Eval_::class
             );
         $variables = $this->app->_load_variables($default_variables);
         $expected_variables = array
@@ -232,6 +234,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
             , new \Lechimp\Dicto\Variables\ErrorSuppressor()
             , new \Lechimp\Dicto\Variables\Exit_()
             , new \Lechimp\Dicto\Variables\Die_()
+            , new \Lechimp\Dicto\Variables\Eval_()
             );
         $this->assertEquals($expected_variables, $variables);
     }

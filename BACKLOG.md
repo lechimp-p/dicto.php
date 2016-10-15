@@ -29,8 +29,9 @@
   would mean to introduce the possibility to add custom classes to the config. 
 
 # Issues
-* `GUIClasses cannot depend on ilDB` finds some locations twice on ILIAS. Seems to
-  be related to the `global` keyword.
+* `GUIClasses cannot depend on ilDB` finds some locations twice on ILIAS. This is
+  caused by the fact, that "classes invoke stuff in their methods" and said methods
+  do this as well.
 * It is inconsistent, that Invoke makes invocations in methods of classes related
   to the class itself, but `only XYZClasses can invoke` also flags the methods in
   XYZClasses.

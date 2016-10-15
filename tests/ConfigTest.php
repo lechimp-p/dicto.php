@@ -64,6 +64,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             , \Lechimp\Dicto\Variables\ErrorSuppressor::class
             , \Lechimp\Dicto\Variables\Exit_::class
             , \Lechimp\Dicto\Variables\Die_::class
+            , \Lechimp\Dicto\Variables\Eval_::class
             ];
         $this->assertEquals($default_variables, $config->rules_variables());
         $this->assertEquals(false, $config->runtime_check_assertions());
