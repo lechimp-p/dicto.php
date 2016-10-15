@@ -10,11 +10,14 @@
 
 use Lechimp\Dicto\App\App;
 use Lechimp\Dicto\App\Config;
+use Lechimp\Dicto\App\CLIReportGenerator;
 use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\App\Engine;
+use Lechimp\Dicto\App\ResultDB;
 use Lechimp\Dicto\App\RuleLoader;
 use Lechimp\Dicto\App\SourceStatus;
 use Lechimp\Dicto\Rules\Ruleset;
+use Lechimp\Dicto\Analysis\CombinedReportGenerators;
 
 require_once(__DIR__."/tempdir.php");
 
@@ -55,6 +58,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_dic_indexer_factory() {
+        // TODO: remove this odd _load_configs stuff. It should not be necessary.
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
         $dic = $this->app->_create_dic("/the/path", array($c));
@@ -63,6 +67,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_dic_engine() {
+        // TODO: remove this odd _load_configs stuff. It should not be necessary.
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
         $dic = $this->app->_create_dic(__DIR__."/data", array($c));
@@ -70,7 +75,63 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf(Engine::class, $dic["engine"]);
     }
 
+    public function test_dic_cli_report_generator() {
+        // TODO: remove this odd _load_configs stuff. It should not be necessary.
+        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
+        $c["project"]["storage"] = tempdir();
+        $dic = $this->app->_create_dic("/the/path", array($c));
+        $dic = $this->app->_create_dic(__DIR__."/data", array($c));
+
+        $this->assertInstanceOf(CLIReportGenerator::class, $dic["report_generator"]);
+    }
+
+    public function test_dic_complain_on_no_report_generator() {
+        // TODO: remove this odd _load_configs stuff. It should not be necessary.
+        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
+        $c["project"]["storage"] = tempdir();
+        $c["analysis"]["report_stdout"] = false;
+        $dic = $this->app->_create_dic("/the/path", array($c));
+        $dic = $this->app->_create_dic(__DIR__."/data", array($c));
+
+        try {
+            $foo = $dic["report_generator"];
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf
+                ( \PHPUnit_Framework_ExpectationFailedException::class
+                , $e
+                );
+        }
+    }
+
+    public function test_dic_database_report_generator() {
+        // TODO: remove this odd _load_configs stuff. It should not be necessary.
+        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
+        $c["project"]["storage"] = tempdir();
+        $c["analysis"]["report_stdout"] = false;
+        $c["analysis"]["report_database"] = true;
+        $dic = $this->app->_create_dic(__DIR__."/data", array($c));
+
+        $this->assertInstanceOf(ResultDB::class, $dic["report_generator"]);
+    }
+
+    public function test_dic_both_report_generators() {
+        // TODO: remove this odd _load_configs stuff. It should not be necessary.
+        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
+        $c["project"]["storage"] = tempdir();
+        $c["analysis"]["report_stdout"] = true;
+        $c["analysis"]["report_database"] = true;
+        $dic = $this->app->_create_dic(__DIR__."/data", array($c));
+
+        $this->assertInstanceOf(CombinedReportGenerators::class, $dic["report_generator"]);
+        $gens = $dic["report_generator"]->generators();
+        $this->assertInstanceOf(CLIReportGenerator::class, $gens[0]);
+        $this->assertInstanceOf(ResultDB::class, $gens[1]); 
+    }
+
     public function test_source_status() {
+        // TODO: remove this odd _load_configs stuff. It should not be necessary.
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
         $dic = $this->app->_create_dic("/the/path", array($c));
@@ -79,6 +140,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_schemas() {
+        // TODO: remove this odd _load_configs stuff. It should not be necessary.
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
         $dic = $this->app->_create_dic("/the/path", array($c));

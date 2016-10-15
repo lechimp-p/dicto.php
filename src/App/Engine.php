@@ -104,10 +104,6 @@ class Engine {
         return $this->config->project_storage()."/$commit_hash.sqlite";
     }
 
-    protected function result_database_path() {
-        return $this->config->project_storage()."/results.sqlite";
-    }
-
     protected function run_indexing(Insert $index) {
         $this->log->notice("Starting to build index...");
         $indexer = $this->indexer_factory->build($index);
@@ -121,10 +117,6 @@ class Engine {
         $this->log->notice("Running analysis...");
         $commit_hash = $this->source_status->commit_hash();
         $this->report_generator->begin_run($commit_hash);
-        //$result_db = $this->db_factory->get_result_db($this->result_database_path());
-        //$result_db->begin_new_run($commit_hash);
-        //$analyzer = $this->analyzer_factory->build($index, $result_db);
-        //$gen = new CLIReportGenerator();
         $analyzer = $this->analyzer_factory->build($index, $this->report_generator);
         $analyzer->run();
         $this->report_generator->end_run();

@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\App;
 
+use Lechimp\Dicto\Analysis\CombinedReportGenerators;
+use Lechimp\Dicto\Analysis\ReportGenerator;
 use Lechimp\Dicto\App\RuleLoader;
 use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules\Ruleset;
@@ -135,8 +137,8 @@ class App {
             return (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
         };
 
-        $container["report_generator"] = function() {
-            return new CLIReportGenerator();
+        $container["report_generator"] = function($c) {
+            return $this->build_report_generator($c["config"], $c["database_factory"]);
         };
 
         $container["source_status"] = function($c) {
@@ -250,5 +252,48 @@ class App {
             $variables[] = $variable;
         }
         return $variables;
+    }
+
+    /**
+     * Build the report generators.
+     *
+     * @param   Config      $config
+     * @param   DBFactory   $db_factory
+     * @return  ReportGenerator
+     */
+    public function build_report_generator(Config $config, DBFactory $db_factory) {
+        if ($config->analysis_report_stdout()) {
+            $cli_report_generator = new CLIReportGenerator();
+        }
+        else {
+            $cli_report_generator = null;
+        }
+
+        if ($config->analysis_report_database()) {
+            $result_db = $db_factory->get_result_db
+                ( $this->result_database_path($config)
+                );
+        }
+        else {
+            $result_db = null;
+        }
+
+        if ($cli_report_generator === null && $result_db === null) {
+            throw new \RuntimeException
+                ("No need to run analysis if no report generator is defined.");
+        }
+
+        if ($cli_report_generator) {
+            if ($result_db) {
+                return new CombinedReportGenerators([$cli_report_generator, $result_db]);
+            }
+            return $cli_report_generator; 
+        }
+
+        return $result_db;
+    }
+
+    protected function result_database_path(Config $c) {
+        return $c->project_storage()."/results.sqlite";
     }
 }
