@@ -59,7 +59,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _not(Predicate $predicate) {
-        return new Predicate\_True();
+        return new Predicate\_Not($predicate);
     }
 
     /**

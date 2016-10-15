@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\PredicateFactory;
 
 class Everything extends Variable {
     /**
@@ -24,10 +24,8 @@ class Everything extends Variable {
      * @inheritdocs
      */
 
-    public function compile() {
-        return function(Node $n) { 
-            return true; 
-        };
+    public function compile(PredicateFactory $f) {
+        return $f->_true();
     }
 }
 

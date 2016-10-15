@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\PredicateFactory;
 
 // TODO: Maybe this should not extend Entities
 class LanguageConstruct extends Entities {
@@ -50,19 +50,12 @@ class LanguageConstruct extends Entities {
     /**
      * @inheritdocs
      */
-    public function compile($negate = false) {
-        if (!$negate) {
-            return function(Node $n) {
-                return $n->type() == Variable::LANGUAGE_CONSTRUCT_TYPE
-                    && $n->property("name") == $this->construct_name();
-            };
-        }
-        else {
-            return function(Node $n) {
-                return $n->type() != Variable::LANGUAGE_CONSTRUCT_TYPE
-                    || $n->property("name") != $this->construct_name();
-            };
-        }
+    public function compile(PredicateFactory $f) {
+        return $f->_and
+            ([$f->_type_is(Variable::LANGUAGE_CONSTRUCT_TYPE)
+            // TODO: property->equals would help
+            , $f->_property("name")->_matches($this->construct_name())
+            ]);
     }
 }
 

@@ -19,6 +19,13 @@ namespace Lechimp\Dicto\Graph;
  */
 interface Query {
     /**
+     * Get a factory for predicates.
+     *
+     * @return  PredicateFactory
+     */
+    public function predicate_factory();
+
+    /**
      * Expand the entities currently matched by the query.
      *
      * @param   \Closure    $expander   Entity -> Entity[]
@@ -35,12 +42,12 @@ interface Query {
     public function extract(\Closure $extractor);
 
     /**
-     * Filter the current nodes and results.
+     * Filter the current nodes.
      *
-     * @param   \Closure    $filter     [Entity, &mixed] -> bool
+     * @param   Predicate   $predicate
      * @return  Query
      */
-    public function filter(\Closure $filter);
+    public function filter(Predicate $predicate);
 
     /**
      * Run the query. The current result will be cloned in every expansion.

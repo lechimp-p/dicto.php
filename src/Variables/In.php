@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\Node;
 use Lechimp\Dicto\Graph\Relation;
 use Lechimp\Dicto\Definition\ArgumentParser;
@@ -55,9 +56,9 @@ class In extends Property {
     /**
      * @inheritdocs
      */
-    public function compile(array &$arguments) {
-        $condition = $arguments[0]->compile();
-        return function (Node $n) use ($condition) {
+    public function compile(PredicateFactory $f, array &$arguments) {
+        $condition = $arguments[0]->compile($f)->compile();
+        return $f->_custom(function (Node $n) use ($condition) {
             $nodes = $n->related_nodes(function (Relation $r) use ($condition) {
                 return in_array($r->type(), self::$relations);
             });
@@ -67,6 +68,6 @@ class In extends Property {
                 }
             }
             return false;
-        };
+        });
     }
 }

@@ -24,6 +24,14 @@ class QueryImpl implements Query {
     public function __construct(Graph $graph) {
         $this->graph = $graph;
         $this->steps = [];
+        $this->predicate_factory = new PredicateFactory();
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function predicate_factory() {
+        return $this->predicate_factory;
     }
 
     /**
@@ -49,9 +57,9 @@ class QueryImpl implements Query {
     /**
      * @inheritdocs
      */
-    public function filter(\Closure $filter) {
+    public function filter(Predicate $predicate) {
         $clone = clone $this;
-        $clone->steps[] = ["filter", $filter];
+        $clone->steps[] = ["filter", $predicate];
         assert('$this->steps != $clone->steps');
         return $clone;
     }
@@ -86,15 +94,15 @@ class QueryImpl implements Query {
      * @return  Iterator<[Node,mixed]>
      */
     protected function switch_run_command(\Iterator $nodes, $step) {
-        list($cmd,$clsr) = $step;
+        list($cmd,$par) = $step;
         if ($cmd == "expand") {
-            return $this->run_expand($nodes, $clsr);
+            return $this->run_expand($nodes, $par);
         }
         elseif ($cmd == "extract") {
-            return $this->run_extract($nodes, $clsr);
+            return $this->run_extract($nodes, $par);
         }
         elseif ($cmd == "filter") {
-            return $this->run_filter($nodes, $clsr);
+            return $this->run_filter($nodes, $par);
         }
         else {
             throw new \LogicException("Unknown command: $cmd");
@@ -133,7 +141,8 @@ class QueryImpl implements Query {
     /**
      * @return  Iterator<[Node,mixed]>
      */
-    protected function run_filter(\Iterator $nodes, \Closure $clsr) {
+    protected function run_filter(\Iterator $nodes, Predicate $predicate) {
+        $clsr = $predicate->compile();
         while ($nodes->valid()) {
             $val = $nodes->current();
             list($node, $result) = $val;
@@ -161,9 +170,9 @@ class QueryImpl implements Query {
      * @inheritdocs
      */
     public function filter_by_types(array $types) {
-        return $this->filter(function(Node $n) use ($types) {
+        return $this->filter($this->predicate_factory()->_custom(function(Node $n) use ($types) {
             return in_array($n->type(), $types);
-        });
+        }));
     }
 
     /**

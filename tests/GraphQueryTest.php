@@ -11,11 +11,13 @@
 use Lechimp\Dicto\Graph\Graph;
 use Lechimp\Dicto\Graph\Entity;
 use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\Relation;
 
 class Graph_QueryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->g = new Graph(); 
+        $this->f = new PredicateFactory();
     }
 
     public function test_filter() {
@@ -23,9 +25,9 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
         $n2 = $this->g->create_node("b_type", []);
 
         $res = $this->g->query()
-            ->filter(function(Node $n, &$_) {
+            ->filter($this->f->_custom(function(Node $n) {
                 return $n->type() == "a_type";
-            })
+            }))
             ->extract(function(Node $n, array &$result) {
                 $result[] = $n;
             })

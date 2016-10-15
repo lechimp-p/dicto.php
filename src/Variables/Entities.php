@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\PredicateFactory;
 
 abstract class Entities extends Variable {
     public function __construct($name= null) {
@@ -30,11 +30,11 @@ abstract class Entities extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile() {
-        return function(Node $n) {
-            return $n->type() == $this->id()
-                || $n->type() == $this->id()." reference";
-        };
+    public function compile(PredicateFactory $f) {
+        return $f->_or
+            ([$f->_type_is($this->id())
+            , $f->_type_is($this->id()." reference")
+            ]);
     }
 }
 

@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\PredicateFactory;
 
 class Except extends Combinator {
     /**
@@ -23,13 +23,12 @@ class Except extends Combinator {
     /**
      * @inheritdocs
      */
-    public function compile() {
-        $left_condition = $this->left()->compile();
-        $right_condition = $this->right()->compile();
-
-        return function(Node $n) use ($left_condition, $right_condition) {
-            return $left_condition($n)
-                && !$right_condition($n);
-        };
+    public function compile(PredicateFactory $f) {
+        $l = $this->left()->compile($f);
+        $r = $this->right()->compile($f);
+        return $f->_and
+            ([$l
+            , $f->_not($r)
+            ]);
     }
 }

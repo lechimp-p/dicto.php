@@ -12,11 +12,13 @@ use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Graph\IndexDB;
 use Lechimp\Dicto\Graph\_Query;
 use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\Relation;
 
 class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->db = new IndexDB();
+        $this->f = new PredicateFactory();
     }
 
     public function test_file() {

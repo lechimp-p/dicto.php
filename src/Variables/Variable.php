@@ -11,6 +11,8 @@
 namespace Lechimp\Dicto\Variables;
 
 use Lechimp\Dicto\Definition as Def;
+use Lechimp\Dicto\Graph\Predicate;
+use Lechimp\Dicto\Graph\PredicateFactory;
 
 abstract class Variable extends Def\Definition {
     // TODO: Use these in Graph/IndexDB.
@@ -72,10 +74,11 @@ abstract class Variable extends Def\Definition {
     abstract public function meaning();
 
     /**
-     * Compile the variable to a condition on a graph node.
+     * Compile the variable to a predicate on a graph node.
      *
-     * @return  \Closure    Node -> bool
+     * @return  PredicateFactory $f
+     * @return  Predicate
      */
-    abstract public function compile();
+    abstract public function compile(PredicateFactory $f);
 }
 

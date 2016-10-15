@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Definition\ArgumentParser;
 
 /**
@@ -49,12 +49,8 @@ class Name extends Property {
     /**
      * @inheritdocs
      */
-    public function compile(array &$arguments) {
+    public function compile(PredicateFactory $f, array &$arguments) {
         assert('$this->arguments_are_valid($arguments)');
-        $regexp = $arguments[0];
-        return function (Node $n) use ($regexp) {
-            return $n->has_property("name")
-                && preg_match("%^$regexp\$%", $n->property("name")) == 1;
-        };
+        return $f->_property("name")->_matches($arguments[0]);
     }
 }

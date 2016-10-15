@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\PredicateFactory;
 
 /**
  * Variable matching any of the sub variables.
@@ -37,19 +37,11 @@ class Any extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile() {
-        $conditions = array_map(function(Variable $v) {
-            return $v->compile();
+    public function compile(PredicateFactory $f) {
+        $predicates = array_map(function(Variable $v) use ($f) {
+            return $v->compile($f);
         }, $this->variables);
-
-        return function(Node $n) use (&$conditions) {
-            foreach ($conditions as $condition) {
-                if ($condition($n)) {
-                    return true;
-                }
-            }
-            return false;
-        };
+        return $f->_or($predicates);
     }
 }
 

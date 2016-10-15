@@ -10,15 +10,17 @@
 
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Graph\IndexDB;
+use Lechimp\Dicto\Graph\PredicateFactory;
 
 class VariableCompilationTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->db = new IndexDB();
+        $this->f = new PredicateFactory();
     }
 
     public function test_compile_everything() {
         $var = new V\Everything();
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c = $this->db->_class("AClass", $f, 1,2);
@@ -35,7 +37,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
 
     public function test_compile_files() {
         $var = new V\Files();
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c = $this->db->_class("AClass", $f, 1,2);
@@ -52,7 +54,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
 
     public function test_compile_classes() {
         $var = new V\Classes();
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c = $this->db->_class("AClass", $f, 1,2);
@@ -69,7 +71,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
 
     public function test_compile_interfaces() {
         $var = new V\Interfaces();
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $i = $this->db->_interface("AnInterface", $f, 1,2);
@@ -86,7 +88,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
 
     public function test_compile_methods() {
         $var = new V\Methods();
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c = $this->db->_class("AClass", $f, 1,2);
@@ -104,7 +106,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
 
     public function test_compile_functions() {
         $var = new V\Functions();
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c = $this->db->_class("AClass", $f, 1,2);
@@ -122,7 +124,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
 
     public function test_compile_globals() {
         $var = new V\Globals();
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c = $this->db->_class("AClass", $f, 1,2);
@@ -139,7 +141,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
 
     public function test_compile_language_constructs() {
         $var = new V\Die_();
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c = $this->db->_class("AClass", $f, 1,2);
@@ -156,7 +158,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
 
     public function test_compile_any() {
         $var = new V\Any([new V\Classes, new V\Methods()]);
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c = $this->db->_class("AClass", $f, 1,2);
@@ -180,7 +182,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
             , array("AClass")
             );
         $var = new V\Except(new V\Classes, $var);
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c1 = $this->db->_class("AClass", $f, 1, 2);
@@ -202,7 +204,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
             , new V\Name()
             , array("AClass")
             );
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c1 = $this->db->_class("AClass", $f, 1, 2);
@@ -224,7 +226,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
             , new V\Name()
             , array(".Class")
             );
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c1 = $this->db->_class("AClass", $f, 1, 2);
@@ -251,7 +253,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
             , new V\In()
             , array($a_classes)
             );
-        $compiled = $var->compile();
+        $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
         $c1 = $this->db->_class("AClass", $f, 1,2);

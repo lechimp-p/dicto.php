@@ -11,6 +11,7 @@
 namespace Lechimp\Dicto\Variables;
 
 use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\PredicateFactory;
 
 /**
  * A variable with a certain property.
@@ -78,13 +79,10 @@ class WithProperty extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile() {
-        $left_condition = $this->other->compile();
-        $property_condition = $this->property->compile($this->arguments);
+    public function compile(PredicateFactory $f) {
+        $l = $this->other->compile($f);
+        $p = $this->property->compile($f, $this->arguments);
 
-        return function(Node $n) use ($left_condition, $property_condition) {
-            return $left_condition($n)
-                && $property_condition($n);
-        };
+        return $f->_and([$l,$p]);
     }
 }
