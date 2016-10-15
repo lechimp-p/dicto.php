@@ -63,7 +63,6 @@ class LanguageConstruct extends Entities {
                     || $n->property("name") != $this->construct_name();
             };
         }
-
     }
 }
 
