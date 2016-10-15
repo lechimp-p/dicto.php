@@ -33,10 +33,12 @@ require_once(__DIR__."/NullDB.php");
 
 class AnalyzerFactoryMock extends AnalyzerFactory {
     public $analyzer_mocks = array();
+    public $report_generators = array();
     public function __construct() {}
     public function build(Index $index, ReportGenerator $report_generator) {
         $analyzer_mock = new AnalyzerMock();
         $this->analyzer_mocks[] = $analyzer_mock;
+        $this->report_generators[] = $report_generator;
         return $analyzer_mock;
     }
 }
@@ -209,5 +211,14 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->engine->run();
 
         $this->assertTrue($this->report_generator->end_run_called);
+    }
+
+    public function test_passes_report_generator_to_analyzer_factory() {
+        $this->engine->run();
+
+        $this->assertSame
+            ( $this->analyzer_factory->report_generators[0]
+            , $this->report_generator
+            );
     }
 }
