@@ -68,7 +68,15 @@ class QueryImpl implements Query {
      * @inheritdocs
      */
     public function run($result) {
-        $nodes = $this->add_result($this->initial_nodes(), $result);
+        $steps = $this->steps;
+        if (count($steps) > 0 && $steps[0][0] == "filter") {
+            $nodes = $this->graph->nodes($steps[0][1]);
+            array_shift($steps);
+        }
+        else {
+            $nodes = $this->graph->nodes();
+        }
+        $nodes = $this->add_result($nodes, $result);
 
         foreach ($this->steps as $step) {
             $nodes = $this->switch_run_command($nodes, $step);
@@ -81,13 +89,6 @@ class QueryImpl implements Query {
             $nodes->next();
         }
         return $res;
-    }
-
-    /**
-     * @return  Iterator<[Node,mixed]>
-     */
-    protected function initial_nodes() {
-        return $this->graph->nodes();
     }
 
     /**
