@@ -10,24 +10,11 @@
 
 namespace Lechimp\Dicto\Graph\Predicate;
 
-use Lechimp\Dicto\Graph\Predicate;
 use Lechimp\Dicto\Graph\Entity;
-
 /**
  * A predicate that is true if all of its subpredicates are true.
  */
-class _And extends Predicate {
-    /**
-     * @var Predicate[]
-     */
-    protected $predicates;
-
-    public function __construct(array $predicates) {
-        $this->predicates = array_map(function(Predicate $p) {
-            return $p;
-        }, $predicates);
-    }
-
+class _And extends _Combined {
     /**
      * @inheritdocs
      */
