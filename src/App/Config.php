@@ -191,7 +191,7 @@ class Config implements ConfigurationInterface {
     }
 
     /**
-     * @return  string[]
+     * @return  bool
      */
     public function analysis_store_index() {
         return $this->values["analysis"]["store_index"];
