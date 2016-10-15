@@ -16,19 +16,19 @@ use Lechimp\Dicto\Rules\Rule;
 
 class ReportGeneratorMock implements ReportGenerator {
     public $violations = array();
-    public $begin_run_called_with = false;
-    public $end_run_called = false;
     public function report_violation(Violation $violation) {
         $this->violations[] = $violation;
     }
+    public $begin_run_called_with = false;
     public function begin_run($commit_hash) {
         $this->begin_run_called_with = $commit_hash;
     }
+    public $end_run_called = false;
     public function end_run() {
         $this->end_run_called = true;
     }
     public function begin_ruleset(Ruleset $rule) {}
-    public function end_ruleset(Ruleset $rule) {}
+    public function end_ruleset() {}
     public function begin_rule(Rule $rule) {}
-    public function end_rule(Rule $rule) {}
+    public function end_rule() {}
 }

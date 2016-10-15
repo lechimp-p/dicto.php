@@ -35,18 +35,17 @@ interface ReportGenerator {
     /**
      * The analyzer will give violations on the given ruleset afterwards.
      *
-     * @param   Ruleset     $rule
+     * @param   Ruleset     $ruleset
      * @return  null
      */
-    public function begin_ruleset(Ruleset $rule);
+    public function begin_ruleset(Ruleset $ruleset);
 
     /**
      * The analyzer will give no more violations on the given ruleset afterwards.
      *
-     * @param   Ruleset     $rule
      * @return  null
      */
-    public function end_ruleset(Ruleset $rule);
+    public function end_ruleset();
 
     /**
      * The analyzer will give violations on the given rule afterwards.
@@ -59,10 +58,9 @@ interface ReportGenerator {
     /**
      * The analyzer will give no moew violations on the given rule afterwards.
      *
-     * @param   Rule        $rule
      * @return  null
      */
-    public function end_rule(Rule $rule);
+    public function end_rule();
 
     /**
      * The analyzer reports a violation on the rule previously given.

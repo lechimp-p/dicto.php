@@ -42,7 +42,7 @@ class CLIReportGenerator implements ReportGenerator {
         $this->line();
     }
 
-    public function end_ruleset(Ruleset $rule) {
+    public function end_ruleset() {
         echo implode("\n", $this->lines);
     }
 
@@ -56,7 +56,7 @@ class CLIReportGenerator implements ReportGenerator {
         $this->line();
     }
 
-    public function end_rule(Rule $rule) {
+    public function end_rule() {
         $this->line();
         $this->line();
     }

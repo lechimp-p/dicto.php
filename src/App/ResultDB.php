@@ -66,7 +66,7 @@ class ResultDB extends DB implements ReportGenerator {
     /**
      * @inheritdoc
      */
-    public function end_ruleset(Ruleset $rule) {
+    public function end_ruleset() {
         // Nothing to do here...
     }
 
@@ -108,7 +108,7 @@ class ResultDB extends DB implements ReportGenerator {
     /**
      * @inheritdoc
      */
-    public function end_rule(Rule $rule) {
+    public function end_rule() {
         $this->current_rule_id = null;
     }
 
