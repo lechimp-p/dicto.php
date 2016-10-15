@@ -33,4 +33,10 @@ class _Or extends _Combined {
             return false;
         };
     }
+
+    /**
+     * @inheritdocs
+     */
+    public function for_types($existing_types) {
+    }
 }

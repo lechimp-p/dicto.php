@@ -32,4 +32,15 @@ class _And extends _Combined {
             return true;
         };
     }
+
+    /**
+     * @inheritdocs
+     */
+    public function for_types($existing_types) {
+        $tss = array_map(function($p) use ($existing_types) {
+            return $p->for_types($existing_types);
+        }, $this->predicates);
+
+        return array_values(call_user_func_array("array_intersect", $tss));
+    }
 }

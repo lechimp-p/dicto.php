@@ -26,10 +26,4 @@ abstract class _Combined extends Predicate {
             return $p;
         }, $predicates);
     }
-
-    /**
-     * @inheritdocs
-     */
-    public function for_types($existing_types) {
-    }
 }
