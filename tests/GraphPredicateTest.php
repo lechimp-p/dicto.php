@@ -242,10 +242,10 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($all_types, $ts);
 
         $ts = $f->_not($f->_true())->for_types($all_types);
-        $this->assertEquals([], $ts);
+        $this->assertEquals($all_types, $ts);
 
         $ts = $f->_not($f->_type_is("a"))->for_types($all_types);
-        $this->assertEquals(["b", "c"], $ts);
+        $this->assertEquals($all_types, $ts);
     }
 
     public function test_possibly_matching_entity_types_and() {

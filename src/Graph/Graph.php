@@ -68,9 +68,16 @@ class Graph {
      */
     public function nodes(Predicate $filter = null) {
         if ($filter !== null) {
+            $types = $filter->for_types(array_keys($this->nodes));
             $filter = $filter->compile();
         }
-        foreach ($this->nodes as $nodes) {
+        else {
+            $types = array_keys($this->nodes);
+        }
+        foreach ($this->nodes as $type => $nodes) {
+            if (!in_array($type, $types)) {
+                continue;
+            }
             foreach ($nodes as $node) {
                 if ($filter === null) {
                     yield $node;

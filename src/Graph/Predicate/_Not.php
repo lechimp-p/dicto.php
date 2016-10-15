@@ -40,7 +40,8 @@ class _Not extends _Combined {
      * @inheritdocs
      */
     public function for_types($existing_types) {
-        $ts = $this->predicate->for_types($existing_types);
-        return array_values(array_diff($existing_types, $ts));
+        // Can't really know what is in predicate, so this could match
+        // all types.
+        return $existing_types;
     }
 }
