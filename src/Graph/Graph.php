@@ -64,7 +64,7 @@ class Graph {
      * Get nodes from the graph, maybe filtered by a filter.
      *
      * @param   Predicate|null    $filter
-     * @return  Iterator<Node>
+     * @return  Iterator <Node>
      */
     public function nodes(Predicate $filter = null) {
         if ($filter !== null) {

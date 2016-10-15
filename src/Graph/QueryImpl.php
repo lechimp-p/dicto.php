@@ -92,7 +92,7 @@ class QueryImpl implements Query {
     }
 
     /**
-     * @return  Iterator<[Node,mixed]>
+     * @return  Iterator <[Node,mixed]>
      */
     protected function switch_run_command(\Iterator $nodes, $step) {
         list($cmd,$par) = $step;
@@ -111,7 +111,7 @@ class QueryImpl implements Query {
     }
 
     /**
-     * @return  Iterator<[Node,mixed]>
+     * @return  Iterator <[Node,mixed]>
      */
     protected function run_expand(\Iterator $nodes, \Closure $clsr) {
         while ($nodes->valid()) {
@@ -125,7 +125,7 @@ class QueryImpl implements Query {
     }
 
     /**
-     * @return  Iterator<[Node,mixed]>
+     * @return  Iterator <[Node,mixed]>
      */
     protected function run_extract(\Iterator $nodes, \Closure $clsr) {
         while ($nodes->valid()) {
@@ -140,7 +140,7 @@ class QueryImpl implements Query {
     }
 
     /**
-     * @return  Iterator<[Node,mixed]>
+     * @return  Iterator <[Node,mixed]>
      */
     protected function run_filter(\Iterator $nodes, Predicate $predicate) {
         $clsr = $predicate->compile();
@@ -155,7 +155,7 @@ class QueryImpl implements Query {
     }
 
     /**
-     * @return  Iterator<[Node,mixed]>
+     * @return  Iterator <[Node,mixed]>
      */
     protected function add_result(\Iterator $nodes, &$result) {
         while ($nodes->valid()) {
