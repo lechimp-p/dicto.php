@@ -27,7 +27,7 @@ class _True extends Predicate {
     /**
      * @inheritdocs
      */
-    public function for_types($existing_types) {
+    public function for_types(array $existing_types) {
         return $existing_types;
     }
 }

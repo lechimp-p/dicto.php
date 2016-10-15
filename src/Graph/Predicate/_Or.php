@@ -20,9 +20,7 @@ class _Or extends _Combined {
      * @inheritdocs
      */
     public function compile() {
-        $compiled = array_map(function($p) {
-            return $p->compile();
-        }, $this->predicates);
+        $compiled = $this->compiled_predicates();
 
         return function(Entity $e) use ($compiled) { 
             foreach ($compiled as $predicate) {
@@ -37,11 +35,8 @@ class _Or extends _Combined {
     /**
      * @inheritdocs
      */
-    public function for_types($existing_types) {
-        $tss = array_map(function($p) use ($existing_types) {
-            return $p->for_types($existing_types);
-        }, $this->predicates);
-
+    public function for_types(array $existing_types) {
+        $tss = $this->for_types_of_predicates($existing_types);
         return array_values(array_unique(call_user_func_array("array_merge", $tss)));
     }
 }

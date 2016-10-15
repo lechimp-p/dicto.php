@@ -39,7 +39,7 @@ class _Not extends _Combined {
     /**
      * @inheritdocs
      */
-    public function for_types($existing_types) {
+    public function for_types(array $existing_types) {
         // Can't really know what is in predicate, so this could match
         // all types.
         return $existing_types;

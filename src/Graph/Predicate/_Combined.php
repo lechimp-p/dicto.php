@@ -26,4 +26,23 @@ abstract class _Combined extends Predicate {
             return $p;
         }, $predicates);
     }
+
+    /**
+     * @return  \Closure[]
+     */
+    protected function compiled_predicates() {
+        return array_map(function($p) {
+            return $p->compile();
+        }, $this->predicates);
+    }
+
+    /**
+     * @param   string[]
+     * @return  string[][]
+     */
+    protected function for_types_of_predicates(array $existing_types) {
+        return array_map(function($p) use ($existing_types) {
+            return $p->for_types($existing_types);
+        }, $this->predicates);
+    }
 }

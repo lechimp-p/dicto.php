@@ -27,5 +27,5 @@ abstract class Predicate {
      * @param   string[]    $existing_types
      * @return  string[]
      */
-    abstract public function for_types($existing_types);
+    abstract public function for_types(array $existing_types);
 }

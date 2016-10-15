@@ -40,7 +40,7 @@ class _TypeIs extends Predicate {
     /**
      * @inheritdocs
      */
-    public function for_types($existing_types) {
+    public function for_types(array $existing_types) {
         return [$this->type];
     }
 }
