@@ -27,6 +27,7 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
                 ])
              , $f->_true()
              , $f->_property("bar")->_matches(".*")
+             , $f->_custom(function(Entity $e) { return true; })
             ]);
         $this->assertInstanceOf(Predicate::class, $pred);
     }

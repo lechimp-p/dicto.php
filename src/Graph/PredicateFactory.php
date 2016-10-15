@@ -81,4 +81,14 @@ class PredicateFactory {
     public function _property($name) {
         return new PropertyPredicateFactory($name);
     }
+
+    /**
+     * A custom predicate.
+     *
+     * @param   \Closure    $predicate  Entity -> bool
+     * @return  Predicate
+     */
+    public function _custom(\Closure $closure) {
+        return new Predicate\_True();
+    }
 }
