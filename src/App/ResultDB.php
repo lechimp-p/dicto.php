@@ -38,7 +38,7 @@ class ResultDB extends DB implements ReportGenerator {
      * @param   string  $commit_hash
      * @return  null
      */
-    public function begin_new_run($commit_hash) {
+    public function begin_run($commit_hash) {
         assert('is_string($commit_hash)');
         $this->builder()
             ->insert($this->run_table())
@@ -48,6 +48,12 @@ class ResultDB extends DB implements ReportGenerator {
             ->setParameter(0, $commit_hash)
             ->execute();
         $this->current_run_id = (int)$this->connection->lastInsertId();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function end_run() {
     }
 
     /**

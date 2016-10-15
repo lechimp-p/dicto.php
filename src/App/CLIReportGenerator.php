@@ -25,6 +25,18 @@ class CLIReportGenerator implements ReportGenerator {
     /**
      * @inheritdoc
      */
+    public function begin_run($commit_hash) {
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function end_run() {
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function begin_ruleset(Ruleset $rule) {
         $this->line("Result of analysis:");
         $this->line();

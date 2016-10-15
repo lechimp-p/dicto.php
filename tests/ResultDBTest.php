@@ -69,8 +69,8 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->db->is_inited());
     }
 
-    public function test_begin_new_run() {
-        $this->db->begin_new_run("#COMMIT_HASH#");
+    public function test_begin_run() {
+        $this->db->begin_run("#COMMIT_HASH#");
 
         $res = $this->builder()
             ->select("*")
@@ -85,8 +85,8 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_begin_two_new_runs() {
-        $this->db->begin_new_run("#COMMIT_HASH1#");
-        $this->db->begin_new_run("#COMMIT_HASH2#");
+        $this->db->begin_run("#COMMIT_HASH1#");
+        $this->db->begin_run("#COMMIT_HASH2#");
 
         $res = $this->builder()
             ->select("*")
@@ -107,7 +107,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_begin_rule_inserts_rule() {
-        $this->db->begin_new_run("#COMMIT_HASH#");
+        $this->db->begin_run("#COMMIT_HASH#");
         $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
 
         $res = $this->builder()
@@ -125,7 +125,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_begin_rule_inserts_variables() {
-        $this->db->begin_new_run("#COMMIT_HASH#");
+        $this->db->begin_run("#COMMIT_HASH#");
         $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
 
         $res = $this->builder()
@@ -153,9 +153,9 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_begin_rule_inserts_rule_twice() {
-        $this->db->begin_new_run("#COMMIT_HASH1#");
+        $this->db->begin_run("#COMMIT_HASH1#");
         $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
-        $this->db->begin_new_run("#COMMIT_HASH2#");
+        $this->db->begin_run("#COMMIT_HASH2#");
         $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
 
         $res = $this->builder()
@@ -173,9 +173,9 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_begin_rule_inserts_variables_twice() {
-        $this->db->begin_new_run("#COMMIT_HASH#");
+        $this->db->begin_run("#COMMIT_HASH#");
         $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
-        $this->db->begin_new_run("#COMMIT_HASH2#");
+        $this->db->begin_run("#COMMIT_HASH2#");
         $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
 
         $res = $this->builder()
@@ -203,9 +203,9 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_begin_ruhle_changed_var_meaning() {
-        $this->db->begin_new_run("#COMMIT_HASH#");
+        $this->db->begin_run("#COMMIT_HASH#");
         $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
-        $this->db->begin_new_run("#COMMIT_HASH2#");
+        $this->db->begin_run("#COMMIT_HASH2#");
         $this->db->begin_rule($this->all_classes_cannot_depend_on_globals_twisted());
 
         $res = $this->builder()
@@ -249,7 +249,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
     public function test_report_violation() {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $violation = new Violation($rule, "file.php", 42, "line of code");
-        $this->db->begin_new_run("#COMMIT_HASH#");
+        $this->db->begin_run("#COMMIT_HASH#");
         $this->db->begin_rule($rule);
         $this->db->report_violation($violation);
 
@@ -285,10 +285,10 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
     public function test_report_violation_twice() {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $violation = new Violation($rule, "file.php", 42, "line of code");
-        $this->db->begin_new_run("#COMMIT_HASH1#");
+        $this->db->begin_run("#COMMIT_HASH1#");
         $this->db->begin_rule($rule);
         $this->db->report_violation($violation);
-        $this->db->begin_new_run("#COMMIT_HASH2#");
+        $this->db->begin_run("#COMMIT_HASH2#");
         $this->db->begin_rule($rule);
         $this->db->report_violation($violation);
 
@@ -333,10 +333,10 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $violation1 = new Violation($rule, "file.php", 42, "line of code");
         $violation2 = new Violation($rule, "file.php", 23, "line of code");
-        $this->db->begin_new_run("#COMMIT_HASH1#");
+        $this->db->begin_run("#COMMIT_HASH1#");
         $this->db->begin_rule($rule);
         $this->db->report_violation($violation1);
-        $this->db->begin_new_run("#COMMIT_HASH2#");
+        $this->db->begin_run("#COMMIT_HASH2#");
         $this->db->begin_rule($rule);
         $this->db->report_violation($violation2);
 
@@ -381,10 +381,10 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $violation1 = new Violation($rule, "file1.php", 42, "line of code");
         $violation2 = new Violation($rule, "file2.php", 42, "line of code");
-        $this->db->begin_new_run("#COMMIT_HASH1#");
+        $this->db->begin_run("#COMMIT_HASH1#");
         $this->db->begin_rule($rule);
         $this->db->report_violation($violation1);
-        $this->db->begin_new_run("#COMMIT_HASH2#");
+        $this->db->begin_run("#COMMIT_HASH2#");
         $this->db->begin_rule($rule);
         $this->db->report_violation($violation2);
 
@@ -439,10 +439,10 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $violation1 = new Violation($rule, "file.php", 42, "line of code");
         $violation2 = new Violation($rule, "file.php", 42, "another line of code");
-        $this->db->begin_new_run("#COMMIT_HASH1#");
+        $this->db->begin_run("#COMMIT_HASH1#");
         $this->db->begin_rule($rule);
         $this->db->report_violation($violation1);
-        $this->db->begin_new_run("#COMMIT_HASH2#");
+        $this->db->begin_run("#COMMIT_HASH2#");
         $this->db->begin_rule($rule);
         $this->db->report_violation($violation2);
 
@@ -498,7 +498,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $rule2 = $this->all_classes_cannot_invoke_functions();
         $violation1 = new Violation($rule1, "file.php", 42, "line of code");
         $violation2 = new Violation($rule2, "file.php", 42, "line of code");
-        $this->db->begin_new_run("#COMMIT_HASH1#");
+        $this->db->begin_run("#COMMIT_HASH1#");
         $this->db->begin_rule($rule1);
         $this->db->report_violation($violation1);
         $this->db->begin_rule($rule2);
@@ -555,7 +555,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $rule = $this->all_classes_cannot_depend_on_globals();
         $violation1 = new Violation($rule, "file.php", 23, "line of code");
         $violation2 = new Violation($rule, "file.php", 42, "line of code");
-        $this->db->begin_new_run("#COMMIT_HASH1#");
+        $this->db->begin_run("#COMMIT_HASH1#");
         $this->db->begin_rule($rule);
         $this->db->report_violation($violation1);
         $this->db->report_violation($violation2);

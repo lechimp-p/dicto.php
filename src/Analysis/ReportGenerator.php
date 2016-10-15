@@ -18,6 +18,21 @@ use Lechimp\Dicto\Rules\Rule;
  */
 interface ReportGenerator {
     /**
+     * Tell the report generator that a run begins.
+     *
+     * @param   string  $commit_hash
+     * @return  null
+     */
+    public function begin_run($commit_hash);
+
+    /**
+     * Tell the report generator that the run ended.
+     *
+     * @return null
+     */
+    public function end_run();
+
+    /**
      * The analyzer will give violations on the given ruleset afterwards.
      *
      * @param   Ruleset     $rule

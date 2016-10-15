@@ -19,6 +19,8 @@ class ReportGeneratorMock implements ReportGenerator {
     public function report_violation(Violation $violation) {
         $this->violations[] = $violation;
     }
+    public function begin_run($commit_hash) {}
+    public function end_run() {}
     public function begin_ruleset(Ruleset $rule) {}
     public function end_ruleset(Ruleset $rule) {}
     public function begin_rule(Rule $rule) {}
