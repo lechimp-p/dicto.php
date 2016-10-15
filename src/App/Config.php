@@ -34,6 +34,7 @@ class Config implements ConfigurationInterface {
     protected $defaults =
         [ "analysis" =>
             [ "ignore"  => []
+            , "store_index" => false
             ]
         , "rules" =>
             [ "schemas" =>
@@ -107,6 +108,9 @@ class Config implements ConfigurationInterface {
                         ->arrayNode("ignore")
                             ->prototype("scalar")
                             ->end()
+                            ->isRequired()
+                        ->end()
+                        ->booleanNode("store_index")
                             ->isRequired()
                         ->end()
                     ->end()
@@ -184,6 +188,13 @@ class Config implements ConfigurationInterface {
      */
     public function analysis_ignore() {
         return $this->values["analysis"]["ignore"];
+    }
+
+    /**
+     * @return  string[]
+     */
+    public function analysis_store_index() {
+        return $this->values["analysis"]["store_index"];
     }
 
     /**

@@ -41,6 +41,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             ]]);
 
         $this->assertEquals([], $config->analysis_ignore());
+        $this->assertFalse($config->analysis_store_index());
         $default_schemas =
             [ \Lechimp\Dicto\Rules\DependOn::class
             , \Lechimp\Dicto\Rules\Invoke::class
@@ -99,6 +100,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
                     [ "ignore" =>
                         [ ".*\\.omit_me"
                         ]
+                    , "store_index" => true
                     ]
                 ]
             ]);
@@ -106,6 +108,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("/root/dir", $config->project_root());
         $this->assertEquals("/data", $config->project_storage());
         $this->assertEquals([".*\\.omit_me"], $config->analysis_ignore());
+        $this->assertTrue($config->analysis_store_index());
     }
 
     public function test_path_resolution() {

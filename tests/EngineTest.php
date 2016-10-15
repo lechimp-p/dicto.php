@@ -112,6 +112,10 @@ class _Engine extends Engine {
 
 class EngineTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
+        $this->build_engine_with_store_index_set_to(false);
+    }
+
+    protected function build_engine_with_store_index_set_to($value) {
         $this->root = __DIR__."/data/src";
         $this->config = new Config(__DIR__."/data", array(array
             ( "project" => array
@@ -123,6 +127,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
                 ( "ignore" => array
                     ( ".*\.omit_me"
                     )
+                , "store_index" => $value
                 )
             )));
         $this->log = new LoggerMock();
@@ -150,7 +155,19 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->analyzer_factory->analyzer_mocks[0]->run_called);
     }
 
+    public function test_does_not_build_index_db_when_no_store_index() {
+        $this->engine->run();
+
+        $this->assertEquals(array(), $this->db_factory->build_paths);
+        $this->assertEquals(array(), $this->db_factory->load_paths);
+        $this->assertFalse($this->engine->write_index_to_called);
+    }
+
+
+
     public function test_builds_index_db() {
+        $this->build_engine_with_store_index_set_to(true);
+
         $commit_hash = uniqid();
         $this->source_status->commit_hash = $commit_hash;
 

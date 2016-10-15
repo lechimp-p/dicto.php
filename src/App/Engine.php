@@ -73,12 +73,15 @@ class Engine {
      */
     public function run() {
         $index_db_path = $this->index_database_path();
-        if (true) {//!$this->db_factory->index_db_exists($index_db_path)) {
+        if (!$this->db_factory->index_db_exists($index_db_path)) {
             $index = $this->build_index();
             $this->run_indexing($index);
-            //$index_db = $this->db_factory->build_index_db($index_db_path);
-            //$this->log->notice("Writing index to database '$index_db_path'...");
-            //$this->write_index_to($index, $index_db);
+
+            if ($this->config->analysis_store_index()) {
+                $index_db = $this->db_factory->build_index_db($index_db_path);
+                $this->log->notice("Writing index to database '$index_db_path'...");
+                $this->write_index_to($index, $index_db);
+            }
         }
         else {
             $index_db = $this->db_factory->load_index_db($index_db_path);
