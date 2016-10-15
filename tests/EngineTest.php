@@ -195,4 +195,13 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(array(), $this->indexer_factory->indexer_mocks);
         $this->assertTrue($this->engine->read_index_from_called);
     }
+
+    public function test_call_begin_run_on_report_generator() {
+        $commit_hash = uniqid();
+        $this->source_status->commit_hash = $commit_hash;
+
+        $this->engine->run();
+
+        $this->assertEquals($commit_hash, $this->report_generator->begin_run_called_with);
+    }
 }

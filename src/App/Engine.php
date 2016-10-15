@@ -48,6 +48,11 @@ class Engine {
     protected $analyzer_factory;
 
     /**
+     * @var ReportGenerator
+     */
+    protected $report_generator;
+
+    /**
      * @var SourceStatus
      */
     protected $source_status;
@@ -65,6 +70,7 @@ class Engine {
         $this->db_factory = $db_factory;
         $this->indexer_factory = $indexer_factory;
         $this->analyzer_factory = $analyzer_factory;
+        $this->report_generator = $report_generator;
         $this->source_status = $source_status;
     }
 
@@ -114,11 +120,12 @@ class Engine {
     protected function run_analysis(Index $index) {
         $this->log->notice("Running analysis...");
         $commit_hash = $this->source_status->commit_hash();
+        $this->report_generator->begin_run($commit_hash);
         //$result_db = $this->db_factory->get_result_db($this->result_database_path());
         //$result_db->begin_new_run($commit_hash);
         //$analyzer = $this->analyzer_factory->build($index, $result_db);
-        $gen = new CLIReportGenerator();
-        $analyzer = $this->analyzer_factory->build($index, $gen);
+        //$gen = new CLIReportGenerator();
+        $analyzer = $this->analyzer_factory->build($index, $this->report_generator);
         $analyzer->run();
     }
 
