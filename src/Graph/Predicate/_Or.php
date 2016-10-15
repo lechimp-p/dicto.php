@@ -38,5 +38,10 @@ class _Or extends _Combined {
      * @inheritdocs
      */
     public function for_types($existing_types) {
+        $tss = array_map(function($p) use ($existing_types) {
+            return $p->for_types($existing_types);
+        }, $this->predicates);
+
+        return array_values(array_unique(call_user_func_array("array_merge", $tss)));
     }
 }
