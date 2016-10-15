@@ -83,9 +83,9 @@ class GraphTest extends PHPUnit_Framework_TestCase {
     public function test_filtered_nodes() {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
-        $matcher = function (Node $n) {
+        $matcher = $this->g->query()->predicate_factory()->_custom(function (Node $n) {
             return $n->type() == "b_type";
-        };
+        });
 
         $this->assertEquals([$n2], iterator_to_array($this->g->nodes($matcher)));
     }

@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\Graph;
 
+use Lechimp\Dicto\Graph\Predicate;
+
 /**
  * The complete graph.
  */
@@ -61,19 +63,22 @@ class Graph {
     /**
      * Get nodes from the graph, maybe filtered by a filter.
      *
-     * @param   \Closure|null    $filter
+     * @param   Predicate|null    $filter
      * @return  Iterator<Node>
      */
-    public function nodes(\Closure $filter = null) {
-        if ($filter === null) {
-            // TODO: This could be more performant with some duplication,
-            // i.e. using two branches for with and without filter.
-            $filter = function($_) { return true; };
+    public function nodes(Predicate $filter = null) {
+        if ($filter !== null) {
+            $filter = $filter->compile();
         }
         foreach ($this->nodes as $nodes) {
             foreach ($nodes as $node) {
-                if ($filter($node)) {
+                if ($filter === null) {
                     yield $node;
+                }
+                else {
+                    if ($filter($node)) {
+                        yield $node;
+                    }
                 }
             }
         }
