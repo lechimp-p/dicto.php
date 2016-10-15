@@ -1,7 +1,3 @@
-# Indexer
-* How should i keep track of namespaces? Is it just a part of the name? Could i
-  store it separately?
-
 # Things to write tests for
 * What happens if i use namespaces?
 * What happens if i use closures and call them like `$closure()`?
@@ -25,6 +21,12 @@
   word.
 * Introduce a RegExp class to put checking for validity in one place.
 * Use custom rules in indexer test.
+* Engine starts to become a mess, maybe it could be refactored to use some different
+  classes.
+
+# Report
+* Introduce some nice way to use different and also custom report generators. That
+  would mean to introduce the possibility to add custom classes to the config. 
 
 # Issues
 * `eval()` does not get recognized, since PHPParser does not treat it as an ordinary

@@ -35,6 +35,8 @@ class Config implements ConfigurationInterface {
         [ "analysis" =>
             [ "ignore"  => []
             , "store_index" => false
+            , "report_stdout" => true 
+            , "report_database" => false
             ]
         , "rules" =>
             [ "schemas" =>
@@ -111,6 +113,12 @@ class Config implements ConfigurationInterface {
                             ->isRequired()
                         ->end()
                         ->booleanNode("store_index")
+                            ->isRequired()
+                        ->end()
+                        ->booleanNode("report_stdout")
+                            ->isRequired()
+                        ->end()
+                        ->booleanNode("report_database")
                             ->isRequired()
                         ->end()
                     ->end()
@@ -195,6 +203,20 @@ class Config implements ConfigurationInterface {
      */
     public function analysis_store_index() {
         return $this->values["analysis"]["store_index"];
+    }
+
+    /**
+     * @return  bool
+     */
+    public function analysis_report_stdout() {
+        return $this->values["analysis"]["report_stdout"];
+    }
+
+    /**
+     * @return  bool
+     */
+    public function analysis_report_database() {
+        return $this->values["analysis"]["report_database"];
     }
 
     /**
