@@ -11,6 +11,7 @@
 namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\Indexer\IndexerFactory;
+use Lechimp\Dicto\Analysis\ReportGenerator;
 use Lechimp\Dicto\Analysis\AnalyzerFactory;
 use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Indexer\Insert;
@@ -56,6 +57,7 @@ class Engine {
                                , DBFactory $db_factory
                                , IndexerFactory $indexer_factory
                                , AnalyzerFactory $analyzer_factory
+                               , ReportGenerator $report_generator
                                , SourceStatus $source_status
                                ) {
         $this->log = $log;

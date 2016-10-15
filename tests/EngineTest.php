@@ -26,6 +26,7 @@ use PhpParser\ParserFactory;
 use Doctrine\DBAL\DriverManager;
 use Psr\Log\LogLevel;
 
+require_once(__DIR__."/ReportGeneratorMock.php");
 require_once(__DIR__."/LoggerMock.php");
 require_once(__DIR__."/tempdir.php");
 require_once(__DIR__."/NullDB.php");
@@ -134,6 +135,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->db_factory = new DBFactoryMock();
         $this->indexer_factory = new IndexerFactoryMock();
         $this->analyzer_factory = new AnalyzerFactoryMock();
+        $this->report_generator = new ReportGeneratorMock();
         $this->source_status = new SourceStatusMock();
         $this->engine = new _Engine
             ( $this->log
@@ -141,6 +143,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
             , $this->db_factory
             , $this->indexer_factory
             , $this->analyzer_factory
+            , $this->report_generator
             , $this->source_status
             );
     }

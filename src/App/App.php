@@ -99,6 +99,7 @@ class App {
                 , $c["database_factory"]
                 , $c["indexer_factory"]
                 , $c["analyzer_factory"]
+                , $c["report_generator"]
                 , $c["source_status"]
                 );
         };
