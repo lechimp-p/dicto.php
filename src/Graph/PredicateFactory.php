@@ -69,7 +69,7 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _type_is($type) {
-        return new Predicate\_True();
+        return new Predicate\_TypeIs($type);
     }
 
     /**
