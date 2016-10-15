@@ -85,10 +85,10 @@ class PredicateFactory {
     /**
      * A custom predicate.
      *
-     * @param   \Closure    $predicate  Entity -> bool
+     * @param   \Closure    $predicate Entity -> bool
      * @return  Predicate
      */
-    public function _custom(\Closure $closure) {
-        return new Predicate\_Custom($closure);
+    public function _custom(\Closure $predicate) {
+        return new Predicate\_Custom($predicate);
     }
 }
