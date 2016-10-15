@@ -21,7 +21,7 @@ class _False extends Predicate {
      * @inheritdocs
      */
     public function compile() {
-        return function(Entity $e) { return false; };
+        return function() { return false; };
     }
 
     /**

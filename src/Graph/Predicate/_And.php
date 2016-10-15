@@ -11,6 +11,7 @@
 namespace Lechimp\Dicto\Graph\Predicate;
 
 use Lechimp\Dicto\Graph\Entity;
+
 /**
  * A predicate that is true if all of its subpredicates are true.
  */

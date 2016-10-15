@@ -21,7 +21,7 @@ class _True extends Predicate {
      * @inheritdocs
      */
     public function compile() {
-        return function(Entity $e) { return true; };
+        return function() { return true; };
     }
 
     /**
