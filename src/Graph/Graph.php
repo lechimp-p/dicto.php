@@ -10,12 +10,14 @@
 
 namespace Lechimp\Dicto\Graph;
 
+use Lechimp\Dicto\Graph\Predicate;
+
 /**
  * The complete graph.
  */
 class Graph {
     /**
-     * @var array<int, Node>
+     * @var array<string, array<int, Node>>
      */
     protected $nodes = [];
 
@@ -33,7 +35,10 @@ class Graph {
      */
     public function create_node($type, array $properties = null) {
         $node = $this->build_node($this->id_counter, $type, $properties);
-        $this->nodes[] = $node;
+        if (!array_key_exists($type, $this->nodes)) {
+            $this->nodes[$type] = [];
+        }
+        $this->nodes[$type][$this->id_counter] = $node;
         $this->id_counter++;
         return $node;
     }
@@ -58,25 +63,31 @@ class Graph {
     /**
      * Get nodes from the graph, maybe filtered by a filter.
      *
-     * @param   \Closure|null    $filter
+     * @param   Predicate|null    $filter
      * @return  Iterator<Node>
      */
-    public function nodes(\Closure $filter = null) {
-        if ($filter === null) {
-            // TODO: This could be more performant with some duplication,
-            // i.e. using two branches for with and without filter.
-            $filter = function($_) { return true; };
+    public function nodes(Predicate $filter = null) {
+        if ($filter !== null) {
+            $types = $filter->for_types(array_keys($this->nodes));
+            $filter = $filter->compile();
         }
-        reset($this->nodes);
-        $val = current($this->nodes);
-        while ( next($this->nodes)) {
-            if ($filter($val)) {
-                yield $val;
+        else {
+            $types = array_keys($this->nodes);
+        }
+        foreach ($this->nodes as $type => $nodes) {
+            if (!in_array($type, $types)) {
+                continue;
             }
-            $val = current($this->nodes);
-        }
-        if ($val) {
-            yield $val;
+            foreach ($nodes as $node) {
+                if ($filter === null) {
+                    yield $node;
+                }
+                else {
+                    if ($filter($node)) {
+                        yield $node;
+                    }
+                }
+            }
         }
     }
 
@@ -89,10 +100,12 @@ class Graph {
      */
     public function node($id) {
         assert('is_int($id)');
-        if (!array_key_exists($id, $this->nodes)) {
-            throw new \InvalidArgumentException("Unknown node id '$id'");
+        foreach ($this->nodes as $nodes) {
+            if (array_key_exists($id, $nodes)) {
+                return $nodes[$id];
+            }
         }
-        return $this->nodes[$id];
+        throw new \InvalidArgumentException("Unknown node id '$id'");
     }
 
     /**

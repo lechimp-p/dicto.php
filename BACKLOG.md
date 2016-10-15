@@ -27,6 +27,10 @@
 * Use custom rules in indexer test.
 
 # Issues
+* `eval()` does not get recognized, since PHPParser does not treat it as an ordinary
+  function.
+* `GUIClasses cannot depend on ilDB` finds some locations twice on ILIAS. Seems to
+  be related to the `global` keyword.
 * It is inconsistent, that Invoke makes invocations in methods of classes related
   to the class itself, but `only XYZClasses can invoke` also flags the methods in
   XYZClasses.

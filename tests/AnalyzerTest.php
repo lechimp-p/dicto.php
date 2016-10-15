@@ -10,6 +10,7 @@
 
 use Lechimp\Dicto\Analysis\Analyzer;
 use Lechimp\Dicto\Analysis\Index;
+use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\IndexQuery;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
@@ -38,18 +39,20 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
                     , "filter_by_types"
                     , "expand_relations"
                     , "expand_target"
+                    , "predicate_factory"
                     ];
                 $mock = $this
                     ->getMockBuilder(IndexQuery::class)
                     ->setMethods($methods)
                     ->getMock();
                 foreach ($methods as $method) {
-                    if ($method == "run") {
+                    if ($method == "run" || $method == "predicate_factory") {
                         continue;
                     }
                     $mock->method($method)->willReturn($mock);
                 }
                 $mock->method("run")->willReturn([]);
+                $mock->method("predicate_factory")->willReturn(new PredicateFactory);
                 $this->query_mocks[] = $mock;
                 return $mock;
             }));

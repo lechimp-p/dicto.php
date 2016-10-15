@@ -57,10 +57,12 @@ abstract class Relation extends Schema {
         $mode = $rule->mode();
         $var_left = $rule->checked_on();
         $var_right = $rule->argument(0);
+        $query = $index->query();
+        $predicate_factory = $query->predicate_factory();
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
-            $filter_left = $var_left->compile();
-            $filter_right = $var_right->compile();
-            return $index->query()
+            $filter_left = $var_left->compile($predicate_factory);
+            $filter_right = $var_right->compile($predicate_factory);
+            return $query
                 ->filter($filter_left)
                 ->expand_relations([$this->name()])
                 ->extract(function($e,&$r) use ($rule) {
@@ -76,11 +78,11 @@ abstract class Relation extends Schema {
                 ;
         }
         if ($mode == Rule::MODE_MUST) {
-            $filter_left = $var_left->compile();
-            $filter_right = $var_right->compile();
-            return $index->query()
+            $filter_left = $var_left->compile($predicate_factory);
+            $filter_right = $var_right->compile($predicate_factory)->compile();
+            return $query
                 ->filter($filter_left)
-                ->filter(function(Node $n) use ($filter_right) {
+                ->filter($predicate_factory->_custom(function(Node $n) use ($filter_right) {
                     $rels = $n->relations(function($r) {
                         return $r->type() == $this->name();
                     });
@@ -93,7 +95,7 @@ abstract class Relation extends Schema {
                         }
                     }
                     return true;
-                })
+                }))
                 ->extract(function($e,&$r) use ($index, $rule) {
                     $rels = $e->relations(function($r) {
                         return $r->type() == "defined in";

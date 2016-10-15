@@ -8,24 +8,26 @@
  * a copy of the license along with the code.
  */
 
-namespace Lechimp\Dicto\Variables;
+namespace Lechimp\Dicto\Graph\Predicate;
 
-use Lechimp\Dicto\Graph\PredicateFactory;
+use Lechimp\Dicto\Graph\Predicate;
+use Lechimp\Dicto\Graph\Entity;
 
-class Everything extends Variable {
+/**
+ * A predicate that is always true.
+ */
+class _False extends Predicate {
     /**
      * @inheritdocs
      */
-    public function meaning() {
-        return "everything";
+    public function compile() {
+        return function(Entity $e) { return false; };
     }
 
     /**
      * @inheritdocs
      */
-
-    public function compile(PredicateFactory $f) {
-        return $f->_true();
+    public function for_types($existing_types) {
+        return [];
     }
 }
-

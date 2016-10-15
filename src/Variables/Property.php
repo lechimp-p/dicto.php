@@ -10,7 +10,8 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\Predicate;
+use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Definition\ArgumentParser;
 
 /**
@@ -54,8 +55,9 @@ abstract class Property {
     /**
      * Compile the property to a condition on a graph node.
      *
+     * @param   PredicateFactory $f
      * @param   array       &$arguments
-     * @return  \Closure    Node -> bool
+     * @return  Predicate
      */
-    abstract public function compile(array &$arguments);
+    abstract public function compile(PredicateFactory $f, array &$arguments);
 }

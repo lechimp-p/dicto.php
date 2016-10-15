@@ -15,6 +15,7 @@ use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Definition\ArgumentParser;
 use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph;
 
 /**
@@ -57,7 +58,9 @@ class ContainText extends Schema {
      */
     public function compile(Index $index, Rule $rule) {
         $mode = $rule->mode();
-        $filter = $rule->checked_on()->compile();
+        $query = $index->query();
+        $predicate_factory = $query->predicate_factory();
+        $filter = $rule->checked_on()->compile($predicate_factory);
         $regexp = $rule->argument(0);
         $regexp_filter = function(Graph\Relation $r) use ($regexp) {
             $start_line = $r->property("start_line");
@@ -74,10 +77,10 @@ class ContainText extends Schema {
         };
 
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
-            return $index->query()
+            return $query
                 ->filter($filter)
                 ->expand_relations(["defined in"])
-                ->filter($this->regexp_source_filter($regexp, false))
+                ->filter($this->regexp_source_filter($predicate_factory, $regexp, false))
                 ->extract(function($e,&$r) use ($rule, $regexp) {
                     $matches = [];
                     $source = $this->get_source_for($e);
@@ -96,7 +99,7 @@ class ContainText extends Schema {
             return $index->query()
                 ->filter($filter)
                 ->expand_relations(["defined in"])
-                ->filter($this->regexp_source_filter($regexp, true))
+                ->filter($this->regexp_source_filter($predicate_factory, $regexp, true))
                 ->extract(function($e,&$r) use ($rule) {
                     $file = $e->target();
                     $r["file"] = $file->property("path");
@@ -124,10 +127,10 @@ class ContainText extends Schema {
             );
     }
 
-    protected function regexp_source_filter($regexp, $negate) {
+    protected function regexp_source_filter(PredicateFactory $f, $regexp, $negate) {
         assert('is_string($regexp)');
         assert('is_bool($negate)');
-        return function(Graph\Relation $r) use ($regexp, $negate) {
+        return $f->_custom(function(Graph\Relation $r) use ($regexp, $negate) {
             $source = $this->get_source_for($r);
             if(!$negate) {
                 return preg_match("%$regexp%", $source) == 1;
@@ -135,7 +138,7 @@ class ContainText extends Schema {
             else {
                 return preg_match("%$regexp%", $source) == 0;
             }
-        };
+        });
     }
 
     /**
@@ -152,5 +155,4 @@ class ContainText extends Schema {
      */
     public function register_listeners(ListenerRegistry $registry) {
     }
-
 }

@@ -1,0 +1,47 @@
+<?php
+/******************************************************************************
+ * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
+ * 
+ * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
+ *
+ * This software is licensed under The MIT License. You should have received 
+ * a copy of the license along with the code.
+ */
+
+namespace Lechimp\Dicto\Graph\Predicate;
+
+use Lechimp\Dicto\Graph\Predicate;
+use Lechimp\Dicto\Graph\Entity;
+
+/**
+ * A predicate that negates another predicate;
+ */
+class _Not extends _Combined {
+    /**
+     * @var Predicate
+     */
+    protected $predicate;
+
+    public function __construct(Predicate $predicate) {
+        $this->predicate = $predicate;
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function compile() {
+        $compiled = $this->predicate->compile();
+        return function(Entity $e) use ($compiled) { 
+            return !$compiled($e);
+        };
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function for_types($existing_types) {
+        // Can't really know what is in predicate, so this could match
+        // all types.
+        return $existing_types;
+    }
+}
