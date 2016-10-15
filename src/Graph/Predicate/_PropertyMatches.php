@@ -49,4 +49,11 @@ class _PropertyMatches extends Predicate {
             return preg_match("%^$regexp\$%", $e->property($name)) == 1;
         };
     }
+
+    /**
+     * @inheritdocs
+     */
+    public function for_types($existing_types) {
+        return $existing_types;
+    }
 }

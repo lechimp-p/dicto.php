@@ -210,4 +210,32 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($false($n1));
         $this->assertFalse($false($r1));
     }
+
+    public function test_possibly_matching_entity_types_simple() {
+        $f = $this->f;
+        $all_types = ["a", "b", "c"];
+
+        $ts = $f->_true()->for_types($all_types);
+        $this->assertEquals($all_types, $ts);
+
+        $ts = $f->_false()->for_types($all_types);
+        $this->assertEquals([], $ts);
+
+        $ts = $f->_type_is("a")->for_types($all_types);
+        $this->assertEquals(["a"], $ts);
+
+        $ts = $f->_type_is("b")->for_types($all_types);
+        $this->assertEquals(["b"], $ts);
+
+        $ts = $f->_property("foo")->_matches("bar")->for_types($all_types);
+        $this->assertEquals($all_types, $ts);
+
+        $ts = $f->_custom(function($e) { return false; })->for_types($all_types);
+        $this->assertEquals($all_types, $ts);
+    }
+
+
+        //$this->assertEquals($all_types, $f->_not($f->_false)->for_types($all_types));
+        //$this->assertEquals([], $f->_not($f->_true)->for_types($all_types));
+        //$this->assertEquals(["b", "c"], $f->_not($f->_type_in("a"))->for_types($all_types));
 }

@@ -35,4 +35,10 @@ class _Not extends _Combined {
             return !$compiled($e);
         };
     }
+
+    /**
+     * @inheritdocs
+     */
+    public function for_types($existing_types) {
+    }
 }

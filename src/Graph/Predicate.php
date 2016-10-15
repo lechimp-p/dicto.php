@@ -20,4 +20,12 @@ abstract class Predicate {
      * @return  \Closure    Entity -> bool
      */
     abstract public function compile();
+
+    /**
+     * Get the entity-types that could be matched by this predicate.
+     *
+     * @param   string[]    $existing_types
+     * @return  string[]
+     */
+    abstract public function for_types($existing_types);
 }

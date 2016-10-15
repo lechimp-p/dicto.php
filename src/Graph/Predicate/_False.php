@@ -23,4 +23,11 @@ class _False extends Predicate {
     public function compile() {
         return function(Entity $e) { return false; };
     }
+
+    /**
+     * @inheritdocs
+     */
+    public function for_types($existing_types) {
+        return [];
+    }
 }

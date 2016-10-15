@@ -32,4 +32,11 @@ class _Custom extends Predicate {
     public function compile() {
         return $this->predicate;
     }
+
+    /**
+     * @inheritdocs
+     */
+    public function for_types($existing_types) {
+        return $existing_types;
+    }
 }

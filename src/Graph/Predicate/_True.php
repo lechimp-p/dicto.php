@@ -23,4 +23,11 @@ class _True extends Predicate {
     public function compile() {
         return function(Entity $e) { return true; };
     }
+
+    /**
+     * @inheritdocs
+     */
+    public function for_types($existing_types) {
+        return $existing_types;
+    }
 }

@@ -36,4 +36,12 @@ class _TypeIs extends Predicate {
             return $e->type() == $type; 
         };
     }
+
+    /**
+     * @inheritdocs
+     */
+    public function for_types($existing_types) {
+        assert('in_array($this->type, $existing_types)');
+        return [$this->type];
+    }
 }
