@@ -89,6 +89,6 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _custom(\Closure $closure) {
-        return new Predicate\_True();
+        return new Predicate\_Custom($closure);
     }
 }

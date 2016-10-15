@@ -32,5 +32,5 @@ class PropertyPredicateFactory {
      */
     public function _matches($regex) {
         return new Predicate\_PropertyMatches($this->name, $regex);
-    } 
+    }
 }
