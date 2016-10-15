@@ -15,7 +15,7 @@ namespace Lechimp\Dicto\Graph;
  */
 class Graph {
     /**
-     * @var array<int, Node>
+     * @var array<string, array<int, Node>>
      */
     protected $nodes = [];
 
@@ -33,7 +33,10 @@ class Graph {
      */
     public function create_node($type, array $properties = null) {
         $node = $this->build_node($this->id_counter, $type, $properties);
-        $this->nodes[] = $node;
+        if (!array_key_exists($type, $this->nodes)) {
+            $this->nodes[$type] = [];
+        }
+        $this->nodes[$type][$this->id_counter] = $node;
         $this->id_counter++;
         return $node;
     }
@@ -67,16 +70,12 @@ class Graph {
             // i.e. using two branches for with and without filter.
             $filter = function($_) { return true; };
         }
-        reset($this->nodes);
-        $val = current($this->nodes);
-        while ( next($this->nodes)) {
-            if ($filter($val)) {
-                yield $val;
+        foreach ($this->nodes as $nodes) {
+            foreach ($nodes as $node) {
+                if ($filter($node)) {
+                    yield $node;
+                }
             }
-            $val = current($this->nodes);
-        }
-        if ($val) {
-            yield $val;
         }
     }
 
@@ -89,10 +88,12 @@ class Graph {
      */
     public function node($id) {
         assert('is_int($id)');
-        if (!array_key_exists($id, $this->nodes)) {
-            throw new \InvalidArgumentException("Unknown node id '$id'");
+        foreach ($this->nodes as $nodes) {
+            if (array_key_exists($id, $nodes)) {
+                return $nodes[$id];
+            }
         }
-        return $this->nodes[$id];
+        throw new \InvalidArgumentException("Unknown node id '$id'");
     }
 
     /**
