@@ -20,8 +20,6 @@ use Lechimp\Dicto\Graph;
 
 /**
  * This checks wheather there is some text in some entity.
- *
- * TODO: Test if ContainText finds text in files.
  */
 class ContainText extends Schema {
     /**
