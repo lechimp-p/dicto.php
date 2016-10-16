@@ -176,9 +176,17 @@ class QueryImpl implements Query {
      * @inheritdocs
      */
     public function filter_by_types(array $types) {
-        return $this->filter($this->predicate_factory()->_custom(function(Node $n) use ($types) {
-            return in_array($n->type(), $types);
-        }));
+        $f = $this->predicate_factory();
+        return $this->filter
+            ( $f->_and
+                ( array_map
+                    ( function($t) use ($f) {
+                            return $f->_type_is($t);
+                        }
+                    , $types
+                    )
+                )
+            );
     }
 
     /**
