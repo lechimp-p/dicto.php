@@ -41,6 +41,9 @@ class _TypeIs extends Predicate {
      * @inheritdocs
      */
     public function for_types(array $existing_types) {
+        if (!in_array($this->type, $existing_types)) {
+            return [];
+        }
         return [$this->type];
     }
 }
