@@ -60,15 +60,26 @@ class ContainText extends Schema {
         $mode = $rule->mode();
         $pred_factory = $index->query()->predicate_factory();
         $filter = $rule->checked_on()->compile($pred_factory);
+        // ContainText needs to have to kinds of queries, one for files, one
+        // for none-files. To make the queries faster, we separate the filters
+        // to the different types.
+        $filter_non_files = $pred_factory->_and
+            ([$pred_factory->_not($pred_factory->_type_is("file"))
+            , $filter
+            ]);
+        $filter_files = $pred_factory->_and
+            ([$pred_factory->_type_is("file")
+            , $filter
+            ]);
         $regexp = $rule->argument(0);
 
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             return
                 [ $index->query()
-                    ->filter($filter)
+                    ->filter($filter_non_files)
                     ->expand_relations(["defined in"])
                     ->filter($this->regexp_source_filter($pred_factory, $regexp, false))
-                    ->extract(function($e,&$r) use ($rule, $regexp) {
+                    ->extract(function($e,&$r) use ($regexp) {
                         $matches = [];
                         $source = $this->get_source_for_defined_in($e);
                         preg_match("%(.*)$regexp%", $source, $matches);
@@ -81,12 +92,25 @@ class ContainText extends Schema {
                         $r["line"] = $line + 1;
                         $r["source"] = $file->property("source")[$line];
                     })
+                , $index->query()
+                    ->filter($filter_files)
+                    ->filter($this->regexp_source_filter($pred_factory, $regexp, false))
+                    ->extract(function($e,&$r) use ($regexp) {
+                        $matches = [];
+                        $source = $this->get_source_for_file($e);
+                        preg_match("%(.*)$regexp%s", $source, $matches);
+
+                        $r["file"] = $e->property("path");
+                        $line = substr_count($matches[0], "\n") + 1;
+                        $r["line"] = $line;
+                        $r["source"] = $e->property("source")[$line-1];
+                    })
                 ];
         }
         if ($mode == Rule::MODE_MUST) {
             return
                 [ $index->query()
-                    ->filter($filter)
+                    ->filter($filter_non_files)
                     ->expand_relations(["defined in"])
                     ->filter($this->regexp_source_filter($pred_factory, $regexp, true))
                     ->extract(function($e,&$r) use ($rule) {
@@ -96,12 +120,24 @@ class ContainText extends Schema {
                         $r["line"] = $line;
                         $r["source"] = $file->property("source")[$line - 1];
                     })
+                // TODO: add implementation for files here.
                 ];
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
     }
 
     // Helpers for compile
+
+    protected function get_source_for(Graph\Entity $e) {
+        if ($e->type() == "defined in") {
+            return $this->get_source_for_defined_in($e);
+        }
+        if ($e->type() == "file") {
+            return $this->get_source_for_file($e);
+        }
+        throw new \LogicException(
+            "Can't get source for entity with type '".$e->type()."'");
+    }
 
     protected function get_source_for_defined_in(Graph\Relation $r) {
         assert('$r->type() == "defined in"');
@@ -117,11 +153,19 @@ class ContainText extends Schema {
             );
     }
 
+    protected function get_source_for_file(Graph\Node $f) {
+        assert('$f->type() == "file"');
+        return implode
+            ( "\n"
+            , $f->property("source")
+            );
+    }
+
     protected function regexp_source_filter(PredicateFactory $f, $regexp, $negate) {
         assert('is_string($regexp)');
         assert('is_bool($negate)');
-        return $f->_custom(function(Graph\Relation $r) use ($regexp, $negate) {
-            $source = $this->get_source_for_defined_in($r);
+        return $f->_custom(function(Graph\Entity $e) use ($regexp, $negate) {
+            $source = $this->get_source_for($e);
             if(!$negate) {
                 return preg_match("%$regexp%", $source) == 1;
             }

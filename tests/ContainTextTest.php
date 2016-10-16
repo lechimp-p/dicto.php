@@ -275,5 +275,7 @@ CODE;
         $this->assertEquals($expected, $violations);
     }
 
+    // TODO: add tests on "only X can contain text"
+    // TODO: add tests on "File Y MUST contain text"
     // TODO: add a test on the regexp
 }
