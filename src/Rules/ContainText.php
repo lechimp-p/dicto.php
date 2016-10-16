@@ -77,7 +77,7 @@ class ContainText extends Schema {
         };
 
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
-            return $query
+            return [$query
                 ->filter($filter)
                 ->expand_relations(["defined in"])
                 ->filter($this->regexp_source_filter($predicate_factory, $regexp, false))
@@ -93,10 +93,11 @@ class ContainText extends Schema {
                     $line = $start_line + $found_at_line;
                     $r["line"] = $line + 1;
                     $r["source"] = $file->property("source")[$line];
-                });
+                })]
+                ;
         }
         if ($mode == Rule::MODE_MUST) {
-            return $index->query()
+            return [$query
                 ->filter($filter)
                 ->expand_relations(["defined in"])
                 ->filter($this->regexp_source_filter($predicate_factory, $regexp, true))
@@ -106,7 +107,8 @@ class ContainText extends Schema {
                     $line = $e->property("start_line");
                     $r["line"] = $line;
                     $r["source"] = $file->property("source")[$line - 1];
-                });
+                })]
+                ;
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
     }

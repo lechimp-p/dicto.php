@@ -141,7 +141,7 @@ class Rule extends Definition {
      * Compile the rule to SQL.
      *
      * @param   Index   $index
-     * @return  Query
+     * @return  Query[]
      */
     public function compile(Index $index) {
         return $this->schema->compile($index, $this);

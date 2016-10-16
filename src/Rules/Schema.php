@@ -57,7 +57,7 @@ abstract class Schema {
      *
      * @param   Index       $index
      * @param   Rule        $rule
-     * @return  Query
+     * @return  Query[]
      */
     abstract public function compile(Index $index, Rule $rule);
 

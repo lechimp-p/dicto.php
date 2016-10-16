@@ -61,10 +61,12 @@ class Analyzer {
         foreach ($this->ruleset->rules() as $rule) {
             $this->log->info("checking: ".$rule->pprint());
             $this->generator->begin_rule($rule);
-            $query = $rule->compile($this->index);
-            $results = $query->run(["rule" => $rule]);
-            foreach ($results as $row) {
-                $this->generator->report_violation($this->build_violation($row));
+            $queries = $rule->compile($this->index);
+            foreach ($queries as $query) {
+                $results = $query->run(["rule" => $rule]);
+                foreach ($results as $row) {
+                    $this->generator->report_violation($this->build_violation($row));
+                }
             }
             $this->generator->end_rule();
         }

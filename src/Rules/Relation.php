@@ -62,7 +62,7 @@ abstract class Relation extends Schema {
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             $filter_left = $var_left->compile($predicate_factory);
             $filter_right = $var_right->compile($predicate_factory);
-            return $query
+            return [$query
                 ->filter($filter_left)
                 ->expand_relations([$this->name()])
                 ->extract(function($e,&$r) use ($rule) {
@@ -74,13 +74,13 @@ abstract class Relation extends Schema {
                     $r["source"] = $file->property("source")[$line - 1];
                 })
                 ->expand_target()
-                ->filter($filter_right)
+                ->filter($filter_right)]
                 ;
         }
         if ($mode == Rule::MODE_MUST) {
             $filter_left = $var_left->compile($predicate_factory);
             $filter_right = $var_right->compile($predicate_factory)->compile();
-            return $query
+            return [$query
                 ->filter($filter_left)
                 ->filter($predicate_factory->_custom(function(Node $n) use ($filter_right) {
                     $rels = $n->relations(function($r) {
@@ -107,7 +107,7 @@ abstract class Relation extends Schema {
                     $line = $rels[0]->property("start_line");
                     $r["line"] = $line;
                     $r["source"] = $file->property("source")[$line - 1];
-                })
+                })]
                 ;
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
