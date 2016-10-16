@@ -58,64 +58,52 @@ class ContainText extends Schema {
      */
     public function compile(Index $index, Rule $rule) {
         $mode = $rule->mode();
-        $query = $index->query();
-        $predicate_factory = $query->predicate_factory();
-        $filter = $rule->checked_on()->compile($predicate_factory);
+        $pred_factory = $index->query()->predicate_factory();
+        $filter = $rule->checked_on()->compile($pred_factory);
         $regexp = $rule->argument(0);
-        $regexp_filter = function(Graph\Relation $r) use ($regexp) {
-            $start_line = $r->property("start_line");
-            $end_line = $r->property("end_line");
-            $source = implode
-                ( "\n"
-                , array_slice
-                    ( $r->target()->property("source")
-                    , $start_line - 1
-                    , $end_line - $start_line
-                    )
-                );
-            return preg_match("%$regexp%", $source) == 1;
-        };
 
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
-            return [$query
-                ->filter($filter)
-                ->expand_relations(["defined in"])
-                ->filter($this->regexp_source_filter($predicate_factory, $regexp, false))
-                ->extract(function($e,&$r) use ($rule, $regexp) {
-                    $matches = [];
-                    $source = $this->get_source_for($e);
-                    preg_match("%(.*)$regexp%", $source, $matches);
+            return
+                [ $index->query()
+                    ->filter($filter)
+                    ->expand_relations(["defined in"])
+                    ->filter($this->regexp_source_filter($pred_factory, $regexp, false))
+                    ->extract(function($e,&$r) use ($rule, $regexp) {
+                        $matches = [];
+                        $source = $this->get_source_for_defined_in($e);
+                        preg_match("%(.*)$regexp%", $source, $matches);
 
-                    $file = $e->target();
-                    $r["file"] = $file->property("path");
-                    $start_line = $e->property("start_line");
-                    $found_at_line = substr_count($matches[0], "\n") + 1;
-                    $line = $start_line + $found_at_line;
-                    $r["line"] = $line + 1;
-                    $r["source"] = $file->property("source")[$line];
-                })]
-                ;
+                        $file = $e->target();
+                        $r["file"] = $file->property("path");
+                        $start_line = $e->property("start_line");
+                        $found_at_line = substr_count($matches[0], "\n") + 1;
+                        $line = $start_line + $found_at_line;
+                        $r["line"] = $line + 1;
+                        $r["source"] = $file->property("source")[$line];
+                    })
+                ];
         }
         if ($mode == Rule::MODE_MUST) {
-            return [$query
-                ->filter($filter)
-                ->expand_relations(["defined in"])
-                ->filter($this->regexp_source_filter($predicate_factory, $regexp, true))
-                ->extract(function($e,&$r) use ($rule) {
-                    $file = $e->target();
-                    $r["file"] = $file->property("path");
-                    $line = $e->property("start_line");
-                    $r["line"] = $line;
-                    $r["source"] = $file->property("source")[$line - 1];
-                })]
-                ;
+            return
+                [ $index->query()
+                    ->filter($filter)
+                    ->expand_relations(["defined in"])
+                    ->filter($this->regexp_source_filter($pred_factory, $regexp, true))
+                    ->extract(function($e,&$r) use ($rule) {
+                        $file = $e->target();
+                        $r["file"] = $file->property("path");
+                        $line = $e->property("start_line");
+                        $r["line"] = $line;
+                        $r["source"] = $file->property("source")[$line - 1];
+                    })
+                ];
         }
         throw new \LogicException("Unknown rule mode: '$mode'");
     }
 
     // Helpers for compile
 
-    protected function get_source_for(Graph\Relation $r) {
+    protected function get_source_for_defined_in(Graph\Relation $r) {
         assert('$r->type() == "defined in"');
         $start_line = $r->property("start_line");
         $end_line = $r->property("end_line");
@@ -133,7 +121,7 @@ class ContainText extends Schema {
         assert('is_string($regexp)');
         assert('is_bool($negate)');
         return $f->_custom(function(Graph\Relation $r) use ($regexp, $negate) {
-            $source = $this->get_source_for($r);
+            $source = $this->get_source_for_defined_in($r);
             if(!$negate) {
                 return preg_match("%$regexp%", $source) == 1;
             }
