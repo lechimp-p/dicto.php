@@ -39,6 +39,9 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _and(array $predicates) {
+        if (count($predicates) == 1) {
+            return array_shift($predicates);
+        }
         return new Predicate\_And($predicates);
     }
 

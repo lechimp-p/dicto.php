@@ -211,6 +211,14 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($false($r1));
     }
 
+    public function test_and_with_one_pred() {
+        $f = $this->f;
+        $true = $f->_true();
+        $true2 = $f->_and([$true]);
+
+        $this->assertSame($true, $true2);
+    }
+
     public function test_possibly_matching_entity_types_simple() {
         $f = $this->f;
         $all_types = ["a", "b", "c"];
