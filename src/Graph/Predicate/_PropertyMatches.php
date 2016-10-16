@@ -39,7 +39,7 @@ class _PropertyMatches extends Predicate {
     /**
      * @inheritdocs
      */
-    public function compile() {
+    public function _compile() {
         $name = $this->name;
         $regexp = $this->regexp;
         return function(Entity $e) use ($name, $regexp) { 
@@ -48,6 +48,18 @@ class _PropertyMatches extends Predicate {
             }
             return preg_match("%^$regexp\$%", $e->property($name)) == 1;
         };
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function compile_to_source(array &$custom_closures) {
+        $name = $this->name;
+        $regexp = $this->regexp;
+        return
+            "   \$stack[\$pos] = \n".
+            "       \$e->has_property(\"$name\")\n".
+            "       && (preg_match(\"%^$regexp\\\$%\", \$e->property(\"$name\")) == 1);\n";
     }
 
     /**

@@ -20,8 +20,15 @@ class _False extends Predicate {
     /**
      * @inheritdocs
      */
-    public function compile() {
+    public function _compile() {
         return function() { return false; };
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function compile_to_source(array &$custom_closures) {
+        return "    \$stack[\$pos] = false;\n";
     }
 
     /**

@@ -29,11 +29,20 @@ class _Not extends _Combined {
     /**
      * @inheritdocs
      */
-    public function compile() {
+    public function _compile() {
         $compiled = $this->predicate->compile();
         return function(Entity $e) use ($compiled) { 
             return !$compiled($e);
         };
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function compile_to_source(array &$custom_closures) {
+        return
+            $this->predicate->compile_to_source($custom_closures).
+            "    \$stack[\$pos] = !\$stack[\$pos];\n";
     }
 
     /**

@@ -30,11 +30,20 @@ class _TypeIs extends Predicate {
     /**
      * @inheritdocs
      */
-    public function compile() {
+    public function _compile() {
         $type = $this->type;
         return function(Entity $e) use ($type) { 
             return $e->type() == $type; 
         };
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function compile_to_source(array &$custom_closures) {
+        $type = $this->type;
+        return
+            "    \$stack[\$pos] = \$e->type() == \"$type\";\n";
     }
 
     /**

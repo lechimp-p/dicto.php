@@ -19,7 +19,30 @@ abstract class Predicate {
      *
      * @return  \Closure    Entity -> bool
      */
-    abstract public function compile();
+    final public function compile() {
+        $custom_closures = [];
+        $source =
+            "return function (\\Lechimp\\Dicto\\Graph\\Entity \$e) use (\$custom_closures) {\n".
+            "    \$stack = [];\n".
+            "    \$pos = 0;\n".
+            $this->compile_to_source($custom_closures).
+            "    assert('count(\$stack) == 1');\n".
+            "    assert('\$pos == 0');\n".
+            "    return \$stack[0];\n".
+            "};\n";
+        $closure = eval($source);
+        assert('$closure instanceof \Closure');
+
+        return $closure;
+    }
+
+    /**
+     * Compile the predicate to some php source code.
+     *
+     * @param   \Closure[]  &$custom_closures
+     * @return  string
+     */
+    abstract public function compile_to_source(array &$custom_closures);
 
     /**
      * Get the entity-types that could be matched by this predicate.

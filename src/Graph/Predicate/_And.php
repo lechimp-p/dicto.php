@@ -19,7 +19,7 @@ class _And extends _Combined {
     /**
      * @inheritdocs
      */
-    public function compile() {
+    public function _compile() {
         $compiled = $this->compiled_predicates();
 
         return function(Entity $e) use ($compiled) { 
@@ -30,6 +30,26 @@ class _And extends _Combined {
             }
             return true;
         };
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function compile_to_source(array &$custom_closures) {
+        $code =
+            "    \$pos++;\n".
+            "    \$stack[\$pos] = true;\n";
+        foreach ($this->predicates as $predicate) {
+            $code .=
+                "    if (\$stack[\$pos]) {\n".
+                $predicate->compile_to_source($custom_closures).
+                "    }\n";
+        }
+        $code .=
+            "    \$stack[\$pos-1] = \$stack[\$pos];\n".
+            "    unset(\$stack[\$pos]);\n".
+            "    \$pos--;\n";
+        return $code;
     }
 
     /**

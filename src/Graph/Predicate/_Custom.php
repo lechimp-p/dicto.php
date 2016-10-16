@@ -29,8 +29,18 @@ class _Custom extends Predicate {
     /**
      * @inheritdocs
      */
-    public function compile() {
+    public function _compile() {
         return $this->predicate;
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function compile_to_source(array &$custom_closures) {
+        $num = count($custom_closures);
+        $custom_closures[] = $this->predicate;
+        return
+            "   \$stack[\$pos] = \$custom_closures[$num](\$e);\n";
     }
 
     /**
