@@ -17,6 +17,8 @@ use Lechimp\Dicto\Rules\Rule;
 
 class CLIReportGenerator implements ReportGenerator {
     protected $lines = array();
+    protected $current_rule = null;
+    protected $current_violations = [];
 
     protected function line($content = "") {
         $this->lines[] = $content;
@@ -50,13 +52,25 @@ class CLIReportGenerator implements ReportGenerator {
      * @inheritdoc
      */
     public function begin_rule(Rule $rule) {
-        $this->line("------------------------------------------------------------------------------");
-        $this->line($rule->pprint());
-        $this->line("------------------------------------------------------------------------------");
-        $this->line();
+        $this->current_rule = $rule;
+        $this->current_violations = [];
     }
 
     public function end_rule() {
+        $this->line("################################################################################");
+        $this->line();
+        $this->line(" ".$this->current_rule->pprint());
+        $this->line(" -> ".count($this->current_violations)." Violations");
+        $this->line();
+        $this->line("################################################################################");
+        $this->line();
+
+        foreach ($this->current_violations as $violation) {
+            $this->line($violation->filename()." (".$violation->line_no()."): ");
+            $this->line("    ".trim($violation->line()));
+            $this->line();
+        }
+
         $this->line();
         $this->line();
     }
@@ -65,6 +79,6 @@ class CLIReportGenerator implements ReportGenerator {
      * @inheritdoc
      */
     public function report_violation(Violation $violation) {
-        $this->line($violation->filename()." (".$violation->line_no().")");
+        $this->current_violations[] = $violation;
     }
 }
