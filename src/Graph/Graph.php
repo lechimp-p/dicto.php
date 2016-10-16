@@ -68,24 +68,29 @@ class Graph {
      */
     public function nodes(Predicate $filter = null) {
         if ($filter !== null) {
-            $types = $filter->for_types(array_keys($this->nodes));
-            $filter = $filter->compile();
+            return $this->filtered_nodes($filter);
         }
         else {
-            $types = array_keys($this->nodes);
+            return $this->all_nodes();
         }
-        foreach ($this->nodes as $type => $nodes) {
-            if (!in_array($type, $types)) {
-                continue;
-            }
+    }
+
+    protected function all_nodes() {
+        foreach($this->nodes as $nodes) {
             foreach ($nodes as $node) {
-                if ($filter === null) {
+                yield $node;
+            }
+        }
+    }
+
+    protected function filtered_nodes(Predicate $filter) {
+        $types = $filter->for_types(array_keys($this->nodes));
+        $filter = $filter->compile();
+        foreach ($types as $type) {
+            $nodes = $this->nodes[$type];
+            foreach ($nodes as $node) {
+                if ($filter($node)) {
                     yield $node;
-                }
-                else {
-                    if ($filter($node)) {
-                        yield $node;
-                    }
                 }
             }
         }
