@@ -29,6 +29,7 @@
   would mean to introduce the possibility to add custom classes to the config. 
 
 # Issues
+* `trait`s are unknown atm.
 * `GUIClasses cannot depend on ilDB` finds some locations twice on ILIAS. This is
   caused by the fact, that "classes invoke stuff in their methods" and said methods
   do this as well.
