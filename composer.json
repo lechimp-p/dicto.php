@@ -1,11 +1,11 @@
 {
-    "name": "lechimp-p/php-dicto",
+    "name": "lechimp-p/dicto.php",
     "version": "0.1.0",
     "description": "An implementation of the dicto-tool (scg.unibe.ch/dicto) in and for PHP.",
     "keywords": [],
     "type": "script",
     "license": "MIT",
-    "homepage": "https://github.com/lechimp-p/php-dicto",
+    "homepage": "https://github.com/lechimp-p/dicto.php",
     "authors": [
         {
             "name": "Richard Klees",
@@ -13,8 +13,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/lechimp-p/php-dicto/internal/issues",
-        "source": "https://github.com/lechimp-p/php-dicto"
+        "issues": "https://github.com/lechimp-p/dicto.php/internal/issues",
+        "source": "https://github.com/lechimp-p/dicto.php"
     },
     "autoload": {
         "psr-4" : { "Lechimp\\Dicto\\" : "src" }

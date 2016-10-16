@@ -9,7 +9,7 @@
  */
 
 function tempdir() {
-    $name = tempnam(sys_get_temp_dir(), "php-dicto");
+    $name = tempnam(sys_get_temp_dir(), "dicto.php");
     if (file_exists($name)) {
         unlink($name);
     }

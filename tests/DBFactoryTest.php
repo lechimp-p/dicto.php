@@ -55,7 +55,7 @@ abstract class DBFactoryTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_get_result_db_create() {
-        $db = $this->factory->get_result_db(tempnam(sys_get_temp_dir(), "php-dicto"));
+        $db = $this->factory->get_result_db(tempnam(sys_get_temp_dir(), "dicto.php"));
         $this->assertInstanceOf(ResultDB::class, $db);
         $this->assertTrue($db->is_inited());
     }
