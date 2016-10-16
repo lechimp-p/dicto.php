@@ -80,28 +80,22 @@ class ContainText extends Schema {
                     ->expand_relations(["defined in"])
                     ->filter($this->regexp_source_filter($pred_factory, $regexp, false))
                     ->extract(function($e,&$r) use ($regexp) {
-                        $matches = [];
-                        $source = $this->get_source_for_defined_in($e);
-                        preg_match("%(.*)$regexp%", $source, $matches);
-
                         $file = $e->target();
-                        $r["file"] = $file->property("path");
+                        $found_at_line = $this->get_source_location($e, $regexp);
                         $start_line = $e->property("start_line");
-                        $found_at_line = substr_count($matches[0], "\n") + 1;
-                        $line = $start_line + $found_at_line;
-                        $r["line"] = $line + 1;
-                        $r["source"] = $file->property("source")[$line];
+                        $line = $start_line + $found_at_line - 1;
+                        // -1 is for the line where the class starts, this would
+                        // count double otherwise.
+                        $r["file"] = $file->property("path");
+                        $r["line"] = $line;
+                        $r["source"] = $file->property("source")[$line-1];
                     })
                 , $index->query()
                     ->filter($filter_files)
                     ->filter($this->regexp_source_filter($pred_factory, $regexp, false))
                     ->extract(function($e,&$r) use ($regexp) {
-                        $matches = [];
-                        $source = $this->get_source_for_file($e);
-                        preg_match("%(.*)$regexp%s", $source, $matches);
-
+                        $line = $this->get_source_location($e, $regexp);
                         $r["file"] = $e->property("path");
-                        $line = substr_count($matches[0], "\n") + 1;
                         $r["line"] = $line;
                         $r["source"] = $e->property("source")[$line-1];
                     })
@@ -173,6 +167,13 @@ class ContainText extends Schema {
                 return preg_match("%$regexp%", $source) == 0;
             }
         });
+    }
+
+    protected function get_source_location(Graph\Entity $e, $regexp) {
+        $matches = [];
+        $source = $this->get_source_for($e);
+        preg_match("%(.*)$regexp%s", $source, $matches);
+        return substr_count($matches[0], "\n") + 1;
     }
 
     /**
