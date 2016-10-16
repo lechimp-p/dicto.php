@@ -94,9 +94,10 @@ interface Insert {
      * @param   string  $name
      * @param   mixed   $file   handle from _file
      * @param   int     $line
+     * @param   int     $column
      * @return  mixed   handle to the method reference
      */
-    public function _method_reference($name, $file, $line);
+    public function _method_reference($name, $file, $line, $column);
 
     /**
      * Store information about a reference to a function to the database.
@@ -104,9 +105,10 @@ interface Insert {
      * @param   string  $name
      * @param   mixed   $file   handle from _file
      * @param   int     $line
+     * @param   int     $column
      * @return  mixed   handle to the function reference
      */
-    public function _function_reference($name, $file, $line);
+    public function _function_reference($name, $file, $line, $column);
 
     /**
      * Store the fact, that two entity have a relation, established at a

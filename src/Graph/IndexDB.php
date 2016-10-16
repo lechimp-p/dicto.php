@@ -157,13 +157,18 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _method_reference($name, $file, $line) {
+    public function _method_reference($name, $file, $line, $column) {
         assert('is_string($name)');
         assert('$file->type() == "file"');
         assert('is_int($line)');
 
         $method = $this->create_node("method reference", ["name" => $name]);
-        $this->add_relation($method, "referenced at", ["line" => $line], $file);
+        $this->add_relation
+            ( $method
+            , "referenced at"
+            , ["line" => $line, "column" => $column]
+            , $file
+            );
 
         return $method;
     }
@@ -171,13 +176,18 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _function_reference($name, $file, $line) {
+    public function _function_reference($name, $file, $line, $column) {
         assert('is_string($name)');
         assert('$file->type() == "file"');
         assert('is_int($line)');
 
         $function = $this->create_node("function reference", ["name" => $name]);
-        $this->add_relation($function, "referenced at", ["line" => $line], $file);
+        $this->add_relation
+            ( $function
+            , "referenced at"
+            , ["line" => $line, "column" => $column]
+            , $file
+            );
 
         return $function;
     }

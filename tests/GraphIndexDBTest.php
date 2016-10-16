@@ -262,7 +262,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
 
     public function test_method_reference() {
         $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
-        $this->db->_method_reference("some_method", $file, 2);
+        $this->db->_method_reference("some_method", $file, 2, 4);
 
         $res = $this->db->query()
             ->filter_by_types(["method reference"])
@@ -272,6 +272,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
             ->expand_relations(["referenced at"])
             ->extract(function($n,&$r) {
                 $r["line"] = $n->property("line");
+                $r["column"] = $n->property("column");
             })
             ->expand_target()
             ->extract(function($n,&$r) {
@@ -282,6 +283,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $expected =
             [   [ "name" => "some_method"
                 , "line" => 2
+                , "column" => 4
                 , "file" => $file
                 ]
             ];
@@ -290,7 +292,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
 
     public function test_function_reference() {
         $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
-        $this->db->_function_reference("some_function", $file, 2);
+        $this->db->_function_reference("some_function", $file, 2, 4);
 
         $res = $this->db->query()
             ->filter_by_types(["function reference"])
@@ -300,6 +302,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
             ->expand_relations(["referenced at"])
             ->extract(function($n,&$r) {
                 $r["line"] = $n->property("line");
+                $r["column"] = $n->property("column");
             })
             ->expand_target()
             ->extract(function($n,&$r) {
@@ -310,6 +313,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $expected =
             [   [ "name" => "some_function"
                 , "line" => 2
+                , "column" => 4
                 , "file" => $file
                 ]
             ];
@@ -319,7 +323,7 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
     public function test_relation() {
         $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
         $l = $this->db->_function("a_function", $file, 2, 3);
-        $r = $this->db->_function_reference("some_function", $file, 2);
+        $r = $this->db->_function_reference("some_function", $file, 2, 4);
         $this->db->_relation($l, "related to", $r, $file, 3);
 
         $res = $this->db->query()
