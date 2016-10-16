@@ -22,18 +22,20 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_file() {
-        $this->db->_file("some_path.php", "A\nB");
+        $this->db->_file("/foo/bar/some_path.php", "A\nB");
 
         $res = $this->db->query()
             ->filter_by_types(["file"])
             ->extract(function($n, &$r) {
                 $r["path"] = $n->property("path");
+                $r["name"] = $n->property("name");
                 $r["source"] = $n->property("source");
             })
             ->run([]);
 
         $expected =
-            [   [ "path" => "some_path.php"
+            [   [ "path" => "/foo/bar/some_path.php"
+                , "name" => "some_path.php"
                 , "source" => ["A","B"]
                 ]
             ];

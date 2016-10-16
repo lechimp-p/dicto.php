@@ -34,9 +34,12 @@ class IndexDB extends Graph implements Insert, Index {
         assert('is_string($path)');
         assert('is_string($source)');
 
+        $parts = explode("/", $path);
+        $name = array_pop($parts);
         return $this->create_node
             ( "file"
             ,   [ "path" => $path
+                , "name" => $name
                 , "source" => explode("\n", $source)
                 ]
             );
