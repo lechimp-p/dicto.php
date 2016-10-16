@@ -138,7 +138,16 @@ class App {
         };
 
         $container["report_generator"] = function($c) {
-            return $this->build_report_generator($c["config"], $c["database_factory"]);
+            return $this->build_report_generator($c);
+        };
+
+        $container["stdout_report_generator"] = function() {
+            return new CLIReportGenerator();
+        };
+
+        $container["database_report_generator"] = function($c) {
+            $path = $this->result_database_path($c["config"]);
+            return $c["database_factory"]->get_result_db($path);
         };
 
         $container["source_status"] = function($c) {
@@ -257,40 +266,28 @@ class App {
     /**
      * Build the report generators.
      *
-     * @param   Config      $config
-     * @param   DBFactory   $db_factory
+     * @param   Container       $c
      * @return  ReportGenerator
      */
-    public function build_report_generator(Config $config, DBFactory $db_factory) {
-        if ($config->analysis_report_stdout()) {
-            $cli_report_generator = new CLIReportGenerator();
+    public function build_report_generator(Container $c) {
+        $config = $c["config"];
+        $stdout = $config->analysis_report_stdout();
+        $db = $config->analysis_report_database();
+        if ($stdout && $db) {
+            return new CombinedReportGenerators
+                ([$c["stdout_report_generator"]
+                , $c["database_report_generator"]
+                ]);
         }
-        else {
-            $cli_report_generator = null;
+        elseif($stdout) {
+            return $c["stdout_report_generator"];
         }
-
-        if ($config->analysis_report_database()) {
-            $result_db = $db_factory->get_result_db
-                ( $this->result_database_path($config)
-                );
-        }
-        else {
-            $result_db = null;
-        }
-
-        if ($cli_report_generator === null && $result_db === null) {
-            throw new \RuntimeException
-                ("No need to run analysis if no report generator is defined.");
+        elseif($db) {
+            return $c["database_report_generator"];
         }
 
-        if ($cli_report_generator) {
-            if ($result_db) {
-                return new CombinedReportGenerators([$cli_report_generator, $result_db]);
-            }
-            return $cli_report_generator; 
-        }
-
-        return $result_db;
+        throw new \RuntimeException
+            ("No need to run analysis if no report generator is defined.");
     }
 
     protected function result_database_path(Config $c) {
