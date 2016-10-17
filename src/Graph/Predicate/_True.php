@@ -28,7 +28,7 @@ class _True extends Predicate {
      * @inheritdocs
      */
     public function compile_to_source(array &$custom_closures) {
-        return "    \$stack[\$pos] = true;\n";
+        return "    \$value = true;\n";
     }
 
     /**

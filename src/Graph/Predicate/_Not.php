@@ -42,7 +42,7 @@ class _Not extends _Combined {
     public function compile_to_source(array &$custom_closures) {
         return
             $this->predicate->compile_to_source($custom_closures).
-            "    \$stack[\$pos] = !\$stack[\$pos];\n";
+            "    \$value = !\$value;\n";
     }
 
     /**

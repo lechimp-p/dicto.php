@@ -23,12 +23,10 @@ abstract class Predicate {
         $custom_closures = [];
         $source =
             "return function (\\Lechimp\\Dicto\\Graph\\Entity \$e) use (\$custom_closures) {\n".
-            "    \$stack = [];\n".
-            "    \$pos = 0;\n".
+            "    \$value = null;\n".
             $this->compile_to_source($custom_closures).
-            "    assert('count(\$stack) == 1');\n".
-            "    assert('\$pos == 0');\n".
-            "    return \$stack[0];\n".
+            "    assert('!is_null(\$value)');\n".
+            "    return \$value;\n".
             "};\n";
         $closure = eval($source);
         assert('$closure instanceof \Closure');

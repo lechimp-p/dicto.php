@@ -43,7 +43,7 @@ class _TypeIs extends Predicate {
     public function compile_to_source(array &$custom_closures) {
         $type = $this->type;
         return
-            "    \$stack[\$pos] = \$e->type() == \"$type\";\n";
+            "    \$value = \$e->type() == \"$type\";\n";
     }
 
     /**

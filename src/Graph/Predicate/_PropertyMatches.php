@@ -57,7 +57,7 @@ class _PropertyMatches extends Predicate {
         $name = $this->name;
         $regexp = $this->regexp;
         return
-            "   \$stack[\$pos] = \n".
+            "   \$value = \n".
             "       \$e->has_property(\"$name\")\n".
             "       && (preg_match(\"%^$regexp\\\$%\", \$e->property(\"$name\")) == 1);\n";
     }

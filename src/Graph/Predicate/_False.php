@@ -28,7 +28,7 @@ class _False extends Predicate {
      * @inheritdocs
      */
     public function compile_to_source(array &$custom_closures) {
-        return "    \$stack[\$pos] = false;\n";
+        return "    \$value = false;\n";
     }
 
     /**
