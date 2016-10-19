@@ -40,7 +40,7 @@ class _Custom extends Predicate {
         $num = count($custom_closures);
         $custom_closures[] = $this->predicate;
         return
-            "   \$value = \$custom_closures[$num](\$e);\n";
+            "    \$value = \$custom_closures[$num](\$e);\n";
     }
 
     /**
