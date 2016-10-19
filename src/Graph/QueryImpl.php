@@ -64,7 +64,16 @@ class QueryImpl implements Query {
      */
     public function filter(Predicate $predicate) {
         $clone = clone $this;
-        $clone->steps[] = ["filter", $predicate];
+        if (count($this->steps) == 0) {
+            // On the first step we keep the predicate to later put it into
+            // graph->nodes.
+            $clone->steps[] = ["filter", $predicate];
+        }
+        else {
+            // For later steps, we already compile the predicate to only
+            // compile it once.
+            $clone->steps[] = ["filter", $predicate->compile()];
+        }
         assert('$this->steps != $clone->steps');
         return $clone;
     }
@@ -83,7 +92,7 @@ class QueryImpl implements Query {
         }
         $nodes = $this->add_result($nodes, $result);
 
-        foreach ($this->steps as $step) {
+        foreach ($steps as $step) {
             $nodes = $this->switch_run_command($nodes, $step);
         }
 
@@ -147,12 +156,11 @@ class QueryImpl implements Query {
     /**
      * @return  Iterator <[Node,mixed]>
      */
-    protected function run_filter(\Iterator $nodes, Predicate $predicate) {
-        $clsr = $predicate->compile();
+    protected function run_filter(\Iterator $nodes, \Closure $predicate) {
         while ($nodes->valid()) {
             $val = $nodes->current();
             list($node, $result) = $val;
-            if ($clsr($node, $result)) {
+            if ($predicate($node, $result)) {
                 yield $val;
             }
             $nodes->next();
