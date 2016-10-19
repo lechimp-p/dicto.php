@@ -37,14 +37,16 @@ class _And extends _Combined {
      */
     public function compile_to_source(array &$custom_closures) {
         $code =
-            "    \$value = true;\n";
+            "    while(true) {\n";
         foreach ($this->predicates as $predicate) {
             $code .=
-                "    if (\$value) {\n".
-                $predicate->compile_to_source($custom_closures).
-                "    }\n";
+                 $predicate->compile_to_source($custom_closures).
+            "    if (!\$value) break;\n";
         }
-        return $code;
+        return
+            $code.
+            "break;\n".
+            "}\n";
     }
 
     /**
