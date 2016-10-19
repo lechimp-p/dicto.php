@@ -35,7 +35,7 @@ abstract class Predicate {
     }
 
     /**
-     * Compile the predicate to some php source code.
+     * Compile the predicate to some php source code to be consumed by compile.
      *
      * @param   \Closure[]  &$custom_closures
      * @return  string
