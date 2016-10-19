@@ -59,7 +59,7 @@ class In extends Property {
     public function compile(PredicateFactory $f, array &$arguments) {
         $condition = $arguments[0]->compile($f)->compile();
         return $f->_custom(function (Node $n) use ($condition) {
-            $nodes = $n->related_nodes(function (Relation $r) use ($condition) {
+            $nodes = $n->related_nodes(function (Relation $r) {
                 return in_array($r->type(), self::$relations);
             });
             foreach ($nodes as $node) {
