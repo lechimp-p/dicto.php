@@ -18,6 +18,8 @@ class _GraphIndexDB extends Graph\IndexDB {
     public function flush_caches() {
         $this->globals = [];
         $this->language_constructs = [];
+        $this->method_references = [];
+        $this->function_references = [];
     }
 }
 

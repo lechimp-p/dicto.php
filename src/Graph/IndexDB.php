@@ -28,6 +28,16 @@ class IndexDB extends Graph implements Insert, Index {
     protected $language_constructs = []; 
 
     /**
+     * @var array<string,Node>
+     */
+    protected $method_references = [];
+
+    /**
+     * @var array<string,Node>
+     */
+    protected $function_references = [];
+
+    /**
      * @inheritdocs
      */
     public function _file($path, $source) {
@@ -162,6 +172,12 @@ class IndexDB extends Graph implements Insert, Index {
         assert('$file->type() == "file"');
         assert('is_int($line)');
 
+        $key = $name."_".$file->property("path")."_".$line."_".$column;
+
+        if (array_key_exists($key, $this->method_references)) {
+            return $this->method_references[$key];
+        }
+
         $method = $this->create_node("method reference", ["name" => $name]);
         $this->add_relation
             ( $method
@@ -170,6 +186,7 @@ class IndexDB extends Graph implements Insert, Index {
             , $file
             );
 
+        $this->method_references[$key] = $method;
         return $method;
     }
 
@@ -181,6 +198,12 @@ class IndexDB extends Graph implements Insert, Index {
         assert('$file->type() == "file"');
         assert('is_int($line)');
 
+        $key = $name."_".$file->property("path")."_".$line."_".$column;
+        
+        if (array_key_exists($key, $this->function_references)) {
+            return $this->function_references[$key];
+        }
+
         $function = $this->create_node("function reference", ["name" => $name]);
         $this->add_relation
             ( $function
@@ -189,6 +212,7 @@ class IndexDB extends Graph implements Insert, Index {
             , $file
             );
 
+        $this->function_references[$key] = $function;
         return $function;
     }
 
