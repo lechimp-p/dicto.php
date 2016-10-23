@@ -27,6 +27,7 @@ abstract class Variable extends Def\Definition {
     static public function is_type($t) {
         static $types = array
             ( "class"
+            , "interface"
             , "file"
             , "global"
             , "function"
