@@ -105,12 +105,16 @@ class Engine {
     }
 
     protected function run_indexing(Insert $index) {
-        $this->log->notice("Starting to build index...");
+        $this->log->notice("Building index...");
         $indexer = $this->indexer_factory->build($index);
-        $indexer->index_directory
-            ( $this->config->project_root()
-            , $this->config->analysis_ignore()
-            );
+        $this->with_time_measurement
+            ( function ($s) { return "Indexing took $s seconds to run."; }
+            , function () use ($indexer) {
+                $indexer->index_directory
+                    ( $this->config->project_root()
+                    , $this->config->analysis_ignore()
+                    );
+            });
     }
 
     protected function run_analysis(Index $index) {
@@ -118,7 +122,11 @@ class Engine {
         $commit_hash = $this->source_status->commit_hash();
         $this->report_generator->begin_run($commit_hash);
         $analyzer = $this->analyzer_factory->build($index, $this->report_generator);
-        $analyzer->run();
+        $this->with_time_measurement
+            ( function ($s) { return "Analysis took $s seconds to run."; }
+            , function () use ($analyzer) {
+                $analyzer->run();
+            });
         $this->report_generator->end_run();
     }
 
@@ -132,5 +140,12 @@ class Engine {
 
     protected function read_index_from(IndexDB $db) {
         return $db->read_index();
+    }
+
+    protected function with_time_measurement(\Closure $message, \Closure $what) {
+        $start_time = microtime(true);
+        $what();
+        $time_elapsed_secs = microtime(true) - $start_time;
+        $this->log->notice($message($time_elapsed_secs));
     }
 }
