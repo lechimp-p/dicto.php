@@ -22,7 +22,6 @@ use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Rules\RuleSet;
-use PhpParser\ParserFactory;
 use Doctrine\DBAL\DriverManager;
 use Psr\Log\LogLevel;
 
