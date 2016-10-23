@@ -151,6 +151,7 @@ CODE;
                 ( "bar"
                 , "file"
                 , 5
+                , 15
                 )
             ->willReturn("method_reference");
         $insert_mock
@@ -204,6 +205,7 @@ CODE;
                 ( "foobar"
                 , "file"
                 , 5
+                , 9
                 )
             ->willReturn("function_reference");
         $insert_mock
@@ -264,6 +266,7 @@ CODE;
                 ( "foobar"
                 , "file"
                 , 5
+                , 10
                 )
             ->willReturn("function_reference");
         $insert_mock

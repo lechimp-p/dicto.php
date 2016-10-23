@@ -22,7 +22,7 @@ use Lechimp\Flightcontrol\FSObject;
 /**
  * Creates an index of source files.
  */
-class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
+class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
     /**
      * @var Log
      */
@@ -48,30 +48,10 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     protected $listeners_enter_misc;
 
-    // state for parsing a file
-
     /**
-     * @var string|null
+     * @var LocationImpl|null
      */
-    protected $file_path = null;
-
-    /**
-     * @var string|null
-     */
-    protected $file_content = null;
-
-    /**
-     * @var \PhpParser\Node|null
-     */
-    protected $current_node = null;
-
-    /**
-     * This contains the stack of ids were currently in, i.e. the nesting of
-     * known code blocks we are in.
-     *
-     * @var array|null  contain ($definition_type, $definition_id)
-     */
-    protected $definition_stack = null;
+    protected $location = null;
 
     public function __construct(Log $log, \PhpParser\Parser $parser, Insert $insert) {
         $this->log = $log;
@@ -159,10 +139,9 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $traverser = new \PhpParser\NodeTraverser;
         $traverser->addVisitor($this);
 
-        $this->definition_stack = array();
-        $this->file_path = $path;
-        $this->file_content = $content;
+        $this->location = new LocationImpl($path, $content);
         $traverser->traverse($stmts);
+        $this->location = null;
     }
 
    // from ListenerRegistry 
@@ -215,13 +194,14 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     protected function call_misc_listener($which) {
         $listeners = &$this->$which;
+        $current_node = $this->location->current_node();
         foreach ($listeners[0] as $listener) {
-            $listener($this->insert, $this, $this->current_node);
+            $listener($this->insert, $this->location, $current_node);
         }
-        $cls = get_class($this->current_node);
+        $cls = get_class($current_node);
         if (array_key_exists($cls, $listeners)) {
             foreach ($listeners[$cls] as $listener) {
-                $listener($this->insert, $this, $this->current_node);
+                $listener($this->insert, $this->location, $current_node);
             }
         }
     }
@@ -234,45 +214,15 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     protected function call_definition_listener($which, $type, $id) {
         $listeners = &$this->$which;
+        $current_node = $this->location->current_node();
         foreach ($listeners[0] as $listener) {
-            $listener($this->insert, $this, $type, $id, $this->current_node);
+            $listener($this->insert, $this->location, $type, $id, $current_node);
         }
         if (array_key_exists($type, $listeners)) {
             foreach ($listeners[$type] as $listener) {
-                $listener($this->insert, $this, $type, $id, $this->current_node);
+                $listener($this->insert, $this->location, $type, $id, $current_node);
             }
         }
-    }
-
-   // from Location
-
-    /**
-     * @inheritdoc
-     */
-    public function file() {
-        return $this->definition_stack[0][1];
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function line() {
-        assert('$this->current_node != null');
-        return $this->current_node->getAttribute("startLine");
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function column() {
-        return 0;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function in_entities() {
-        return $this->definition_stack;
     }
 
     // from \PhpParser\NodeVisitor
@@ -281,17 +231,14 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function beforeTraverse(array $nodes) {
-        $handle = $this->insert->_file($this->file_path, $this->file_content);
-
-        $this->definition_stack[] = [Variable::FILE_TYPE, $handle];
+        $handle = $this->insert->_file($this->location->file_name(), $this->location->file_content());
+        $this->location->push_entity(Variable::FILE_TYPE, $handle);
     }
 
     /**
      * @inheritdoc
      */
     public function afterTraverse(array $nodes) {
-        assert('count($this->definition_stack) == 1');
-        array_pop($this->definition_stack);
     }
 
     /**
@@ -301,46 +248,46 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         $start_line = $node->getAttribute("startLine");
         $end_line = $node->getAttribute("endLine");
 
-        $this->current_node = $node;
+        $this->location->set_current_node($node);
 
         $handle = null;
         $type = null;
         if ($node instanceof N\Stmt\Class_) {
-            assert('count($this->definition_stack) == 1');
+            assert('$this->location->count_in_entity() == 1');
             $handle = $this->insert->_class
                 ( $node->name
-                , $this->definition_stack[0][1]
+                , $this->location->in_entity(0)[1]
                 , $start_line
                 , $end_line
                 );
             $type = Variable::CLASS_TYPE;
         }
         else if ($node instanceof N\Stmt\Interface_) {
-            assert('count($this->definition_stack) == 1');
+            assert('$this->location->count_in_entity() == 1');
             $handle = $this->insert->_interface
                 ( $node->name
-                , $this->definition_stack[0][1]
+                , $this->location->in_entity(0)[1]
                 , $start_line
                 , $end_line
                 );
             $type = Variable::INTERFACE_TYPE;
         }
         else if ($node instanceof N\Stmt\ClassMethod) {
-            assert('count($this->definition_stack) == 2');
+            assert('$this->location->count_in_entity() == 2');
             $handle = $this->insert->_method
                 ( $node->name
-                , $this->definition_stack[1][1]
-                , $this->definition_stack[0][1]
+                , $this->location->in_entity(1)[1]
+                , $this->location->in_entity(0)[1]
                 , $start_line
                 , $end_line
                 );
             $type = Variable::METHOD_TYPE;
         }
         else if ($node instanceof N\Stmt\Function_) {
-            assert('count($this->definition_stack) >= 1');
+            assert('$this->location->count_in_entity() == 1');
             $handle = $this->insert->_function
                 ( $node->name
-                , $this->definition_stack[0][1]
+                , $this->location->in_entity(0)[1]
                 , (int)$start_line
                 , (int)$end_line
                 );
@@ -350,7 +297,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
         if ($handle !== null) {
             assert('$type !== null');
             $this->call_definition_listener("listeners_enter_definition",  $type, $handle);
-            $this->definition_stack[] = [$type, $handle];
+            $this->location->push_entity($type, $handle);
 
         }
         else {
@@ -358,7 +305,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
             $this->call_misc_listener("listeners_enter_misc");
         }
 
-        $this->current_node = $node;
+        $this->location->flush_current_node();
     }
 
     /**
@@ -371,7 +318,7 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
            || $node instanceof N\Stmt\ClassMethod
            || $node instanceof N\Stmt\Function_) {
 
-            array_pop($this->definition_stack);
+            $this->location->pop_entity();
         }
     }
 }
