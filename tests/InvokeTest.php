@@ -49,7 +49,7 @@ CODE;
                 ( "bar"
                 , "file"
                 , 5
-                , 15
+                , 9
                 )
             ->willReturn("method_reference");
         $insert_mock

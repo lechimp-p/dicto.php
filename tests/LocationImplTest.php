@@ -12,9 +12,18 @@ use Lechimp\Dicto\Indexer\LocationImpl;
 use Lechimp\Dicto\Variables\Variable;
 use PhpParser\Node\Stmt\Class_; 
 
+class _LocationImpl extends LocationImpl {
+    public function get_running_line_length() {
+        return $this->running_line_length;
+    }
+    public function _init_running_line_length() {
+        $this->init_running_line_length();
+    }
+}
+
 class LocationTest extends PHPUnit_Framework_TestCase {
     public function location($file, $content) {
-        return new LocationImpl($file, $content);
+        return new _LocationImpl($file, $content);
     }
 
     public function test_file_name() {
@@ -65,5 +74,33 @@ class LocationTest extends PHPUnit_Framework_TestCase {
         $node = new Class_("foo", [], ["startLine" => 23]);
         $loc->set_current_node($node);
         $this->assertEquals(23, $loc->line());
+    }
+
+    public function test_running_line_length() {
+        $code = <<<CODE
+12345
+12
+
+12345678
+2
+CODE;
+        $loc = $this->location("file.php", $code);
+        $this->assertEquals(null, $loc->get_running_line_length());
+
+        $loc->_init_running_line_length();
+        $expected = [0, 6, 9, 10, 19];
+        $this->assertEquals($expected, $loc->get_running_line_length());
+    }
+
+    public function test_column() {
+$code = <<<CODE
+<?php
+
+    class Foo {}
+CODE;
+        $loc = $this->location("file.php", $code);
+        $node = new Class_("foo", [], ["startLine" => 3, "startFilePos" => 17]);
+        $loc->set_current_node($node);
+        $this->assertEquals(11, $loc->column());
     }
 }

@@ -31,7 +31,9 @@ abstract class RuleTest extends PHPUnit_Framework_TestCase {
     abstract public function schema();
 
     protected function indexer(Insert $insert_mock) {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $lexer = new \PhpParser\Lexer\Emulative
+            (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         $logger_mock = new LoggerMock();
         $indexer = new Indexer
             ( $logger_mock
@@ -47,7 +49,9 @@ abstract class RuleTest extends PHPUnit_Framework_TestCase {
 
         $this->rp = new ReportGeneratorMock();
         $this->log = new LoggerMock();
-        $this->parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $lexer = new \PhpParser\Lexer\Emulative
+            (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
+        $this->parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         $this->indexer = new Indexer($this->log, $this->parser, $this->db);
         $this->schema()->register_listeners($this->indexer);
     }

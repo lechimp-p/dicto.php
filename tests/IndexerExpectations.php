@@ -16,7 +16,9 @@ require_once(__DIR__."/LoggerMock.php");
 
 trait IndexerExpectations {
     protected function indexer(Insert $insert_mock) {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $lexer = new \PhpParser\Lexer\Emulative
+            (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
+        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         $logger_mock = new LoggerMock();
         $indexer = new Indexer
             ( $logger_mock

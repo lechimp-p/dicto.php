@@ -26,6 +26,11 @@ class LocationImpl implements Location {
     protected $file_content;
 
     /**
+     * @var int[]|null
+     */
+    protected $running_line_length = null;
+
+    /**
      * This contains the stack of ids were currently in, i.e. the nesting of
      * known code blocks we are in.
      *
@@ -82,7 +87,12 @@ class LocationImpl implements Location {
      */
     public function column() {
         assert('$this->current_node !== null');
-        return 23;
+        if ($this->running_line_length === null) {
+            $this->init_running_line_length();
+        }
+        $start_pos = $this->current_node->getAttribute("startFilePos");
+        $length_before = $this->running_line_length[$this->line() - 1];
+        return $start_pos - $length_before + 1;
     }
 
     /**
@@ -154,6 +164,20 @@ class LocationImpl implements Location {
     public function flush_current_node() {
         assert('$this->current_node !== null');
         $this->current_node = null;
+    }
+
+    protected function init_running_line_length() {
+        $pos = 0;
+        $count = 0;
+        while (true) {
+            $this->running_line_length[] = $count;
+            $count = strpos($this->file_content, "\n", $pos);
+            if (!$count) {
+                break;
+            }
+            $count++; // for actual linebreak
+            $pos = $count;
+        }
     }
 }
 

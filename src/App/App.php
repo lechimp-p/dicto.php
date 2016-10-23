@@ -134,7 +134,9 @@ class App {
         };
 
         $container["php_parser"] = function() {
-            return (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+            $lexer = new \PhpParser\Lexer\Emulative
+                (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
+            return (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         };
 
         $container["report_generator"] = function($c) {
