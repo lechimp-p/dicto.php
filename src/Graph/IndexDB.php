@@ -199,7 +199,7 @@ class IndexDB extends Graph implements Insert, Index {
         assert('is_int($line)');
 
         $key = $name."_".$file->property("path")."_".$line."_".$column;
-        
+
         if (array_key_exists($key, $this->function_references)) {
             return $this->function_references[$key];
         }
