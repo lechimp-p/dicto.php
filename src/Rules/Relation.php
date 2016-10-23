@@ -122,8 +122,7 @@ abstract class Relation extends Schema {
      * @param   mixed       $other
      * @return  null
      */
-    protected function insert_relation_into(Insert $insert, Location $location, $other, $line) {
-        assert('is_int($line)');
+    protected function insert_relation_into(Insert $insert, Location $location, $other) {
         foreach ($location->in_entities() as $entity) {
             if ($entity[0] == Variable::FILE_TYPE) {
                 continue;
@@ -133,7 +132,7 @@ abstract class Relation extends Schema {
                 , $this->name()
                 , $other
                 , $location->file()
-                , $line
+                , $location->line()
                 );
         }
     }

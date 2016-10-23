@@ -61,6 +61,11 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     protected $file_content = null;
 
     /**
+     * @var \PhpParser\Node|null
+     */
+    protected $current_node = null;
+
+    /**
      * This contains the stack of ids were currently in, i.e. the nesting of
      * known code blocks we are in.
      *
@@ -208,15 +213,15 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @param   string          $which
      * @param   \PhpParser\Node $node
      */
-    protected function call_misc_listener($which, \PhpParser\Node $node) {
+    protected function call_misc_listener($which) {
         $listeners = &$this->$which;
         foreach ($listeners[0] as $listener) {
-            $listener($this->insert, $this, $node);
+            $listener($this->insert, $this, $this->current_node);
         }
-        $cls = get_class($node);
+        $cls = get_class($this->current_node);
         if (array_key_exists($cls, $listeners)) {
             foreach ($listeners[$cls] as $listener) {
-                $listener($this->insert, $this, $node);
+                $listener($this->insert, $this, $this->current_node);
             }
         }
     }
@@ -227,14 +232,14 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      * @param   int                     $type
      * @param   \PhpParser\Node|null    $node
      */
-    protected function call_definition_listener($which, $type, $id, \PhpParser\Node $node = null) {
+    protected function call_definition_listener($which, $type, $id) {
         $listeners = &$this->$which;
         foreach ($listeners[0] as $listener) {
-            $listener($this->insert, $this, $type, $id, $node);
+            $listener($this->insert, $this, $type, $id, $this->current_node);
         }
         if (array_key_exists($type, $listeners)) {
             foreach ($listeners[$type] as $listener) {
-                $listener($this->insert, $this, $type, $id, $node);
+                $listener($this->insert, $this, $type, $id, $this->current_node);
             }
         }
     }
@@ -246,6 +251,21 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
      */
     public function file() {
         return $this->definition_stack[0][1];
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function line() {
+        assert('$this->current_node != null');
+        return $this->current_node->getAttribute("startLine");
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function column() {
+        return 0;
     }
 
     /**
@@ -280,6 +300,8 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
     public function enterNode(\PhpParser\Node $node) {
         $start_line = $node->getAttribute("startLine");
         $end_line = $node->getAttribute("endLine");
+
+        $this->current_node = $node;
 
         $handle = null;
         $type = null;
@@ -327,14 +349,16 @@ class Indexer implements Location, ListenerRegistry, \PhpParser\NodeVisitor {
 
         if ($handle !== null) {
             assert('$type !== null');
-            $this->call_definition_listener("listeners_enter_definition",  $type, $handle, $node);
+            $this->call_definition_listener("listeners_enter_definition",  $type, $handle);
             $this->definition_stack[] = [$type, $handle];
 
         }
         else {
             assert('$type === null');
-            $this->call_misc_listener("listeners_enter_misc", $node);
+            $this->call_misc_listener("listeners_enter_misc");
         }
+
+        $this->current_node = $node;
     }
 
     /**

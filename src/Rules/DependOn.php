@@ -49,13 +49,14 @@ class DependOn extends Relation {
                     $method_reference = $insert->_method_reference
                         ( $node->name
                         , $location->in_entities()[0][1]
-                        , $node->getAttribute("startLine")
+                        , $location->line()
+                        , $location->column()
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
                         , $method_reference
-                        , $node->getAttribute("startLine")
+                        , $location->line()
                         );
                 }
             });
@@ -74,13 +75,13 @@ class DependOn extends Relation {
                     $function_reference = $insert->_function_reference
                         ( $node->name->parts[0]
                         , $location->in_entities()[0][1]
-                        , $node->getAttribute("startLine")
+                        , $location->line()
+                        , $location->column()
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
                         , $function_reference
-                        , $node->getAttribute("startLine")
                         );
                 }
             });
@@ -100,7 +101,6 @@ class DependOn extends Relation {
                         ( $insert
                         , $location
                         , $global
-                        , $node->getAttribute("startLine")
                         );
                 }
             });
@@ -119,7 +119,6 @@ class DependOn extends Relation {
                         ( $insert
                         , $location
                         , $global
-                        , $node->getAttribute("startLine")
                         );
                 }
             });
@@ -134,7 +133,6 @@ class DependOn extends Relation {
                     ( $insert
                     , $location
                     , $language_construct
-                    , $node->getAttribute("startLine")
                     );
             });
         }

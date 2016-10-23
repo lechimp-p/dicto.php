@@ -48,8 +48,8 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         $db1->_function("a_function", $file, 1,1);
         $db1->_global("a_global");
         $db1->_language_construct("@");
-        $method_reference = $db1->_method_reference("a_method", $file, 1);
-        $db1->_function_reference("a_function", $file, 1);
+        $method_reference = $db1->_method_reference("a_method", $file, 1, 2);
+        $db1->_function_reference("a_function", $file, 1, 2);
         $db1->_relation($class, "relates to", $method_reference, $file, 1);
 
         $this->db1->write_index($db1);

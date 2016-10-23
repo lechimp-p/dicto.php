@@ -47,13 +47,13 @@ class Invoke extends Relation {
                     $method_reference = $insert->_method_reference
                         ( $node->name
                         , $location->in_entities()[0][1]
-                        , $node->getAttribute("startLine")
+                        , $location->line()
+                        , $location->column()
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
                         , $method_reference
-                        , $node->getAttribute("startLine")
                         );
                 }
             });
@@ -72,13 +72,13 @@ class Invoke extends Relation {
                     $function_reference = $insert->_function_reference
                         ( $node->name->parts[0]
                         , $location->in_entities()[0][1]
-                        , $node->getAttribute("startLine")
+                        , $location->line()
+                        , $location->column()
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
                         , $function_reference
-                        , $node->getAttribute("startLine")
                         );
                 }
             });
@@ -101,7 +101,6 @@ class Invoke extends Relation {
                     ( $insert
                     , $location
                     , $exit_or_die
-                    , $node->getAttribute("startLine")
                     );
             });
     }
@@ -115,7 +114,6 @@ class Invoke extends Relation {
                     ( $insert
                     , $location
                     , $eval_
-                    , $node->getAttribute("startLine")
                     );
             });
     }
