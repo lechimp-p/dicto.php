@@ -170,6 +170,12 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($compiled($r));
     }
 
+    public function test_and_short_circuit() {
+        $p = $this->f->_true();
+        $p2 = $this->f->_and([$p]);
+        $this->assertSame($p, $p2);
+    }
+
     public function test_and_empty() {
         try {
             $this->f->_and([]);
