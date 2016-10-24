@@ -170,6 +170,16 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($compiled($r));
     }
 
+    public function test_and_empty() {
+        try {
+            $this->f->_and([]);
+            $this->assertFalse("This should not happen!");
+        }
+        catch (\InvalidArgumentException $e) {
+            $this->assertTrue(true);
+        }
+    }
+
     public function test_compile_type_is() {
         $n1 = $this->g->create_node("some_type", []);
         $n2 = $this->g->create_node("some_other_type", []);
