@@ -24,7 +24,7 @@ abstract class Variable extends Def\Definition {
     const METHOD_TYPE = "method";
     const LANGUAGE_CONSTRUCT_TYPE = "language construct";
 
-    static public function is_type($t) {
+    public static function is_type($t) {
         static $types = array
             ( "class"
             , "interface"
