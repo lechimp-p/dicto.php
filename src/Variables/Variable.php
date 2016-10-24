@@ -77,7 +77,7 @@ abstract class Variable extends Def\Definition {
     /**
      * Compile the variable to a predicate on a graph node.
      *
-     * @return  PredicateFactory $f
+     * @param   PredicateFactory $f
      * @return  Predicate
      */
     abstract public function compile(PredicateFactory $f);
