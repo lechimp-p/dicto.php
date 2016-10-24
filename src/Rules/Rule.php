@@ -21,7 +21,7 @@ class Rule extends Definition {
     const MODE_MUST     = "MUST";
     const MODE_ONLY_CAN = "ONLY_CAN";
 
-    static $modes = array
+    private static $modes = array
         ( Rule::MODE_CANNOT
         , Rule::MODE_MUST
         , Rule::MODE_ONLY_CAN
