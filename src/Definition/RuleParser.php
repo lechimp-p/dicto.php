@@ -218,7 +218,8 @@ class RuleParser extends Parser implements ArgumentParser {
     }
 
     /**
-     * Parses the top level statements in the rules file.
+     * Root expression for the parser is some whitespace or comment where a
+     * top level statement is in the middle.
      *
      * @return  Ruleset 
      */
@@ -232,31 +233,35 @@ class RuleParser extends Parser implements ArgumentParser {
                 break;
             }
 
-            // A top level statments is either..
-            // ..an explanation
-            if ($this->is_current_token_matched_by(self::EXPLANATION_RE)) {
-                $m = $this->current_match();
-                $this->last_explanation = $this->trim_explanation($m[1]);
-                $this->advance(self::EXPLANATION_RE);
-            }
-            // ..an assignment to a variable.
-            elseif ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {
-                $this->variable_assignment();
-                $this->last_explanation = null;
-            }
-            // ..or a rule declaration
-            else {
-                $this->rule_declaration();
-                $this->last_explanation = null;
-            }
-
-            if ($this->is_end_of_file_reached()) {
-                break;
-            }
-            $this->advance("\n");
+            $this->top_level_statement();
         }
         $this->purge_predefined_variables();
         return new Ruleset($this->variables, $this->rules);
+    }
+
+    /**
+     * Parses the top level statements in the rules file.
+     *
+     * @return  null
+     */
+    public function top_level_statement() {
+        // A top level statements is either..
+        // ..an explanation
+        if ($this->is_current_token_matched_by(self::EXPLANATION_RE)) {
+            $m = $this->current_match();
+            $this->last_explanation = $this->trim_explanation($m[1]);
+            $this->advance(self::EXPLANATION_RE);
+        }
+        // ..an assignment to a variable.
+        elseif ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {
+            $this->variable_assignment();
+            $this->last_explanation = null;
+        }
+        // ..or a rule declaration
+        else {
+            $this->rule_declaration();
+            $this->last_explanation = null;
+        }
     }
 
     /**
