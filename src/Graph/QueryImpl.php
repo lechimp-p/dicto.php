@@ -185,6 +185,9 @@ class QueryImpl implements Query {
      */
     public function filter_by_types(array $types) {
         $f = $this->predicate_factory();
+        if (count($types) == 0) {
+            return $f->_false();
+        }
         return $this->filter
             ( $f->_and
                 ( array_map
