@@ -148,7 +148,17 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_filter_by_types_empty() {
-        $query = $this->g->query()->filter_by_types([]);
-        $this->assertEquals($this->f->_false(), $query);
+        $this->g->create_node("a_type", []);
+        $this->g->create_node("b_type", []);
+        $this->g->create_node("c_type", []);
+
+        $extract_self = function(Entity $e, array &$res) { $res[] = $e; };
+
+        $res = $this->g->query()
+            ->filter_by_types([])
+            ->extract($extract_self)
+            ->run([]);
+
+        $this->assertEquals([], $res);
     }
 }
