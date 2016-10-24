@@ -57,6 +57,13 @@ class PredicateFactory {
      * @return  Predicate
      */
     public function _or(array $predicates) {
+        if (count($predicates) == 0) {
+            throw new \InvalidArgumentException
+                ("Predicates for _and can not be empty.");
+        }
+        if (count($predicates) == 1) {
+            return array_shift($predicates);
+        }
         return new Predicate\_Or($predicates);
     }
 
