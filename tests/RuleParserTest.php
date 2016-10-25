@@ -430,4 +430,15 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf(V\Functions::class, $res);
         $this->assertSame(null, $res->explanation());
     }
+
+    public function test_end_comment() {
+        $res = $this->parse("\nAllClasses = Classes\n\nAllFunctions = Functions\n// Comment\n/* Comment */");
+
+        $expected = array
+            ( "AllClasses" => new V\Classes("AllClasses")
+            , "AllFunctions" => new V\Functions("AllFunctions")
+            );
+
+        $this->assertEquals($expected, $res->variables());
+    }
 }

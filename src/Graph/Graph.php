@@ -43,6 +43,12 @@ class Graph {
         return $node;
     }
 
+    /**
+     * @param   int                         $id
+     * @param   string                      $type
+     * @param   array<string,mixed>|null    $properties
+     * @return  Node
+     */
     protected function build_node($id, $type, array $properties = null) {
         return new Node($id, $type, $properties);
     }

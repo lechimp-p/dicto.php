@@ -114,6 +114,22 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($compiled($r));
     }
 
+    public function test_or_short_circuit() {
+        $p = $this->f->_true();
+        $p2 = $this->f->_or([$p]);
+        $this->assertSame($p, $p2);
+    }
+
+    public function test_or_empty() {
+        try {
+            $this->f->_or([]);
+            $this->assertFalse("This should not happen!");
+        }
+        catch (\InvalidArgumentException $e) {
+            $this->assertTrue(true);
+        }
+    }
+
     public function test_compile_true_and_false() {
         $n1 = $this->g->create_node("some_type", []);
         $n2 = $this->g->create_node("some_other_type", []);
@@ -168,6 +184,22 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $this->assertFalse($compiled($n1));
         $this->assertFalse($compiled($n2));
         $this->assertFalse($compiled($r));
+    }
+
+    public function test_and_short_circuit() {
+        $p = $this->f->_true();
+        $p2 = $this->f->_and([$p]);
+        $this->assertSame($p, $p2);
+    }
+
+    public function test_and_empty() {
+        try {
+            $this->f->_and([]);
+            $this->assertFalse("This should not happen!");
+        }
+        catch (\InvalidArgumentException $e) {
+            $this->assertTrue(true);
+        }
     }
 
     public function test_compile_type_is() {

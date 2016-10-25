@@ -13,6 +13,7 @@ use Lechimp\Dicto\Graph\Entity;
 use Lechimp\Dicto\Graph\Node;
 use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\Relation;
+use Lechimp\Dicto\Graph\Query;
 
 class Graph_QueryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
@@ -141,6 +142,21 @@ class Graph_QueryTest extends PHPUnit_Framework_TestCase {
             ->expand(function($n) { return $n->relations(); })
             ->expand(function($n) { return [$n->target()]; })
             ->extract(function($_,&$r) { $r["foo"] = "bar"; })
+            ->run([]);
+
+        $this->assertEquals([], $res);
+    }
+
+    public function test_filter_by_types_empty() {
+        $this->g->create_node("a_type", []);
+        $this->g->create_node("b_type", []);
+        $this->g->create_node("c_type", []);
+
+        $extract_self = function(Entity $e, array &$res) { $res[] = $e; };
+
+        $res = $this->g->query()
+            ->filter_by_types([])
+            ->extract($extract_self)
             ->run([]);
 
         $this->assertEquals([], $res);

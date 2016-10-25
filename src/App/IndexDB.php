@@ -135,8 +135,7 @@ class IndexDB extends DB {
             );
         while ($row = $res->fetch()) {
             $properties = $this->select_properties($row["id"], $index);
-            $node = $index->create_node($row["type"], $properties);
-            assert('$row["id"] == $node->id()');
+            $index->create_node($row["type"], $properties);
         }
     }
 

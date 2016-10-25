@@ -24,7 +24,7 @@ abstract class Variable extends Def\Definition {
     const METHOD_TYPE = "method";
     const LANGUAGE_CONSTRUCT_TYPE = "language construct";
 
-    static public function is_type($t) {
+    public static function is_type($t) {
         static $types = array
             ( "class"
             , "interface"
@@ -77,7 +77,7 @@ abstract class Variable extends Def\Definition {
     /**
      * Compile the variable to a predicate on a graph node.
      *
-     * @return  PredicateFactory $f
+     * @param   PredicateFactory $f
      * @return  Predicate
      */
     abstract public function compile(PredicateFactory $f);

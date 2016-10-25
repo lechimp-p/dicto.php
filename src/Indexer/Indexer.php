@@ -190,7 +190,6 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
 
     /**
      * @param   string          $which
-     * @param   \PhpParser\Node $node
      */
     protected function call_misc_listener($which) {
         $listeners = &$this->$which;
@@ -210,7 +209,6 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
      * @param   string                  $which
      * @param   string                  $type
      * @param   int                     $type
-     * @param   \PhpParser\Node|null    $node
      */
     protected function call_definition_listener($which, $type, $id) {
         $listeners = &$this->$which;

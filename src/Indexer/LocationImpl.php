@@ -18,7 +18,7 @@ class LocationImpl implements Location {
     /**
      * @var string
      */
-    protected $file;
+    protected $file_name;
 
     /**
      * @var string
