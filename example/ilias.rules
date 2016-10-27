@@ -1,0 +1,120 @@
+/*
+ * dicto rules from the FOSS Learning Managment System
+ *
+ *     ILIAS     www.ilias.de
+ *
+ * thus: this is GPLed
+ *
+ * (c) Richard Klees <richard.klees@rwth-aachen.de>
+ */
+
+ilClasses = Classes with name:"il.*"
+assClasses = Classes with name:"ass.*"
+WholeIliasCodebase = {ilClasses, assClasses}
+_GUIClasses = Classes with name:".*GUI.*"
+GUIClasses = {_GUIClasses, Methods in: _GUIClasses}
+triggerError = Functions with name:"trigger_error"
+raiseError = Functions with name:"raiseError"
+exitOrDie = {Exit, Die}
+ilTopLevelException = Classes with name:"ilException"
+ilExceptions = Classes with name:"il.*Exception*"
+ilExceptionsWithoutTopLevelException = {ilExceptions} except {ilTopLevelException} 
+ilDBClass = Classes with name:"ilDB"
+ilDBGlobal = Globals with name:"ilDB"
+ilDB = {ilDBClass, ilDBGlobal}
+ilTemplateClass = Classes with name:"ilTemplate"
+ilTemplateGlobal = Globals with name:"tpl"
+ilTemplate = {ilTemplateClass, ilTemplateGlobal}
+ilTabsClass = Classes with name:"ilTabsGUI"
+ilTabsGlobal = Globals with name:"ilTabs"
+ilTabs = {ilTabsClass, ilTabsGlobal}
+SetErrorHandler = Functions with name:"set_error_handler"
+SetExceptionHandler = Functions with name:"set_exception_handler"
+SetErrorOrExceptionHandler = {SetExceptionHandler, SetErrorHandler}
+IliasTemplateFiles = Files with name:"tpl[.].*[.]html"
+
+
+/**
+ * The global php function trigger_error is a procedural concept. Please 
+ * ommit this php function and use an ILIAS exception instead.
+ */
+WholeIliasCodebase cannot invoke triggerError
+
+/**
+ * Exit and die are a bad idea in both development and production: In
+ * development you have no idea what went wrong and in production the
+ * user receives a white page and has no idea whats going on. The
+ * implemented exception handling does not work if you use exit or die.
+ *
+ * If you want to send a file consider using: Services/FilesDelivery.
+ *
+ * Exception: Currently if you want to output json you most likely have
+ * to use exit() at the moment.
+ */
+WholeIliasCodebase cannot invoke exitOrDie
+
+/**
+ * The error and exception handler of ILIAS should not be overridden!
+ */
+WholeIliasCodebase cannot invoke SetErrorOrExceptionHandler
+
+/**
+ * The php function Eval() is not good practice. Its use often comes with
+ * a high security risk, because it is generally not a trivial task to
+ * make sure that a paramater of eval() can be fully trusted. And if it is,
+ * then eval() is usually not neccessary. It is also tricky to debug, because
+ * it obfuscates control flow. Last but not least, it does not work with HHVM
+ * in the special "RepoAuthoritative" mode, which makes PHP run extra-fast.
+ */
+WholeIliasCodebase cannot invoke Eval
+
+
+/**
+ * Silencing errors with the @ operator is bad practice. It makes code
+ * uneccessarily harder to debug if the currently suppressed error changes
+ * into a real show-stopper bug. Try to handle the possible warnings and errors.
+ */
+WholeIliasCodebase cannot depend on ErrorSuppressor
+
+/**
+ * The GUI-Layer should not itself interact with the database. Try to build
+ * reusable Model classes, adding a layer of abstraction instead of accessing
+ * the database.
+ */
+GUIClasses cannot depend on ilDB
+
+/**
+ * Only the GUI-Layer should use the global variable ilTabs and the class
+ * ilTabsGUI. If you use them in a Model the model cannot be used for e.g.
+ * SOAP requests without unnecessary overhead.
+ */
+only GUIClasses can depend on ilTabs
+
+/**
+ * Only the GUI-Layer should use the global variable ilTemplate and the
+ * class ilTemplate itself. If you use ilTemplate in the model it cannot be
+ * used by calls that do not initiate global ilTemplate for example SOAP.
+ */
+only GUIClasses can depend on ilTemplate
+
+/**
+ * ILIAS should not rely on PEAR::raiseError. We would like to introduce
+ * exceptions instead. 
+ */
+WholeIliasCodebase cannot invoke raiseError
+
+/**
+ * Used to detect HTML <script>-Tags 
+ */
+IliasTemplateFiles cannot contain text "<script"
+
+/**
+ * Used to detect JavaScript in e.g. HTML attributes, e.g. 
+ * <a href="javascript:void(0);">x</a>
+ */
+IliasTemplateFiles cannot contain text "javascript\s*:"
+
+/**
+ * Used to detect inline JavaScript events, e.g. <a onclick="alert('HelloWorld');">x</a>
+ */
+IliasTemplateFiles cannot contain text "on(blur|change|click|dblclick|focus|keydown|keypress|keyup|load|mousemove|mouseup|mousedown|mouseenter|mouseleave|mouseout|mouseover|mousewheel|resize|select|submit|unload|wheel|scroll)"
