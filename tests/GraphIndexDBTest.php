@@ -42,6 +42,24 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
+    public function test_namespace() {
+        $this->db->_namespace("ANamespace");
+
+        $res = $this->db->query()
+            ->filter_by_types(["namespace"])
+            ->extract(function($n, &$r) {
+                $r["name"] = $n->property("name");
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "name" => "ANamespace"
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+    }
+
+
     public function test_class() {
         $file = $this->db->_file("some_path.php", "A\nB");
         $this->db->_class("AClass", $file, 1, 2);
@@ -162,6 +180,150 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
                 , "file" => $file
                 , "start_line" => 1
                 , "end_line" => 2
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_namespace_class_rel() {
+        $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
+        $namespace = $this->db->_namespace("ANamespace");
+        $class = $this->db->_class("AClass", $file, 1, 4, $namespace);
+
+        $res = $this->db->query()
+            ->filter_by_types(["class"])
+            ->expand_relations(["contained in"])
+            ->expand_target()
+            ->extract(function($n, &$r) {
+                $r["namespace"] = $n;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "namespace" => $namespace
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+
+        $res = $this->db->query()
+            ->filter_by_types(["namespace"])
+            ->expand_relations(["contains"])
+            ->expand_target()
+            ->extract(function($n, &$r) {
+                $r["class"] = $n;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "class" => $class
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_namespace_interface_rel() {
+        $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
+        $namespace = $this->db->_namespace("ANamespace");
+        $interface = $this->db->_interface("AnInterface", $file, 1, 4, $namespace);
+
+        $res = $this->db->query()
+            ->filter_by_types(["interface"])
+            ->expand_relations(["contained in"])
+            ->expand_target()
+            ->extract(function($n, &$r) {
+                $r["namespace"] = $n;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "namespace" => $namespace
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+
+        $res = $this->db->query()
+            ->filter_by_types(["namespace"])
+            ->expand_relations(["contains"])
+            ->expand_target()
+            ->extract(function($n, &$r) {
+                $r["interface"] = $n;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "interface" => $interface
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_namespace_trait_rel() {
+        $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
+        $namespace = $this->db->_namespace("ANamespace");
+        $trait = $this->db->_trait("ATrait", $file, 1, 4, $namespace);
+
+        $res = $this->db->query()
+            ->filter_by_types(["trait"])
+            ->expand_relations(["contained in"])
+            ->expand_target()
+            ->extract(function($n, &$r) {
+                $r["namespace"] = $n;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "namespace" => $namespace
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+
+        $res = $this->db->query()
+            ->filter_by_types(["namespace"])
+            ->expand_relations(["contains"])
+            ->expand_target()
+            ->extract(function($n, &$r) {
+                $r["trait"] = $n;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "trait" => $trait
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_namespace_function_rel() {
+        $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
+        $namespace = $this->db->_namespace("ANamespace");
+        $function = $this->db->_function("a_function", $file, 1, 4, $namespace);
+
+        $res = $this->db->query()
+            ->filter_by_types(["function"])
+            ->expand_relations(["contained in"])
+            ->expand_target()
+            ->extract(function($n, &$r) {
+                $r["namespace"] = $n;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "namespace" => $namespace
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+
+        $res = $this->db->query()
+            ->filter_by_types(["namespace"])
+            ->expand_relations(["contains"])
+            ->expand_target()
+            ->extract(function($n, &$r) {
+                $r["function"] = $n;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "function" => $function
                 ]
             ];
         $this->assertEquals($expected, $res);

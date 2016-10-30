@@ -31,40 +31,43 @@ interface Insert {
      * @param   string  $name
      * @return  mixed   handle to the namespace
      */
-    public function _namespace($namespace);
+    public function _namespace($name);
 
     /**
      * Store a class in the database.
      *
-     * @param   string  $name
-     * @param   mixed   $file   handle from _file
-     * @param   int     $start_line
-     * @param   int     $end_line
-     * @return  mixed   handle to the class
+     * @param   string      $name
+     * @param   mixed       $file       handle from _file
+     * @param   int         $start_line
+     * @param   int         $end_line
+     * @param   mixed|null  $namespace  handle from namespace
+     * @return  mixed       handle to the class
      */
-    public function _class($name, $file, $start_line, $end_line);
+    public function _class($name, $file, $start_line, $end_line, $namespace = null);
 
     /**
      * Store an interface in the database.
      *
      * @param   string  $name
-     * @param   mixed   $file   handle from _file
-     * @param   int     $start_line
-     * @param   int     $end_line
-     * @return  mixed   handle to the class
+     * @param   mixed       $file       handle from _file
+     * @param   int         $start_line
+     * @param   int         $end_line
+     * @param   mixed|null  $namespace  handle from namespace
+     * @return  mixed       handle to the class
      */
-    public function _interface($name, $file, $start_line, $end_line);
+    public function _interface($name, $file, $start_line, $end_line, $namespace = null);
 
     /**
      * Store a trait in the database.
      *
      * @param   string  $name
-     * @param   mixed   $file   handle from _file
-     * @param   int     $start_line
-     * @param   int     $end_line
-     * @return  mixed   handle to the class
+     * @param   mixed       $file       handle from _file
+     * @param   int         $start_line
+     * @param   int         $end_line
+     * @param   mixed|null  $namespace  handle from namespace
+     * @return  mixed       handle to the class
      */
-    public function _trait($name, $file, $start_line, $end_line);
+    public function _trait($name, $file, $start_line, $end_line, $namespace = null);
 
     /**
      * Store a method in the database.
@@ -81,13 +84,14 @@ interface Insert {
     /**
      * Store a function in the database.
      *
-     * @param   string  $name
-     * @param   mixed   $file   handle from _file
-     * @param   int     $start_line
-     * @param   int     $end_line
-     * @return  mixed   handle to the function
+     * @param   string      $name
+     * @param   mixed       $file       handle from _file
+     * @param   int         $start_line
+     * @param   int         $end_line
+     * @param   mixed|null  $namespace  handle from namespace
+     * @return  mixed       handle to the function
      */
-    public function _function($name, $file, $start_line, $end_line);
+    public function _function($name, $file, $start_line, $end_line, $namespace = null);
 
     /**
      * Store information about the usage of a global to the database.
