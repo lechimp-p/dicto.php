@@ -86,6 +86,23 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([[$i]], $res);
     }
 
+    public function test_compile_traits() {
+        $var = new V\Traits();
+        $compiled = $var->compile($this->f);
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $t = $this->db->_trait("ATrait", $f, 1,2);
+        $m = $this->db->_method("a_method", $t, $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$t]], $res);
+    }
+
     public function test_compile_methods() {
         $var = new V\Methods();
         $compiled = $var->compile($this->f);

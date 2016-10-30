@@ -28,6 +28,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
             ( array
                 ( new V\Classes()
                 , new V\Interfaces()
+                , new V\Traits()
                 , new V\Functions()
                 , new V\Globals()
                 , new V\Files()
@@ -82,6 +83,16 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
 
         $expected = array
             ( "AllInterfaces" => new V\Interfaces("AllInterfaces")
+            );
+
+        $this->assertEquals($expected, $res->variables());
+    }
+
+    public function test_trait_variable() {
+        $res = $this->parse("AllTraits = Traits");
+
+        $expected = array
+            ( "AllTraits" => new V\Traits("AllTraits")
             );
 
         $this->assertEquals($expected, $res->variables());

@@ -18,6 +18,7 @@ abstract class Variable extends Def\Definition {
     // TODO: Use these in Graph/IndexDB.
     const CLASS_TYPE = "class";
     const INTERFACE_TYPE = "interface";
+    const TRAIT_TYPE = "trait";
     const FILE_TYPE = "file";
     const GLOBAL_TYPE = "global";
     const FUNCTION_TYPE = "function";
@@ -28,6 +29,7 @@ abstract class Variable extends Def\Definition {
         static $types = array
             ( "class"
             , "interface"
+            , "trait"
             , "file"
             , "global"
             , "function"

@@ -114,7 +114,7 @@ class IndexDB extends Graph implements Insert, Index {
      */
     public function _method($name, $class, $file, $start_line, $end_line) {
         assert('is_string($name)');
-        assert('in_array($class->type(), ["class", "interface"])');
+        assert('in_array($class->type(), ["class", "interface", "trait"])');
         assert('$file->type() == "file"');
         assert('is_int($start_line)');
         assert('is_int($end_line)');
