@@ -48,9 +48,9 @@ class LocationImpl implements Location {
     protected $class_interface_trait = null;
 
     /**
-     * @var mixed|null
+     * @var mixed[]
      */
-    protected $function_method = null;
+    protected $function_method = [];
 
     /**
      * @var \PhpParser\Node|null
@@ -89,7 +89,12 @@ class LocationImpl implements Location {
      * @inheritdocs
      */
     public function _function_method() {
-        return $this->function_method;
+        $c = count($this->function_method);
+        assert('$c == 0 || $c == 1 || $c = 2');
+        if ($c == 0) {
+            return null;
+        }
+        return $this->function_method[$c-1];
     }
 
     /**
@@ -145,7 +150,7 @@ class LocationImpl implements Location {
             $this->class_interface_trait = $handle;
         }
         else if (in_array($type, [Variable::METHOD_TYPE, Variable::FUNCTION_TYPE])) {
-            $this->function_method = $handle;
+            $this->function_method[] = $handle;
         }
         else {
             throw new \LogicException("What should i do with handles of type '$type'?");
@@ -158,8 +163,8 @@ class LocationImpl implements Location {
      * @return null
      */
     public function pop_entity() {
-        if ($this->function_method !== null) {
-            $this->function_method = null;
+        if (count($this->function_method) > 0) {
+            array_pop($this->function_method);
         }
         else if ($this->class_interface_trait !== null) {
             $this->class_interface_trait = null;

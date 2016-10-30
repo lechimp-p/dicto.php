@@ -93,6 +93,31 @@ class LocationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(null, $loc->_function_method());
     }
 
+    public function test_in_entites_inline_function() {
+        $loc = $this->location("file.php", "");
+        $loc->push_entity(Variable::FILE_TYPE, 0);
+        $loc->push_entity(Variable::CLASS_TYPE, 1);
+        $loc->push_entity(Variable::METHOD_TYPE, 2);
+        $loc->push_entity(Variable::FUNCTION_TYPE, 3);
+
+        $this->assertEquals(0, $loc->_file());
+        $this->assertEquals(null, $loc->_namespace());
+        $this->assertEquals(1, $loc->_class_interface_trait());
+        $this->assertEquals(3, $loc->_function_method());
+
+        $loc->pop_entity();
+        $this->assertEquals(0, $loc->_file());
+        $this->assertEquals(null, $loc->_namespace());
+        $this->assertEquals(1, $loc->_class_interface_trait());
+        $this->assertEquals(2, $loc->_function_method());
+
+        $loc->pop_entity();
+        $this->assertEquals(0, $loc->_file());
+        $this->assertEquals(null, $loc->_namespace());
+        $this->assertEquals(1, $loc->_class_interface_trait());
+        $this->assertEquals(null, $loc->_function_method());
+    }
+
     public function test_current_node() {
         $loc = $this->location("file.php", "");
         $node = new Class_("foo");

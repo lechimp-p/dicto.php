@@ -354,6 +354,49 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
+    // IMHO no one should do this, but it is allowed anyway.
+    public function test_inline_function_definition_and_after() {
+        $source = <<<PHP
+<?php
+class AClass{
+    public function a_method() {
+        function a_function() {
+        }
+    }
+    public function another_method() {
+    }
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $this->expect_class($insert_mock, "AClass", "file23", 2, 9)
+            ->willReturn("class42");
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("_method")
+            ->withConsecutive
+                ([$this->equalTo("a_method")
+                , $this->equalTo("class42")
+                , $this->equalTo("file23")
+                , $this->equalTo(3)
+                , $this->equalTo(6)
+                ]
+                ,[$this->equalTo("another_method")
+                , $this->equalTo("class42")
+                , $this->equalTo("file23")
+                , $this->equalTo(7)
+                , $this->equalTo(8)
+                ])
+            ->willReturnOnConsecutiveCalls
+                ("a_method", "b_method");
+        $this->expect_function($insert_mock, "a_function", "file23", 4, 5)
+            ->willReturn("function666");
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
 
 
     // TODO: Write a test on methods in interfaces and traits. Do they get popped
