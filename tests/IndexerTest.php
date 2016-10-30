@@ -328,6 +328,6 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    // TODO: Write a test on methods in interfaces. Do they get popped from
-    //       the location?
+    // TODO: Write a test on methods in interfaces and traits. Do they get popped
+    //       from the location?
 }
