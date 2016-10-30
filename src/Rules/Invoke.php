@@ -46,7 +46,7 @@ class Invoke extends Relation {
                 if (is_string($node->name)) {
                     $method_reference = $insert->_method_reference
                         ( $node->name
-                        , $location->in_entities()[0][1]
+                        , $location->_file()
                         , $location->_line()
                         , $location->_column()
                         );
@@ -71,7 +71,7 @@ class Invoke extends Relation {
                       $node->name instanceof N\Expr\ArrayDimFetch)) {
                     $function_reference = $insert->_function_reference
                         ( $node->name->parts[0]
-                        , $location->in_entities()[0][1]
+                        , $location->_file()
                         , $location->_line()
                         , $location->_column()
                         );

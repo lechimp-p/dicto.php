@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\Indexer;
 
+use Lechimp\Dicto\Variables\Variable;
+
 /**
  * TODO: This is not the correct name for this thing. It also holds
  * information about the file.
@@ -31,12 +33,24 @@ class LocationImpl implements Location {
     protected $running_line_length = null;
 
     /**
-     * This contains the stack of ids were currently in, i.e. the nesting of
-     * known code blocks we are in.
-     *
-     * @var array   contains ($definition_type, $definition_id) tuples
+     * @var mixed|null
      */
-    protected $definition_stack;
+    protected $file = null;
+
+    /**
+     * @var mixed|null
+     */
+    protected $namespace = null;
+
+    /**
+     * @var mixed|null
+     */
+    protected $class_interface_trait = null;
+
+    /**
+     * @var mixed|null
+     */
+    protected $function_method = null;
 
     /**
      * @var \PhpParser\Node|null
@@ -48,22 +62,34 @@ class LocationImpl implements Location {
         assert('is_string($file_content)');
         $this->file_name = $file_name;
         $this->file_content = $file_content;
-        $this->definition_stack = [];
     }
 
     /**
      * @inheritdocs
      */
     public function _file() {
-        assert('count($this->definition_stack) > 0');
-        assert('$this->definition_stack[0][0] === \\Lechimp\\Dicto\\Variables\\Variable::FILE_TYPE');
-        return $this->definition_stack[0][1];
+        return $this->file;
     }
 
     /**
      * @inheritdocs
      */
     public function _namespace() {
+        return $this->namespace;
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function _class_interface_trait() {
+        return $this->class_interface_trait;
+    }
+
+    /**
+     * @inheritdocs
+     */
+    public function _function_method() {
+        return $this->function_method;
     }
 
     /**
@@ -102,31 +128,6 @@ class LocationImpl implements Location {
     }
 
     /**
-     * @return  array[]     List of ($type, $handle)
-     */
-    public function in_entities() {
-        return $this->definition_stack;
-    }
-
-    /**
-     * @param   int     $pos
-     * @return  array       ($type, $handle)
-     */
-    public function in_entity($pos) {
-        assert('is_int($pos)');
-        assert('$pos >= 0');
-        assert('$pos < count($this->definition_stack)');
-        return $this->definition_stack[$pos];
-    }
-
-    /**
-     * @return   int
-     */
-    public function count_in_entity() {
-        return count($this->definition_stack);
-    }
-
-    /**
      * Push an entity on the stack.
      *
      * @param   string  $type
@@ -134,8 +135,21 @@ class LocationImpl implements Location {
      * @return  null
      */
     public function push_entity($type, $handle) {
-        assert('\\Lechimp\\Dicto\\Variables\\Variable::is_type($type)');
-        $this->definition_stack[] = [$type, $handle];
+        if ($type == Variable::FILE_TYPE) {
+            $this->file = $handle;
+        }
+        else if ($type == Variable::NAMESPACE_TYPE) {
+            $this->namespace = $handle;
+        }
+        else if (in_array($type, [Variable::CLASS_TYPE, Variable::INTERFACE_TYPE, Variable::TRAIT_TYPE])) {
+            $this->class_interface_trait = $handle;
+        }
+        else if (in_array($type, [Variable::METHOD_TYPE, Variable::FUNCTION_TYPE])) {
+            $this->function_method = $handle;
+        }
+        else {
+            throw new \LogicException("What should i do with handles of type '$type'?");
+        }
     }
 
     /**
@@ -144,7 +158,21 @@ class LocationImpl implements Location {
      * @return null
      */
     public function pop_entity() {
-        array_pop($this->definition_stack);
+        if ($this->function_method !== null) {
+            $this->function_method = null;
+        }
+        else if ($this->class_interface_trait !== null) {
+            $this->class_interface_trait = null;
+        }
+        else if ($this->namespace !== null) {
+            $this->namespace = null;
+        }
+        else if ($this->file !== null) {
+            $this->file = null;
+        }
+        else {
+            throw new \LogicException("Can't pop anymore entities.");
+        }
     }
 
     /**

@@ -29,6 +29,20 @@ interface Location {
     public function _namespace();
 
     /**
+     * Get a handle to the class, interface or trait the location is in.
+     *
+     * @return mixed|null
+     */
+    public function _class_interface_trait();
+
+    /**
+     * Get a handle to the function or method the location is in.
+     *
+     * @return mixed|null
+     */
+    public function _function_method();
+
+    /**
      * @return  int
      */
     public function _line();
@@ -37,12 +51,5 @@ interface Location {
      * @return  int
      */
     public function _column();
-
-    /**
-     * TODO: This should go away in favour of more specific methods like namespace.
-     *
-     * @return  array[]     List of ($entity_type, $entity_id)
-     */
-    public function in_entities();
 }
 

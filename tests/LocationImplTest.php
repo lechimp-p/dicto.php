@@ -35,10 +35,12 @@ class LocationTest extends PHPUnit_Framework_TestCase {
         $loc = $this->location("file.php", "some_content");
         $this->assertEquals("some_content", $loc->_file_content());
     }
-
     public function test_in_entity_empty() {
         $loc = $this->location("file.php", "");
-        $this->assertEquals([], $loc->in_entities());
+        $this->assertEquals(null, $loc->_file());
+        $this->assertEquals(null, $loc->_namespace());
+        $this->assertEquals(null, $loc->_class_interface_trait());
+        $this->assertEquals(null, $loc->_function_method());
     }
 
     public function test_in_entites() {
@@ -46,20 +48,49 @@ class LocationTest extends PHPUnit_Framework_TestCase {
         $loc->push_entity(Variable::FILE_TYPE, 0);
         $loc->push_entity(Variable::CLASS_TYPE, 1);
 
-        $expected = 
-            [ [Variable::FILE_TYPE, 0]
-            , [Variable::CLASS_TYPE, 1]
-            ];
-        $this->assertEquals($expected, $loc->in_entities());
-        $this->assertEquals(2, $loc->count_in_entity());
-
-        $this->assertEquals([Variable::FILE_TYPE, 0], $loc->in_entity(0));
-        $this->assertEquals([Variable::CLASS_TYPE, 1], $loc->in_entity(1));
+        $this->assertEquals(0, $loc->_file());
+        $this->assertEquals(null, $loc->_namespace());
+        $this->assertEquals(1, $loc->_class_interface_trait());
 
         $loc->pop_entity();
-        $this->assertEquals([[Variable::FILE_TYPE, 0]], $loc->in_entities());
-        $this->assertEquals([Variable::FILE_TYPE, 0], $loc->in_entity(0));
-        $this->assertEquals(1, $loc->count_in_entity());
+        $this->assertEquals(0, $loc->_file());
+        $this->assertEquals(null, $loc->_namespace());
+        $this->assertEquals(null, $loc->_class_interface_trait());
+    }
+
+    public function test_in_entites_function_method() {
+        $loc = $this->location("file.php", "");
+        $loc->push_entity(Variable::FILE_TYPE, 0);
+        $loc->push_entity(Variable::CLASS_TYPE, 1);
+        $loc->push_entity(Variable::METHOD_TYPE, 2);
+
+        $this->assertEquals(0, $loc->_file());
+        $this->assertEquals(null, $loc->_namespace());
+        $this->assertEquals(1, $loc->_class_interface_trait());
+        $this->assertEquals(2, $loc->_function_method());
+
+        $loc->pop_entity();
+        $this->assertEquals(0, $loc->_file());
+        $this->assertEquals(null, $loc->_namespace());
+        $this->assertEquals(1, $loc->_class_interface_trait());
+        $this->assertEquals(null, $loc->_function_method());
+    }
+
+    public function test_in_entites_function() {
+        $loc = $this->location("file.php", "");
+        $loc->push_entity(Variable::FILE_TYPE, 0);
+        $loc->push_entity(Variable::FUNCTION_TYPE, 2);
+
+        $this->assertEquals(0, $loc->_file());
+        $this->assertEquals(null, $loc->_namespace());
+        $this->assertEquals(null, $loc->_class_interface_trait());
+        $this->assertEquals(2, $loc->_function_method());
+
+        $loc->pop_entity();
+        $this->assertEquals(0, $loc->_file());
+        $this->assertEquals(null, $loc->_namespace());
+        $this->assertEquals(null, $loc->_class_interface_trait());
+        $this->assertEquals(null, $loc->_function_method());
     }
 
     public function test_current_node() {

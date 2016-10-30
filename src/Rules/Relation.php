@@ -123,17 +123,24 @@ abstract class Relation extends Schema {
      * @return  null
      */
     protected function insert_relation_into(Insert $insert, Location $location, $other) {
-        foreach ($location->in_entities() as $entity) {
-            if ($entity[0] == Variable::FILE_TYPE) {
-                continue;
-            }
+        if ($cit = $location->_class_interface_trait()) {
             $insert->_relation
-                ( $entity[1]
+                ( $cit
                 , $this->name()
                 , $other
                 , $location->_file()
                 , $location->_line()
                 );
         }
+        if ($fm = $location->_function_method()) {
+            $insert->_relation
+                ( $fm
+                , $this->name()
+                , $other
+                , $location->_file()
+                , $location->_line()
+                );
+        }
+        // TODO: Should i be introducing namespace here?
     }
 }

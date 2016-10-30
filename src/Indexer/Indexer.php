@@ -255,69 +255,53 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
         $handle = null;
         $type = null;
         if ($node instanceof N\Stmt\Namespace_) {
-            assert('$this->location->count_in_entity() == 1');
             $handle = $this->insert->_namespace
                 ( $node->name
                 );
             $type = Variable::NAMESPACE_TYPE;
         }
         else if ($node instanceof N\Stmt\Class_) {
-            assert('in_array($this->location->count_in_entity(), [1,2])');
-            if ($this->location->count_in_entity() == 1) {
-                $handle = $this->insert->_class
-                    ( $node->name
-                    , $this->location->in_entity(0)[1]
-                    , $start_line
-                    , $end_line
-                    );
-            }
-            else {
-                $handle = $this->insert->_class
-                    ( $node->name
-                    , $this->location->in_entity(0)[1]
-                    , $start_line
-                    , $end_line
-                    , $this->location->in_entity(1)[1]
-                    );
-            }
+            $handle = $this->insert->_class
+                ( $node->name
+                , $this->location->_file()
+                , $start_line
+                , $end_line
+                , $this->location->_namespace()
+                );
             $type = Variable::CLASS_TYPE;
         }
         else if ($node instanceof N\Stmt\Interface_) {
-            assert('in_array($this->location->count_in_entity(), [1,2])');
             $handle = $this->insert->_interface
                 ( $node->name
-                , $this->location->in_entity(0)[1]
+                , $this->location->_file()
                 , $start_line
                 , $end_line
                 );
             $type = Variable::INTERFACE_TYPE;
         }
         else if ($node instanceof N\Stmt\Trait_) {
-            assert('in_array($this->location->count_in_entity(), [1,2])');
             $handle = $this->insert->_trait
                 ( $node->name
-                , $this->location->in_entity(0)[1]
+                , $this->location->_file()
                 , $start_line
                 , $end_line
                 );
             $type = Variable::INTERFACE_TYPE;
         }
         else if ($node instanceof N\Stmt\ClassMethod) {
-            assert('in_array($this->location->count_in_entity(), [2,3])');
             $handle = $this->insert->_method
                 ( $node->name
-                , $this->location->in_entity(1)[1]
-                , $this->location->in_entity(0)[1]
+                , $this->location->_class_interface_trait()
+                , $this->location->_file()
                 , $start_line
                 , $end_line
                 );
             $type = Variable::METHOD_TYPE;
         }
         else if ($node instanceof N\Stmt\Function_) {
-            assert('in_array($this->location->count_in_entity(), [1,2])');
             $handle = $this->insert->_function
                 ( $node->name
-                , $this->location->in_entity(0)[1]
+                , $this->location->_file()
                 , (int)$start_line
                 , (int)$end_line
                 );

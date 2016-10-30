@@ -210,4 +210,8 @@ PHP;
 
     // TODO: Write a test on methods in classes in namespaces.
     // TODO: Write tests on traits, interfaces and function in namespaces.
+    // TODO: Write a test with a file that contains one class in a namespace
+    //       and one class not in a namespace.
+    // TODO: Write a test on methods in interfaces. Do they get popped from
+    //       the location?
 }
