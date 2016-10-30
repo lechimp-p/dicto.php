@@ -200,6 +200,8 @@ class AppTest extends PHPUnit_Framework_TestCase {
 
         $expected_variables = array
             ( new \Lechimp\Dicto\Variables\Classes()
+            , new \Lechimp\Dicto\Variables\Interfaces()
+            , new \Lechimp\Dicto\Variables\Traits()
             , new \Lechimp\Dicto\Variables\Functions()
             , new \Lechimp\Dicto\Variables\Globals()
             , new \Lechimp\Dicto\Variables\Files()

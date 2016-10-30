@@ -50,6 +50,8 @@ class Config implements ConfigurationInterface {
                 ]
             , "variables" =>
                 [ \Lechimp\Dicto\Variables\Classes::class
+                , \Lechimp\Dicto\Variables\Interfaces::class
+                , \Lechimp\Dicto\Variables\Traits::class
                 , \Lechimp\Dicto\Variables\Functions::class
                 , \Lechimp\Dicto\Variables\Globals::class
                 , \Lechimp\Dicto\Variables\Files::class
