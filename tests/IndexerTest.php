@@ -332,8 +332,6 @@ PHP;
     public function test_inline_function_definition() {
         $source = <<<PHP
 <?php
-namespace SomeNamespace;
-
 class AClass{
     public function a_method() {
         function a_function() {
@@ -345,13 +343,11 @@ PHP;
 
         $this->expect_file($insert_mock, "source.php", $source)
             ->willReturn("file23");
-        $this->expect_namespace($insert_mock, "SomeNamespace")
-            ->willReturn("namespace123");
-        $this->expect_class($insert_mock, "AClass", "file23", 4, 9, "namespace123")
+        $this->expect_class($insert_mock, "AClass", "file23", 2, 7)
             ->willReturn("class42");
-        $this->expect_method($insert_mock, "a_method", "class42", "file23", 5, 8)
+        $this->expect_method($insert_mock, "a_method", "class42", "file23", 3, 6)
             ->willReturn("method83");
-        $this->expect_function($insert_mock, "a_function", "file23", 6, 7)
+        $this->expect_function($insert_mock, "a_function", "file23", 4, 5)
             ->willReturn("function666");
 
         $indexer = $this->indexer($insert_mock);
