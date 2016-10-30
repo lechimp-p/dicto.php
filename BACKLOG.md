@@ -9,6 +9,7 @@
 * Expose `everything` in definition language.
 * Make `language_construct` more pleasant to use.
 * Define known types of `language_construct`s.
+* Make syntax errors in rules being outputted more nicely.
 
 # DB
 * Maybe make rules (and maybe vars) able to initialize their own tables.
