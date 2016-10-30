@@ -110,6 +110,42 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res->variables());
     }
 
+    public function test_classes_in_namespaces_with_name_1() {
+        $this->parser->which_expression = "variable";
+        $res = $this->parse("Classes in: Namespaces with name: \"foo.*\"");
+
+        $expected = new V\WithProperty
+            ( new V\Classes
+            , new V\In
+            , array
+                ( new V\WithProperty
+                    ( new V\Namespaces
+                    , new V\Name
+                    , array("foo.*")
+                    )
+                )
+            );
+
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_classes_in_namespaces_with_name_2() {
+        $this->parser->which_expression = "variable";
+        $res = $this->parse("{Classes in: Namespaces} with name: \"foo.*\"");
+
+        $expected = new V\WithProperty
+            ( new V\WithProperty
+                ( new V\Classes
+                , new V\In
+                , array(new V\Namespaces)
+                )
+            , new V\Name
+            , array("foo.*")
+            );
+
+        $this->assertEquals($expected, $res);
+    }
+
     public function test_variables() {
         $res = $this->parse("AllClasses = Classes\nAllFunctions = Functions");
 
@@ -119,6 +155,14 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
             );
 
         $this->assertEquals($expected, $res->variables());
+    }
+
+    public function test_any_short_circuit() {
+        $this->parser->which_expression = "variable";
+        $res = $this->parse("{Classes}");
+
+        $expected = new V\Classes();
+        $this->assertEquals($expected, $res);
     }
 
     public function test_any() {

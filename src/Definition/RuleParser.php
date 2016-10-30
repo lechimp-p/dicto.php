@@ -125,6 +125,10 @@ class RuleParser extends Parser implements ArgumentParser {
                     $arr[] = $this->variable(0);
                     if ($this->is_current_token_operator("}")) {
                         $this->advance_operator("}");
+                        // short circuit
+                        if (count($arr) == 1) {
+                            return $arr[0];
+                        }
                         return new V\Any($arr);
                     }
                     $this->advance_operator(",");
