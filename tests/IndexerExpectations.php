@@ -35,6 +35,7 @@ trait IndexerExpectations {
                 [ "_file"
                 , "_class"
                 , "_interface"
+                , "_trait"
                 , "_method"
                 , "_function"
                 , "_global"
@@ -72,6 +73,18 @@ trait IndexerExpectations {
         return $insert_mock
             ->expects($this->once())
             ->method("_interface")
+            ->with
+                ( $this->equalTo($name)
+                , $this->equalTo($file)
+                , $this->equalTo($start_line)
+                , $this->equalTo($end_line)
+                );
+    }
+
+    public function expect_trait($insert_mock, $name, $file, $start_line, $end_line) {
+        return $insert_mock
+            ->expects($this->once())
+            ->method("_trait")
             ->with
                 ( $this->equalTo($name)
                 , $this->equalTo($file)

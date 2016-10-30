@@ -270,6 +270,16 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
                 );
             $type = Variable::INTERFACE_TYPE;
         }
+        else if ($node instanceof N\Stmt\Trait_) {
+            assert('$this->location->count_in_entity() == 1');
+            $handle = $this->insert->_trait
+                ( $node->name
+                , $this->location->in_entity(0)[1]
+                , $start_line
+                , $end_line
+                );
+            $type = Variable::INTERFACE_TYPE;
+        }
         else if ($node instanceof N\Stmt\ClassMethod) {
             assert('$this->location->count_in_entity() == 2');
             $handle = $this->insert->_method

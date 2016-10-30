@@ -125,4 +125,44 @@ PHP;
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
     }
+
+    public function test_trait_definition() {
+        $source = <<<PHP
+<?php
+
+trait ATrait {
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $this->expect_trait($insert_mock, "ATrait", "file23", 3, 4)
+            ->willReturn(42);
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+    public function test_trait_in_interface() {
+        $source = <<<PHP
+<?php
+
+trait ATrait {
+    public function a_method() {
+    }
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $this->expect_trait($insert_mock, "ATrait", "file23", 3, 6)
+            ->willReturn("trait42");
+        $this->expect_method($insert_mock, "a_method", "trait42", "file23", 4, 5)
+            ->willReturn(1234);
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
 }
