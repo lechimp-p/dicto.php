@@ -199,7 +199,8 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $dic = $this->app->_create_dic("/the/path", array($c));
 
         $expected_variables = array
-            ( new \Lechimp\Dicto\Variables\Classes()
+            ( new \Lechimp\Dicto\Variables\Namespaces()
+            , new \Lechimp\Dicto\Variables\Classes()
             , new \Lechimp\Dicto\Variables\Interfaces()
             , new \Lechimp\Dicto\Variables\Traits()
             , new \Lechimp\Dicto\Variables\Functions()

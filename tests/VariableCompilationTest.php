@@ -343,4 +343,31 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([[$m1]], $res);
     }
 
+    public function test_compile_anything_in_some_namespace() {
+        $var = new V\WithProperty
+            ( new V\Everything()
+            , new V\In()
+            , array(new V\Namespaces())
+            );
+        $compiled = $var->compile($this->f);
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $n = $this->db->_namespace("SomeNamespace");
+        $c1 = $this->db->_class("AClass", $f, 1,2);
+        $c2 = $this->db->_class("AClass", $f, 1,2, $n);
+        $i1 = $this->db->_interface("AnInterface", $f, 1,2);
+        $i2 = $this->db->_interface("AnInterface", $f, 1,2, $n);
+        $t1 = $this->db->_trait("ATrait", $f, 1,2);
+        $t2 = $this->db->_trait("ATrait", $f, 1,2, $n);
+        $f1 = $this->db->_function("a_function", $f, 1,2);
+        $f2 = $this->db->_function("a_function", $f, 1,2, $n);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$c2], [$i2], [$t2], [$f2]], $res);
+    }
 }

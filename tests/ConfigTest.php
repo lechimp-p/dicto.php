@@ -56,7 +56,8 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             ];
         $this->assertEquals($default_properties, $config->rules_properties());
         $default_variables =
-            [ \Lechimp\Dicto\Variables\Classes::class
+            [ \Lechimp\Dicto\Variables\Namespaces::class
+            , \Lechimp\Dicto\Variables\Classes::class
             , \Lechimp\Dicto\Variables\Interfaces::class
             , \Lechimp\Dicto\Variables\Traits::class
             , \Lechimp\Dicto\Variables\Functions::class

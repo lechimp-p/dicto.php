@@ -27,7 +27,8 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->parser = new _RuleParser
             ( array
-                ( new V\Classes()
+                ( new V\Namespaces()
+                , new V\Classes()
                 , new V\Interfaces()
                 , new V\Traits()
                 , new V\Functions()
@@ -94,6 +95,16 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
 
         $expected = array
             ( "AllTraits" => new V\Traits("AllTraits")
+            );
+
+        $this->assertEquals($expected, $res->variables());
+    }
+
+    public function test_namespace_variable() {
+        $res = $this->parse("AllNamespaces = Namespaces");
+
+        $expected = array
+            ( "AllNamespaces" => new V\Namespaces("AllNamespaces")
             );
 
         $this->assertEquals($expected, $res->variables());

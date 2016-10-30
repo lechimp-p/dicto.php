@@ -49,7 +49,8 @@ class Config implements ConfigurationInterface {
                 , \Lechimp\Dicto\Variables\In::class
                 ]
             , "variables" =>
-                [ \Lechimp\Dicto\Variables\Classes::class
+                [ \Lechimp\Dicto\Variables\Namespaces::class
+                , \Lechimp\Dicto\Variables\Classes::class
                 , \Lechimp\Dicto\Variables\Interfaces::class
                 , \Lechimp\Dicto\Variables\Traits::class
                 , \Lechimp\Dicto\Variables\Functions::class
