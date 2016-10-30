@@ -286,4 +286,61 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
             ->run([]);
         $this->assertEquals([[$m1]], $res);
     }
+
+    public function test_compile_methods_in_some_interface() {
+        $a_interfaces = new V\WithProperty
+            ( new V\Interfaces()
+            , new V\Name()
+            , array("AInterface")
+            );
+        $var = new V\WithProperty
+            ( new V\Methods()
+            , new V\In()
+            , array($a_interfaces)
+            );
+        $compiled = $var->compile($this->f);
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $i1 = $this->db->_interface("AInterface", $f, 1,2);
+        $m1 = $this->db->_method("a_method", $i1, $f, 1, 2);
+        $i2 = $this->db->_interface("BInterface", $f, 1,2);
+        $m2 = $this->db->_method("a_method", $i2, $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$m1]], $res);
+    }
+
+    public function test_compile_methods_in_some_traits() {
+        $a_traits = new V\WithProperty
+            ( new V\Traits()
+            , new V\Name()
+            , array("ATrait")
+            );
+        $var = new V\WithProperty
+            ( new V\Methods()
+            , new V\In()
+            , array($a_traits)
+            );
+        $compiled = $var->compile($this->f);
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $t1 = $this->db->_trait("ATrait", $f, 1,2);
+        $m1 = $this->db->_method("a_method", $t1, $f, 1, 2);
+        $t2 = $this->db->_trait("BTrait", $f, 1,2);
+        $m2 = $this->db->_method("a_method", $t2, $f, 1, 2);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$m1]], $res);
+    }
+
 }
