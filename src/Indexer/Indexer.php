@@ -329,8 +329,8 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function leaveNode(\PhpParser\Node $node) {
-        // Class
-        if (  $node instanceof N\Stmt\Class_
+        if (  $node instanceof N\Stmt\Namespace_
+           || $node instanceof N\Stmt\Class_
            || $node instanceof N\Stmt\Interface_
            || $node instanceof N\Stmt\ClassMethod
            || $node instanceof N\Stmt\Function_) {

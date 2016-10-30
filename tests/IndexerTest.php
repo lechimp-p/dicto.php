@@ -275,8 +275,59 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    // TODO: Write a test with a file that contains one class in a namespace
-    //       and one class not in a namespace.
+    public function test_file_with_mixed_namespace() {
+        $source = <<<PHP
+<?php
+namespace SomeNamespace {
+    class AClass{
+    }
+}
+
+namespace SomeOtherNamespace {
+    class BClass {
+    }
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("_namespace")
+            ->withConsecutive
+                (["SomeNamespace"]
+                ,["SomeOtherNamespace"]
+                )
+            ->willReturnOnConsecutiveCalls
+                ( "namespace123"
+                , "namespace456"
+                );
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("_class")
+            ->withConsecutive
+                ([$this->equalTo("AClass")
+                , $this->equalTo("file23")
+                , $this->equalTo(3)
+                , $this->equalTo(4)
+                , $this->equalTo("namespace123")
+                ]
+                ,[$this->equalTo("BClass")
+                , $this->equalTo("file23")
+                , $this->equalTo(8)
+                , $this->equalTo(9)
+                , $this->equalTo("namespace456")
+                ])
+            ->willReturnOnConsecutiveCalls
+                ( "class1"
+                , "class2"
+                );
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
     // TODO: Write a test on methods in interfaces. Do they get popped from
     //       the location?
 }
