@@ -28,12 +28,12 @@ class LocationTest extends PHPUnit_Framework_TestCase {
 
     public function test_file_name() {
         $loc = $this->location("file.php", "");
-        $this->assertEquals("file.php", $loc->file_name());
+        $this->assertEquals("file.php", $loc->_file_name());
     }
 
     public function test_file_content() {
         $loc = $this->location("file.php", "some_content");
-        $this->assertEquals("some_content", $loc->file_content());
+        $this->assertEquals("some_content", $loc->_file_content());
     }
 
     public function test_in_entity_empty() {
@@ -73,7 +73,7 @@ class LocationTest extends PHPUnit_Framework_TestCase {
         $loc = $this->location("file.php", "");
         $node = new Class_("foo", [], ["startLine" => 23]);
         $loc->set_current_node($node);
-        $this->assertEquals(23, $loc->line());
+        $this->assertEquals(23, $loc->_line());
     }
 
     public function test_running_line_length() {
@@ -101,6 +101,6 @@ CODE;
         $loc = $this->location("file.php", $code);
         $node = new Class_("foo", [], ["startLine" => 3, "startFilePos" => 17]);
         $loc->set_current_node($node);
-        $this->assertEquals(11, $loc->column());
+        $this->assertEquals(11, $loc->_column());
     }
 }

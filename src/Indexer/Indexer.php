@@ -233,7 +233,7 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function beforeTraverse(array $nodes) {
-        $handle = $this->insert->_file($this->location->file_name(), $this->location->file_content());
+        $handle = $this->insert->_file($this->location->_file_name(), $this->location->_file_content());
         $this->location->push_entity(Variable::FILE_TYPE, $handle);
     }
 

@@ -131,8 +131,8 @@ abstract class Relation extends Schema {
                 ( $entity[1]
                 , $this->name()
                 , $other
-                , $location->file()
-                , $location->line()
+                , $location->_file()
+                , $location->_line()
                 );
         }
     }

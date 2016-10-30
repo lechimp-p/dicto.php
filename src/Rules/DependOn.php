@@ -49,14 +49,14 @@ class DependOn extends Relation {
                     $method_reference = $insert->_method_reference
                         ( $node->name
                         , $location->in_entities()[0][1]
-                        , $location->line()
-                        , $location->column()
+                        , $location->_line()
+                        , $location->_column()
                         );
                     $this->insert_relation_into
                         ( $insert
                         , $location
                         , $method_reference
-                        , $location->line()
+                        , $location->_line()
                         );
                 }
             });
@@ -75,8 +75,8 @@ class DependOn extends Relation {
                     $function_reference = $insert->_function_reference
                         ( $node->name->parts[0]
                         , $location->in_entities()[0][1]
-                        , $location->line()
-                        , $location->column()
+                        , $location->_line()
+                        , $location->_column()
                         );
                     $this->insert_relation_into
                         ( $insert

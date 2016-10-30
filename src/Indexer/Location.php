@@ -15,21 +15,32 @@ namespace Lechimp\Dicto\Indexer;
  */
 interface Location {
     /**
+     * Get the handle to the file where the location is in.
+     *
      * @return  mixed
      */
-    public function file();
+    public function _file();
+
+    /**
+     * Get the handle to the namespace the location is in.
+     *
+     * @return mixed|null
+     */
+    public function _namespace();
 
     /**
      * @return  int
      */
-    public function line();
+    public function _line();
 
     /**
      * @return  int
      */
-    public function column();
+    public function _column();
 
     /**
+     * TODO: This should go away in favour of more specific methods like namespace.
+     *
      * @return  array[]     List of ($entity_type, $entity_id)
      */
     public function in_entities();

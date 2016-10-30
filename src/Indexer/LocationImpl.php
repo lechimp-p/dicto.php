@@ -52,32 +52,38 @@ class LocationImpl implements Location {
     }
 
     /**
-     * @return  mixed
+     * @inheritdocs
      */
-    public function file() {
+    public function _file() {
         assert('count($this->definition_stack) > 0');
         assert('$this->definition_stack[0][0] === \\Lechimp\\Dicto\\Variables\\Variable::FILE_TYPE');
         return $this->definition_stack[0][1];
     }
 
     /**
+     * @inheritdocs
+     */
+    public function _namespace() {
+    }
+
+    /**
      * @return  string
      */
-    public function file_name() {
+    public function _file_name() {
         return $this->file_name;
     }
 
     /**
      * @return  string
      */
-    public function file_content() {
+    public function _file_content() {
         return $this->file_content;
     }
 
     /**
      * @return  int
      */
-    public function line() {
+    public function _line() {
         assert('$this->current_node !== null');
         return $this->current_node->getAttribute("startLine");
     }
@@ -85,13 +91,13 @@ class LocationImpl implements Location {
     /**
      * @return  int
      */
-    public function column() {
+    public function _column() {
         assert('$this->current_node !== null');
         if ($this->running_line_length === null) {
             $this->init_running_line_length();
         }
         $start_pos = $this->current_node->getAttribute("startFilePos");
-        $length_before = $this->running_line_length[$this->line() - 1];
+        $length_before = $this->running_line_length[$this->_line() - 1];
         return $start_pos - $length_before + 1;
     }
 
