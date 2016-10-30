@@ -250,7 +250,31 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    // TODO: Write a test on methods in classes in namespaces.
+    public function test_class_and_method_in_namespace() {
+        $source = <<<PHP
+<?php
+namespace SomeNamespace;
+
+class AClass{
+    public function a_method() {
+    }
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $this->expect_namespace($insert_mock, "SomeNamespace")
+            ->willReturn("namespace123");
+        $this->expect_class($insert_mock, "AClass", "file23", 4, 7, "namespace123")
+            ->willReturn("class42");
+        $this->expect_method($insert_mock, "a_method", "class42", "file23", 5, 6)
+            ->willReturn("method83");
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
     // TODO: Write a test with a file that contains one class in a namespace
     //       and one class not in a namespace.
     // TODO: Write a test on methods in interfaces. Do they get popped from
