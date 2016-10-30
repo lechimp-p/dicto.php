@@ -144,7 +144,7 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_trait_in_interface() {
+    public function test_method_in_trait() {
         $source = <<<PHP
 <?php
 
