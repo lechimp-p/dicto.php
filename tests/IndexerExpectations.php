@@ -33,6 +33,7 @@ trait IndexerExpectations {
             ->getMockBuilder(Lechimp\Dicto\Indexer\Insert::class)
             ->setMethods(
                 [ "_file"
+                , "_namespace"
                 , "_class"
                 , "_interface"
                 , "_trait"
@@ -57,17 +58,39 @@ trait IndexerExpectations {
                 );
     }
 
-    public function expect_class($insert_mock, $name, $file, $start_line, $end_line) {
+    public function expect_namespace($insert_mock, $name) {
         return $insert_mock
             ->expects($this->once())
-            ->method("_class")
+            ->method("_namespace")
             ->with
                 ( $this->equalTo($name)
-                , $this->equalTo($file)
-                , $this->equalTo($start_line)
-                , $this->equalTo($end_line)
                 );
     }
+
+    public function expect_class($insert_mock, $name, $file, $start_line, $end_line, $namespace = null) {
+        $mock = $insert_mock
+            ->expects($this->once())
+            ->method("_class");
+            if ($namespace === null) {
+                return $mock
+                    ->with
+                        ( $this->equalTo($name)
+                        , $this->equalTo($file)
+                        , $this->equalTo($start_line)
+                        , $this->equalTo($end_line)
+                        );
+            }
+            else {
+                return $mock
+                    ->with
+                        ( $this->equalTo($name)
+                        , $this->equalTo($file)
+                        , $this->equalTo($start_line)
+                        , $this->equalTo($end_line)
+                        , $this->equalTo($namespace)
+                        );
+            }
+        }
 
     public function expect_interface($insert_mock, $name, $file, $start_line, $end_line) {
         return $insert_mock

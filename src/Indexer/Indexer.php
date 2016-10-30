@@ -254,18 +254,36 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
 
         $handle = null;
         $type = null;
-        if ($node instanceof N\Stmt\Class_) {
+        if ($node instanceof N\Stmt\Namespace_) {
             assert('$this->location->count_in_entity() == 1');
-            $handle = $this->insert->_class
+            $handle = $this->insert->_namespace
                 ( $node->name
-                , $this->location->in_entity(0)[1]
-                , $start_line
-                , $end_line
                 );
+            $type = Variable::NAMESPACE_TYPE;
+        }
+        else if ($node instanceof N\Stmt\Class_) {
+            assert('in_array($this->location->count_in_entity(), [1,2])');
+            if ($this->location->count_in_entity() == 1) {
+                $handle = $this->insert->_class
+                    ( $node->name
+                    , $this->location->in_entity(0)[1]
+                    , $start_line
+                    , $end_line
+                    );
+            }
+            else {
+                $handle = $this->insert->_class
+                    ( $node->name
+                    , $this->location->in_entity(0)[1]
+                    , $start_line
+                    , $end_line
+                    , $this->location->in_entity(1)[1]
+                    );
+            }
             $type = Variable::CLASS_TYPE;
         }
         else if ($node instanceof N\Stmt\Interface_) {
-            assert('$this->location->count_in_entity() == 1');
+            assert('in_array($this->location->count_in_entity(), [1,2])');
             $handle = $this->insert->_interface
                 ( $node->name
                 , $this->location->in_entity(0)[1]
@@ -275,7 +293,7 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
             $type = Variable::INTERFACE_TYPE;
         }
         else if ($node instanceof N\Stmt\Trait_) {
-            assert('$this->location->count_in_entity() == 1');
+            assert('in_array($this->location->count_in_entity(), [1,2])');
             $handle = $this->insert->_trait
                 ( $node->name
                 , $this->location->in_entity(0)[1]
@@ -285,7 +303,7 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
             $type = Variable::INTERFACE_TYPE;
         }
         else if ($node instanceof N\Stmt\ClassMethod) {
-            assert('$this->location->count_in_entity() == 2');
+            assert('in_array($this->location->count_in_entity(), [2,3])');
             $handle = $this->insert->_method
                 ( $node->name
                 , $this->location->in_entity(1)[1]
@@ -296,7 +314,7 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
             $type = Variable::METHOD_TYPE;
         }
         else if ($node instanceof N\Stmt\Function_) {
-            assert('$this->location->count_in_entity() == 1');
+            assert('in_array($this->location->count_in_entity(), [1,2])');
             $handle = $this->insert->_function
                 ( $node->name
                 , $this->location->in_entity(0)[1]
@@ -308,9 +326,10 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
 
         if ($handle !== null) {
             assert('$type !== null');
-            $this->call_definition_listener("listeners_enter_definition",  $type, $handle);
+            if ($type !== Variable::NAMESPACE_TYPE) {
+               $this->call_definition_listener("listeners_enter_definition",  $type, $handle);
+            }
             $this->location->push_entity($type, $handle);
-
         }
         else {
             assert('$type === null');

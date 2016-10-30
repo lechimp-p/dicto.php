@@ -165,4 +165,49 @@ PHP;
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);
     }
+
+    public function test_class_in_namespace_1() {
+        $source = <<<PHP
+<?php
+namespace SomeNamespace;
+
+class AClass{
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $this->expect_namespace($insert_mock, "SomeNamespace")
+            ->willReturn("namespace123");
+        $this->expect_class($insert_mock, "AClass", "file23", 4, 5, "namespace123")
+            ->willReturn("class42");
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+    public function test_class_in_namespace_2() {
+        $source = <<<PHP
+<?php
+namespace SomeNamespace {
+    class AClass{
+    }
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $this->expect_namespace($insert_mock, "SomeNamespace")
+            ->willReturn("namespace123");
+        $this->expect_class($insert_mock, "AClass", "file23", 3, 4, "namespace123")
+            ->willReturn("class42");
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+    // TODO: Write a test on methods in classes in namespaces.
+    // TODO: Write tests on traits, interfaces and function in namespaces.
 }

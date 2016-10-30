@@ -16,6 +16,7 @@ use Lechimp\Dicto\Graph\PredicateFactory;
 
 abstract class Variable extends Def\Definition {
     // TODO: Use these in Graph/IndexDB.
+    const NAMESPACE_TYPE = "namespace";
     const CLASS_TYPE = "class";
     const INTERFACE_TYPE = "interface";
     const TRAIT_TYPE = "trait";
@@ -27,7 +28,8 @@ abstract class Variable extends Def\Definition {
 
     public static function is_type($t) {
         static $types = array
-            ( "class"
+            ( "namespace"
+            , "class"
             , "interface"
             , "trait"
             , "file"

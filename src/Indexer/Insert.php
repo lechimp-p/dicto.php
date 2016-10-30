@@ -26,6 +26,14 @@ interface Insert {
     public function _file($path, $source);
 
     /**
+     * Store a namespace in the database.
+     *
+     * @param   string  $name
+     * @return  mixed   handle to the namespace
+     */
+    public function _namespace($namespace);
+
+    /**
      * Store a class in the database.
      *
      * @param   string  $name

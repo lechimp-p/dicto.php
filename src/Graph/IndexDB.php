@@ -58,6 +58,12 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
+    public function _namespace($namespace) {
+    }
+
+    /**
+     * @inheritdocs
+     */
     public function _class($name, $file, $start_line, $end_line) {
         assert('is_string($name)');
         assert('$file->type() == "file"');
