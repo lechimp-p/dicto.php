@@ -4,7 +4,6 @@ project:
     rules:      "./ilias.rules"
 analysis:
     ignore:
-        - "src"
         - ".*\\.swp"
         - ".git"
         - "composer"
