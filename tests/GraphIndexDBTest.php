@@ -137,6 +137,36 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
+    public function test_trait() {
+        $file = $this->db->_file("some_path.php", "A\nB");
+        $this->db->_trait("ATrait", $file, 1, 2);
+
+        $res = $this->db->query()
+            ->filter_by_types(["trait"])
+            ->extract(function($n, &$r) {
+                $r["name"] = $n->property("name");
+            })
+            ->expand_relations(["defined in"])
+            ->extract(function($e,&$r) {
+                $r["start_line"] = $e->property("start_line");
+                $r["end_line"] = $e->property("end_line");
+            })
+            ->expand_target()
+            ->extract(function($e,&$r) {
+                $r["file"] = $e;
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "name" => "ATrait"
+                , "file" => $file
+                , "start_line" => 1
+                , "end_line" => 2
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+    }
+
     public function test_method_class_rel() {
         $file = $this->db->_file("some_path.php", "A\nB\nC\nD");
         $class = $this->db->_class("AClass", $file, 1, 4);
