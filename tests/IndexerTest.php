@@ -328,6 +328,38 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
+    // IMHO no one should do this, but it is allowed anyway.
+    public function test_inline_function_definition() {
+        $source = <<<PHP
+<?php
+namespace SomeNamespace;
+
+class AClass{
+    public function a_method() {
+        function a_function() {
+        }
+    }
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $this->expect_namespace($insert_mock, "SomeNamespace")
+            ->willReturn("namespace123");
+        $this->expect_class($insert_mock, "AClass", "file23", 4, 9, "namespace123")
+            ->willReturn("class42");
+        $this->expect_method($insert_mock, "a_method", "class42", "file23", 5, 8)
+            ->willReturn("method83");
+        $this->expect_function($insert_mock, "a_function", "file23", 6, 7)
+            ->willReturn("function666");
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+
+
     // TODO: Write a test on methods in interfaces and traits. Do they get popped
     //       from the location?
 }

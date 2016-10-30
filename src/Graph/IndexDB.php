@@ -276,7 +276,7 @@ class IndexDB extends Graph implements Insert, Index {
 
     // Helper
 
-    protected function add_definition(Node $n, Node $file, $start_line, $end_line, $namespace = null) {
+    protected function add_definition(Node $n, Node $file, $start_line, $end_line, Node $namespace = null) {
         assert('$namespace === null || $namespace->type() == "namespace"');
         assert('$n->type() !== "method" || $namespace === null');
         $this->add_relation
