@@ -276,6 +276,7 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
                 , $this->location->_file()
                 , $start_line
                 , $end_line
+                , $this->location->_namespace()
                 );
             $type = Variable::INTERFACE_TYPE;
         }
@@ -285,6 +286,7 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
                 , $this->location->_file()
                 , $start_line
                 , $end_line
+                , $this->location->_namespace()
                 );
             $type = Variable::INTERFACE_TYPE;
         }

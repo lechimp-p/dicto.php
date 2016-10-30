@@ -71,49 +71,75 @@ trait IndexerExpectations {
         $mock = $insert_mock
             ->expects($this->once())
             ->method("_class");
-            if ($namespace === null) {
-                return $mock
-                    ->with
-                        ( $this->equalTo($name)
-                        , $this->equalTo($file)
-                        , $this->equalTo($start_line)
-                        , $this->equalTo($end_line)
-                        );
-            }
-            else {
-                return $mock
-                    ->with
-                        ( $this->equalTo($name)
-                        , $this->equalTo($file)
-                        , $this->equalTo($start_line)
-                        , $this->equalTo($end_line)
-                        , $this->equalTo($namespace)
-                        );
-            }
+        if ($namespace === null) {
+            return $mock
+                ->with
+                    ( $this->equalTo($name)
+                    , $this->equalTo($file)
+                    , $this->equalTo($start_line)
+                    , $this->equalTo($end_line)
+                    );
         }
-
-    public function expect_interface($insert_mock, $name, $file, $start_line, $end_line) {
-        return $insert_mock
-            ->expects($this->once())
-            ->method("_interface")
-            ->with
-                ( $this->equalTo($name)
-                , $this->equalTo($file)
-                , $this->equalTo($start_line)
-                , $this->equalTo($end_line)
-                );
+        else {
+            return $mock
+                ->with
+                    ( $this->equalTo($name)
+                    , $this->equalTo($file)
+                    , $this->equalTo($start_line)
+                    , $this->equalTo($end_line)
+                    , $this->equalTo($namespace)
+                    );
+        }
     }
 
-    public function expect_trait($insert_mock, $name, $file, $start_line, $end_line) {
-        return $insert_mock
+    public function expect_interface($insert_mock, $name, $file, $start_line, $end_line, $namespace = null) {
+        $mock = $insert_mock
             ->expects($this->once())
-            ->method("_trait")
-            ->with
-                ( $this->equalTo($name)
-                , $this->equalTo($file)
-                , $this->equalTo($start_line)
-                , $this->equalTo($end_line)
-                );
+            ->method("_interface");
+        if ($namespace === null) {
+            return $mock
+                ->with
+                    ( $this->equalTo($name)
+                    , $this->equalTo($file)
+                    , $this->equalTo($start_line)
+                    , $this->equalTo($end_line)
+                    );
+        }
+        else {
+            return $mock
+                ->with
+                    ( $this->equalTo($name)
+                    , $this->equalTo($file)
+                    , $this->equalTo($start_line)
+                    , $this->equalTo($end_line)
+                    , $this->equalTo($namespace)
+                    );
+        }
+    }
+
+    public function expect_trait($insert_mock, $name, $file, $start_line, $end_line, $namespace = null) {
+        $mock = $insert_mock
+            ->expects($this->once())
+            ->method("_trait");
+        if ($namespace === null) {
+            return $mock
+                ->with
+                    ( $this->equalTo($name)
+                    , $this->equalTo($file)
+                    , $this->equalTo($start_line)
+                    , $this->equalTo($end_line)
+                    );
+        }
+        else {
+            return $mock
+                ->with
+                    ( $this->equalTo($name)
+                    , $this->equalTo($file)
+                    , $this->equalTo($start_line)
+                    , $this->equalTo($end_line)
+                    , $this->equalTo($namespace)
+                    );
+        }
     }
 
     public function expect_method($insert_mock, $name, $class, $file, $start_line, $end_line) {

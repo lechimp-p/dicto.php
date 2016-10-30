@@ -208,8 +208,49 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
+    public function test_interface_in_namespace() {
+        $source = <<<PHP
+<?php
+namespace SomeNamespace;
+
+interface AInterface {
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $this->expect_namespace($insert_mock, "SomeNamespace")
+            ->willReturn("namespace123");
+        $this->expect_interface($insert_mock, "AInterface", "file23", 4, 5, "namespace123")
+            ->willReturn("interface42");
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
+    public function test_trait_in_namespace() {
+        $source = <<<PHP
+<?php
+namespace SomeNamespace;
+
+trait ATrait {
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $this->expect_namespace($insert_mock, "SomeNamespace")
+            ->willReturn("namespace123");
+        $this->expect_trait($insert_mock, "ATrait", "file23", 4, 5, "namespace123")
+            ->willReturn("trait42");
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
     // TODO: Write a test on methods in classes in namespaces.
-    // TODO: Write tests on traits, interfaces and function in namespaces.
     // TODO: Write a test with a file that contains one class in a namespace
     //       and one class not in a namespace.
     // TODO: Write a test on methods in interfaces. Do they get popped from
