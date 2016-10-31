@@ -15,6 +15,11 @@ class RegexpTest extends PHPUnit_Framework_TestCase {
         return new Regexp($str);
     }
 
+    public function test_raw() {
+        $re = $this->regexp("ab");
+        $this->assertEquals("ab", $re->raw());
+    }
+
     public function test_throws_on_delim() {
         try {
             $this->regexp("%");

@@ -33,6 +33,13 @@ class Regexp {
     }
 
     /**
+     * @return  string
+     */
+    public function raw() {
+        return $this->regexp;
+    }
+
+    /**
      * Match a string with the regexp.
      *
      * @param   string      $str
