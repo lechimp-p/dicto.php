@@ -59,6 +59,22 @@ class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
+    public function test_nested_namespace() {
+        $this->db->_namespace("A\\NestedNamespace");
+
+        $res = $this->db->query()
+            ->filter_by_types(["namespace"])
+            ->extract(function($n, &$r) {
+                $r["name"] = $n->property("name");
+            })
+            ->run([]);
+
+        $expected =
+            [   [ "name" => "A\\NestedNamespace"
+                ]
+            ];
+        $this->assertEquals($expected, $res);
+    }
 
     public function test_class() {
         $file = $this->db->_file("some_path.php", "A\nB");

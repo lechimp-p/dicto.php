@@ -208,6 +208,27 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
+    public function test_class_in_nested_namespace() {
+        $source = <<<PHP
+<?php
+namespace Some\\NestedNamespace;
+
+class AClass{
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+        $this->expect_namespace($insert_mock, "Some\\NestedNamespace")
+            ->willReturn("namespace123");
+        $this->expect_class($insert_mock, "AClass", "file23", 4, 5, "namespace123")
+            ->willReturn("class42");
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
+
     public function test_interface_in_namespace() {
         $source = <<<PHP
 <?php

@@ -256,7 +256,7 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
         $type = null;
         if ($node instanceof N\Stmt\Namespace_) {
             $handle = $this->insert->_namespace
-                ( $node->name
+                ( "".$node->name
                 );
             $type = Variable::NAMESPACE_TYPE;
         }
