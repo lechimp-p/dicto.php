@@ -35,4 +35,14 @@ class PropertyPredicateFactory {
     public function _matches(Regexp $regex) {
         return new Predicate\_PropertyMatches($this->name, $regex);
     }
+
+    /**
+     * Is true when the property equals the given value.
+     *
+     * @param   string      $value 
+     * @return  Predicate
+     */
+    public function _equals($value) {
+        return new Predicate\_PropertyEquals($this->name, $value);
+    }
 }
