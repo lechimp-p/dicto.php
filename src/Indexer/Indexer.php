@@ -21,7 +21,7 @@ use Lechimp\Flightcontrol\FSObject;
 /**
  * Creates an index of source files.
  */
-class Indexer implements ListenerRegistry {
+class Indexer {
     /**
      * @var Log
      */
@@ -38,25 +38,17 @@ class Indexer implements ListenerRegistry {
     protected $parser;
 
     /**
-     * @var array   string => array()
+     * @var ASTVisitor[]
      */
-    protected $listeners_enter_definition;
+    protected $ast_visitors;
 
-    /**
-     * @var array   string => array()
-     */
-    protected $listeners_enter_misc;
-
-    public function __construct(Log $log, \PhpParser\Parser $parser, Insert $insert) {
+    public function __construct(Log $log, \PhpParser\Parser $parser, Insert $insert, array $ast_visitors) {
         $this->log = $log;
         $this->parser = $parser;
         $this->insert = $insert;
-        $this->listeners_enter_definition = array
-            ( 0 => array()
-            );
-        $this->listeners_enter_misc = array
-            ( 0 => array()
-            );
+        $this->ast_visitors = array_map(function (ASTVisitor $v) { 
+            return $v;
+        }, $ast_visitors);
     }
 
     /**
@@ -135,51 +127,11 @@ class Indexer implements ListenerRegistry {
 
         $traverser = new \PhpParser\NodeTraverser;
         $location = new LocationImpl($path, $content);
-        $visitor = new BaseVisitor($location, $this->insert, $this->listeners_enter_definition, $this->listeners_enter_misc);
+        $visitor = new BaseVisitor($location, $this->insert);
         $traverser->addVisitor($visitor);
-
+        foreach ($this->ast_visitors as $visitor) {
+            $traverser->addVisitor(new AdapterVisitor($location, $this->insert, $visitor));
+        }
         $traverser->traverse($stmts);
-    }
-
-   // from ListenerRegistry 
-
-    /**
-     * @inheritdoc
-     */
-    public function on_enter_definition($types, \Closure $listener) {
-        $this->on_enter_something("listeners_enter_definition", $types, $listener);
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function on_enter_misc($classes, \Closure $listener) {
-        $this->on_enter_something("listeners_enter_misc", $classes, $listener);
-        return $this;
-    }
-
-    // generalizes over over on_enter
-
-    /**
-     * TODO: Maybe remove this in favour of duplicates.
-     *
-     * @param   string      $what
-     * @param   array|null  $things
-     */
-    protected function on_enter_something($what, $things, \Closure $listener) {
-        $loc = &$this->$what;
-        if ($things === null) {
-            $loc[0][] = $listener;
-        }
-        else {
-            foreach ($things as $thing) {
-                assert('is_string($thing)');
-                if (!array_key_exists($thing, $loc)) {
-                    $loc[$thing] = array();
-                }
-                $loc[$thing][] = $listener;
-            }
-        }
     }
 }

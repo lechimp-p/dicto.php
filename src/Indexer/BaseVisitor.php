@@ -28,16 +28,6 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
     protected $insert;
 
     /**
-     * @var array   string => array()
-     */
-    protected $listeners_enter_definition;
-
-    /**
-     * @var array   string => array()
-     */
-    protected $listeners_enter_misc;
-
-    /**
      * This is used to exit early in enterNode and to break enterNode apart
      * into many methods.
      *
@@ -45,11 +35,9 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
      */
     protected $jump_labels;
 
-    public function __construct(LocationImpl $location, Insert $insert, array &$listeners_enter_definition, array &$listeners_enter_misc) {
+    public function __construct(LocationImpl $location, Insert $insert) {
         $this->location = $location;
         $this->insert = $insert;
-        $this->listeners_enter_definition = $listeners_enter_definition;
-        $this->listeners_enter_misc = $listeners_enter_misc;
         $this->jump_labels =
             [ N\Stmt\Namespace_::class => "enterNamespace"
             , N\Stmt\Class_::class => "enterClass"
@@ -58,43 +46,6 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
             , N\Stmt\ClassMethod::class => "enterMethod"
             , N\Stmt\Function_::class => "enterFunction"
             ];
-    }
-
-    // generalizes over calls to misc listeners
-
-    /**
-     * @param   string          $which
-     */
-    protected function call_misc_listener($which) {
-        $listeners = &$this->$which;
-        $current_node = $this->location->current_node();
-        foreach ($listeners[0] as $listener) {
-            $listener($this->insert, $this->location, $current_node);
-        }
-        $cls = get_class($current_node);
-        if (array_key_exists($cls, $listeners)) {
-            foreach ($listeners[$cls] as $listener) {
-                $listener($this->insert, $this->location, $current_node);
-            }
-        }
-    }
-
-    /**
-     * @param   string                  $which
-     * @param   string                  $type
-     * @param   int                     $type
-     */
-    protected function call_definition_listener($which, $type, $id) {
-        $listeners = &$this->$which;
-        $current_node = $this->location->current_node();
-        foreach ($listeners[0] as $listener) {
-            $listener($this->insert, $this->location, $type, $id, $current_node);
-        }
-        if (array_key_exists($type, $listeners)) {
-            foreach ($listeners[$type] as $listener) {
-                $listener($this->insert, $this->location, $type, $id, $current_node);
-            }
-        }
     }
 
     // from \PhpParser\NodeVisitor
@@ -125,14 +76,7 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
             $end_line = $node->getAttribute("endLine");
             list($type, $handle) = $this->{$this->jump_labels[$cls]}
                                                 ($node, $start_line, $end_line);
-
-            if ($type !== Variable::NAMESPACE_TYPE) {
-               $this->call_definition_listener("listeners_enter_definition",  $type, $handle);
-            }
             $this->location->push_entity($type, $handle);
-        }
-        else {
-            $this->call_misc_listener("listeners_enter_misc");
         }
 
         $this->location->flush_current_node();

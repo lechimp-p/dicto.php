@@ -14,6 +14,7 @@ use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Graph\IndexDB;
 use Lechimp\Dicto\Analysis\Violation;
 use Psr\Log\LogLevel;
+use Lechimp\Dicto\Indexer\ASTVisitor;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\Indexer;
 use PhpParser\ParserFactory;
@@ -35,12 +36,13 @@ abstract class RuleTest extends PHPUnit_Framework_TestCase {
             (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         $logger_mock = new LoggerMock();
+        $schema = $this->schema();
         $indexer = new Indexer
             ( $logger_mock
             , $parser
             , $insert_mock
+            , $schema instanceof ASTVisitor ? [$schema] : []
             );
-        $this->schema()->register_listeners($indexer);
         return $indexer;
     }
 
@@ -52,8 +54,13 @@ abstract class RuleTest extends PHPUnit_Framework_TestCase {
         $lexer = new \PhpParser\Lexer\Emulative
             (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
         $this->parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
-        $this->indexer = new Indexer($this->log, $this->parser, $this->db);
-        $this->schema()->register_listeners($this->indexer);
+        $schema = $this->schema();
+        $this->indexer = new Indexer
+            ( $this->log
+            , $this->parser
+            , $this->db
+            , $schema instanceof ASTVisitor ? [$schema] : []
+            );
     }
 
     public function analyze(R\Rule $rule, $source) {

@@ -33,12 +33,23 @@ class IndexerFactory {
     protected $schemas;
 
     /**
+     * @var ASTVisitor[]
+     */
+    protected $ast_visitors;
+
+    /**
      * @param   Schema[]    $schemas
      */
     public function __construct(Log $log, \PhpParser\Parser $parser, array $schemas) {
         $this->log = $log;
         $this->parser = $parser;
-        $this->schemas = array_map(function(Schema $s) { return $s; }, $schemas);
+        $this->ast_visitors = [];
+        $this->schemas = array_map(function(Schema $s) {
+            if ($s instanceof ASTVisitor) {
+                $this->ast_visitors[] = $s;
+            }
+            return $s;
+        }, $schemas);
     }
 
     /**
@@ -49,11 +60,8 @@ class IndexerFactory {
             ( $this->log
             , $this->parser
             , $insert
+            , $this->ast_visitors
             );
-        foreach ($this->schemas as $schema) {
-            assert('$schema instanceof \Lechimp\Dicto\Rules\Schema');
-            $schema->register_listeners($indexer);
-        }
         return $indexer;
     }
 }

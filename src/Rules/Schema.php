@@ -12,7 +12,6 @@ namespace Lechimp\Dicto\Rules;
 
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Definition\ArgumentParser;
-use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Graph\Query;
@@ -60,13 +59,4 @@ abstract class Schema {
      * @return  Query[]
      */
     abstract public function compile(Index $index, Rule $rule);
-
-    /**
-     * Register listeners to the indexer that are required to detect information
-     * for the rule.
-     *
-     * @param   ListenerRegistry $registry
-     * @return  null
-     */
-    abstract public function register_listeners(ListenerRegistry $registry);
 }

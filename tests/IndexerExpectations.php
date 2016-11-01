@@ -14,8 +14,10 @@ use PhpParser\ParserFactory;
 
 require_once(__DIR__."/LoggerMock.php");
 
+use Lechimp\Dicto\Indexer\ASTVisitor;
+
 trait IndexerExpectations {
-    protected function indexer(Insert $insert_mock) {
+    protected function indexer(Insert $insert_mock, ASTVisitor $visitor = null) {
         $lexer = new \PhpParser\Lexer\Emulative
             (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
@@ -24,6 +26,7 @@ trait IndexerExpectations {
             ( $logger_mock
             , $parser
             , $insert_mock
+            , $visitor !== null ? [$visitor] : []
             );
         return $indexer;
     }

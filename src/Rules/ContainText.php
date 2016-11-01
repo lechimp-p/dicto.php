@@ -14,7 +14,6 @@ use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Definition\ArgumentParser;
-use Lechimp\Dicto\Indexer\ListenerRegistry;
 use Lechimp\Dicto\Graph\Node;
 use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph;
@@ -179,13 +178,5 @@ class ContainText extends Schema {
      */
     public function pprint(Rule $rule) {
         return $this->name().' "'.$rule->argument(0)->raw().'"';
-    }
-
-    /**
-     * No listeners required for contains text. 
-     *
-     * @inheritdoc
-     */
-    public function register_listeners(ListenerRegistry $registry) {
     }
 }
