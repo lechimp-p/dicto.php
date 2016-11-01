@@ -81,8 +81,7 @@ class AdapterVisitor implements \PhpParser\NodeVisitor {
         if (isset($this->jump_labels[$cls])) {
             $this->location->set_current_node($node);
             $name = $this->jump_labels[$cls];
-            list($type, $handle) 
-                = $this->visitor->$name($this->insert, $this->location, $node);
+            $this->visitor->$name($this->insert, $this->location, $node);
             $this->location->flush_current_node();
         }
     }
