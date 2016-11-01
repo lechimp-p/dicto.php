@@ -45,8 +45,7 @@ abstract class LanguageConstruct extends Variable {
     public function compile(PredicateFactory $f) {
         return $f->_and
             ([$f->_type_is(Variable::LANGUAGE_CONSTRUCT_TYPE)
-            // TODO: property->equals would help
-            , $f->_property("name")->_matches(new Regexp($this->construct_name()))
+            , $f->_property("name")->_equals($this->construct_name())
             ]);
     }
 }
