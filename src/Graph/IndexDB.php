@@ -17,7 +17,10 @@ use Lechimp\Dicto\Analysis\Index;
  * A database for the indexer based on graph.
  */
 class IndexDB extends Graph implements Insert, Index {
-    // TODO: add caching for namespaces
+    /**
+     * @var array<string,Node>
+     */
+    protected $namespaces = [];
 
     /**
      * @var array<string,Node>
@@ -63,11 +66,18 @@ class IndexDB extends Graph implements Insert, Index {
     public function _namespace($name) {
         assert('is_string($name)');
 
-        return $this->create_node
+        if (array_key_exists($name, $this->namespaces)) {
+            return $this->namespaces[$name];
+        }
+
+        $namespace = $this->create_node
             ( "namespace"
             ,   [ "name" => $name
                 ]
             );
+
+        $this->namespaces[$name] = $namespace;
+        return $namespace;
     }
 
     /**
