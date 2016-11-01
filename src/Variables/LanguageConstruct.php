@@ -13,8 +13,7 @@ namespace Lechimp\Dicto\Variables;
 use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Graph\PredicateFactory;
 
-// TODO: Maybe this should not extend Entities
-class LanguageConstruct extends Entities {
+abstract class LanguageConstruct extends Variable {
     /**
      * @var string
      */
@@ -23,7 +22,6 @@ class LanguageConstruct extends Entities {
     public function __construct($construct_name, $name = null) {
         parent::__construct($name);
         assert('is_string($construct_name)');
-        // TODO: Restrict the possible construct_names (like @, unset, echo, ...)
         $this->construct_name = $construct_name;     
     }
 
@@ -39,13 +37,6 @@ class LanguageConstruct extends Entities {
      */
     public function meaning() {
         return $this->construct_name();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function id() {
-        return Variable::LANGUAGE_CONSTRUCT_TYPE;
     }
 
     /**
