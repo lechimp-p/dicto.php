@@ -84,4 +84,20 @@ class RegexpTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($re->match_beginning("a\nb", true));
         $this->assertTrue($re->search("a\nb", true));
     }
+
+    public function test_match_backslash() {
+        $re = $this->regexp("[\\\\]");
+
+        $this->assertTrue($re->match("\\"));
+        $this->assertTrue($re->match_beginning("\\a"));
+        $this->assertTrue($re->search("a\\b"));
+    }
+
+    public function test_match_namespacelike() {
+        $re = $this->regexp("A[\\\\]B");
+
+        $this->assertTrue($re->match("A\\B"));
+        $this->assertTrue($re->match_beginning("A\\Ba"));
+        $this->assertTrue($re->search("aA\\Bb"));
+    }
 }
