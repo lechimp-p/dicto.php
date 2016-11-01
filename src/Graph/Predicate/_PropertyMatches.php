@@ -24,7 +24,7 @@ class _PropertyMatches extends Predicate {
     protected $name;
 
     /**
-     * @var string
+     * @var Regexp
      */
     protected $regexp;
 
