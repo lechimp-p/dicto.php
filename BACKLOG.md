@@ -1,14 +1,10 @@
 # Things to write tests for
-* What happens if i use namespaces?
 * What happens if i use closures and call them like `$closure()`?
 * What happens if a relevant statement spans several lines? is that even possible
   with the relations i defined so far?
-* What happens if i use a 'multi global' statement: global $a1, $a2;
 
 # Definition
 * Expose `everything` in definition language.
-* Make `language_construct` more pleasant to use.
-* Define known types of `language_construct`s.
 * Make syntax errors in rules being outputted more nicely.
 
 # DB
@@ -30,10 +26,6 @@
   would mean to introduce the possibility to add custom classes to the config. 
 
 # Issues
-* `trait`s are unknown atm.
-* `GUIClasses cannot depend on ilDB` finds some locations twice on ILIAS. This is
-  caused by the fact, that "classes invoke stuff in their methods" and said methods
-  do this as well.
 * It is inconsistent, that Invoke makes invocations in methods of classes related
   to the class itself, but `only XYZClasses can invoke` also flags the methods in
   XYZClasses.
