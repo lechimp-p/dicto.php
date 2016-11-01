@@ -117,51 +117,35 @@ class ASTVisitor implements \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function enterNode(\PhpParser\Node $node) {
-        $start_line = $node->getAttribute("startLine");
-        $end_line = $node->getAttribute("endLine");
-
         $this->location->set_current_node($node);
 
         $cls = get_class($node);
         if (array_key_exists($cls, $this->jump_labels)) {
-            list($type, $handle) = $this->{$this->jump_labels[$cls]}($node);
-        }
-        else {
-            $handle = null;
-            $type = null;
-        }
+            $start_line = $node->getAttribute("startLine");
+            $end_line = $node->getAttribute("endLine");
+            list($type, $handle) = $this->{$this->jump_labels[$cls]}
+                                                ($node, $start_line, $end_line);
 
-        if ($handle !== null) {
-            assert('$type !== null');
             if ($type !== Variable::NAMESPACE_TYPE) {
                $this->call_definition_listener("listeners_enter_definition",  $type, $handle);
             }
             $this->location->push_entity($type, $handle);
         }
         else {
-            assert('$type === null');
             $this->call_misc_listener("listeners_enter_misc");
         }
 
         $this->location->flush_current_node();
     }
 
-    public function enterNamespace(N\Stmt\Namespace_ $node) {
-        $start_line = $node->getAttribute("startLine");
-        $end_line = $node->getAttribute("endLine");
-
+    public function enterNamespace(N\Stmt\Namespace_ $node, $start_line, $end_line) {
         $handle = $this->insert->_namespace
             ( "".$node->name // force string representation
             );
-        $type = Variable::NAMESPACE_TYPE;
-
-        return [$type, $handle];
+        return [Variable::NAMESPACE_TYPE, $handle];
     }
 
-    public function enterClass(N\Stmt\Class_ $node) {
-        $start_line = $node->getAttribute("startLine");
-        $end_line = $node->getAttribute("endLine");
-
+    public function enterClass(N\Stmt\Class_ $node, $start_line, $end_line) {
         $handle = $this->insert->_class
             ( $node->name
             , $this->location->_file()
@@ -169,15 +153,10 @@ class ASTVisitor implements \PhpParser\NodeVisitor {
             , $end_line
             , $this->location->_namespace()
             );
-        $type = Variable::CLASS_TYPE;
-
-        return [$type, $handle];
+        return [Variable::CLASS_TYPE, $handle];
     }
 
-    public function enterInterface(N\Stmt\Interface_ $node) {
-        $start_line = $node->getAttribute("startLine");
-        $end_line = $node->getAttribute("endLine");
-
+    public function enterInterface(N\Stmt\Interface_ $node, $start_line, $end_line) {
         $handle = $this->insert->_interface
             ( $node->name
             , $this->location->_file()
@@ -185,15 +164,10 @@ class ASTVisitor implements \PhpParser\NodeVisitor {
             , $end_line
             , $this->location->_namespace()
             );
-        $type = Variable::INTERFACE_TYPE;
-
-        return [$type, $handle];
+        return [Variable::INTERFACE_TYPE, $handle];
     }
 
-    public function enterTrait(N\Stmt\Trait_ $node) {
-        $start_line = $node->getAttribute("startLine");
-        $end_line = $node->getAttribute("endLine");
-
+    public function enterTrait(N\Stmt\Trait_ $node, $start_line, $end_line) {
         $handle = $this->insert->_trait
             ( $node->name
             , $this->location->_file()
@@ -201,15 +175,10 @@ class ASTVisitor implements \PhpParser\NodeVisitor {
             , $end_line
             , $this->location->_namespace()
             );
-        $type = Variable::INTERFACE_TYPE;
-
-        return [$type, $handle];
+        return [Variable::INTERFACE_TYPE, $handle];
     }
 
-    public function enterMethod(N\Stmt\ClassMethod $node) {
-        $start_line = $node->getAttribute("startLine");
-        $end_line = $node->getAttribute("endLine");
-
+    public function enterMethod(N\Stmt\ClassMethod $node, $start_line, $end_line) {
         $handle = $this->insert->_method
             ( $node->name
             , $this->location->_class_interface_trait()
@@ -217,24 +186,17 @@ class ASTVisitor implements \PhpParser\NodeVisitor {
             , $start_line
             , $end_line
             );
-        $type = Variable::METHOD_TYPE;
-
-        return [$type, $handle];
+        return [Variable::METHOD_TYPE, $handle];
     }
 
-    public function enterFunction(N\Stmt\Function_ $node) {
-        $start_line = $node->getAttribute("startLine");
-        $end_line = $node->getAttribute("endLine");
-
+    public function enterFunction(N\Stmt\Function_ $node, $start_line, $end_line) {
         $handle = $this->insert->_function
             ( $node->name
             , $this->location->_file()
-            , (int)$start_line
-            , (int)$end_line
+            , $start_line
+            , $end_line
             );
-        $type = Variable::FUNCTION_TYPE;
-
-        return [$type, $handle];
+        return [Variable::FUNCTION_TYPE, $handle];
     }
 
     /**
