@@ -8,6 +8,7 @@
  * a copy of the license along with the code.
  */
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\Predicate;
 use Lechimp\Dicto\Graph\Graph;
@@ -26,7 +27,7 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
                  , $f->_false()
                 ])
              , $f->_true()
-             , $f->_property("bar")->_matches(".*")
+             , $f->_property("bar")->_matches(new Regexp(".*"))
              , $f->_custom(function(Entity $e) { return true; })
             ]);
         $this->assertInstanceOf(Predicate::class, $pred);
@@ -225,7 +226,7 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $r2 = $n1->add_relation("some_type", ["foo"=>"bar"], $n2);
         $r3 = $n1->add_relation("some_type", [], $n2);
 
-        $property = $this->f->_property("foo")->_matches("bar");
+        $property = $this->f->_property("foo")->_matches(new Regexp("bar"));
         $compiled = $property->compile();
 
         $this->assertTrue($compiled($n1));
@@ -310,7 +311,7 @@ class GraphPredicateTest extends PHPUnit_Framework_TestCase {
         $ts = $f->_type_is("b")->for_types($all_types);
         $this->assertEquals(["b"], $ts);
 
-        $ts = $f->_property("foo")->_matches("bar")->for_types($all_types);
+        $ts = $f->_property("foo")->_matches(new Regexp("bar"))->for_types($all_types);
         $this->assertEquals($all_types, $ts);
 
         $ts = $f->_custom(function($e) { return false; })->for_types($all_types);

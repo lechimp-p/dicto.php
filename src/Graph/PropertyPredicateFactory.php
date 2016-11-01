@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\Graph;
 
+use Lechimp\Dicto\Regexp;
+
 /**
  * Create some predicate over a property.
  */
@@ -27,10 +29,10 @@ class PropertyPredicateFactory {
     /**
      * Is true when the property matches the given regex.
      *
-     * @param   string  $regex
+     * @param   Regexp  $regex
      * @return  Predicate
      */
-    public function _matches($regex) {
+    public function _matches(Regexp $regex) {
         return new Predicate\_PropertyMatches($this->name, $regex);
     }
 }

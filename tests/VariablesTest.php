@@ -8,6 +8,7 @@
  * a copy of the license along with the code.
  */
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Variables as V;
 
 class VariablesTest extends PHPUnit_Framework_TestCase {
@@ -46,7 +47,7 @@ class VariablesTest extends PHPUnit_Framework_TestCase {
                 ( new V\WithProperty
                     ( new V\Classes()
                     , new V\Name()
-                    , array(".*GUI")
+                    , array(new Regexp(".*GUI"))
                     )
                 , null
                 , "classes with name: \".*GUI\""

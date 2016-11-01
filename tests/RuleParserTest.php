@@ -121,7 +121,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 ( new V\WithProperty
                     ( new V\Namespaces
                     , new V\Name
-                    , array("foo.*")
+                    , array(new Regexp("foo.*"))
                     )
                 )
             );
@@ -140,7 +140,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 , array(new V\Namespaces)
                 )
             , new V\Name
-            , array("foo.*")
+            , array(new Regexp("foo.*"))
             );
 
         $this->assertEquals($expected, $res);
@@ -225,7 +225,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $expected = new V\WithProperty
             ( new V\Classes()
             , new V\Name
-            , array("foo")
+            , array(new Regexp("foo"))
             );
         $this->assertEquals($expected, $res);
     }
@@ -237,7 +237,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
             ( "Foo" => (new V\WithProperty
                 ( new V\Classes()
                 , new V\Name
-                , array("foo")
+                , array(new Regexp("foo"))
                 ))
                 ->withName("Foo")
             );
@@ -374,7 +374,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 , new V\WithProperty
                     ( new V\Classes()
                     , new V\Name()
-                    , array("foo")
+                    , array(new Regexp("foo"))
                     )
                 , new R\ContainText
                 , array(new Regexp("foo"))

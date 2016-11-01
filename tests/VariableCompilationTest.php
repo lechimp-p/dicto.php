@@ -8,6 +8,7 @@
  * a copy of the license along with the code.
  */
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Graph\IndexDB;
 use Lechimp\Dicto\Graph\PredicateFactory;
@@ -196,7 +197,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $var = new V\WithProperty
             ( new V\Classes()
             , new V\Name()
-            , array("AClass")
+            , array(new Regexp("AClass"))
             );
         $var = new V\Except(new V\Classes, $var);
         $compiled = $var->compile($this->f);
@@ -219,7 +220,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $var = new V\WithProperty
             ( new V\Classes()
             , new V\Name()
-            , array("AClass")
+            , array(new Regexp("AClass"))
             );
         $compiled = $var->compile($this->f);
 
@@ -241,7 +242,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $var = new V\WithProperty
             ( new V\Classes()
             , new V\Name()
-            , array(".Class")
+            , array(new Regexp(".Class"))
             );
         $compiled = $var->compile($this->f);
 
@@ -263,7 +264,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $a_classes = new V\WithProperty
             ( new V\Classes()
             , new V\Name()
-            , array("AClass")
+            , array(new Regexp("AClass"))
             );
         $var = new V\WithProperty
             ( new V\Methods()
@@ -291,7 +292,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $a_interfaces = new V\WithProperty
             ( new V\Interfaces()
             , new V\Name()
-            , array("AInterface")
+            , array(new Regexp("AInterface"))
             );
         $var = new V\WithProperty
             ( new V\Methods()
@@ -319,7 +320,7 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
         $a_traits = new V\WithProperty
             ( new V\Traits()
             , new V\Name()
-            , array("ATrait")
+            , array(new Regexp("ATrait"))
             );
         $var = new V\WithProperty
             ( new V\Methods()
@@ -353,6 +354,38 @@ class VariableCompilationTest extends PHPUnit_Framework_TestCase {
 
         $f = $this->db->_file("source.php", "A\nB");
         $n = $this->db->_namespace("SomeNamespace");
+        $c1 = $this->db->_class("AClass", $f, 1,2);
+        $c2 = $this->db->_class("AClass", $f, 1,2, $n);
+        $i1 = $this->db->_interface("AnInterface", $f, 1,2);
+        $i2 = $this->db->_interface("AnInterface", $f, 1,2, $n);
+        $t1 = $this->db->_trait("ATrait", $f, 1,2);
+        $t2 = $this->db->_trait("ATrait", $f, 1,2, $n);
+        $f1 = $this->db->_function("a_function", $f, 1,2);
+        $f2 = $this->db->_function("a_function", $f, 1,2, $n);
+
+        $res = $this->db->query()
+            ->filter($compiled)
+            ->extract(function($n,&$r) {
+                $r[] = $n;
+            })
+            ->run([]);
+        $this->assertEquals([[$c2], [$i2], [$t2], [$f2]], $res);
+    }
+
+    public function test_compile_anything_in_specific_nested_namespace() {
+        $var = new V\WithProperty
+            ( new V\Everything()
+            , new V\In()
+            , array(new V\WithProperty
+                ( new V\Namespaces()
+                , new V\Name()
+                , array(new Regexp("Test[\\\\]Namespace"))
+                ))
+            );
+        $compiled = $var->compile($this->f);
+
+        $f = $this->db->_file("source.php", "A\nB");
+        $n = $this->db->_namespace("Test\\Namespace");
         $c1 = $this->db->_class("AClass", $f, 1,2);
         $c2 = $this->db->_class("AClass", $f, 1,2, $n);
         $i1 = $this->db->_interface("AnInterface", $f, 1,2);

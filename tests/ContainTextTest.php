@@ -29,7 +29,7 @@ class ContainTextTest extends RuleTest {
         $a_classes = new V\WithProperty
                 ( new V\Classes()
                 , new V\Name()
-                , array("A.*")
+                , array(new Regexp("A.*"))
                 );
         return new R\Rule
             ( R\Rule::MODE_MUST
@@ -101,7 +101,7 @@ CODE;
         $a_classes = new V\WithProperty
                 ( new V\Classes()
                 , new V\Name()
-                , array("A.*")
+                , array(new Regexp("A.*"))
                 );
         return new R\Rule
             ( R\Rule::MODE_CANNOT

@@ -28,10 +28,10 @@ class _PropertyMatches extends Predicate {
      */
     protected $regexp;
 
-    public function __construct($name, $regexp) {
+    public function __construct($name, Regexp $regexp) {
         assert('is_string($name)');
         $this->name = $name;
-        $this->regexp = new Regexp($regexp);
+        $this->regexp = $regexp;
     }
 
     /**
@@ -39,8 +39,7 @@ class _PropertyMatches extends Predicate {
      */
     public function _compile() {
         $name = $this->name;
-        $regexp = $this->regexp;
-        return function(Entity $e) use ($name, $regexp) { 
+        return function(Entity $e) use ($name) {
             if (!$e->has_property($name)) {
                 return false;
             }
@@ -53,11 +52,13 @@ class _PropertyMatches extends Predicate {
      */
     public function compile_to_source(array &$custom_closures) {
         $name = $this->name;
-        $regexp = $this->regexp->raw();
+        // If we didn't do this, backslash would not be escaped enough when
+        // eval'ing them.
+        $regexp = '%^'.str_replace("\\", "\\\\", $this->regexp->raw()).'$%';
         return
             "   \$value = \n".
             "       \$e->has_property(\"$name\")\n".
-            "       && (preg_match(\"%^$regexp\\\$%\", \$e->property(\"$name\")) == 1);\n";
+            "       && (preg_match(\"$regexp\", \$e->property(\"$name\")) == 1);\n";
     }
 
     /**

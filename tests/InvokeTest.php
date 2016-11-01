@@ -8,6 +8,7 @@
  * a copy of the license along with the code.
  */
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Analysis\Violation;
@@ -238,7 +239,7 @@ CODE;
         $a_classes = new V\WithProperty
                 ( new V\Classes()
                 , new V\Name()
-                , array("A.*")
+                , array(new Regexp("A.*"))
                 );
         $methods_in_a_classes = new V\WithProperty
                 ( new V\Methods()
@@ -326,7 +327,7 @@ CODE;
             , array(new V\WithProperty
                 ( new V\Functions()
                 , new V\Name()
-                , array("a_.*")
+                , array(new Regexp("a_.*"))
                 ))
             );
     }

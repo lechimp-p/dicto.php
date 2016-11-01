@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Graph\PredicateFactory;
 
 // TODO: Maybe this should not extend Entities
@@ -54,7 +55,7 @@ class LanguageConstruct extends Entities {
         return $f->_and
             ([$f->_type_is(Variable::LANGUAGE_CONSTRUCT_TYPE)
             // TODO: property->equals would help
-            , $f->_property("name")->_matches($this->construct_name())
+            , $f->_property("name")->_matches(new Regexp($this->construct_name()))
             ]);
     }
 }

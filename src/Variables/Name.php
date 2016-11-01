@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Definition\ArgumentParser;
 
@@ -28,7 +29,7 @@ class Name extends Property {
      * @inheritdocs
      */
     public function fetch_arguments(ArgumentParser $parser) {
-        $regexp = $parser->fetch_string();
+        $regexp = new Regexp($parser->fetch_string());
         return array($regexp);
     }
 
@@ -36,11 +37,7 @@ class Name extends Property {
      * @inheritdocs
      */
     public function arguments_are_valid(array &$arguments) {
-        if (count($arguments) != 1) {
-            return false;
-        }
-        $regexp = $arguments[0];
-        if (!is_string($regexp) || @preg_match("%^$regexp\$%", "") === false) {
+        if (count($arguments) != 1 || !($arguments[0] instanceof Regexp)) {
             return false;
         }
         return true;

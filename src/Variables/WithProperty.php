@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Graph\Node;
 use Lechimp\Dicto\Graph\PredicateFactory;
 
@@ -59,6 +60,9 @@ class WithProperty extends Variable {
         foreach ($this->arguments as $argument) {
             if (is_string($argument)) {
                 $args[] = "\"$argument\"";
+            }
+            else if ($argument instanceof Regexp) {
+                $args[] = "\"".$argument->raw()."\"";
             }
             else if ($argument instanceof Variable) {
                 $name = $argument->name();
