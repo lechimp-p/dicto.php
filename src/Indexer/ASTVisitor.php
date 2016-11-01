@@ -37,11 +37,27 @@ class ASTVisitor implements \PhpParser\NodeVisitor {
      */
     protected $listeners_enter_misc;
 
+    /**
+     * This is used to exit early in enterNode and to break enterNode apart
+     * into many methods.
+     *
+     * @var array<string,string>
+     */
+    protected $jump_labels;
+
     public function __construct(LocationImpl $location, Insert $insert, array &$listeners_enter_definition, array &$listeners_enter_misc) {
         $this->location = $location;
         $this->insert = $insert;
         $this->listeners_enter_definition = $listeners_enter_definition;
         $this->listeners_enter_misc = $listeners_enter_misc;
+        $this->jump_labels =
+            [ N\Stmt\Namespace_::class => "enterNamespace"
+            , N\Stmt\Class_::class => "enterClass"
+            , N\Stmt\Interface_::class => "enterInterface"
+            , N\Stmt\Trait_::class => "enterTrait"
+            , N\Stmt\ClassMethod::class => "enterMethod"
+            , N\Stmt\Function_::class => "enterFunction"
+            ];
     }
 
     // generalizes over calls to misc listeners
@@ -106,62 +122,13 @@ class ASTVisitor implements \PhpParser\NodeVisitor {
 
         $this->location->set_current_node($node);
 
-        $handle = null;
-        $type = null;
-        if ($node instanceof N\Stmt\Namespace_) {
-            $handle = $this->insert->_namespace
-                ( "".$node->name // force string representation
-                );
-            $type = Variable::NAMESPACE_TYPE;
+        $cls = get_class($node);
+        if (array_key_exists($cls, $this->jump_labels)) {
+            list($type, $handle) = $this->{$this->jump_labels[$cls]}($node);
         }
-        else if ($node instanceof N\Stmt\Class_) {
-            $handle = $this->insert->_class
-                ( $node->name
-                , $this->location->_file()
-                , $start_line
-                , $end_line
-                , $this->location->_namespace()
-                );
-            $type = Variable::CLASS_TYPE;
-        }
-        else if ($node instanceof N\Stmt\Interface_) {
-            $handle = $this->insert->_interface
-                ( $node->name
-                , $this->location->_file()
-                , $start_line
-                , $end_line
-                , $this->location->_namespace()
-                );
-            $type = Variable::INTERFACE_TYPE;
-        }
-        else if ($node instanceof N\Stmt\Trait_) {
-            $handle = $this->insert->_trait
-                ( $node->name
-                , $this->location->_file()
-                , $start_line
-                , $end_line
-                , $this->location->_namespace()
-                );
-            $type = Variable::INTERFACE_TYPE;
-        }
-        else if ($node instanceof N\Stmt\ClassMethod) {
-            $handle = $this->insert->_method
-                ( $node->name
-                , $this->location->_class_interface_trait()
-                , $this->location->_file()
-                , $start_line
-                , $end_line
-                );
-            $type = Variable::METHOD_TYPE;
-        }
-        else if ($node instanceof N\Stmt\Function_) {
-            $handle = $this->insert->_function
-                ( $node->name
-                , $this->location->_file()
-                , (int)$start_line
-                , (int)$end_line
-                );
-            $type = Variable::FUNCTION_TYPE;
+        else {
+            $handle = null;
+            $type = null;
         }
 
         if ($handle !== null) {
@@ -177,6 +144,97 @@ class ASTVisitor implements \PhpParser\NodeVisitor {
         }
 
         $this->location->flush_current_node();
+    }
+
+    public function enterNamespace(N\Stmt\Namespace_ $node) {
+        $start_line = $node->getAttribute("startLine");
+        $end_line = $node->getAttribute("endLine");
+
+        $handle = $this->insert->_namespace
+            ( "".$node->name // force string representation
+            );
+        $type = Variable::NAMESPACE_TYPE;
+
+        return [$type, $handle];
+    }
+
+    public function enterClass(N\Stmt\Class_ $node) {
+        $start_line = $node->getAttribute("startLine");
+        $end_line = $node->getAttribute("endLine");
+
+        $handle = $this->insert->_class
+            ( $node->name
+            , $this->location->_file()
+            , $start_line
+            , $end_line
+            , $this->location->_namespace()
+            );
+        $type = Variable::CLASS_TYPE;
+
+        return [$type, $handle];
+    }
+
+    public function enterInterface(N\Stmt\Interface_ $node) {
+        $start_line = $node->getAttribute("startLine");
+        $end_line = $node->getAttribute("endLine");
+
+        $handle = $this->insert->_interface
+            ( $node->name
+            , $this->location->_file()
+            , $start_line
+            , $end_line
+            , $this->location->_namespace()
+            );
+        $type = Variable::INTERFACE_TYPE;
+
+        return [$type, $handle];
+    }
+
+    public function enterTrait(N\Stmt\Trait_ $node) {
+        $start_line = $node->getAttribute("startLine");
+        $end_line = $node->getAttribute("endLine");
+
+        $handle = $this->insert->_trait
+            ( $node->name
+            , $this->location->_file()
+            , $start_line
+            , $end_line
+            , $this->location->_namespace()
+            );
+        $type = Variable::INTERFACE_TYPE;
+
+        return [$type, $handle];
+    }
+
+    public function enterMethod(N\Stmt\ClassMethod $node) {
+        $start_line = $node->getAttribute("startLine");
+        $end_line = $node->getAttribute("endLine");
+
+        $handle = $this->insert->_method
+            ( $node->name
+            , $this->location->_class_interface_trait()
+            , $this->location->_file()
+            , $start_line
+            , $end_line
+            );
+        $type = Variable::METHOD_TYPE;
+
+        return [$type, $handle];
+    }
+
+    public function enterFunction(N\Stmt\Function_ $node) {
+        $start_line = $node->getAttribute("startLine");
+        $end_line = $node->getAttribute("endLine");
+
+        $handle = $this->insert->_function
+            ( $node->name
+            , $this->location->_file()
+            , (int)$start_line
+            , (int)$end_line
+            );
+        $type = Variable::FUNCTION_TYPE;
+
+        return [$type, $handle];
     }
 
     /**
