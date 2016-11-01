@@ -10,12 +10,14 @@
 
 namespace Lechimp\Dicto\Definition;
 
+use Lechimp\Dicto\Regexp;
+
 /**
  * A symbol in known to the parser.
  */
 class Symbol {
     /**
-     * @var string
+     * @var Regexp
      */
     protected $regexp;
 
@@ -41,18 +43,14 @@ class Symbol {
     protected $left_denotation = null;
 
     public function __construct($regexp, $binding_power) {
-        assert('is_string($regexp)');
-        if (!is_string($regexp) || @preg_match("%$regexp%", "") === false) {
-            throw new \InvalidArgumentException("Invalid regexp: '%$regexp%'");
-        }
         assert('is_int($binding_power)');
         assert('$binding_power >= 0');
-        $this->regexp = $regexp;
+        $this->regexp = new Regexp("($regexp)");
         $this->binding_power = $binding_power;
     }
 
     /**
-     * @return  string
+     * @return  Regexp
      */
     public function regexp() {
         return $this->regexp;

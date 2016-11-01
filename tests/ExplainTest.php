@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto as Dicto;
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Rules;
 use Lechimp\Dicto\Variables as Vars;
 
@@ -75,7 +75,7 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
                 ( Rules\Rule::MODE_CANNOT
                 , new Vars\Classes("CLASSES")
                 , new Rules\ContainText()
-                , array("foo")
+                , array(new Regexp("foo"))
                 )
             );
         $explainable[] = array

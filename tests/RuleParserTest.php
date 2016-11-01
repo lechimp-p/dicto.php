@@ -8,6 +8,7 @@
  * a copy of the license along with the code.
  */
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables as V;
@@ -237,7 +238,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 ( R\Rule::MODE_CANNOT
                 , new V\Classes()
                 , new R\ContainText
-                , array("foo")
+                , array(new Regexp("foo"))
                 )
             );
         $this->assertEquals($expected, $res->rules());
@@ -251,7 +252,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 ( R\Rule::MODE_MUST
                 , new V\Classes()
                 , new R\ContainText
-                , array("foo")
+                , array(new Regexp("foo"))
                 )
             );
         $this->assertEquals($expected, $res->rules());
@@ -265,7 +266,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 ( R\Rule::MODE_ONLY_CAN
                 , new V\Classes()
                 , new R\ContainText
-                , array("foo")
+                , array(new Regexp("foo"))
                 )
             );
         $this->assertEquals($expected, $res->rules());
@@ -282,7 +283,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                     , new V\Methods()
                     ))
                 , new R\ContainText
-                , array("foo")
+                , array(new Regexp("foo"))
                 )
             );
         $this->assertEquals($expected, $res->rules());
@@ -303,7 +304,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                         )
                     ))
                 , new R\ContainText
-                , array("foo")
+                , array(new Regexp("foo"))
                 )
             );
         $this->assertEquals($expected, $res->rules());
@@ -321,7 +322,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                     , array("foo")
                     )
                 , new R\ContainText
-                , array("foo")
+                , array(new Regexp("foo"))
                 )
             );
         $this->assertEquals($expected, $res->rules());
@@ -338,7 +339,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                     , new V\Functions()
                     ))
                 , new R\ContainText
-                , array("foo")
+                , array(new Regexp("foo"))
                 )
             );
         $this->assertEquals($expected, $res->rules());

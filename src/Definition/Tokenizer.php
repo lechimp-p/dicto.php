@@ -147,7 +147,7 @@ class Tokenizer implements \Iterator {
         foreach ($this->symbol_table->symbols() as $symbol) {
             $re = $symbol->regexp();
             $matches = array();
-            if (preg_match("%^($re)%s", $this->unparsed, $matches) == 1) {
+            if ($re->match_beginning($this->unparsed, true, $matches)) {
                 unset($matches[1]);
                 $this->advance($matches[0]);
                 $this->tokens[] = array($symbol, array_values($matches));

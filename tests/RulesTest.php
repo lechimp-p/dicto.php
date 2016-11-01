@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Dicto as Dicto;
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Rules as Rules;
 use Lechimp\Dicto\Variables as Vars;
@@ -61,7 +61,7 @@ class RulesTest extends PHPUnit_Framework_TestCase {
                 ( Rules\Rule::MODE_MUST
                 , new Vars\Classes("CLASSES")
                 , new Rules\ContainText()
-                , array("foo")
+                , array(new Regexp("foo"))
                 );
         $expected = array(new Vars\Classes("CLASSES"));
         $this->assertEquals($expected, $rule->variables());

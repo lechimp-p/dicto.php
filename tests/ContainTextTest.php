@@ -8,6 +8,7 @@
  * a copy of the license along with the code.
  */
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Analysis\Violation;
@@ -34,7 +35,7 @@ class ContainTextTest extends RuleTest {
             ( R\Rule::MODE_MUST
             , $a_classes
             , new R\ContainText()
-            , array("foo")
+            , array(new Regexp("foo"))
             );
     }
 
@@ -106,7 +107,7 @@ CODE;
             ( R\Rule::MODE_CANNOT
             , $a_classes
             , new R\ContainText()
-            , array("foo")
+            , array(new Regexp("foo"))
             );
     }
 
@@ -195,7 +196,7 @@ CODE;
             ( R\Rule::MODE_CANNOT
             , new V\Files()
             , new R\ContainText()
-            , array("foo")
+            , array(new Regexp("foo"))
             );
     }
 

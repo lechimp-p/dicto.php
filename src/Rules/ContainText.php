@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Rules;
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Definition\ArgumentParser;
@@ -33,7 +34,7 @@ class ContainText extends Schema {
      * @inheritdoc
      */
     public function fetch_arguments(ArgumentParser $parser) {
-        $regexp = $parser->fetch_string();
+        $regexp = new Regexp($parser->fetch_string());
         return array($regexp);
     }
 
@@ -41,11 +42,7 @@ class ContainText extends Schema {
      * @inheritdoc
      */
     public function arguments_are_valid(array &$arguments) {
-        if (count($arguments) != 1) {
-            return false;
-        }
-        $regexp = $arguments[0];
-        if (!is_string($regexp) || @preg_match("%$regexp%", "") === false) {
+        if (count($arguments) != 1 || !($arguments[0] instanceof Regexp)) {
             return false;
         }
         return true;
@@ -70,6 +67,10 @@ class ContainText extends Schema {
             , $filter
             ]);
         $regexp = $rule->argument(0);
+        // TODO: This behaviour might better be encoded as a method on regexp.
+        //       This is needed in get_source_location to find the number of
+        //       the line the regexp was found.
+        $loc_regexp = new Regexp(".*".$rule->argument(0)->raw());
 
         if ($mode == Rule::MODE_CANNOT || $mode == Rule::MODE_ONLY_CAN) {
             return
@@ -77,9 +78,9 @@ class ContainText extends Schema {
                     ->filter($filter_non_files)
                     ->expand_relations(["defined in"])
                     ->filter($this->regexp_source_filter($pred_factory, $regexp, false))
-                    ->extract(function($e,&$r) use ($regexp) {
+                    ->extract(function($e,&$r) use ($regexp, $loc_regexp) {
                         $file = $e->target();
-                        $found_at_line = $this->get_source_location($e, $regexp);
+                        $found_at_line = $this->get_source_location($e, $loc_regexp);
                         $start_line = $e->property("start_line");
                         $line = $start_line + $found_at_line - 1;
                         // -1 is for the line where the class starts, this would
@@ -91,8 +92,8 @@ class ContainText extends Schema {
                 , $index->query()
                     ->filter($filter_files)
                     ->filter($this->regexp_source_filter($pred_factory, $regexp, false))
-                    ->extract(function($e,&$r) use ($regexp) {
-                        $line = $this->get_source_location($e, $regexp);
+                    ->extract(function($e,&$r) use ($regexp, $loc_regexp) {
+                        $line = $this->get_source_location($e, $loc_regexp);
                         $r["file"] = $e->property("path");
                         $r["line"] = $line;
                         $r["source"] = $e->property("source")[$line-1];
@@ -153,24 +154,23 @@ class ContainText extends Schema {
             );
     }
 
-    protected function regexp_source_filter(PredicateFactory $f, $regexp, $negate) {
-        assert('is_string($regexp)');
+    protected function regexp_source_filter(PredicateFactory $f, Regexp $regexp, $negate) {
         assert('is_bool($negate)');
         return $f->_custom(function(Graph\Entity $e) use ($regexp, $negate) {
             $source = $this->get_source_for($e);
             if(!$negate) {
-                return preg_match("%$regexp%", $source) == 1;
+                return $regexp->search($source);
             }
             else {
-                return preg_match("%$regexp%", $source) == 0;
+                return !$regexp->search($source);
             }
         });
     }
 
-    protected function get_source_location(Graph\Entity $e, $regexp) {
+    protected function get_source_location(Graph\Entity $e, Regexp $regexp) {
         $matches = [];
         $source = $this->get_source_for($e);
-        preg_match("%(.*)$regexp%s", $source, $matches);
+        $regexp->search($source, true, $matches);
         return substr_count($matches[0], "\n") + 1;
     }
 
@@ -178,7 +178,7 @@ class ContainText extends Schema {
      * @inheritdoc
      */
     public function pprint(Rule $rule) {
-        return $this->name().' "'.$rule->argument(0).'"';
+        return $this->name().' "'.$rule->argument(0)->raw().'"';
     }
 
     /**

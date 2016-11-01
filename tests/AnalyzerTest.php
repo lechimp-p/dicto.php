@@ -8,6 +8,7 @@
  * a copy of the license along with the code.
  */
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Analysis\Analyzer;
 use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Graph\PredicateFactory;
@@ -63,7 +64,7 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
             ( R\Rule::MODE_CANNOT
             , new V\Classes("allClasses")
             , new R\ContainText()
-            , array("foo")
+            , array(new Regexp("foo"))
             );
         $rule2 = new R\Rule
             ( R\Rule::MODE_CANNOT

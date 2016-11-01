@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Indexer;
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Variables\Variable;
 use PhpParser\Node as N;
 use Psr\Log\LoggerInterface as Log;
@@ -73,12 +74,15 @@ class Indexer implements ListenerRegistry, \PhpParser\NodeVisitor {
      * @return  null
      */
     public function index_directory($path, array $ignore_paths) {
+        $ignore_paths_re = array_map(function($ignore) {
+            return new Regexp($ignore);
+        }, $ignore_paths);
         $fc = $this->init_flightcontrol($path);
         $fc->directory("/")
             ->recurseOn()
-            ->filter(function(FSObject $obj) use (&$ignore_paths) {
-                foreach ($ignore_paths as $pattern) {
-                    if (preg_match("%$pattern%", $obj->path()) !== 0) {
+            ->filter(function(FSObject $obj) use (&$ignore_paths_re) {
+                foreach ($ignore_paths_re as $re) {
+                    if ($re->match($obj->path())) {
                         return false;
                     }
                 }

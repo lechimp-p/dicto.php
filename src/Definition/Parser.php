@@ -172,7 +172,8 @@ abstract class Parser {
      */
     protected function is_current_token_matched_by($regexp) {
         assert('is_string($regexp)');
-        return $this->token[0]->regexp() == $regexp;
+        // Extra () for regexp are added by Symbol.
+        return $this->token[0]->regexp()->raw() == "($regexp)";
     }
 
     /**

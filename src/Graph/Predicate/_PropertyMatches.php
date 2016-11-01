@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\Graph\Predicate;
 
+use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Graph\Predicate;
 use Lechimp\Dicto\Graph\Entity;
 
@@ -29,11 +30,8 @@ class _PropertyMatches extends Predicate {
 
     public function __construct($name, $regexp) {
         assert('is_string($name)');
-        if (!is_string($regexp) || @preg_match("%^$regexp\$%", "") === false) {
-            throw new \InvalidArgumentException("'%^$regexp\$%' is no valid regex.");
-        }
         $this->name = $name;
-        $this->regexp = $regexp;
+        $this->regexp = new Regexp($regexp);
     }
 
     /**
@@ -46,7 +44,7 @@ class _PropertyMatches extends Predicate {
             if (!$e->has_property($name)) {
                 return false;
             }
-            return preg_match("%^$regexp\$%", $e->property($name)) == 1;
+            return $this->regexp->match($e->property($name));
         };
     }
 
@@ -55,7 +53,7 @@ class _PropertyMatches extends Predicate {
      */
     public function compile_to_source(array &$custom_closures) {
         $name = $this->name;
-        $regexp = $this->regexp;
+        $regexp = $this->regexp->raw();
         return
             "   \$value = \n".
             "       \$e->has_property(\"$name\")\n".
