@@ -76,16 +76,15 @@ class AdapterVisitor implements \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function enterNode(\PhpParser\Node $node) {
-        $this->location->set_current_node($node);
 
         $cls = get_class($node);
         if (array_key_exists($cls, $this->jump_labels)) {
+            $this->location->set_current_node($node);
             $name = $this->jump_labels[$cls];
             list($type, $handle) 
                 = $this->visitor->$name($this->insert, $this->location, $node);
+            $this->location->flush_current_node();
         }
-
-        $this->location->flush_current_node();
     }
 
     /**

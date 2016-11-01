@@ -68,18 +68,16 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
      * @inheritdoc
      */
     public function enterNode(\PhpParser\Node $node) {
-        $this->location->set_current_node($node);
-
         $cls = get_class($node);
         if (array_key_exists($cls, $this->jump_labels)) {
+            $this->location->set_current_node($node);
             $start_line = $node->getAttribute("startLine");
             $end_line = $node->getAttribute("endLine");
             list($type, $handle) = $this->{$this->jump_labels[$cls]}
                                                 ($node, $start_line, $end_line);
             $this->location->push_entity($type, $handle);
+            $this->location->flush_current_node();
         }
-
-        $this->location->flush_current_node();
     }
 
     public function enterNamespace(N\Stmt\Namespace_ $node, $start_line, $end_line) {
