@@ -69,7 +69,7 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
      */
     public function enterNode(\PhpParser\Node $node) {
         $cls = get_class($node);
-        if (array_key_exists($cls, $this->jump_labels)) {
+        if (isset($this->jump_labels[$cls])) {
             $this->location->set_current_node($node);
             $start_line = $node->getAttribute("startLine");
             $end_line = $node->getAttribute("endLine");
