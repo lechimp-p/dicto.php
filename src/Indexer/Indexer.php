@@ -135,7 +135,7 @@ class Indexer implements ListenerRegistry {
 
         $traverser = new \PhpParser\NodeTraverser;
         $location = new LocationImpl($path, $content);
-        $visitor = new ASTVisitor($location, $this->insert, $this->listeners_enter_definition, $this->listeners_enter_misc); 
+        $visitor = new BaseVisitor($location, $this->insert, $this->listeners_enter_definition, $this->listeners_enter_misc);
         $traverser->addVisitor($visitor);
 
         $traverser->traverse($stmts);

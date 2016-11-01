@@ -16,7 +16,7 @@ use PhpParser\Node as N;
 /**
  * Visitor for the AST used by Indexer.
  */
-class ASTVisitor implements \PhpParser\NodeVisitor {
+class BaseVisitor implements \PhpParser\NodeVisitor {
     /**
      * @var LocationImpl
      */
