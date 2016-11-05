@@ -41,23 +41,26 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_read_write_db() {
-        $db1 = new _GraphIndexDB();
-        $file = $db1->_file("source.php", "<?php echo \"Hello World!\";");
-        $class = $db1->_class("AClass", $file, 1,1);
-        $interface = $db1->_class("AnInterface", $file, 1,1);
-        $db1->_method("a_method", $class, $file, 1,1);
-        $db1->_method("another_method", $interface, $file, 1,1);
-        $db1->_function("a_function", $file, 1,1);
-        $db1->_global("a_global");
-        $db1->_language_construct("@");
-        $method_reference = $db1->_method_reference("a_method", $file, 1, 2);
-        $db1->_function_reference("a_function", $file, 1, 2);
-        $db1->_relation($class, "relates to", $method_reference, $file, 1);
+        $in_memory = new _GraphIndexDB();
+        $build = function($db) {
+            $file = $db->_file("source.php", "<?php echo \"Hello World!\";");
+            $class = $db->_class("AClass", $file, 1,1);
+            $interface = $db->_class("AnInterface", $file, 1,1);
+            $db->_method("a_method", $class, $file, 1,1);
+            $db->_method("another_method", $interface, $file, 1,1);
+            $db->_function("a_function", $file, 1,1);
+            $db->_global("a_global");
+            $db->_language_construct("@");
+            $method_reference = $db->_method_reference("a_method", $file, 1, 2);
+            $db->_function_reference("a_function", $file, 1, 2);
+            $db->_relation($class, "relates to", $method_reference, $file, 1);
+        };
+        $build($in_memory);
+        $build($this->db1);
 
-        $this->db1->write_index($db1);
-        $db1->flush_caches();
-        $db2 = $this->db2->read_index();
+        $this->db1->write_cached_inserts();
+        $in_memory2 = $this->db2->to_graph_index();
 
-        $this->assertEquals($db1, $db2);
+        $this->assertEquals($in_memory, $in_memory2);
     }
 }
