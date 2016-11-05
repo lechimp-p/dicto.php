@@ -145,7 +145,4 @@ interface Insert {
      * @return  null
      */
     public function _relation($left_entity, $relation, $right_entity, $file, $line);
-
-    //interface
-    //namespace
 }
