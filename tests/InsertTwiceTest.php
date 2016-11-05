@@ -24,16 +24,27 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
         $db = new InsertTwice($db1, $db2);
 
         $file = $db->_file("source.php", "<?php echo \"Hello World!\";");
-        $class = $db->_class("AClass", $file, 1,1);
-        $interface = $db->_class("AnInterface", $file, 1,1);
-        $db->_method("a_method", $class, $file, 1,1);
-        $db->_method("another_method", $interface, $file, 1,1);
+        $namespace = $db->_namespace("ANamespace");
+        $class1 = $db->_class("AClass", $file, 1,1);
+        $class2 = $db->_class("AnotherClass", $file, 1,1, $namespace);
+        $interface1 = $db->_class("AnInterface", $file, 1,1);
+        $interface2 = $db->_class("AnotherInterface", $file, 1,1, $namespace);
+        $trait1 = $db->_class("AnTrait", $file, 1,1);
+        $trait2 = $db->_class("AnotherTrait", $file, 1,1, $namespace);
+        $db->_method("a_method", $class1, $file, 1,1);
+        $db->_method("a_method", $class2, $file, 1,1);
+        $db->_method("another_method", $interface1, $file, 1,1);
+        $db->_method("another_method", $interface2, $file, 1,1);
+        $db->_method("another_method", $trait1, $file, 1,1);
+        $db->_method("another_method", $trait2, $file, 1,1);
         $db->_function("a_function", $file, 1,1);
+        $db->_function("another_function", $file, 1,1, $namespace);
         $db->_global("a_global");
         $db->_language_construct("@");
         $method_reference = $db->_method_reference("a_method", $file, 1, 2);
         $db->_function_reference("a_function", $file, 1, 2);
-        $db->_relation($class, "relates to", $method_reference, $file, 1);
+        $db->_relation($class1, "relates to", $method_reference, $file, 1);
+        $db->_relation($class2, "relates to", $method_reference, $file, 1);
 
         $this->assertEquals($db1->node(0), $db2->node(0));
         $this->assertEquals($db1, $db2);
