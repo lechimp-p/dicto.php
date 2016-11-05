@@ -452,6 +452,9 @@ class IndexDB extends DB implements Insert {
         foreach ($inserts as $insert) {
             $id++;
             assert('$insert["_which"] == "relation" || $insert["id"] == $id');
+            if (isset($insert["namespace_id"])) {
+                $insert["namespace_id"] = $index->node((int)$insert["namespace_id"]);
+            }
             switch ($insert["_which"]) {
                 case "file":
                     $index->_file($insert["path"], $insert["source"]);
