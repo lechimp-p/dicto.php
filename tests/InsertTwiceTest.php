@@ -14,8 +14,14 @@ use Lechimp\Dicto\Graph;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
-class IndexDBTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class InsertTwiceTest extends PHPUnit_Framework_TestCase {
+    public function test_first_second() {
+        $db1 = new Graph\IndexDB();
+        $db2 = new Graph\IndexDB();
+        $db = new InsertTwice($db1, $db2);
+
+        $this->assertSame($db1, $db->first());
+        $this->assertSame($db2, $db->second());
     }
 
     public function test_read_write_db() {

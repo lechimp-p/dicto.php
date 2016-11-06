@@ -33,6 +33,22 @@ class InsertTwice implements Insert {
     }
 
     /**
+     * @return Insert
+     */
+    public function first() {
+        return $this->insert1;
+    }
+
+    /**
+     * @return Insert
+     */
+    public function second() {
+        return $this->insert2;
+    }
+
+    /**
+
+    /**
      * @inheritdocs
      */
     public function _file($path, $source) {
