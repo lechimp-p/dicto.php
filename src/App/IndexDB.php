@@ -59,110 +59,88 @@ class IndexDB extends DB implements Insert {
      * @inheritdocs
      */
     public function _file($path, $source) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("files",
-            [$id, $this->esc_str($path), $this->esc_str($source)]);
-        return $id;
+        return $this->append_and_maybe_flush("files",
+            [null, $this->esc_str($path), $this->esc_str($source)]);
     }
 
     /**
      * @inheritdocs
      */
     public function _namespace($name) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("namespaces",
-            [$id, $this->esc_str($name)]);
-        return $id;
+        return $this->append_and_maybe_flush("namespaces",
+            [null, $this->esc_str($name)]);
     }
 
     /**
      * @inheritdocs
      */
     public function _class($name, $file, $start_line, $end_line, $namespace = null) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("classes",
-            [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
-        return $id;
+        return $this->append_and_maybe_flush("classes",
+            [null, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
     }
 
     /**
      * @inheritdocs
      */
     public function _interface($name, $file, $start_line, $end_line, $namespace = null) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("interfaces",
-            [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
-        return $id;
+        return $this->append_and_maybe_flush("interfaces",
+            [null, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
     }
 
     /**
      * @inheritdocs
      */
     public function _trait($name, $file, $start_line, $end_line, $namespace = null) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("traits",
-            [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
-        return $id;
+        return $this->append_and_maybe_flush("traits",
+            [null, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
     }
 
     /**
      * @inheritdocs
      */
     public function _method($name, $class, $file, $start_line, $end_line) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("methods",
-            [$id, $this->esc_str($name), $class, $file, $start_line, $end_line]);
-        return $id;
+        return $this->append_and_maybe_flush("methods",
+            [null, $this->esc_str($name), $class, $file, $start_line, $end_line]);
     }
 
     /**
      * @inheritdocs
      */
     public function _function($name, $file, $start_line, $end_line, $namespace = null) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("functions",
-            [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
-        return $id;
+        return $this->append_and_maybe_flush("functions",
+            [null, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
     }
 
     /**
      * @inheritdocs
      */
     public function _global($name) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("globals",
-            [$id, $this->esc_str($name)]);
-        return $id;
+        return $this->append_and_maybe_flush("globals",
+            [null, $this->esc_str($name)]);
     }
 
     /**
      * @inheritdocs
      */
     public function _language_construct($name) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("language_constructs",
-            [$id, $this->esc_str($name)]);
-        return $id;
+        return $this->append_and_maybe_flush("language_constructs",
+            [null, $this->esc_str($name)]);
     }
 
     /**
      * @inheritdocs
      */
     public function _method_reference($name, $file, $line, $column) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("method_references",
-            [$id, $this->esc_str($name), $file, $line, $column]);
-        return $id;
+        return $this->append_and_maybe_flush("method_references",
+            [null, $this->esc_str($name), $file, $line, $column]);
     }
 
     /**
      * @inheritdocs
      */
     public function _function_reference($name, $file, $line, $column) {
-        $id = $this->id_counter++;
-        $this->append_and_maybe_flush("function_references",
-            [$id, $this->esc_str($name), $file, $line, $column]);
-        return $id;
+        return $this->append_and_maybe_flush("function_references",
+            [null, $this->esc_str($name), $file, $line, $column]);
     }
 
     /**
@@ -191,11 +169,21 @@ class IndexDB extends DB implements Insert {
     }
 
     protected function append_and_maybe_flush($table, $values) {
+        if ($values[0] === null) {
+            $id = $this->id_counter++;
+            $values[0] = $id;
+        }
+        else {
+            $id = null;
+        }
+
         $which = &$this->caches[$table];
         $which[] = $values;
         if (count($which) > $this->nodes_per_insert) {
             $this->insert_cache($table);
         }
+
+        return $id;
     }
     protected function esc_str($str) {
         assert('is_string($str)');
