@@ -18,7 +18,7 @@ use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 use Doctrine\DBAL\Statement;
 
 class IndexDB extends DB implements Insert {
-    protected $nodes_per_insert = 100;
+    protected $nodes_per_insert = 200;
 
     /**
      * @var array[]
