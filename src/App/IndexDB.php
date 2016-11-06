@@ -338,7 +338,9 @@ class IndexDB extends DB implements Insert {
             ];
         $count = count($results);
         $i = 0;
-        $current_id = 0;
+        $expected_id = 0;
+        // TODO: This will loop forever if there are (unexpected) holes
+        // in the sequence of ids.
         while ($count > 0) {
             if ($i >= $count) {
                 $i = 0;
@@ -346,7 +348,7 @@ class IndexDB extends DB implements Insert {
 
             $current_res = $results[$i][1];
             if ($current_res !== null) {
-                if ($current_res["id"] != $current_id) {
+                if ($current_res["id"] != $expected_id) {
                     $i++;
                     continue;
                 }
@@ -354,7 +356,7 @@ class IndexDB extends DB implements Insert {
                 $current_res["_which"] = $results[$i][0];
                 yield $current_res;
                 $results[$i][1] = null;
-                $current_id++;
+                $expected_id++;
             }
 
             $next_res = $results[$i][2]->fetch();
