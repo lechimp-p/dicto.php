@@ -426,8 +426,8 @@ class IndexDB extends DB implements Insert {
                 case "name":
                 case "relation":
                     $table->addColumn
-                        ($field, "integer"
-                        , ["notnull" => true, "unsigned" => true]
+                        ($field, "string"
+                        , ["notnull" => true]
                         );
                     break;
                 default:
