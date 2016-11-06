@@ -29,8 +29,8 @@ class IndexDB extends DB implements Insert {
         , "classes" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
         , "interfaces" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
         , "traits" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
-        , "method" => ["id", "name", "class_id", "file_id", "start_line", "end_line"]
-        , "function" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
+        , "methods" => ["id", "name", "class_id", "file_id", "start_line", "end_line"]
+        , "functions" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
         , "globals" => ["id", "name"]
         , "language_constructs" => ["id", "name"]
         , "method_references" => ["id", "name", "file_id", "line", "column"]
@@ -113,10 +113,6 @@ class IndexDB extends DB implements Insert {
         return $id;
     }
 
-    protected function insert_files() {
-        $this->insert_any("files", ["id", "path", "source"]);
-    }
-
     /**
      * @inheritdocs
      */
@@ -125,10 +121,6 @@ class IndexDB extends DB implements Insert {
         $this->append_and_maybe_flush("namespaces",
             [$id, $this->esc_str($name)]);
         return $id;
-    }
-
-    protected function insert_namespaces() {
-        $this->insert_any("namespaces", ["id", "name"]);
     }
 
     /**
@@ -141,10 +133,6 @@ class IndexDB extends DB implements Insert {
         return $id;
     }
 
-    protected function insert_classes() {
-        $this->insert_any("classes", ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]);
-    }
-
     /**
      * @inheritdocs
      */
@@ -153,10 +141,6 @@ class IndexDB extends DB implements Insert {
         $this->append_and_maybe_flush("interfaces",
             [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
         return $id;
-    }
-
-    protected function insert_interfaces() {
-        $this->insert_any("interfaces", ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]);
     }
 
     /**
@@ -169,10 +153,6 @@ class IndexDB extends DB implements Insert {
         return $id;
     }
 
-    protected function insert_traits() {
-        $this->insert_any("traits", ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]);
-    }
-
     /**
      * @inheritdocs
      */
@@ -181,10 +161,6 @@ class IndexDB extends DB implements Insert {
         $this->append_and_maybe_flush("methods",
             [$id, $this->esc_str($name), $class, $file, $start_line, $end_line]);
         return $id;
-    }
-
-    protected function insert_methods() {
-        $this->insert_any("methods", ["id", "name", "class_id", "file_id", "start_line", "end_line"]);
     }
 
     /**
@@ -197,10 +173,6 @@ class IndexDB extends DB implements Insert {
         return $id;
     }
 
-    protected function insert_functions() {
-        $this->insert_any("functions", ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]);
-    }
-
     /**
      * @inheritdocs
      */
@@ -209,10 +181,6 @@ class IndexDB extends DB implements Insert {
         $this->append_and_maybe_flush("globals",
             [$id, $this->esc_str($name)]);
         return $id;
-    }
-
-    protected function insert_globals() {
-        $this->insert_any("globals", ["id", "name"]);
     }
 
     /**
@@ -225,10 +193,6 @@ class IndexDB extends DB implements Insert {
         return $id;
     }
 
-    protected function insert_language_constructs() {
-        $this->insert_any("language_constructs", ["id", "name"]);
-    }
-
     /**
      * @inheritdocs
      */
@@ -237,10 +201,6 @@ class IndexDB extends DB implements Insert {
         $this->append_and_maybe_flush("method_references",
             [$id, $this->esc_str($name), $file, $line, $column]);
         return $id;
-    }
-
-    protected function insert_method_references() {
-        $this->insert_any("method_references", ["id", "name", "file_id", "line", "column"]);
     }
 
     /**
@@ -253,10 +213,6 @@ class IndexDB extends DB implements Insert {
         return $id;
     }
 
-    protected function insert_function_references() {
-        $this->insert_any("function_references", ["id", "name", "file_id", "line", "column"]);
-    }
-
     /**
      * @inheritdocs
      */
@@ -265,11 +221,9 @@ class IndexDB extends DB implements Insert {
             [$left_entity, $this->esc_str($relation), $right_entity, $file, $line]);
     }
 
-    protected function insert_relations() {
-        $this->insert_any("relations", ["left_id", "relation", "right_id", "file_id", "line"]);
-    }
-
-    protected function insert_any($table, array $fields) {
+    protected function insert_cache($table) {
+        assert('array_key_exists($table, $this->tables)');
+        $fields = $this->tables[$table];
         $which = &$this->$table;
         if (count($which) == 0) {
             return;
@@ -284,11 +238,11 @@ class IndexDB extends DB implements Insert {
         $which = [];
     }
 
-    protected function append_and_maybe_flush($which_name, $values) {
-        $which = &$this->$which_name;
+    protected function append_and_maybe_flush($table, $values) {
+        $which = &$this->$table;
         $which[] = $values;
         if (count($which) > $this->nodes_per_insert) {
-            $this->{"insert_$which_name"}();
+            $this->insert_cache($table);
         }
     }
     protected function esc_str($str) {
@@ -310,18 +264,9 @@ class IndexDB extends DB implements Insert {
      * @return null
      */
     public function write_cached_inserts() {
-        $this->insert_files();
-        $this->insert_namespaces();
-        $this->insert_classes();
-        $this->insert_interfaces();
-        $this->insert_traits();
-        $this->insert_methods();
-        $this->insert_functions();
-        $this->insert_globals();
-        $this->insert_language_constructs();
-        $this->insert_method_references();
-        $this->insert_function_references();
-        $this->insert_relations();
+        foreach ($this->tables as $table => $_) {
+            $this->insert_cache($table);
+        }
     }
 
     /**
