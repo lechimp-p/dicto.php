@@ -85,6 +85,9 @@ class Engine {
         if (!$this->db_factory->index_db_exists($index_db_path)) {
             $index = $this->build_index();
             $this->run_indexing($index);
+            if ($this->config->analysis_store_index()) {
+                $index = $index->first();
+            }
         }
         else {
             $index_db = $this->db_factory->load_index_db($index_db_path);

@@ -103,13 +103,6 @@ class _Engine extends Engine {
     public function _read_index_from(IndexDB $db) {
         return parent::read_index_from($db);
     }
-    public $write_index_to_called = false;
-    public function write_index_to(Graph\IndexDB $index, IndexDB $db) {
-        $this->write_index_to_called = true;
-    }
-    public function _write_index_to(Graph\IndexDB $index, IndexDB $db) {
-        parent::write_index_to($index, $db);
-    }
 }
 
 class EngineTest extends PHPUnit_Framework_TestCase {
@@ -164,10 +157,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
 
         $this->assertEquals(array(), $this->db_factory->build_paths);
         $this->assertEquals(array(), $this->db_factory->load_paths);
-        $this->assertFalse($this->engine->write_index_to_called);
     }
-
-
 
     public function test_builds_index_db() {
         $this->build_engine_with_store_index_set_to(true);
@@ -180,7 +170,6 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $expected = array($this->config->project_storage()."/$commit_hash.sqlite");
         $this->assertEquals($expected, $this->db_factory->build_paths);
         $this->assertEquals(array(), $this->db_factory->load_paths);
-        $this->assertTrue($this->engine->write_index_to_called);
     }
 
     public function test_no_reindex_on_existing_index_db() {
