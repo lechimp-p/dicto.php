@@ -144,7 +144,13 @@ class Engine {
     }
 
     protected function read_index_from(IndexDB $db) {
-        return $db->read_index();
+        $res = null;
+        $this->with_time_measurement
+            ( function ($s) { return "Loading the index took $s seconds."; }
+            , function () use ($db, &$res) {
+                $res = $db->to_graph_index();
+            });
+        return $res;
     }
 
     protected function with_time_measurement(\Closure $message, \Closure $what) {

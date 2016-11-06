@@ -340,7 +340,7 @@ class IndexDB extends DB implements Insert {
         $i = 0;
         $current_id = 0;
         while ($count > 0) {
-            if ($i > $count) {
+            if ($i >= $count) {
                 $i = 0;
             }
 
@@ -460,92 +460,96 @@ class IndexDB extends DB implements Insert {
 
     protected function write_inserts_to(Graph\IndexDB $index, \Iterator $inserts) {
         $id = -1;
+        $id_map = [];
         foreach ($inserts as $insert) {
             $id++;
             assert('$insert["_which"] == "relation" || $insert["id"] == $id');
             if (isset($insert["namespace_id"])) {
-                $insert["namespace_id"] = $index->node((int)$insert["namespace_id"]);
+                $insert["namespace_id"] = $id_map[(int)$insert["namespace_id"]];
+            }
+            if (isset($insert["file_id"])) {
+                $insert["file_id"] = $id_map[(int)$insert["file_id"]];
             }
             switch ($insert["_which"]) {
                 case "file":
-                    $index->_file($insert["path"], $insert["source"]);
+                    $id_map[$id] = $index->_file($insert["path"], $insert["source"]);
                     break;
                 case "namespace":
-                    $index->_namespace($insert["name"]);
+                    $id_map[$id] = $index->_namespace($insert["name"]);
                     break;
                 case "class":
-                    $index->_class
+                    $id_map[$id] = $index->_class
                         ( $insert["name"]
-                        , $index->node((int)$insert["file_id"])
+                        , $insert["file_id"]
                         , (int)$insert["start_line"]
                         , (int)$insert["end_line"]
                         , $insert["namespace_id"]
                         );
                     break;
                 case "interface":
-                    $index->_interface
+                    $id_map[$id] = $index->_interface
                         ( $insert["name"]
-                        , $index->node((int)$insert["file_id"])
+                        , $insert["file_id"]
                         , (int)$insert["start_line"]
                         , (int)$insert["end_line"]
                         , $insert["namespace_id"]
                         );
                     break;
                 case "trait":
-                    $index->_trait
+                    $id_map[$id] = $index->_trait
                         ( $insert["name"]
-                        , $index->node((int)$insert["file_id"])
+                        , $insert["file_id"]
                         , (int)$insert["start_line"]
                         , (int)$insert["end_line"]
                         , $insert["namespace_id"]
                         );
                     break;
                 case "method":
-                    $index->_method
+                    $id_map[$id] = $index->_method
                         ( $insert["name"]
-                        , $index->node((int)$insert["class_id"])
-                        , $index->node((int)$insert["file_id"])
+                        , $id_map[(int)$insert["class_id"]]
+                        , $insert["file_id"]
                         , (int)$insert["start_line"]
                         , (int)$insert["end_line"]
                         );
                     break;
                 case "function":
-                    $index->_function
+                    $id_map[$id] = $index->_function
                         ( $insert["name"]
-                        , $index->node((int)$insert["file_id"])
+                        , $insert["file_id"]
                         , (int)$insert["start_line"]
                         , (int)$insert["end_line"]
                         , $insert["namespace_id"]
                         );
                     break;
                 case "global":
-                    $index->_global($insert["name"]);
+                    $id_map[$id] = $index->_global($insert["name"]);
                     break;
                 case "language_construct":
-                    $index->_language_construct($insert["name"]);
+                    $id_map[$id] = $index->_language_construct($insert["name"]);
                     break;
                 case "method_reference":
-                    $index->_method_reference
+                    $id_map[$id] = $index->_method_reference
                         ( $insert["name"]
-                        , $index->node((int)$insert["file_id"])
+                        , $insert["file_id"]
                         , (int)$insert["line"]
                         , (int)$insert["column"]
                         );
                     break;
                 case "function_reference":
-                    $index->_function_reference
+                    $id_map[$id] = $index->_function_reference
                         ( $insert["name"]
-                        , $index->node((int)$insert["file_id"])
+                        , $insert["file_id"]
                         , (int)$insert["line"]
                         , (int)$insert["column"]
                         );
                     break;
                 case "relation":
                     $index->_relation
-                        ( $index->node((int)$insert["left_id"])
+                        ( $id_map[(int)$insert["left_id"]]
                         , $insert["relation"]
-                        , $index->node((int)$insert["right_id"])
-                        , $index->node((int)$insert["file_id"])
+                        , $id_map[(int)$insert["right_id"]]
+                        , $insert["file_id"]
                         , (int)$insert["line"]
                         );
                     break;

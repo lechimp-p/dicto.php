@@ -67,6 +67,8 @@ class IndexDBTest extends PHPUnit_Framework_TestCase {
             $db->_relation($class2, "relates to", $method_reference, $file, 1);
         };
         $build($in_memory);
+        $build($in_memory);
+        $build($this->db1);
         $build($this->db1);
 
         $this->db1->write_cached_inserts();
