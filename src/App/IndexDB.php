@@ -266,10 +266,11 @@ class IndexDB extends DB implements Insert {
         $which = [];
     }
 
-    protected function append_and_maybe_flush($which, $values) {
-        $this->$which[] = $values;
-        if (count($this->$which) > $this->nodes_per_insert) {
-            $this->{"insert_$which"}();
+    protected function append_and_maybe_flush($which_name, $values) {
+        $which = &$this->$which_name;
+        $which[] = $values;
+        if (count($which) > $this->nodes_per_insert) {
+            $this->{"insert_$which_name"}();
         }
     }
     protected function esc_str($str) {
