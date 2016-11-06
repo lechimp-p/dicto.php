@@ -18,7 +18,67 @@ use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 use Doctrine\DBAL\Statement;
 
 class IndexDB extends DB implements Insert {
-    protected $insert_per_transaction = 1000;
+    protected $nodes_per_insert = 100;
+
+    /**
+     * @var array[]
+     */
+    protected $files = [];
+
+    /**
+     * @var array[]
+     */
+    protected $namespaces = [];
+
+    /**
+     * @var array[]
+     */
+    protected $classes = [];
+
+    /**
+     * @var array[]
+     */
+    protected $interfaces = [];
+
+    /**
+     * @var array[]
+     */
+    protected $traits = [];
+
+    /**
+     * @var array[]
+     */
+    protected $methods = [];
+
+    /**
+     * @var array[]
+     */
+    protected $functions = [];
+
+    /**
+     * @var array[]
+     */
+    protected $globals = [];
+
+    /**
+     * @var array[]
+     */
+    protected $language_constructs = [];
+
+    /**
+     * @var array[]
+     */
+    protected $method_references = [];
+
+    /**
+     * @var array[]
+     */
+    protected $function_references = [];
+
+    /**
+     * @var array[]
+     */
+    protected $relations = [];
 
     /**
      * @var integer
@@ -30,18 +90,12 @@ class IndexDB extends DB implements Insert {
      */
     public function _file($path, $source) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("files")
-            ->values(
-                [ "id" => "?"
-                , "path" => "?"
-                , "source" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $path)
-            ->setParameter(2, $source)
-            ->execute();
+        $this->files[] = [$id, $this->esc_str($path), $this->esc_str($source)];
         return $id;
+    }
+
+    protected function insert_files() {
+        $this->insert_any("files", ["id", "path", "source"]);
     }
 
     /**
@@ -49,16 +103,12 @@ class IndexDB extends DB implements Insert {
      */
     public function _namespace($name) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("namespaces")
-            ->values(
-                [ "id" => "?"
-                , "name" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $name)
-            ->execute();
+        $this->namespaces[] = [$id, $this->esc_str($name)];
         return $id;
+    }
+
+    protected function insert_namespaces() {
+        $this->insert_any("namespaces", ["id", "name"]);
     }
 
     /**
@@ -66,24 +116,12 @@ class IndexDB extends DB implements Insert {
      */
     public function _class($name, $file, $start_line, $end_line, $namespace = null) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("classes")
-            ->values(
-                [ "id" => "?"
-                , "name" => "?"
-                , "file_id" => "?"
-                , "start_line" => "?"
-                , "end_line" => "?"
-                , "namespace_id" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $name)
-            ->setParameter(2, $file)
-            ->setParameter(3, $start_line)
-            ->setParameter(4, $end_line)
-            ->setParameter(5, $namespace)
-            ->execute();
+        $this->classes[] = [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)];
         return $id;
+    }
+
+    protected function insert_classes() {
+        $this->insert_any("classes", ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]);
     }
 
     /**
@@ -91,24 +129,12 @@ class IndexDB extends DB implements Insert {
      */
     public function _interface($name, $file, $start_line, $end_line, $namespace = null) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("interfaces")
-            ->values(
-                [ "id" => "?"
-                , "name" => "?"
-                , "file_id" => "?"
-                , "start_line" => "?"
-                , "end_line" => "?"
-                , "namespace_id" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $name)
-            ->setParameter(2, $file)
-            ->setParameter(3, $start_line)
-            ->setParameter(4, $end_line)
-            ->setParameter(5, $namespace)
-            ->execute();
+        $this->interfaces[] = [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)];
         return $id;
+    }
+
+    protected function insert_interfaces() {
+        $this->insert_any("interfaces", ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]);
     }
 
     /**
@@ -116,24 +142,12 @@ class IndexDB extends DB implements Insert {
      */
     public function _trait($name, $file, $start_line, $end_line, $namespace = null) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("traits")
-            ->values(
-                [ "id" => "?"
-                , "name" => "?"
-                , "file_id" => "?"
-                , "start_line" => "?"
-                , "end_line" => "?"
-                , "namespace_id" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $name)
-            ->setParameter(2, $file)
-            ->setParameter(3, $start_line)
-            ->setParameter(4, $end_line)
-            ->setParameter(5, $namespace)
-            ->execute();
+        $this->traits[] = [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)];
         return $id;
+    }
+
+    protected function insert_traits() {
+        $this->insert_any("traits", ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]);
     }
 
     /**
@@ -141,24 +155,12 @@ class IndexDB extends DB implements Insert {
      */
     public function _method($name, $class, $file, $start_line, $end_line) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("methods")
-            ->values(
-                [ "id" => "?"
-                , "name" => "?"
-                , "class_id" => "?"
-                , "file_id" => "?"
-                , "start_line" => "?"
-                , "end_line" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $name)
-            ->setParameter(2, $class)
-            ->setParameter(3, $file)
-            ->setParameter(4, $start_line)
-            ->setParameter(5, $end_line)
-            ->execute();
+        $this->methods[] = [$id, $this->esc_str($name), $class, $file, $start_line, $end_line];
         return $id;
+    }
+
+    protected function insert_methods() {
+        $this->insert_any("methods", ["id", "name", "class_id", "file_id", "start_line", "end_line"]);
     }
 
     /**
@@ -166,24 +168,12 @@ class IndexDB extends DB implements Insert {
      */
     public function _function($name, $file, $start_line, $end_line, $namespace = null) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("functions")
-            ->values(
-                [ "id" => "?"
-                , "name" => "?"
-                , "file_id" => "?"
-                , "start_line" => "?"
-                , "end_line" => "?"
-                , "namespace_id" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $name)
-            ->setParameter(2, $file)
-            ->setParameter(3, $start_line)
-            ->setParameter(4, $end_line)
-            ->setParameter(5, $namespace)
-            ->execute();
+        $this->functions[] = [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)];
         return $id;
+    }
+
+    protected function insert_functions() {
+        $this->insert_any("functions", ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]);
     }
 
     /**
@@ -191,16 +181,12 @@ class IndexDB extends DB implements Insert {
      */
     public function _global($name) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("globals")
-            ->values(
-                [ "id" => "?"
-                , "name" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $name)
-            ->execute();
+        $this->globals[] = [$id, $this->esc_str($name)];
         return $id;
+    }
+
+    protected function insert_globals() {
+        $this->insert_any("globals", ["id", "name"]);
     }
 
     /**
@@ -208,16 +194,12 @@ class IndexDB extends DB implements Insert {
      */
     public function _language_construct($name) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("language_constructs")
-            ->values(
-                [ "id" => "?"
-                , "name" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $name)
-            ->execute();
+        $this->language_constructs[] = [$id, $this->esc_str($name)];
         return $id;
+    }
+
+    protected function insert_language_constructs() {
+        $this->insert_any("language_constructs", ["id", "name"]);
     }
 
     /**
@@ -225,22 +207,12 @@ class IndexDB extends DB implements Insert {
      */
     public function _method_reference($name, $file, $line, $column) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("method_references")
-            ->values(
-                [ "id" => "?"
-                , "name" => "?"
-                , "file_id" => "?"
-                , "line" => "?"
-                , "column" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $name)
-            ->setParameter(2, $file)
-            ->setParameter(3, $line)
-            ->setParameter(4, $column)
-            ->execute();
+        $this->method_references[] = [$id, $this->esc_str($name), $file, $line, $column];
         return $id;
+    }
+
+    protected function insert_method_references() {
+        $this->insert_any("method_references", ["id", "name", "file_id", "line", "column"]);
     }
 
     /**
@@ -248,43 +220,51 @@ class IndexDB extends DB implements Insert {
      */
     public function _function_reference($name, $file, $line, $column) {
         $id = $this->id_counter++;
-        $this->builder()
-            ->insert("function_references")
-            ->values(
-                [ "id" => "?"
-                , "name" => "?"
-                , "file_id" => "?"
-                , "line" => "?"
-                , "column" => "?"
-                ])
-            ->setParameter(0, $id)
-            ->setParameter(1, $name)
-            ->setParameter(2, $file)
-            ->setParameter(3, $line)
-            ->setParameter(4, $column)
-            ->execute();
+        $this->function_references[] = [$id, $this->esc_str($name), $file, $line, $column];
         return $id;
+    }
+
+    protected function insert_function_references() {
+        $this->insert_any("function_references", ["id", "name", "file_id", "line", "column"]);
     }
 
     /**
      * @inheritdocs
      */
     public function _relation($left_entity, $relation, $right_entity, $file, $line) {
-        $this->builder()
-            ->insert("relations")
-            ->values(
-                [ "left_id" => "?"
-                , "relation" => "?"
-                , "right_id" => "?"
-                , "file_id" => "?"
-                , "line" => "?"
-                ])
-            ->setParameter(0, $left_entity)
-            ->setParameter(1, $relation)
-            ->setParameter(2, $right_entity)
-            ->setParameter(3, $file)
-            ->setParameter(4, $line)
-            ->execute();
+        $this->relations[] = [$left_entity, $this->esc_str($relation), $right_entity, $file, $line];
+    }
+
+    protected function insert_relations() {
+        $this->insert_any("relations", ["left_id", "relation", "right_id", "file_id", "line"]);
+    }
+
+    protected function insert_any($table, array $fields) {
+        $which = &$this->$table;
+        if (count($which) == 0) {
+            return;
+        }
+        $stmt = "INSERT INTO $table (".implode(", ", $fields).") VALUES\n";
+        $values = [];
+        foreach ($which as $v) {
+            $values[] = "(".implode(", ", $v).")";
+        }
+        $stmt .= implode(",\n", $values).";";
+        $this->connection->exec($stmt);
+        $which = [];
+    }
+
+    protected function esc_str($str) {
+        assert('is_string($str)');
+        return '"'.str_replace('"', '""', $str).'"';
+    }
+
+    protected function esc_maybe_null($val) {
+        assert('!is_string($val)');
+        if ($val === null) {
+            return "NULL";
+        }
+        return $val;
     }
 
     /**
@@ -293,6 +273,18 @@ class IndexDB extends DB implements Insert {
      * @return null
      */
     public function write_cached_inserts() {
+        $this->insert_files();
+        $this->insert_namespaces();
+        $this->insert_classes();
+        $this->insert_interfaces();
+        $this->insert_traits();
+        $this->insert_methods();
+        $this->insert_functions();
+        $this->insert_globals();
+        $this->insert_language_constructs();
+        $this->insert_method_references();
+        $this->insert_function_references();
+        $this->insert_relations();
     }
 
     /**
