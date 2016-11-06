@@ -24,33 +24,30 @@ class IndexDB extends DB implements Insert {
      * @var array
      */
     protected $tables =
-        [ "files" => ["id", "path", "source"]
-        , "namespaces" => ["id", "name"]
-        , "classes" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
-        , "interfaces" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
-        , "traits" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
-        , "methods" => ["id", "name", "class_id", "file_id", "start_line", "end_line"]
-        , "functions" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
-        , "globals" => ["id", "name"]
-        , "language_constructs" => ["id", "name"]
-        , "method_references" => ["id", "name", "file_id", "line", "column"]
-        , "function_references" => ["id", "name", "file_id", "line", "column"]
-        , "relations" => ["left_id", "relation", "right_id", "file_id", "line"]
-        ];
-
-    protected $methods =
-        [ "files" => "_file"
-        , "namespaces" => "_namespace"
-        , "classes" => "_class"
-        , "interfaces" => "_interface"
-        , "traits" => "_trait"
-        , "methods" => "_method"
-        , "functions" => "_function"
-        , "globals" => "_global"
-        , "language_constructs" => "_language_construct"
-        , "method_references" => "_method_reference"
-        , "function_references" => "_function_reference"
-        , "relations" => "_relation"
+        [ "files" => ["_file",
+            ["id", "path", "source"]]
+        , "namespaces" => ["_namespace",
+            ["id", "name"]]
+        , "classes" => ["_class",
+            ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]]
+        , "interfaces" => ["_interface",
+            ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]]
+        , "traits" => ["_trait",
+            ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]]
+        , "methods" => ["_method",
+            ["id", "name", "class_id", "file_id", "start_line", "end_line"]]
+        , "functions" => ["_function",
+            ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]]
+        , "globals" => ["_global",
+            ["id", "name"]]
+        , "language_constructs" => ["_language_construct",
+            ["id", "name"]]
+        , "method_references" => ["_method_reference",
+            ["id", "name", "file_id", "line", "column"]]
+        , "function_references" => ["_function_reference",
+            ["id", "name", "file_id", "line", "column"]]
+        , "relations" => ["_relation",
+            ["left_id", "relation", "right_id", "file_id", "line"]]
         ];
 
     /**
@@ -65,7 +62,6 @@ class IndexDB extends DB implements Insert {
 
     public function __construct($connection) {
         parent::__construct($connection);
-        assert('array_keys($this->tables) == array_keys($this->methods)');
         foreach ($this->tables as $table => $_) {
             $this->caches[$table] = [];
         }
@@ -169,7 +165,7 @@ class IndexDB extends DB implements Insert {
 
     protected function insert_cache($table) {
         assert('array_key_exists($table, $this->tables)');
-        $fields = $this->tables[$table];
+        $fields = $this->tables[$table][1];
         $which = &$this->caches[$table];
         if (count($which) == 0) {
             return;
@@ -292,7 +288,7 @@ class IndexDB extends DB implements Insert {
 
     protected function select_all_from($table) {
         return $this->builder()
-            ->select($this->tables[$table])
+            ->select($this->tables[$table][1])
             ->from($table)
             ->execute();
     }
@@ -328,8 +324,8 @@ class IndexDB extends DB implements Insert {
                 $insert["column"] = (int)$insert["column"];
             }
 
-            assert('array_key_exists($insert["_which"], $this->methods)');
-            $method = $this->methods[$insert["_which"]];
+            assert('array_key_exists($insert["_which"], $this->tables)');
+            $method = $this->tables[$insert["_which"]][0];
             unset($insert["_which"]);
             if (isset($insert["id"])) {
                 $id = $insert["id"];
@@ -347,7 +343,7 @@ class IndexDB extends DB implements Insert {
     public function init_table($name, Schema\Schema $schema, Schema\Table $file_table = null, Schema\Table $namespace_table = null) {
         assert('array_key_exists($name, $this->tables)');
         $table = $schema->createTable($name);
-        foreach ($this->tables[$name] as $field) {
+        foreach ($this->tables[$name][1] as $field) {
             switch ($field) {
                 case "id":
                 case "file_id":
