@@ -238,19 +238,14 @@ class IndexDB extends DB implements Insert {
     }
 
     protected function get_inserts() {
-        $results =
-            [ ["file", null, $this->select_files()]
-            , ["namespace", null, $this->select_namespaces()]
-            , ["class", null, $this->select_classes()]
-            , ["interface", null, $this->select_interfaces()]
-            , ["trait", null, $this->select_traits()]
-            , ["method", null, $this->select_methods()]
-            , ["function", null, $this->select_functions()]
-            , ["global", null, $this->select_globals()]
-            , ["language_construct", null, $this->select_language_constructs()]
-            , ["method_reference", null, $this->select_method_references()]
-            , ["function_reference", null, $this->select_function_references()]
-            ];
+        $results = [];
+        foreach ($this->tables as $key => $_) {
+            if ($key == "relations") {
+                continue;
+            }
+            $results[] = [$key, null, $this->select_all_from($key)];
+        }
+
         $count = count($results);
         $i = 0;
         $expected_id = 0;
@@ -284,94 +279,17 @@ class IndexDB extends DB implements Insert {
             $results[$i][1] = $next_res;
         }
 
-        $relations = $this->select_relations();
+        $relations = $this->select_all_from("relations");
         while($res = $relations->fetch()) {
-            $res["_which"] = "relation";
+            $res["_which"] = "relations";
             yield $res;
         }
     }
 
-    protected function select_files() {
+    protected function select_all_from($table) {
         return $this->builder()
-            ->select(["id", "path", "source"])
-            ->from("files")
-            ->execute();
-    }
-
-    protected function select_namespaces() {
-        return $this->builder()
-            ->select(["id", "name"])
-            ->from("namespaces")
-            ->execute();
-    }
-
-    protected function select_classes() {
-        return $this->builder()
-            ->select(["id", "name", "file_id", "start_line", "end_line", "namespace_id"])
-            ->from("classes")
-            ->execute();
-    }
-
-    protected function select_interfaces() {
-        return $this->builder()
-            ->select(["id", "name", "file_id", "start_line", "end_line", "namespace_id"])
-            ->from("interfaces")
-            ->execute();
-    }
-
-    protected function select_traits() {
-        return $this->builder()
-            ->select(["id", "name", "file_id", "start_line", "end_line", "namespace_id"])
-            ->from("traits")
-            ->execute();
-    }
-
-    protected function select_methods() {
-        return $this->builder()
-            ->select(["id", "name", "class_id", "file_id", "start_line", "end_line"])
-            ->from("methods")
-            ->execute();
-    }
-
-    protected function select_functions() {
-        return $this->builder()
-            ->select(["id", "name", "file_id", "start_line", "end_line", "namespace_id"])
-            ->from("functions")
-            ->execute();
-    }
-
-    protected function select_globals() {
-        return $this->builder()
-            ->select(["id", "name"])
-            ->from("globals")
-            ->execute();
-    }
-
-    protected function select_language_constructs() {
-        return $this->builder()
-            ->select(["id", "name"])
-            ->from("language_constructs")
-            ->execute();
-    }
-
-    protected function select_method_references() {
-        return $this->builder()
-            ->select(["id", "name", "file_id", "line", "column"])
-            ->from("method_references")
-            ->execute();
-    }
-
-    protected function select_function_references() {
-        return $this->builder()
-            ->select(["id", "name", "file_id", "line", "column"])
-            ->from("function_references")
-            ->execute();
-    }
-
-    protected function select_relations() {
-        return $this->builder()
-            ->select(["left_id", "relation", "right_id", "file_id", "line"])
-            ->from("relations")
+            ->select($this->tables[$table])
+            ->from($table)
             ->execute();
     }
 
@@ -380,7 +298,7 @@ class IndexDB extends DB implements Insert {
         $id_map = [];
         foreach ($inserts as $insert) {
             $id++;
-            assert('$insert["_which"] == "relation" || $insert["id"] == $id');
+            assert('$insert["_which"] == "relations" || $insert["id"] == $id');
             if (isset($insert["namespace_id"])) {
                 $insert["namespace_id"] = $id_map[(int)$insert["namespace_id"]];
             }
@@ -388,13 +306,13 @@ class IndexDB extends DB implements Insert {
                 $insert["file_id"] = $id_map[(int)$insert["file_id"]];
             }
             switch ($insert["_which"]) {
-                case "file":
+                case "files":
                     $id_map[$id] = $index->_file($insert["path"], $insert["source"]);
                     break;
-                case "namespace":
+                case "namespaces":
                     $id_map[$id] = $index->_namespace($insert["name"]);
                     break;
-                case "class":
+                case "classes":
                     $id_map[$id] = $index->_class
                         ( $insert["name"]
                         , $insert["file_id"]
@@ -403,7 +321,7 @@ class IndexDB extends DB implements Insert {
                         , $insert["namespace_id"]
                         );
                     break;
-                case "interface":
+                case "interfaces":
                     $id_map[$id] = $index->_interface
                         ( $insert["name"]
                         , $insert["file_id"]
@@ -412,7 +330,7 @@ class IndexDB extends DB implements Insert {
                         , $insert["namespace_id"]
                         );
                     break;
-                case "trait":
+                case "traits":
                     $id_map[$id] = $index->_trait
                         ( $insert["name"]
                         , $insert["file_id"]
@@ -421,7 +339,7 @@ class IndexDB extends DB implements Insert {
                         , $insert["namespace_id"]
                         );
                     break;
-                case "method":
+                case "methods":
                     $id_map[$id] = $index->_method
                         ( $insert["name"]
                         , $id_map[(int)$insert["class_id"]]
@@ -430,7 +348,7 @@ class IndexDB extends DB implements Insert {
                         , (int)$insert["end_line"]
                         );
                     break;
-                case "function":
+                case "functions":
                     $id_map[$id] = $index->_function
                         ( $insert["name"]
                         , $insert["file_id"]
@@ -439,13 +357,13 @@ class IndexDB extends DB implements Insert {
                         , $insert["namespace_id"]
                         );
                     break;
-                case "global":
+                case "globals":
                     $id_map[$id] = $index->_global($insert["name"]);
                     break;
-                case "language_construct":
+                case "language_constructs":
                     $id_map[$id] = $index->_language_construct($insert["name"]);
                     break;
-                case "method_reference":
+                case "method_references":
                     $id_map[$id] = $index->_method_reference
                         ( $insert["name"]
                         , $insert["file_id"]
@@ -453,7 +371,7 @@ class IndexDB extends DB implements Insert {
                         , (int)$insert["column"]
                         );
                     break;
-                case "function_reference":
+                case "function_references":
                     $id_map[$id] = $index->_function_reference
                         ( $insert["name"]
                         , $insert["file_id"]
@@ -461,7 +379,7 @@ class IndexDB extends DB implements Insert {
                         , (int)$insert["column"]
                         );
                     break;
-                case "relation":
+                case "relations":
                     $index->_relation
                         ( $id_map[(int)$insert["left_id"]]
                         , $insert["relation"]
@@ -471,7 +389,7 @@ class IndexDB extends DB implements Insert {
                         );
                     break;
                 default:
-                    \LogicException("Can't insert '".$insert["which"]."'");
+                    throw new \LogicException("Can't insert '".$insert["_which"]."'");
             }
         }
     }
