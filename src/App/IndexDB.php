@@ -41,67 +41,19 @@ class IndexDB extends DB implements Insert {
     /**
      * @var array[]
      */
-    protected $files = [];
-
-    /**
-     * @var array[]
-     */
-    protected $namespaces = [];
-
-    /**
-     * @var array[]
-     */
-    protected $classes = [];
-
-    /**
-     * @var array[]
-     */
-    protected $interfaces = [];
-
-    /**
-     * @var array[]
-     */
-    protected $traits = [];
-
-    /**
-     * @var array[]
-     */
-    protected $methods = [];
-
-    /**
-     * @var array[]
-     */
-    protected $functions = [];
-
-    /**
-     * @var array[]
-     */
-    protected $globals = [];
-
-    /**
-     * @var array[]
-     */
-    protected $language_constructs = [];
-
-    /**
-     * @var array[]
-     */
-    protected $method_references = [];
-
-    /**
-     * @var array[]
-     */
-    protected $function_references = [];
-
-    /**
-     * @var array[]
-     */
-    protected $relations = [];
+    protected $caches = [];
 
     /**
      * @var integer
      */
     protected $id_counter = 0;
+
+    public function __construct($connection) {
+        parent::__construct($connection);
+        foreach ($this->tables as $table => $_) {
+            $this->caches[$table] = [];
+        }
+    }
 
     /**
      * @inheritdocs
@@ -224,7 +176,7 @@ class IndexDB extends DB implements Insert {
     protected function insert_cache($table) {
         assert('array_key_exists($table, $this->tables)');
         $fields = $this->tables[$table];
-        $which = &$this->$table;
+        $which = &$this->caches[$table];
         if (count($which) == 0) {
             return;
         }
@@ -239,7 +191,7 @@ class IndexDB extends DB implements Insert {
     }
 
     protected function append_and_maybe_flush($table, $values) {
-        $which = &$this->$table;
+        $which = &$this->caches[$table];
         $which[] = $values;
         if (count($which) > $this->nodes_per_insert) {
             $this->insert_cache($table);
