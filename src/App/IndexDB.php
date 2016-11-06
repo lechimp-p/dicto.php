@@ -90,7 +90,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _file($path, $source) {
         $id = $this->id_counter++;
-        $this->files[] = [$id, $this->esc_str($path), $this->esc_str($source)];
+        $this->append_and_maybe_flush("files",
+            [$id, $this->esc_str($path), $this->esc_str($source)]);
         return $id;
     }
 
@@ -103,7 +104,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _namespace($name) {
         $id = $this->id_counter++;
-        $this->namespaces[] = [$id, $this->esc_str($name)];
+        $this->append_and_maybe_flush("namespaces",
+            [$id, $this->esc_str($name)]);
         return $id;
     }
 
@@ -116,7 +118,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _class($name, $file, $start_line, $end_line, $namespace = null) {
         $id = $this->id_counter++;
-        $this->classes[] = [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)];
+        $this->append_and_maybe_flush("classes",
+            [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
         return $id;
     }
 
@@ -129,7 +132,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _interface($name, $file, $start_line, $end_line, $namespace = null) {
         $id = $this->id_counter++;
-        $this->interfaces[] = [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)];
+        $this->append_and_maybe_flush("interfaces",
+            [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
         return $id;
     }
 
@@ -142,7 +146,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _trait($name, $file, $start_line, $end_line, $namespace = null) {
         $id = $this->id_counter++;
-        $this->traits[] = [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)];
+        $this->append_and_maybe_flush("traits",
+            [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
         return $id;
     }
 
@@ -155,7 +160,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _method($name, $class, $file, $start_line, $end_line) {
         $id = $this->id_counter++;
-        $this->methods[] = [$id, $this->esc_str($name), $class, $file, $start_line, $end_line];
+        $this->append_and_maybe_flush("methods",
+            [$id, $this->esc_str($name), $class, $file, $start_line, $end_line]);
         return $id;
     }
 
@@ -168,7 +174,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _function($name, $file, $start_line, $end_line, $namespace = null) {
         $id = $this->id_counter++;
-        $this->functions[] = [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)];
+        $this->append_and_maybe_flush("functions",
+            [$id, $this->esc_str($name), $file, $start_line, $end_line, $this->esc_maybe_null($namespace)]);
         return $id;
     }
 
@@ -181,7 +188,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _global($name) {
         $id = $this->id_counter++;
-        $this->globals[] = [$id, $this->esc_str($name)];
+        $this->append_and_maybe_flush("globals",
+            [$id, $this->esc_str($name)]);
         return $id;
     }
 
@@ -194,7 +202,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _language_construct($name) {
         $id = $this->id_counter++;
-        $this->language_constructs[] = [$id, $this->esc_str($name)];
+        $this->append_and_maybe_flush("language_constructs",
+            [$id, $this->esc_str($name)]);
         return $id;
     }
 
@@ -207,7 +216,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _method_reference($name, $file, $line, $column) {
         $id = $this->id_counter++;
-        $this->method_references[] = [$id, $this->esc_str($name), $file, $line, $column];
+        $this->append_and_maybe_flush("method_references",
+            [$id, $this->esc_str($name), $file, $line, $column]);
         return $id;
     }
 
@@ -220,7 +230,8 @@ class IndexDB extends DB implements Insert {
      */
     public function _function_reference($name, $file, $line, $column) {
         $id = $this->id_counter++;
-        $this->function_references[] = [$id, $this->esc_str($name), $file, $line, $column];
+        $this->append_and_maybe_flush("function_references",
+            [$id, $this->esc_str($name), $file, $line, $column]);
         return $id;
     }
 
@@ -232,7 +243,8 @@ class IndexDB extends DB implements Insert {
      * @inheritdocs
      */
     public function _relation($left_entity, $relation, $right_entity, $file, $line) {
-        $this->relations[] = [$left_entity, $this->esc_str($relation), $right_entity, $file, $line];
+        $this->append_and_maybe_flush("relations",
+            [$left_entity, $this->esc_str($relation), $right_entity, $file, $line]);
     }
 
     protected function insert_relations() {
@@ -254,6 +266,12 @@ class IndexDB extends DB implements Insert {
         $which = [];
     }
 
+    protected function append_and_maybe_flush($which, $values) {
+        $this->$which[] = $values;
+        if (count($this->$which) > $this->nodes_per_insert) {
+            $this->{"insert_$which"}();
+        }
+    }
     protected function esc_str($str) {
         assert('is_string($str)');
         return '"'.str_replace('"', '""', $str).'"';
