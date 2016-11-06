@@ -70,17 +70,27 @@ class IndexerMock extends Indexer {
     }
 }
 
+class __IndexDB extends NullDB {
+    public $write_cached_inserts_called = false;
+    public function write_cached_inserts() {
+        $this->write_cached_inserts_called = true;
+    }
+}
+
 class DBFactoryMock extends DBFactory {
     public $build_paths = array();
     public $load_paths = array();
     public $index_db_exists = false;
+    public $index_db = null;
     public function build_index_db($path) {
         $this->build_paths[] = $path;
-        return new NullDB();
+        $this->index_db = new __IndexDB();
+        return $this->index_db;
     }
     public function load_index_db($path) {
         $this->load_paths[] = $path;
-        return new NullDB();
+        $this->index_db = new __IndexDB();
+        return $this->index_db;
     }
     public function index_db_exists($path) {
         return $this->index_db_exists; 
@@ -170,6 +180,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $expected = array($this->config->project_storage()."/$commit_hash.sqlite");
         $this->assertEquals($expected, $this->db_factory->build_paths);
         $this->assertEquals(array(), $this->db_factory->load_paths);
+        $this->assertTrue($this->db_factory->index_db->write_cached_inserts_called);
     }
 
     public function test_no_reindex_on_existing_index_db() {

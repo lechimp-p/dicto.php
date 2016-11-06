@@ -86,6 +86,7 @@ class Engine {
             $index = $this->build_index();
             $this->run_indexing($index);
             if ($this->config->analysis_store_index()) {
+                $index->second()->write_cached_inserts();
                 $index = $index->first();
             }
         }
