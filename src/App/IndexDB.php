@@ -21,6 +21,24 @@ class IndexDB extends DB implements Insert {
     protected $nodes_per_insert = 200;
 
     /**
+     * @var array
+     */
+    protected $tables =
+        [ "files" => ["id", "path", "source"]
+        , "namespaces" => ["id", "name"]
+        , "classes" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
+        , "interfaces" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
+        , "traits" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
+        , "method" => ["id", "name", "class_id", "file_id", "start_line", "end_line"]
+        , "function" => ["id", "name", "file_id", "start_line", "end_line", "namespace_id"]
+        , "globals" => ["id", "name"]
+        , "language_constructs" => ["id", "name"]
+        , "method_references" => ["id", "name", "file_id", "line", "column"]
+        , "function_references" => ["id", "name", "file_id", "line", "column"]
+        , "relations" => ["left_id", "relation", "right_id", "file_id", "line"]
+        ];
+
+    /**
      * @var array[]
      */
     protected $files = [];
