@@ -38,6 +38,21 @@ class IndexDB extends DB implements Insert {
         , "relations" => ["left_id", "relation", "right_id", "file_id", "line"]
         ];
 
+    protected $methods =
+        [ "files" => "_file"
+        , "namespaces" => "_namespace"
+        , "classes" => "_class"
+        , "interfaces" => "_interface"
+        , "traits" => "_trait"
+        , "methods" => "_method"
+        , "functions" => "_function"
+        , "globals" => "_global"
+        , "language_constructs" => "_language_construct"
+        , "method_references" => "_method_reference"
+        , "function_references" => "_function_reference"
+        , "relations" => "_relation"
+        ];
+
     /**
      * @var array[]
      */
@@ -50,6 +65,7 @@ class IndexDB extends DB implements Insert {
 
     public function __construct($connection) {
         parent::__construct($connection);
+        assert('array_keys($this->tables) == array_keys($this->methods)');
         foreach ($this->tables as $table => $_) {
             $this->caches[$table] = [];
         }
@@ -282,102 +298,46 @@ class IndexDB extends DB implements Insert {
     }
 
     protected function write_inserts_to(Graph\IndexDB $index, \Iterator $inserts) {
-        $id = -1;
         $id_map = [];
         foreach ($inserts as $insert) {
-            $id++;
-            assert('$insert["_which"] == "relations" || $insert["id"] == $id');
-            if (isset($insert["namespace_id"])) {
-                $insert["namespace_id"] = $id_map[(int)$insert["namespace_id"]];
-            }
             if (isset($insert["file_id"])) {
                 $insert["file_id"] = $id_map[(int)$insert["file_id"]];
             }
-            switch ($insert["_which"]) {
-                case "files":
-                    $id_map[$id] = $index->_file($insert["path"], $insert["source"]);
-                    break;
-                case "namespaces":
-                    $id_map[$id] = $index->_namespace($insert["name"]);
-                    break;
-                case "classes":
-                    $id_map[$id] = $index->_class
-                        ( $insert["name"]
-                        , $insert["file_id"]
-                        , (int)$insert["start_line"]
-                        , (int)$insert["end_line"]
-                        , $insert["namespace_id"]
-                        );
-                    break;
-                case "interfaces":
-                    $id_map[$id] = $index->_interface
-                        ( $insert["name"]
-                        , $insert["file_id"]
-                        , (int)$insert["start_line"]
-                        , (int)$insert["end_line"]
-                        , $insert["namespace_id"]
-                        );
-                    break;
-                case "traits":
-                    $id_map[$id] = $index->_trait
-                        ( $insert["name"]
-                        , $insert["file_id"]
-                        , (int)$insert["start_line"]
-                        , (int)$insert["end_line"]
-                        , $insert["namespace_id"]
-                        );
-                    break;
-                case "methods":
-                    $id_map[$id] = $index->_method
-                        ( $insert["name"]
-                        , $id_map[(int)$insert["class_id"]]
-                        , $insert["file_id"]
-                        , (int)$insert["start_line"]
-                        , (int)$insert["end_line"]
-                        );
-                    break;
-                case "functions":
-                    $id_map[$id] = $index->_function
-                        ( $insert["name"]
-                        , $insert["file_id"]
-                        , (int)$insert["start_line"]
-                        , (int)$insert["end_line"]
-                        , $insert["namespace_id"]
-                        );
-                    break;
-                case "globals":
-                    $id_map[$id] = $index->_global($insert["name"]);
-                    break;
-                case "language_constructs":
-                    $id_map[$id] = $index->_language_construct($insert["name"]);
-                    break;
-                case "method_references":
-                    $id_map[$id] = $index->_method_reference
-                        ( $insert["name"]
-                        , $insert["file_id"]
-                        , (int)$insert["line"]
-                        , (int)$insert["column"]
-                        );
-                    break;
-                case "function_references":
-                    $id_map[$id] = $index->_function_reference
-                        ( $insert["name"]
-                        , $insert["file_id"]
-                        , (int)$insert["line"]
-                        , (int)$insert["column"]
-                        );
-                    break;
-                case "relations":
-                    $index->_relation
-                        ( $id_map[(int)$insert["left_id"]]
-                        , $insert["relation"]
-                        , $id_map[(int)$insert["right_id"]]
-                        , $insert["file_id"]
-                        , (int)$insert["line"]
-                        );
-                    break;
-                default:
-                    throw new \LogicException("Can't insert '".$insert["_which"]."'");
+            if (isset($insert["namespace_id"])) {
+                $insert["namespace_id"] = $id_map[(int)$insert["namespace_id"]];
+            }
+            if (isset($insert["class_id"])) {
+                $insert["class_id"] = $id_map[(int)$insert["class_id"]];
+            }
+            if (isset($insert["left_id"])) {
+                $insert["left_id"] = $id_map[(int)$insert["left_id"]];
+            }
+            if (isset($insert["right_id"])) {
+                $insert["right_id"] = $id_map[(int)$insert["right_id"]];
+            }
+            if (isset($insert["start_line"])) {
+                $insert["start_line"] = (int)$insert["start_line"];
+            }
+            if (isset($insert["end_line"])) {
+                $insert["end_line"] = (int)$insert["end_line"];
+            }
+            if (isset($insert["line"])) {
+                $insert["line"] = (int)$insert["line"];
+            }
+            if (isset($insert["column"])) {
+                $insert["column"] = (int)$insert["column"];
+            }
+
+            assert('array_key_exists($insert["_which"], $this->methods)');
+            $method = $this->methods[$insert["_which"]];
+            unset($insert["_which"]);
+            if (isset($insert["id"])) {
+                $id = $insert["id"];
+                unset($insert["id"]);
+                $id_map[$id] = call_user_func_array([$index, $method], $insert);
+            }
+            else {
+                call_user_func_array([$index, $method], $insert);
             }
         }
     }
