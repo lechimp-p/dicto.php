@@ -396,365 +396,80 @@ class IndexDB extends DB implements Insert {
 
     // INIT DATABASE
 
-    public function init_file_table(Schema\Schema $schema) {
-        $file_table = $schema->createTable("files");
-        $file_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $file_table->addColumn
-            ( "path", "string"
-            , ["notnull" => true]
-            );
-        $file_table->addColumn
-            ( "source", "string"
-            , ["notnull" => true]
-            );
-        $file_table->setPrimaryKey(["id"]);
-        return $file_table;
-    }
-
-    public function init_namespace_table(Schema\Schema $schema) {
-        $namespace_table = $schema->createTable("namespaces");
-        $namespace_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $namespace_table->addColumn
-            ( "name", "string"
-            , ["notnull" => true]
-            );
-        $namespace_table->setPrimaryKey(["id"]);
-        return $namespace_table;
-    }
-
-    public function init_class_table(Schema\Schema $schema, Schema\Table $file_table, Schema\Table $namespace_table) {
-        $class_table = $schema->createTable("classes");
-        $class_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $class_table->addColumn
-            ( "name", "string"
-            , ["notnull" => true]
-            );
-        $class_table->addColumn
-            ( "file_id", "integer"
-            , ["notnull" => true]
-            );
-        $class_table->addColumn
-            ( "start_line", "integer"
-            , ["notnull" => true]
-            );
-        $class_table->addColumn
-            ( "end_line", "integer"
-            , ["notnull" => true]
-            );
-        $class_table->addColumn
-            ( "namespace_id", "integer"
-            , ["notnull" => false]
-            );
-        $class_table->setPrimaryKey(["id"]);
-        $class_table->addForeignKeyConstraint
-            ( $file_table
-            , array("file_id")
-            , array("id")
-            );
-        $class_table->addForeignKeyConstraint
-            ( $namespace_table
-            , array("namespace_id")
-            , array("id")
-            );
-        return $class_table;
-    }
-
-    public function init_interface_table(Schema\Schema $schema, Schema\Table $file_table, Schema\Table $namespace_table) {
-        $interface_table = $schema->createTable("interfaces");
-        $interface_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $interface_table->addColumn
-            ( "name", "string"
-            , ["notnull" => true]
-            );
-        $interface_table->addColumn
-            ( "file_id", "integer"
-            , ["notnull" => true]
-            );
-        $interface_table->addColumn
-            ( "start_line", "integer"
-            , ["notnull" => true]
-            );
-        $interface_table->addColumn
-            ( "end_line", "integer"
-            , ["notnull" => true]
-            );
-        $interface_table->addColumn
-            ( "namespace_id", "integer"
-            , ["notnull" => false]
-            );
-        $interface_table->setPrimaryKey(["id"]);
-        $interface_table->addForeignKeyConstraint
-            ( $file_table
-            , array("file_id")
-            , array("id")
-            );
-        $interface_table->addForeignKeyConstraint
-            ( $namespace_table
-            , array("namespace_id")
-            , array("id")
-            );
-    }
-
-    public function init_trait_table(Schema\Schema $schema, Schema\Table $file_table, Schema\Table $namespace_table) {
-        $trait_table = $schema->createTable("traits");
-        $trait_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $trait_table->addColumn
-            ( "name", "string"
-            , ["notnull" => true]
-            );
-        $trait_table->addColumn
-            ( "file_id", "integer"
-            , ["notnull" => true]
-            );
-        $trait_table->addColumn
-            ( "start_line", "integer"
-            , ["notnull" => true]
-            );
-        $trait_table->addColumn
-            ( "end_line", "integer"
-            , ["notnull" => true]
-            );
-        $trait_table->addColumn
-            ( "namespace_id", "integer"
-            , ["notnull" => false]
-            );
-        $trait_table->setPrimaryKey(["id"]);
-        $trait_table->addForeignKeyConstraint
-            ( $file_table
-            , array("file_id")
-            , array("id")
-            );
-        $trait_table->addForeignKeyConstraint
-            ( $namespace_table
-            , array("namespace_id")
-            , array("id")
-            );
-    }
-
-    public function init_method_table(Schema\Schema $schema, Schema\Table $file_table, Schema\Table $class_table) {
-        $method_table = $schema->createTable("methods");
-        $method_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $method_table->addColumn
-            ( "name", "string"
-            , ["notnull" => true]
-            );
-        $method_table->addColumn
-            ( "class_id", "integer"
-            , ["notnull" => true]
-            );
-        $method_table->addColumn
-            ( "file_id", "integer"
-            , ["notnull" => true]
-            );
-        $method_table->addColumn
-            ( "start_line", "integer"
-            , ["notnull" => true]
-            );
-        $method_table->addColumn
-            ( "end_line", "integer"
-            , ["notnull" => true]
-            );
-        $method_table->setPrimaryKey(["id"]);
-        $method_table->addForeignKeyConstraint
-            ( $class_table
-            , array("class_id")
-            , array("id")
-            );
-        $method_table->addForeignKeyConstraint
-            ( $file_table
-            , array("file_id")
-            , array("id")
-            );
-    }
-
-    public function init_function_table(Schema\Schema $schema, Schema\Table $file_table, Schema\Table $namespace_table) {
-        $function_table = $schema->createTable("functions");
-        $function_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $function_table->addColumn
-            ( "name", "string"
-            , ["notnull" => true]
-            );
-        $function_table->addColumn
-            ( "file_id", "integer"
-            , ["notnull" => true]
-            );
-        $function_table->addColumn
-            ( "start_line", "integer"
-            , ["notnull" => true]
-            );
-        $function_table->addColumn
-            ( "end_line", "integer"
-            , ["notnull" => true]
-            );
-        $function_table->addColumn
-            ( "namespace_id", "integer"
-            , ["notnull" => false]
-            );
-        $function_table->setPrimaryKey(["id"]);
-        $function_table->addForeignKeyConstraint
-            ( $file_table
-            , array("file_id")
-            , array("id")
-            );
-        $function_table->addForeignKeyConstraint
-            ( $namespace_table
-            , array("namespace_id")
-            , array("id")
-            );
-    }
-
-    public function init_global_table(Schema\Schema $schema) {
-        $global_table = $schema->createTable("globals");
-        $global_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $global_table->addColumn
-            ( "name", "string"
-            , ["notnull" => true]
-            );
-        $global_table->setPrimaryKey(["id"]);
-    }
-
-    public function init_language_construct_table(Schema\Schema $schema) {
-        $language_construct_table = $schema->createTable("language_constructs");
-        $language_construct_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $language_construct_table->addColumn
-            ( "name", "string"
-            , ["notnull" => true]
-            );
-        $language_construct_table->setPrimaryKey(["id"]);
-    }
-
-    public function init_method_reference_table(Schema\Schema $schema, Schema\Table $file_table) {
-        $method_reference_table = $schema->createTable("method_references");
-        $method_reference_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $method_reference_table->addColumn
-            ( "name", "string"
-            , ["notnull" => true]
-            );
-        $method_reference_table->addColumn
-            ( "file_id", "integer"
-            , ["notnull" => true]
-            );
-        $method_reference_table->addColumn
-            ( "line", "integer"
-            , ["notnull" => true]
-            );
-        $method_reference_table->addColumn
-            ( "column", "integer"
-            , ["notnull" => true]
-            );
-        $method_reference_table->setPrimaryKey(["id"]);
-        $method_reference_table->addForeignKeyConstraint
-            ( $file_table
-            , array("file_id")
-            , array("id")
-            );
-    }
-
-    public function init_function_reference_table(Schema\Schema $schema, Schema\Table $file_table) {
-        $function_reference_table = $schema->createTable("function_references");
-        $function_reference_table->addColumn
-            ("id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $function_reference_table->addColumn
-            ( "name", "string"
-            , ["notnull" => true]
-            );
-        $function_reference_table->addColumn
-            ( "file_id", "integer"
-            , ["notnull" => true]
-            );
-        $function_reference_table->addColumn
-            ( "line", "integer"
-            , ["notnull" => true]
-            );
-        $function_reference_table->addColumn
-            ( "column", "integer"
-            , ["notnull" => true]
-            );
-        $function_reference_table->setPrimaryKey(["id"]);
-        $function_reference_table->addForeignKeyConstraint
-            ( $file_table
-            , array("file_id")
-            , array("id")
-            );
-    }
-
-    public function init_relation_table(Schema\Schema $schema, Schema\Table $file_table) {
-        $relation_table = $schema->createTable("relations");
-        $relation_table->addColumn
-            ("left_id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $relation_table->addColumn
-            ( "relation", "string"
-            , ["notnull" => true]
-            );
-        $relation_table->addColumn
-            ("right_id", "integer"
-            , ["notnull" => true, "unsigned" => true]
-            );
-        $relation_table->addColumn
-            ( "file_id", "integer"
-            , ["notnull" => true]
-            );
-        $relation_table->addColumn
-            ( "line", "integer"
-            , ["notnull" => true]
-            );
-        $relation_table->setPrimaryKey(["left_id", "relation", "right_id"]);
-        $relation_table->addForeignKeyConstraint
-            ( $file_table
-            , array("file_id")
-            , array("id")
-            );
+    public function init_table($name, Schema\Schema $schema, Schema\Table $file_table = null, Schema\Table $namespace_table = null) {
+        assert('array_key_exists($name, $this->tables)');
+        $table = $schema->createTable($name);
+        foreach ($this->tables[$name] as $field) {
+            switch ($field) {
+                case "id":
+                case "file_id":
+                case "class_id":
+                case "left_id":
+                case "right_id":
+                case "start_line":
+                case "end_line":
+                case "line":
+                case "column":
+                    $table->addColumn
+                        ($field, "integer"
+                        , ["notnull" => true, "unsigned" => true]
+                        );
+                    break;
+                case "namespace_id":
+                    $table->addColumn
+                        ($field, "integer"
+                        , ["notnull" => false, "unsigned" => true]
+                        );
+                   break;
+                case "path":
+                case "source":
+                case "name":
+                case "relation":
+                    $table->addColumn
+                        ($field, "integer"
+                        , ["notnull" => true, "unsigned" => true]
+                        );
+                    break;
+                default:
+                    throw new \LogicException("Unknown field '$field'");
+            }
+            if ($field == "id") {
+                $table->setPrimaryKey(["id"]);
+            }
+            if ($field == "file_id") {
+                $table->addForeignKeyConstraint
+                    ( $file_table
+                    , array("file_id")
+                    , array("id")
+                    );
+            }
+            if ($field == "namespace_id") {
+                $table->addForeignKeyConstraint
+                    ( $namespace_table
+                    , array("namespace_id")
+                    , array("id")
+                    );
+            }
+        }
+        return $table;
     }
 
     public function init_database_schema() {
         $schema = new Schema\Schema();
 
-        $file_table = $this->init_file_table($schema);
-        $namespace_table = $this->init_namespace_table($schema);
-        $class_table = $this->init_class_table($schema, $file_table, $namespace_table);
-        $this->init_interface_table($schema, $file_table, $namespace_table);
-        $this->init_trait_table($schema, $file_table, $namespace_table);
-        $this->init_method_table($schema, $file_table, $class_table);
-        $this->init_function_table($schema, $file_table, $namespace_table);
-        $this->init_global_table($schema);
-        $this->init_language_construct_table($schema);
-        $this->init_method_reference_table($schema, $file_table);
-        $this->init_function_reference_table($schema, $file_table);
-        $this->init_relation_table($schema, $file_table);
+        $file_table = $this->init_table("files", $schema);
+        $namespace_table = $this->init_table("namespaces", $schema);
+        $this->init_table("classes", $schema, $file_table, $namespace_table);
+        $this->init_table("interfaces", $schema, $file_table, $namespace_table);
+        $this->init_table("traits", $schema, $file_table, $namespace_table);
+        $this->init_table("methods", $schema, $file_table);
+        $this->init_table("functions", $schema, $file_table, $namespace_table);
+        $this->init_table("globals", $schema);
+        $this->init_table("language_constructs", $schema);
+        $this->init_table("method_references", $schema, $file_table);
+        $this->init_table("function_references", $schema, $file_table);
+        $relation_table = $this->init_table("relations", $schema, $file_table);
+        $relation_table->setPrimaryKey(["left_id", "relation", "right_id"]);
 
         $sync = new SingleDatabaseSynchronizer($this->connection);
         $sync->createSchema($schema);
