@@ -155,11 +155,12 @@ class IndexDBReader {
             ->select($this->tables[$table][1])
             ->from($table)
             ->execute();
-        return (function() use ($query_result) {
+        $i = function() use ($query_result) {
             while ($res = $query_result->fetch()) {
                 yield $res;
             }
-        })();
+        };
+        return $i();
     }
 
     /**
