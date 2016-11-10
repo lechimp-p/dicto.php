@@ -267,19 +267,22 @@ class IndexDB extends DB implements Insert {
                 $expected_id++;
             }
 
-            $next_res = $results[$i][2]->fetch();
-            if (!$next_res) {
+            $rs = $results[$i][2];
+            if ($rs->valid()) {
+                $results[$i][1] = $rs->current();
+                $rs->next();
+            }
+            else {
                 $count--;
                 unset($results[$i]);
                 $results = array_values($results);
-                continue;
             }
-            $results[$i][1] = $next_res;
         }
 
-        $relations = $this->select_all_from("relations");
-        while($res = $relations->fetch()) {
-            yield "relations" => $res;
+        $rs = $this->select_all_from("relations");
+        while ($rs->valid()) {
+            yield "relations" => $rs->current();
+            $rs->next();
         }
     }
 
@@ -299,11 +302,19 @@ class IndexDB extends DB implements Insert {
         return $results;
     }
 
+    /**
+     * @return  \Iterator
+     */
     protected function select_all_from($table) {
-        return $this->builder()
+        $query_result = $this->builder()
             ->select($this->tables[$table][1])
             ->from($table)
             ->execute();
+        return (function() use ($query_result) {
+            while ($res = $query_result->fetch()) {
+                yield $res;
+            }
+        })();
     }
 
     protected function write_inserts_to(Graph\IndexDB $index, \Iterator $inserts) {
