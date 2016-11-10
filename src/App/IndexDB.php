@@ -253,137 +253,19 @@ class IndexDB extends DB implements Insert {
      */
     public function to_graph_index() {
         $index = $this->build_graph_index_db();
-        $id_map = [null => null];
-        $inserts = $this->get_inserts($id_map);
-        $this->write_inserts_to($id_map, $index, $inserts);
+        $reader = new IndexDBReader
+            ( $this->tables
+            , $this->id_fields
+            , $this->int_fields
+            , function () { return $this->builder(); }
+            , $index
+            );
+        $reader->run();
         return $index;
     }
 
     protected function build_graph_index_db() {
         return new Graph\IndexDB();
-    }
-
-    /**
-     * Builds a list of inserts ordered by the id.
-     *
-     * @param   array   &$id_map     to resolve ids
-     * @return  \Iterator   $table => $values
-     */
-    protected function get_inserts(array &$id_map) {
-        $results = $this->build_results_with_id();
-
-        $count = count($results);
-        $i = 0;
-        $expected_id = 0;
-        // TODO: This will loop forever if there are (unexpected) holes
-        // in the sequence of ids.
-        while ($count > 0) {
-            if ($i >= $count) {
-                $i = 0;
-            }
-
-            $current_res = $results[$i][1];
-            if ($current_res !== null) {
-                if ($current_res["id"] != $expected_id) {
-                    $i++;
-                    continue;
-                }
-
-                yield $results[$i][0] => $this->transform_results($id_map, $current_res);
-                $results[$i][1] = null;
-                $expected_id++;
-            }
-
-            $rs = $results[$i][2];
-            if ($rs->valid()) {
-                $results[$i][1] = $rs->current();
-                $rs->next();
-            }
-            else {
-                $count--;
-                unset($results[$i]);
-                $results = array_values($results);
-            }
-        }
-
-        $rs = $this->select_all_from("relations");
-        while ($rs->valid()) {
-            yield "relations" => $this->transform_results($id_map, $rs->current());
-            $rs->next();
-        }
-    }
-
-    /**
-     * Initialize all tables that contain an id with their results.
-     *
-     * @return  array[] containing [$table_name, null, $results]
-     */
-    protected function build_results_with_id() {
-        $results = [];
-        foreach ($this->tables as $key => $_) {
-            if ($key == "relations") {
-                continue;
-            }
-            $results[] = [$key, null, $this->select_all_from($key)];
-        }
-        return $results;
-    }
-
-    /**
-     * @param   string  $table
-     * @return  \Iterator
-     */
-    protected function select_all_from($table) {
-        $query_result = $this->builder()
-            ->select($this->tables[$table][1])
-            ->from($table)
-            ->execute();
-        return (function() use ($query_result) {
-            while ($res = $query_result->fetch()) {
-                yield $res;
-            }
-        })();
-    }
-
-    /**
-     * Transforms results as retreived from sql to their appropriate internal
-     * representation.
-     *
-     * @param   array   &$id_map     to resolve ids
-     * @param   array   $results    from database
-     * @return  array
-     */
-    public function transform_results(array &$id_map, array $results) {
-        foreach (array_keys($results) as $field) {
-            if (isset($this->id_fields[$field])) {
-                $results[$field] = $id_map[$results[$field]];
-            }
-            else if (isset($this->int_fields[$field])) {
-                $results[$field] = (int)$results[$field];
-            }
-        }
-        return $results;
-    }
-
-    /**
-     * @param   array $id_map   &$id_map    to set ids
-     * @param   Graph\IndexDB   $index
-     * @param   \Iterator       $inserts
-     * @return  null
-     */
-    protected function write_inserts_to(array &$id_map, Graph\IndexDB $index, \Iterator $inserts) {
-        foreach ($inserts as $table => $insert) {
-            assert('array_key_exists($table, $this->tables)');
-            $method = $this->tables[$table][0];
-            if (isset($insert["id"])) {
-                $id = $insert["id"];
-                unset($insert["id"]);
-                $id_map[$id] = call_user_func_array([$index, $method], $insert);
-            }
-            else {
-                call_user_func_array([$index, $method], $insert);
-            }
-        }
     }
 
     // INIT DATABASE
