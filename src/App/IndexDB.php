@@ -51,6 +51,31 @@ class IndexDB extends DB implements Insert {
         ];
 
     /**
+     * Lists of fields that contain an id.
+     *
+     * @var array<string,int>
+     */
+    protected $id_fields =
+        [ "file_id" => 0
+        , "namespace_id" => 0
+        , "class_id" => 0
+        , "left_id" => 0
+        , "right_id" => 0
+        ];
+
+    /**
+     * List of all fields that contain an integer.
+     *
+     * @var array<string,0>
+     */
+    protected $int_fields =
+        [ "start_line" => 0
+        , "end_line" => 0
+        , "line" => 0
+        , "column" => 0
+        ];
+
+    /**
      * @var array[]
      */
     protected $caches = [];
@@ -317,36 +342,29 @@ class IndexDB extends DB implements Insert {
         })();
     }
 
+    /**
+     * Transforms results as retreived from sql to their appropriate internal
+     * representation.
+     *
+     * @param   array   $id_map      to resolve ids
+     * @param   array   &$results    from database
+     * @return  null
+     */
+    public function transform_results(array $id_map, array &$results) {
+        foreach (array_keys($results) as $field) {
+            if (isset($this->id_fields[$field])) {
+                $results[$field] = $id_map[$results[$field]];
+            }
+            else if (isset($this->int_fields[$field])) {
+                $results[$field] = (int)$results[$field];
+            }
+        }
+    }
+
     protected function write_inserts_to(Graph\IndexDB $index, \Iterator $inserts) {
-        $id_map = [];
+        $id_map = [null => null];
         foreach ($inserts as $table => $insert) {
-            if (isset($insert["file_id"])) {
-                $insert["file_id"] = $id_map[(int)$insert["file_id"]];
-            }
-            if (isset($insert["namespace_id"])) {
-                $insert["namespace_id"] = $id_map[(int)$insert["namespace_id"]];
-            }
-            if (isset($insert["class_id"])) {
-                $insert["class_id"] = $id_map[(int)$insert["class_id"]];
-            }
-            if (isset($insert["left_id"])) {
-                $insert["left_id"] = $id_map[(int)$insert["left_id"]];
-            }
-            if (isset($insert["right_id"])) {
-                $insert["right_id"] = $id_map[(int)$insert["right_id"]];
-            }
-            if (isset($insert["start_line"])) {
-                $insert["start_line"] = (int)$insert["start_line"];
-            }
-            if (isset($insert["end_line"])) {
-                $insert["end_line"] = (int)$insert["end_line"];
-            }
-            if (isset($insert["line"])) {
-                $insert["line"] = (int)$insert["line"];
-            }
-            if (isset($insert["column"])) {
-                $insert["column"] = (int)$insert["column"];
-            }
+            $this->transform_results($id_map, $insert);
 
             assert('array_key_exists($table, $this->tables)');
             $method = $this->tables[$table][0];
