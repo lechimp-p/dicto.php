@@ -243,13 +243,7 @@ class IndexDB extends DB implements Insert {
      * @return  \Iterator   $table => $values
      */
     protected function get_inserts() {
-        $results = [];
-        foreach ($this->tables as $key => $_) {
-            if ($key == "relations") {
-                continue;
-            }
-            $results[] = [$key, null, $this->select_all_from($key)];
-        }
+        $results = $this->build_results_with_id(); 
 
         $count = count($results);
         $i = 0;
@@ -287,6 +281,22 @@ class IndexDB extends DB implements Insert {
         while($res = $relations->fetch()) {
             yield "relations" => $res;
         }
+    }
+
+    /**
+     * Initialize all tables that contain an id with their results.
+     *
+     * @return array[]  containing [$table_name, null, $results]
+     */
+    protected function build_results_with_id() {
+        $results = [];
+        foreach ($this->tables as $key => $_) {
+            if ($key == "relations") {
+                continue;
+            }
+            $results[] = [$key, null, $this->select_all_from($key)];
+        }
+        return $results;
     }
 
     protected function select_all_from($table) {
