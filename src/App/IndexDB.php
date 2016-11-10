@@ -237,6 +237,11 @@ class IndexDB extends DB implements Insert {
         return new Graph\IndexDB();
     }
 
+    /**
+     * Builds a list of inserts ordered by the id.
+     *
+     * @return  \Iterator   $table => $values
+     */
     protected function get_inserts() {
         $results = [];
         foreach ($this->tables as $key => $_) {
@@ -263,8 +268,7 @@ class IndexDB extends DB implements Insert {
                     continue;
                 }
 
-                $current_res["_which"] = $results[$i][0];
-                yield $current_res;
+                yield $results[$i][0] => $current_res;
                 $results[$i][1] = null;
                 $expected_id++;
             }
@@ -281,8 +285,7 @@ class IndexDB extends DB implements Insert {
 
         $relations = $this->select_all_from("relations");
         while($res = $relations->fetch()) {
-            $res["_which"] = "relations";
-            yield $res;
+            yield "relations" => $res;
         }
     }
 
@@ -295,7 +298,7 @@ class IndexDB extends DB implements Insert {
 
     protected function write_inserts_to(Graph\IndexDB $index, \Iterator $inserts) {
         $id_map = [];
-        foreach ($inserts as $insert) {
+        foreach ($inserts as $table => $insert) {
             if (isset($insert["file_id"])) {
                 $insert["file_id"] = $id_map[(int)$insert["file_id"]];
             }
@@ -324,9 +327,8 @@ class IndexDB extends DB implements Insert {
                 $insert["column"] = (int)$insert["column"];
             }
 
-            assert('array_key_exists($insert["_which"], $this->tables)');
-            $method = $this->tables[$insert["_which"]][0];
-            unset($insert["_which"]);
+            assert('array_key_exists($table, $this->tables)');
+            $method = $this->tables[$table][0];
             if (isset($insert["id"])) {
                 $id = $insert["id"];
                 unset($insert["id"]);
