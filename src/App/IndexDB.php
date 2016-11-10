@@ -253,8 +253,9 @@ class IndexDB extends DB implements Insert {
      */
     public function to_graph_index() {
         $index = $this->build_graph_index_db();
-        $inserts = $this->get_inserts();
-        $this->write_inserts_to($index, $inserts);
+        $id_map = [null => null];
+        $inserts = $this->get_inserts($id_map);
+        $this->write_inserts_to($id_map, $index, $inserts);
         return $index;
     }
 
@@ -265,10 +266,11 @@ class IndexDB extends DB implements Insert {
     /**
      * Builds a list of inserts ordered by the id.
      *
+     * @param   array   &$id_map     to resolve ids
      * @return  \Iterator   $table => $values
      */
-    protected function get_inserts() {
-        $results = $this->build_results_with_id(); 
+    protected function get_inserts(array &$id_map) {
+        $results = $this->build_results_with_id();
 
         $count = count($results);
         $i = 0;
@@ -287,7 +289,7 @@ class IndexDB extends DB implements Insert {
                     continue;
                 }
 
-                yield $results[$i][0] => $current_res;
+                yield $results[$i][0] => $this->transform_results($id_map, $current_res);
                 $results[$i][1] = null;
                 $expected_id++;
             }
@@ -306,7 +308,7 @@ class IndexDB extends DB implements Insert {
 
         $rs = $this->select_all_from("relations");
         while ($rs->valid()) {
-            yield "relations" => $rs->current();
+            yield "relations" => $this->transform_results($id_map, $rs->current());
             $rs->next();
         }
     }
@@ -314,7 +316,7 @@ class IndexDB extends DB implements Insert {
     /**
      * Initialize all tables that contain an id with their results.
      *
-     * @return array[]  containing [$table_name, null, $results]
+     * @return  array[] containing [$table_name, null, $results]
      */
     protected function build_results_with_id() {
         $results = [];
@@ -328,6 +330,7 @@ class IndexDB extends DB implements Insert {
     }
 
     /**
+     * @param   string  $table
      * @return  \Iterator
      */
     protected function select_all_from($table) {
@@ -346,11 +349,11 @@ class IndexDB extends DB implements Insert {
      * Transforms results as retreived from sql to their appropriate internal
      * representation.
      *
-     * @param   array   $id_map      to resolve ids
-     * @param   array   &$results    from database
-     * @return  null
+     * @param   array   &$id_map     to resolve ids
+     * @param   array   $results    from database
+     * @return  array
      */
-    public function transform_results(array $id_map, array &$results) {
+    public function transform_results(array &$id_map, array $results) {
         foreach (array_keys($results) as $field) {
             if (isset($this->id_fields[$field])) {
                 $results[$field] = $id_map[$results[$field]];
@@ -359,13 +362,17 @@ class IndexDB extends DB implements Insert {
                 $results[$field] = (int)$results[$field];
             }
         }
+        return $results;
     }
 
-    protected function write_inserts_to(Graph\IndexDB $index, \Iterator $inserts) {
-        $id_map = [null => null];
+    /**
+     * @param   array $id_map   &$id_map    to set ids
+     * @param   Graph\IndexDB   $index
+     * @param   \Iterator       $inserts
+     * @return  null
+     */
+    protected function write_inserts_to(array &$id_map, Graph\IndexDB $index, \Iterator $inserts) {
         foreach ($inserts as $table => $insert) {
-            $this->transform_results($id_map, $insert);
-
             assert('array_key_exists($table, $this->tables)');
             $method = $this->tables[$table][0];
             if (isset($insert["id"])) {
