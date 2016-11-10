@@ -105,15 +105,15 @@ class IndexDBReader {
                     continue;
                 }
 
-                yield $results[$i][0] => $this->transform_results($current_res);
+                $this->transform_results($current_res);
+                yield $results[$i][0] => $current_res;
                 $results[$i][1] = null;
                 $expected_id++;
             }
 
-            $rs = $results[$i][2];
-            if ($rs->valid()) {
-                $results[$i][1] = $rs->current();
-                $rs->next();
+            $res = $results[$i][2]->fetch();
+            if ($res) {
+                $results[$i][1] = $res;
             }
             else {
                 $count--;
@@ -123,9 +123,9 @@ class IndexDBReader {
         }
 
         $rs = $this->select_all_from("relations");
-        while ($rs->valid()) {
-            yield "relations" => $this->transform_results($rs->current());
-            $rs->next();
+        while ($res = $rs->fetch()) {
+            $this->transform_results($res);
+            yield "relations" => $res;
         }
     }
 
@@ -151,26 +151,22 @@ class IndexDBReader {
      */
     protected function select_all_from($table) {
         $get_query_builder = $this->get_query_builder;
-        $query_result = $get_query_builder()
+        return $get_query_builder()
             ->select($this->tables[$table][1])
             ->from($table)
             ->execute();
-        $i = function() use ($query_result) {
-            while ($res = $query_result->fetch()) {
-                yield $res;
-            }
-        };
-        return $i();
     }
 
     /**
      * Transforms results as retreived from sql to their appropriate internal
      * representation.
      *
-     * @param   array   $results    from database
+     * TODO: Unrolling this loop might make things faster.
+     *
+     * @param   array   &$results    from database
      * @return  array
      */
-    public function transform_results(array $results) {
+    public function transform_results(array &$results) {
         foreach (array_keys($results) as $field) {
             if (isset($this->id_fields[$field])) {
                 $results[$field] = $this->id_map[$results[$field]];
@@ -179,7 +175,6 @@ class IndexDBReader {
                 $results[$field] = (int)$results[$field];
             }
         }
-        return $results;
     }
 
     /**
