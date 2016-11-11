@@ -86,7 +86,15 @@ class Engine {
             $index = $this->build_index();
             $this->run_indexing($index);
             if ($this->config->analysis_store_index()) {
-                $index->second()->write_cached_inserts();
+                $index_db = $index->second();
+                if ($index_db instanceof IndexDB) {
+                    $index_db->write_cached_inserts();
+                }
+                else {
+                    throw new \LogicException(
+                        "Expected index_db to be of type App\IndexDB, but it is '".
+                        get_class($index_db)."'");
+                }
                 $index = $index->first();
             }
         }
@@ -95,7 +103,14 @@ class Engine {
             $this->log->notice("Reading index from database '$index_db_path'...");
             $index = $this->read_index_from($index_db);
         }
-        $this->run_analysis($index);
+        if ($index instanceof Graph\IndexDB) {
+            $this->run_analysis($index);
+        }
+        else {
+            throw new \LogicException(
+                "Expected index to be of type Graph\IndexDB, but it is '".
+                get_class($index)."'");
+        }
     }
 
     protected function index_database_path() {
@@ -140,18 +155,24 @@ class Engine {
         return new Graph\IndexDB;
     }
 
-    protected function write_index_to(Graph\IndexDB $index, IndexDB $db) {
-        $db->write_index($index);
-    }
-
+    /**
+     * @return  Graph\IndexDB
+     */
     protected function read_index_from(IndexDB $db) {
-        $res = null;
+        $index = null;
         $this->with_time_measurement
             ( function ($s) { return "Loading the index took $s seconds."; }
-            , function () use ($db, &$res) {
-                $res = $db->to_graph_index();
+            , function () use ($db, &$index) {
+                $index = $db->to_graph_index();
             });
-        return $res;
+        if ($index instanceof Graph\IndexDB) {
+            return $index;
+        }
+        else {
+            throw new \LogicException(
+                "Expected index to be of type Graph\IndexDB, but it is '".
+                get_class($index)."'");
+        }
     }
 
     protected function with_time_measurement(\Closure $message, \Closure $what) {
