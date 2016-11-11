@@ -165,7 +165,7 @@ There are also some general features missing:
 From an implementation perspective I consider the codebase solid, with space
 for improvements:
 
-* The performance is a lot better after i did many optimizations, but there
+* The performance is a lot better after I did many optimizations, but there
   are still improvements to be made. When the system can process more information,
   it will take longer time to run. The analysis is performed on an in memory
   representation of the dependency graph. By moving analysis to SQL one could
