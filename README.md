@@ -41,6 +41,7 @@ It's not completely finished, but
   the analysis.
 * See how rules are defined in examples/ilias.rules. The set of available rules
   and variables is not completed and things might not work as expected, though.
+* If you are lazy, have a at some results [here](https://gist.github.com/lechimp-p/1e62ce404adc34491db53b78eb69962b).
 
 ## How To
 
