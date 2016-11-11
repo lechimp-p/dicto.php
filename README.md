@@ -71,7 +71,7 @@ where `$SOME_ENTITIES` is one of the following forms (with nested `$ENTITIES`s):
 * *`Function`*: Every function in your codebase.
 * *`Global`*: Every function in your codebase.
 * *`Exit`*: The build in exit function.
-* *`Die`*: The build in exit function.
+* *`Die`*: The build in die function.
 * *`ErrorSuppressor`*: The build in exit function.
 * *`Eval`*: The build in eval function.
 * *`$ENTITIES with name: "$REGEXP"`*: Any of the given `$ENTITIES` where the name
@@ -100,12 +100,12 @@ Currently there are three different statements that could be used to express
 rules on on the codebase:
 
 * *`$ENTITIES cannot depend on $OTHER_ENTITIES`*: If the defined $ENTITIES either
-  call the $OTHER_ENTITIES or read or write to it (if it is a global) that is
+  call the `$OTHER_ENTITIES` or read or write to it (if it is a global) that is
   a violation.
 * *`$ENTITIES must invoke $OTHER_ENTITIES`*: If the $ENTITIES do not call the
-  $OTHER_ENTITIES, that is a violation.
-* *`only $ENTITIES can contain text "$REGEXP"`*: If any other than $ENTITIES
-  contain a text that matches the given $REGEXP (according to `preg_match`,
+  `$OTHER_ENTITIES`, that is a violation.
+* *`only $ENTITIES can contain text "$REGEXP"`*: If any other than `$ENTITIES`
+  contain a text that matches the given `$REGEXP` (according to `preg_match`,
   no regexp delimiters), that is a violation.
 
 
