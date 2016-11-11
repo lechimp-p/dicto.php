@@ -13,9 +13,9 @@ a LMS (Learning Managment System) which recently had it's 18th birthday. In an
 effort to refactor and streamline this old code base, some other ILIAS devs and
 me introduced [dicto](http://scg.unibe.ch/dicto) to the ILIAS development process.
 
-dicto is a tool that allows developers to express rules in a natural-like language
-and then finds violations of these rules on a code base. It is written in Smalltalk
-and utilizes off-the-shelf tools for the analysis work.
+dicto is a tool that allows developers to express architectural rules in a
+natural-like language and then finds violations of these rules on a code base.
+It is written in Smalltalk and utilizes off-the-shelf tools for the analysis work.
 
 When working with the tool in the community it became appearant to me that a real
 adoption of the tool is hindered by the fact that it is written in Smalltalk.
