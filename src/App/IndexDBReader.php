@@ -46,6 +46,11 @@ class IndexDBReader {
     protected $other;
 
     /**
+     * @var array<int,mixed>|null
+     */
+    protected $id_map;
+
+    /**
      * @var bool
      */
     protected $already_run;
@@ -166,7 +171,7 @@ class IndexDBReader {
      * @param   array   &$results    from database
      * @return  array
      */
-    public function transform_results(array &$results) {
+    protected function transform_results(array &$results) {
         foreach (array_keys($results) as $field) {
             if (isset($this->id_fields[$field])) {
                 $results[$field] = $this->id_map[$results[$field]];
