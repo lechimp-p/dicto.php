@@ -311,18 +311,30 @@ class IndexDB extends DB implements Insert {
                 $table->setPrimaryKey(["id"]);
             }
             if ($field == "file_id") {
-                $table->addForeignKeyConstraint
-                    ( $file_table
-                    , array("file_id")
-                    , array("id")
-                    );
+                if ($file_table instanceof Schema\Table) {
+                    $table->addForeignKeyConstraint
+                        ( $file_table
+                        , array("file_id")
+                        , array("id")
+                        );
+                }
+                else {
+                    throw new \LogicException(
+                        "Expected \$file_table to be a schema when file_id is used.");
+                }
             }
             if ($field == "namespace_id") {
-                $table->addForeignKeyConstraint
-                    ( $namespace_table
-                    , array("namespace_id")
-                    , array("id")
-                    );
+                if ($namespace_table instanceof Schema\Table) {
+                    $table->addForeignKeyConstraint
+                        ( $namespace_table
+                        , array("namespace_id")
+                        , array("id")
+                        );
+                }
+                else {
+                    throw new \LogicException(
+                        "Expected \$namespace_table to be a schema when namespace_id is used.");
+                }
             }
         }
         return $table;
