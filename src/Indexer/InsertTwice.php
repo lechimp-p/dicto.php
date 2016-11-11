@@ -151,8 +151,7 @@ class InsertTwice implements Insert {
      * @inheritdocs
      */
     public function _relation($left_entity, $relation, $right_entity, $file, $line) {
-        $id1 = $this->insert1->_relation($left_entity[0], $relation, $right_entity[0], $file[0], $line);
-        $id2 = $this->insert2->_relation($left_entity[1], $relation, $right_entity[1], $file[1], $line);
-        return [$id1, $id2];
+        $this->insert1->_relation($left_entity[0], $relation, $right_entity[0], $file[0], $line);
+        $this->insert2->_relation($left_entity[1], $relation, $right_entity[1], $file[1], $line);
     }
 }
