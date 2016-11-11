@@ -48,7 +48,12 @@ class IndexDBReader {
     /**
      * @var array<int,mixed>|null
      */
-    protected $id_map;
+    protected $id_map = null;
+
+    /**
+     * @var array|null
+     */
+    protected $results = null;
 
     /**
      * @var bool
@@ -79,6 +84,7 @@ class IndexDBReader {
 
         $this->id_map = [null => null];
 
+        $this->results = $this->build_results_with_id();
         $inserts = $this->get_inserts();
         $this->write_inserts($inserts);
 
@@ -91,9 +97,7 @@ class IndexDBReader {
      * @return  \Iterator   $table => $values
      */
     protected function get_inserts() {
-        $results = $this->build_results_with_id();
-
-        $count = count($results);
+        $count = count($this->results);
         $i = 0;
         $expected_id = 0;
         // TODO: This will loop forever if there are (unexpected) holes
@@ -103,7 +107,7 @@ class IndexDBReader {
                 $i = 0;
             }
 
-            $current_res = $results[$i][1];
+            $current_res = $this->results[$i][1];
             if ($current_res !== null) {
                 if ($current_res["id"] != $expected_id) {
                     $i++;
@@ -111,19 +115,19 @@ class IndexDBReader {
                 }
 
                 $this->transform_results($current_res);
-                yield $results[$i][0] => $current_res;
-                $results[$i][1] = null;
+                yield $this->results[$i][0] => $current_res;
+                $this->results[$i][1] = null;
                 $expected_id++;
             }
 
-            $res = $results[$i][2]->fetch();
+            $res = $this->results[$i][2]->fetch();
             if ($res) {
-                $results[$i][1] = $res;
+                $this->results[$i][1] = $res;
             }
             else {
                 $count--;
-                unset($results[$i]);
-                $results = array_values($results);
+                unset($this->results[$i]);
+                $this->results = array_values($this->results);
             }
         }
 
