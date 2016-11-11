@@ -109,7 +109,34 @@ rules on on the codebase:
 
 ### Config
 
-TBD
+The config is read from one or more yaml files, where fields in later files
+overwrite fields from the files before if set. This should make it possible
+to define add a file for a given project to it's repo with the possibility
+for individual developers to overwrite it locally.
+
+Fields marked with (\*) are mandatory. Directories can be given with a
+leading `./` to make them relative to the position of the first given config
+file. Regexps are given in a form compatible to `preg_match` but without
+delimiters.
+
+The following fields can be used in the config:
+
+* **project.root**(\*): The path to the source code of the project.
+* **project.storage**(\*): A directory where temporary files and results of the
+  analysis are stored.
+* **project.rules**(\*): Path to the rules for the project.
+* **analysis.ignore**: A list of regexps, where files are ignored if their path
+  matches.
+* **analysis.store_index**: A boolean to determine, if the index is stored in
+  a database. If set, a new database is created in `project.storage` for every
+  commit hash and existing databases are used when analysing the same commit
+  again. Defaults to false, i.e. dicto reindexes on every run.
+* **analysis.report_stdout**: A boolean telling whether the results of the
+  analysis are written to stdout. Defaults to true.
+* **analysis.report_database**: A boolean telling whether the results of the
+  analysis shoult be written to a database containing results from different
+  runs. This could be used to generate some timelines over the results of the
+  analysis. This is not very well tested and thus defaults to false.
 
 ## Shortcommings and Outlook
 
@@ -132,17 +159,25 @@ There are also some general features missing:
   is say `cannot have name` or `depending on`. In general, every rule basically
   is a statement over the existence of entities with some properties.
 * There are minimal attempts to use information from git, but information of
-  git could be used a lot better to spare time reindexing unchanged files.
+  git could be used a lot better to not reindex unchanged files and save time.
+* Error reporting is not very user friendly atm.
 
-From an implementation perspective I consider the codebase solid, with with
-space for improvements:
+From an implementation perspective I consider the codebase solid, with space
+for improvements:
 
 * The performance is a lot better after i did many optimizations, but there
   are still improvements to be made. When the system can process more information,
   it will take longer time to run. The analysis is performed on an in memory
   representation of the dependency graph. By moving analysis to SQL one could
   use a multi client database to have parallel processing and faster analysis.
+* The whole `App` part could benefit from the restructuring to be better configurable.
 
 ## Contributions
 
-TBD
+At the moment I am interested in general and specific feedback. Feel free to
+report issues, although I can't promise to fix them in a timely manner or at all.
+As outlined in [Shortcommings and Outlook](#shortcommings-and-outlook) the
+current structure will see some changes most probably. Thus I am not ready to
+accept PRs in general. If you want to contribute code, please contact me before
+putting any effort into coding stuff.
+
