@@ -62,27 +62,27 @@ MyNewVariable = $SOME_ENTITIES
 
 where `$SOME_ENTITIES` is one of the following forms (with nested `$ENTITIES`s):
 
-* `File`: Every class in your codebase.
-* `Namespace`: Every namespace in your codebase.
-* `Class`: Every class in your codebase.
-* `Interface`: Every interface in your codebase.
-* `Trait`: Every trait in your codebase.
-* `Method`: Every method in your codebase.
-* `Function`: Every function in your codebase.
-* `Global`: Every function in your codebase.
-* `Exit`: The build in exit function.
-* `Die`: The build in exit function.
-* `ErrorSuppressor`: The build in exit function.
-* `Eval`: The build in eval function.
-* `$ENTITIES with name: "$REGEXP"`: Any of the given $ENTITIES where the name 
-  matches the given $REGEXP. The $regexp is according to `preg_match` but without
+* *`File`*: Every class in your codebase.
+* *`Namespace`*: Every namespace in your codebase.
+* *`Class`*: Every class in your codebase.
+* *`Interface`*: Every interface in your codebase.
+* *`Trait`*: Every trait in your codebase.
+* *`Method`*: Every method in your codebase.
+* *`Function`*: Every function in your codebase.
+* *`Global`*: Every function in your codebase.
+* *`Exit`*: The build in exit function.
+* *`Die`*: The build in exit function.
+* *`ErrorSuppressor`*: The build in exit function.
+* *`Eval`*: The build in eval function.
+* *`$ENTITIES with name: "$REGEXP"`*: Any of the given `$ENTITIES` where the name
+  matches the given `$REGEXP`. The `$REGEXP` is according to `preg_match` but without
   regexp delimiters.
-* `$ENTITIES in: $OTHER_ENTITIES`: Any of the given $ENTITIES that is somehow
-  contained in $OTHER_ENTITIES.
-* `{$ENTITIES, $OTHER_ENTITIES}`: All entities that are either $ENTITIES or
-  $OTHER_ENTITIES.
-* `$ENTITIES except $OTHER_ENTITIES`: All $ENTITIES that are not at the same
-  time $OTHER_ENTITIES.
+* *`$ENTITIES in: $OTHER_ENTITIES`*: Any of the given `$ENTITIES` that is somehow
+  contained in `$OTHER_ENTITIES`.
+* *`{$ENTITIES, $OTHER_ENTITIES}`*: All entities that are either `$ENTITIES` or
+  `$OTHER_ENTITIES`.
+* *`$ENTITIES except $OTHER_ENTITIES`*: All `$ENTITIES` that are not at the same
+  time `$OTHER_ENTITIES`.
 
 #### Rules
 
@@ -99,12 +99,12 @@ as used when defining variables.
 Currently there are three different statements that could be used to express
 rules on on the codebase:
 
-* `$ENTITIES cannot depend on $OTHER_ENTITIES`: If the defined $ENTITIES either
+* *`$ENTITIES cannot depend on $OTHER_ENTITIES`*: If the defined $ENTITIES either
   call the $OTHER_ENTITIES or read or write to it (if it is a global) that is
   a violation.
-* `$ENTITIES must invoke $OTHER_ENTITIES`: If the $ENTITIES do not call the
+* *`$ENTITIES must invoke $OTHER_ENTITIES`*: If the $ENTITIES do not call the
   $OTHER_ENTITIES, that is a violation.
-* `only $ENTITIES can contain text "$REGEXP"`: If any other than $ENTITIES
+* *`only $ENTITIES can contain text "$REGEXP"`*: If any other than $ENTITIES
   contain a text that matches the given $REGEXP (according to `preg_match`,
   no regexp delimiters), that is a violation.
 
