@@ -86,15 +86,8 @@ class Engine {
             $index = $this->build_index();
             $this->run_indexing($index);
             if ($this->config->analysis_store_index()) {
-                $index_db = $index->second();
-                if ($index_db instanceof IndexDB) {
-                    $index_db->write_cached_inserts();
-                }
-                else {
-                    throw new \LogicException(
-                        "Expected index_db to be of type App\IndexDB, but it is '".
-                        get_class($index_db)."'");
-                }
+                $index_db = $this->force_app_index_db($index->second());
+                $index_db->write_cached_inserts();
                 $index = $index->first();
             }
         }
@@ -103,14 +96,7 @@ class Engine {
             $this->log->notice("Reading index from database '$index_db_path'...");
             $index = $this->read_index_from($index_db);
         }
-        if ($index instanceof Graph\IndexDB) {
-            $this->run_analysis($index);
-        }
-        else {
-            throw new \LogicException(
-                "Expected index to be of type Graph\IndexDB, but it is '".
-                get_class($index)."'");
-        }
+        $this->run_analysis($this->force_graph_index_db($index));
     }
 
     protected function index_database_path() {
@@ -165,6 +151,21 @@ class Engine {
             , function () use ($db, &$index) {
                 $index = $db->to_graph_index();
             });
+        return $this->force_graph_index_db($index);
+    }
+
+    protected function with_time_measurement(\Closure $message, \Closure $what) {
+        $start_time = microtime(true);
+        $what();
+        $time_elapsed_secs = microtime(true) - $start_time;
+        $this->log->notice($message($time_elapsed_secs));
+    }
+
+    /**
+     * @param   mixed   $index
+     * @return  Graph\IndexDB
+     */
+    protected function force_graph_index_db($index) {
         if ($index instanceof Graph\IndexDB) {
             return $index;
         }
@@ -175,10 +176,18 @@ class Engine {
         }
     }
 
-    protected function with_time_measurement(\Closure $message, \Closure $what) {
-        $start_time = microtime(true);
-        $what();
-        $time_elapsed_secs = microtime(true) - $start_time;
-        $this->log->notice($message($time_elapsed_secs));
+    /**
+     * @param   mixed   $index
+     * @return  IndexDB
+     */
+    protected function force_app_index_db($index) {
+        if ($index instanceof IndexDB) {
+            return $index;
+        }
+        else {
+            throw new \LogicException(
+                "Expected index to be of type App\IndexDB, but it is '".
+                get_class($index)."'");
+        }
     }
 }
