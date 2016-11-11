@@ -156,7 +156,7 @@ missing:
 There are also some general features missing:
 
 * The difference between rules and properties is somehow arbitrary, why can't
-  is say `cannot have name` or `depending on`. In general, every rule basically
+  I say `cannot have name` or `depending on`. In general, every rule basically
   is a statement over the existence of entities with some properties.
 * There are minimal attempts to use information from git, but information of
   git could be used a lot better to not reindex unchanged files and save time.
