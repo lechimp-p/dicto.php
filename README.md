@@ -56,9 +56,9 @@ describes entities in your codebase, while rules but constraints on variables.
 
 A variable is defined by using the form
 
-```
+**```
 MyNewVariable = $SOME_ENTITIES
-```
+```**
 
 where `$SOME_ENTITIES` is one of the following forms (with nested `$ENTITIES`s):
 
@@ -89,9 +89,9 @@ where `$SOME_ENTITIES` is one of the following forms (with nested `$ENTITIES`s):
 A rule is a statement over some variable. There are three modes a rule can be
 expressed in:
 
-* `$ENTITIES cannot $STATEMENT`
-* `$ENTITIES must $STATEMENT`
-* `only $ENTITIES can $STATEMENT`
+* **`$ENTITIES cannot $STATEMENT`**
+* **`$ENTITIES must $STATEMENT`**
+* **`only $ENTITIES can $STATEMENT`**
 
 where $ENTITIES is some previously defined variable or another entity definition
 as used when defining variables.
