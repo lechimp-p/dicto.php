@@ -56,7 +56,7 @@ describes entities in your codebase, while rules but constraints on variables.
 
 A variable is defined by using the form
 
-**```MyNewVariable = $SOME_ENTITIES```**
+* **`MyNewVariable = $SOME_ENTITIES`**
 
 where `$SOME_ENTITIES` is one of the following forms (with nested `$ENTITIES`s):
 
