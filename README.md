@@ -8,24 +8,24 @@
 
 ## Motivation
 
-I'm a member of the [ILIAS](http://www.ilias.de) Open Source Community. ILIAS is a
-LMS (Learning Managment System) which recently had it's 18th birthday. In an effort
-to refactor and streamline this old code base, some other ILIAS devs and me introduced
-[dicto](http://scg.unibe.ch/dicto).
+I'm a member of the [ILIAS](http://www.ilias.de) Open Source Community. ILIAS is
+a LMS (Learning Managment System) which recently had it's 18th birthday. In an
+effort to refactor and streamline this old code base, some other ILIAS devs and
+me introduced [dicto](http://scg.unibe.ch/dicto) to the ILIAS development process.
 
 dicto is a tool that allows developers to express rules in a natural-like language
-and then finds violation of these rules on a code base. It is written in Smalltalk
+and then finds violations of these rules on a code base. It is written in Smalltalk
 and utilizes off-the-shelf tools for the analysis work.
 
 When working with the tool in the community it became appearant to me that a real
-addoption of the tool is hindered by the fact, that it is written in Smalltalk.
-Nobody really knows, how one could run the tool on any machine. When a new type
-of rule would be required, no one could implement it in Smalltalk without some
-effort. In general, the tool is kind of intangible.
+adoption of the tool is hindered by the fact that it is written in Smalltalk.
+Nobody really knows how one could run the tool on some machine. When a new type
+of rule was required, no one could implement it in Smalltalk without some effort.
+In general, the tool is kind of intangible.
 
 This is the attempt to reimplement the great original idea (thx. A.C. and O.T.!)
-in PHP. General goals where, to make the tool accessible for PHP programmers and
-make it executable without problems in a standard PHP environment.
+in PHP. General goals were to make the tool accessible for PHP programmers and
+make it easily executable in a standard PHP environment.
 
 ## Try it out
 
