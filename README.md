@@ -38,7 +38,7 @@ It's not completely finished, but
   to the location of your freshly checked out ILIAS repository.
 * Make sure hhvm >=3.15 is installed.
 * Execute `hhvm dicto.php examples/ilias.config.yaml`.
-* Watch dicto.php crunching the ILIAS code base and performing analysis.
+* Watch dicto.php whilte it's crunching the ILIAS code base and performing analysis.
 * Check out the analysis results.
 * See how rules are defined in `examples/ilias.rules`. The set of available rules
   and variables is not complete and things might not work as expected.
