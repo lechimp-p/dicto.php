@@ -51,7 +51,7 @@ $PATH_TO_CONFIG is the location of your config.yml.
 ### Writing down rules
 
 The rules file has two basic type of entities, variables and rules. A variable
-describes entities in your codebase, while rules but constraints on variables.
+describes entities in your codebase, while rules put constraints on variables.
 
 #### Variables
 
@@ -71,7 +71,7 @@ where `$SOME_ENTITIES` is one of the following forms (with nested `$ENTITIES`s):
 * **`Global`**: Every function in your codebase.
 * **`Exit`**: The build in exit function.
 * **`Die`**: The build in die function.
-* **`ErrorSuppressor`**: The build in exit function.
+* **`ErrorSuppressor`**: The infamous error suppressor.
 * **`Eval`**: The build in eval function.
 * **`$ENTITIES with name: "$REGEXP"`**: Any of the given `$ENTITIES` where the name
   matches the given `$REGEXP`. The `$REGEXP` is according to `preg_match` but without
