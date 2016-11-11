@@ -36,7 +36,7 @@ It's not completely finished, but
   for analysis.
 * Open example/ilias.config.yaml and adjust the project.root variable to the
   location of your ILIAS-repo.
-* Use hhvm (>3.15) to get the best speed and: `hhvm dicto.php examples/ilias.config.yaml`
+* Use hhvm (>=3.15) to get the best speed and: `hhvm dicto.php examples/ilias.config.yaml`
 * Watch dicto crunch the ILIAS files, perform analysis and output the results of
   the analysis.
 * See how rules are defined in examples/ilias.rules. The set of available rules
