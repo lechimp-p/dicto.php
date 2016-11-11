@@ -85,10 +85,10 @@ class Engine {
         if (!$this->db_factory->index_db_exists($index_db_path)) {
             $index = $this->build_index();
             $this->run_indexing($index);
-            if ($this->config->analysis_store_index()) {
+            if ($index instanceof InsertTwice) {
                 $index_db = $this->force_app_index_db($index->second());
                 $index_db->write_cached_inserts();
-                $index = $index->first();
+                $index = $this->force_graph_index_db($index->first());
             }
         }
         else {
@@ -96,7 +96,7 @@ class Engine {
             $this->log->notice("Reading index from database '$index_db_path'...");
             $index = $this->read_index_from($index_db);
         }
-        $this->run_analysis($this->force_graph_index_db($index));
+        $this->run_analysis($index);
     }
 
     protected function index_database_path() {
