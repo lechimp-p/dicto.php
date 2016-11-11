@@ -6,6 +6,7 @@
 # Definition
 * Expose `everything` in definition language.
 * Make syntax errors in rules being outputted more nicely.
+* Have ExitOrDie instead of Exit and Die.
 
 # DB
 * Maybe make rules (and maybe vars) able to initialize their own tables.
