@@ -41,8 +41,6 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 )
             , array
                 ( new R\ContainText()
-                , new R\DependOn()
-                , new R\Invoke()
                 )
             , array
                 ( new V\Name()
@@ -400,34 +398,6 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res->rules());
     }
 
-    public function test_classes_cannot_depend_on_functions() {
-        $res = $this->parser->parse("Classes cannot depend on Functions");
-
-        $expected = array
-            ( new R\Rule
-                ( R\Rule::MODE_CANNOT
-                , new V\Classes()
-                , new R\DependOn
-                , array(new V\Functions())
-                )
-            );
-        $this->assertEquals($expected, $res->rules());
-    }
-
-    public function test_classes_cannot_invoke_functions() {
-        $res = $this->parser->parse("Classes cannot invoke Functions");
-
-        $expected = array
-            ( new R\Rule
-                ( R\Rule::MODE_CANNOT
-                , new V\Classes()
-                , new R\Invoke
-                , array(new V\Functions())
-                )
-            );
-        $this->assertEquals($expected, $res->rules());
-    }
-
     public function test_drop_empty_lines() {
         $res = $this->parse("\nAllClasses = Classes\n\nAllFunctions = Functions\n");
 
@@ -449,7 +419,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_explain_rules() {
-        $res = $this->parser->parse("/** Explanation */\nClasses cannot depend on Functions");
+        $res = $this->parser->parse("/** Explanation */\nClasses cannot contain text \"name\"");
 
         $res = $res->rules()[0];
         $this->assertInstanceOf(R\Rule::class, $res);

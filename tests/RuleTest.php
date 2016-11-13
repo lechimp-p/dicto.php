@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto as Dicto;
+use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Graph\IndexDB;
@@ -70,5 +71,31 @@ abstract class RuleTest extends PHPUnit_Framework_TestCase {
         $analyzer = new Dicto\Analysis\Analyzer($this->log, $ruleset, $this->db, $this->rp);
         $analyzer->run();
         return $this->rp->violations;
+    }
+
+    public function parse($rules) {
+        $parser = new RuleParser
+            ( array
+                ( new V\Namespaces()
+                , new V\Classes()
+                , new V\Interfaces()
+                , new V\Traits()
+                , new V\Functions()
+                , new V\Globals()
+                , new V\Files()
+                , new V\Methods()
+                , new V\ErrorSuppressor()
+                , new V\Exit_()
+                , new V\Die_()
+                )
+            , array
+                ( $this->schema()
+                )
+            , array
+                ( new V\Name()
+                , new V\In()
+                )
+            );
+        return $parser->parse($rules);
     }
 }

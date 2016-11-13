@@ -23,6 +23,25 @@ class InvokeTest extends RuleTest {
         return new R\Invoke();
     }
 
+    // Parsing
+
+    public function test_classes_cannot_invoke_functions() {
+        $res = $this->parse("Classes cannot invoke Functions");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_CANNOT
+                , new V\Classes()
+                , new R\Invoke
+                , array(new V\Functions())
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
+    }
+
+
+    // Indexing
+
     public function test_index_method_call() {
         $code = <<<CODE
 <?php

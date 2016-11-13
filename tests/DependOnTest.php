@@ -23,6 +23,24 @@ class DependOnTest extends RuleTest {
         return new R\DependOn();
     }
 
+    // Parsing
+
+    public function test_classes_cannot_depend_on_functions() {
+        $res = $this->parse("Classes cannot depend on Functions");
+
+        $expected = array
+            ( new R\Rule
+                ( R\Rule::MODE_CANNOT
+                , new V\Classes()
+                , new R\DependOn
+                , array(new V\Functions())
+                )
+            );
+        $this->assertEquals($expected, $res->rules());
+    }
+
+    // Indexing
+
     public function test_index_global1() {
         $code = <<<CODE
 <?php
