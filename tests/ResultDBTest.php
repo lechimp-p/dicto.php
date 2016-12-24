@@ -202,7 +202,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
-    public function test_begin_ruhle_changed_var_meaning() {
+    public function test_begin_rule_changed_var_meaning() {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
         $this->db->begin_run("#COMMIT_HASH2#");
@@ -598,5 +598,4 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
             );
         $this->assertEquals($expected, $res);
     }
-
 }
