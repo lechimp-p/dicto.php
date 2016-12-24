@@ -12,6 +12,7 @@ namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\Analysis\ReportGenerator;
 use Lechimp\Dicto\Analysis\Violation;
+use Lechimp\Dicto\DB\DB;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
 use Lechimp\Dicto\Variables\Variable;
