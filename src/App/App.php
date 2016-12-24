@@ -10,8 +10,8 @@
 
 namespace Lechimp\Dicto\App;
 
-use Lechimp\Dicto\Analysis\CombinedReportGenerators;
-use Lechimp\Dicto\Analysis\ReportGenerator;
+use Lechimp\Dicto\Analysis\CombinedListener;
+use Lechimp\Dicto\Analysis\Listener;
 use Lechimp\Dicto\App\RuleLoader;
 use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules\Ruleset;
@@ -101,7 +101,7 @@ class App {
                 , $c["database_factory"]
                 , $c["indexer_factory"]
                 , $c["analyzer_factory"]
-                , $c["report_generator"]
+                , $c["analysis_listener"]
                 , $c["source_status"]
                 );
         };
@@ -139,15 +139,15 @@ class App {
             return (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         };
 
-        $container["report_generator"] = function($c) {
-            return $this->build_report_generator($c);
+        $container["analysis_listener"] = function($c) {
+            return $this->build_analysis_listener($c);
         };
 
-        $container["stdout_report_generator"] = function() {
+        $container["stdout_analysis_listener"] = function() {
             return new CLIReportGenerator();
         };
 
-        $container["database_report_generator"] = function($c) {
+        $container["database_analysis_listener"] = function($c) {
             $path = $this->result_database_path($c["config"]);
             return $c["database_factory"]->get_result_db($path);
         };
@@ -266,30 +266,30 @@ class App {
     }
 
     /**
-     * Build the report generators.
+     * Build the listeners for analysis.
      *
      * @param   Container       $c
-     * @return  ReportGenerator
+     * @return  Listener
      */
-    public function build_report_generator(Container $c) {
+    public function build_analysis_listener(Container $c) {
         $config = $c["config"];
         $stdout = $config->analysis_report_stdout();
         $db = $config->analysis_report_database();
         if ($stdout && $db) {
-            return new CombinedReportGenerators
-                ([$c["stdout_report_generator"]
-                , $c["database_report_generator"]
+            return new CombinedListener
+                ([$c["stdout_analysis_listener"]
+                , $c["database_analysis_listener"]
                 ]);
         }
         elseif($stdout) {
-            return $c["stdout_report_generator"];
+            return $c["stdout_analysis_listener"];
         }
         elseif($db) {
-            return $c["database_report_generator"];
+            return $c["database_analysis_listener"];
         }
 
         throw new \RuntimeException
-            ("No need to run analysis if no report generator is defined.");
+            ("No need to run analysis if no listener is defined.");
     }
 
     protected function result_database_path(Config $c) {

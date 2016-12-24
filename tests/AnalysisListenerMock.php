@@ -8,13 +8,13 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Analysis\ReportGenerator;
+use Lechimp\Dicto\Analysis\Listener;
 
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
 
-class ReportGeneratorMock implements ReportGenerator {
+class AnalysisListenerMock implements Listener {
     public $violations = array();
     public function report_violation(Violation $violation) {
         $this->violations[] = $violation;

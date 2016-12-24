@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Report;
 
-use Lechimp\Dicto\Analysis\ReportGenerator;
+use Lechimp\Dicto\Analysis\Listener;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\DB\DB;
 use Lechimp\Dicto\Rules\Ruleset;
@@ -19,7 +19,7 @@ use Lechimp\Dicto\Variables\Variable;
 use Doctrine\DBAL\Schema;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
-class ResultDB extends DB implements ReportGenerator {
+class ResultDB extends DB implements Listener {
     /**
      * @var int|null
      */
@@ -30,7 +30,7 @@ class ResultDB extends DB implements ReportGenerator {
      */
     private $current_rule_id = null;
 
-    // ReportGenerator implementation
+    // Analysis\Listener implementation
 
     /**
      * Announce to start a new run of the analysis now.

@@ -18,11 +18,11 @@ use Lechimp\Dicto\Variables as V;
 use Psr\Log\LogLevel;
 
 require_once(__DIR__."/LoggerMock.php");
-require_once(__DIR__."/ReportGeneratorMock.php");
+require_once(__DIR__."/AnalysisListenerMock.php");
 
 class AnalyzerTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
-        $this->rp = new ReportGeneratorMock();
+        $this->al = new AnalysisListenerMock();
         $this->log = new LoggerMock();
         $this->query_mocks = [];
         $this->index = $this
@@ -75,7 +75,7 @@ class AnalyzerTest extends PHPUnit_Framework_TestCase {
         $vars = array_merge($rule1->variables(), $rule2->variables());
 
         $ruleset = new R\Ruleset($vars, array($rule1, $rule2));
-        $analyzer = new Analyzer($this->log, $ruleset, $this->index, $this->rp);
+        $analyzer = new Analyzer($this->log, $ruleset, $this->index, $this->al);
         $analyzer->run();
 
         $expected = array(LogLevel::INFO, "checking: ".$rule1->pprint(), array());

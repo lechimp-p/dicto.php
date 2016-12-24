@@ -17,7 +17,7 @@ use Lechimp\Dicto\App\RuleLoader;
 use Lechimp\Dicto\App\SourceStatus;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Report\ResultDB;
-use Lechimp\Dicto\Analysis\CombinedReportGenerators;
+use Lechimp\Dicto\Analysis\CombinedListener;
 
 require_once(__DIR__."/tempdir.php");
 
@@ -82,10 +82,10 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $dic = $this->app->_create_dic("/the/path", array($c));
         $dic = $this->app->_create_dic(__DIR__."/data", array($c));
 
-        $this->assertInstanceOf(CLIReportGenerator::class, $dic["report_generator"]);
+        $this->assertInstanceOf(CLIReportGenerator::class, $dic["analysis_listener"]);
     }
 
-    public function test_dic_complain_on_no_report_generator() {
+    public function test_dic_complain_on_no_analysis_listener() {
         // TODO: remove this odd _load_configs stuff. It should not be necessary.
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
@@ -94,7 +94,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $dic = $this->app->_create_dic(__DIR__."/data", array($c));
 
         try {
-            $foo = $dic["report_generator"];
+            $foo = $dic["analysis_listener"];
             $this->assertFalse("This should not happen.");
         }
         catch (\RuntimeException $e) {
@@ -105,7 +105,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    public function test_dic_database_report_generator() {
+    public function test_dic_database_analysis_listener() {
         // TODO: remove this odd _load_configs stuff. It should not be necessary.
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
@@ -113,10 +113,10 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $c["analysis"]["report_database"] = true;
         $dic = $this->app->_create_dic(__DIR__."/data", array($c));
 
-        $this->assertInstanceOf(ResultDB::class, $dic["report_generator"]);
+        $this->assertInstanceOf(ResultDB::class, $dic["analysis_listener"]);
     }
 
-    public function test_dic_both_report_generators() {
+    public function test_dic_both_analysis_listener() {
         // TODO: remove this odd _load_configs stuff. It should not be necessary.
         $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
         $c["project"]["storage"] = tempdir();
@@ -124,10 +124,10 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $c["analysis"]["report_database"] = true;
         $dic = $this->app->_create_dic(__DIR__."/data", array($c));
 
-        $this->assertInstanceOf(CombinedReportGenerators::class, $dic["report_generator"]);
-        $gens = $dic["report_generator"]->generators();
-        $this->assertInstanceOf(CLIReportGenerator::class, $gens[0]);
-        $this->assertInstanceOf(ResultDB::class, $gens[1]); 
+        $this->assertInstanceOf(CombinedListener::class, $dic["analysis_listener"]);
+        $listeners = $dic["analysis_listener"]->listeners();
+        $this->assertInstanceOf(CLIReportGenerator::class, $listeners[0]);
+        $this->assertInstanceOf(ResultDB::class, $listeners[1]);
     }
 
     public function test_source_status() {

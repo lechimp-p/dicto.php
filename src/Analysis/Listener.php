@@ -14,11 +14,11 @@ use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
 
 /**
- * Defines how the analysis talks to a report generator.
+ * Listen to events during analysis.
  */
-interface ReportGenerator {
+interface Listener {
     /**
-     * Tell the report generator that a run begins.
+     * Tell the listener that a run begins.
      *
      * @param   string  $commit_hash
      * @return  null
@@ -26,14 +26,16 @@ interface ReportGenerator {
     public function begin_run($commit_hash);
 
     /**
-     * Tell the report generator that the run ended.
+     * Tell the listener that the run ended.
      *
      * @return null
      */
     public function end_run();
 
     /**
-     * The analyzer will give violations on the given ruleset afterwards.
+     * Tell the listener that the analysis of a ruleset began.
+     *
+     * The analyzer will report on rules in the given ruleset afterwards.
      *
      * @param   Ruleset     $ruleset
      * @return  null
@@ -41,14 +43,18 @@ interface ReportGenerator {
     public function begin_ruleset(Ruleset $ruleset);
 
     /**
-     * The analyzer will give no more violations on the given ruleset afterwards.
+     * Tell the listener that the analysis of a ruleset ended.
+     *
+     * The analyzer will report no more rules in the given ruleset afterwards.
      *
      * @return  null
      */
     public function end_ruleset();
 
     /**
-     * The analyzer will give violations on the given rule afterwards.
+     * Tell the listener that the analysis for the given rule began.
+     *
+     * The analyzer will report violations off the given rule afterwards.
      *
      * @param   Rule        $rule
      * @return  null
@@ -56,14 +62,16 @@ interface ReportGenerator {
     public function begin_rule(Rule $rule);
 
     /**
-     * The analyzer will give no moew violations on the given rule afterwards.
+     * Tell the listener that the analysis for the given rule ended.
+     *
+     * The analyzer will report no more violations off the given rule afterwards.
      *
      * @return  null
      */
     public function end_rule();
 
     /**
-     * The analyzer reports a violation on the rule previously given.
+     * Tell the listener about a violation off the rule reported previously.
      *
      * @param   Violation   $violation
      * @return  null
