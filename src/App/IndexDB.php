@@ -14,7 +14,6 @@ use Lechimp\Dicto\DB\DB;
 use Lechimp\Dicto\Graph;
 use Lechimp\Dicto\Indexer\Insert;
 use Doctrine\DBAL\Schema;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 use Doctrine\DBAL\Statement;
 

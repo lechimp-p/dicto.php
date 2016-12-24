@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-namespace Lechimp\Dicto\App;
+namespace Lechimp\Dicto\Report;
 
 use Lechimp\Dicto\Analysis\ReportGenerator;
 use Lechimp\Dicto\Analysis\Violation;
@@ -17,7 +17,6 @@ use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
 use Lechimp\Dicto\Variables\Variable;
 use Doctrine\DBAL\Schema;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
 class ResultDB extends DB implements ReportGenerator {

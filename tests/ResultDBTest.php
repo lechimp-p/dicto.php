@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\App\ResultDB;
+use Lechimp\Dicto\Report\ResultDB;
 use Lechimp\Dicto\Rules as Rules;
 use Lechimp\Dicto\Variables as Vars;
 use Lechimp\Dicto\Analysis\Violation;

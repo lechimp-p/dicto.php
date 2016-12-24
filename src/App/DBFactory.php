@@ -10,6 +10,7 @@
 
 namespace Lechimp\Dicto\App;
 
+use Lechimp\Dicto\Report\ResultDB;
 use Doctrine\DBAL\DriverManager;
 
 class DBFactory {

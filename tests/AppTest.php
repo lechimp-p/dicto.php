@@ -13,10 +13,10 @@ use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\App\CLIReportGenerator;
 use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\App\Engine;
-use Lechimp\Dicto\App\ResultDB;
 use Lechimp\Dicto\App\RuleLoader;
 use Lechimp\Dicto\App\SourceStatus;
 use Lechimp\Dicto\Rules\Ruleset;
+use Lechimp\Dicto\Report\ResultDB;
 use Lechimp\Dicto\Analysis\CombinedReportGenerators;
 
 require_once(__DIR__."/tempdir.php");
