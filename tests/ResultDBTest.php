@@ -69,6 +69,10 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->db->is_inited());
     }
 
+    public function test_connection() {
+        $this->assertSame($this->connection, $this->db->connection());
+    }
+
     public function test_begin_run() {
         $this->db->begin_run("#COMMIT_HASH#");
 

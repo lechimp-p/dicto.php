@@ -30,6 +30,13 @@ abstract class DB {
     }
 
     /**
+     * @return Connection
+     */
+    public function connection() {
+        return $this->connection;
+    }
+
+    /**
      * Initialize REGEXP for sqlite.
      */
     public function init_sqlite_regexp() {
