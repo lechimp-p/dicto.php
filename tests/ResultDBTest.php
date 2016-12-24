@@ -74,7 +74,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->run_table())
+            ->from("runs")
             ->execute()
             ->fetchAll();
         $expected = array(array
@@ -90,7 +90,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->run_table())
+            ->from("runs")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -112,7 +112,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->rule_table())
+            ->from("rules")
             ->execute()
             ->fetchAll();
         $expected = array(array
@@ -130,7 +130,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->variable_table())
+            ->from("variables")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -160,7 +160,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->rule_table())
+            ->from("rules")
             ->execute()
             ->fetchAll();
         $expected = array(array
@@ -180,7 +180,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->variable_table())
+            ->from("variables")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -210,7 +210,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->variable_table())
+            ->from("variables")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -255,7 +255,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_table())
+            ->from("violations")
             ->execute()
             ->fetchAll();
         $expected = array(array
@@ -270,7 +270,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_location_table())
+            ->from("violation_locations")
             ->execute()
             ->fetchAll();
         $expected = array(array
@@ -294,7 +294,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_table())
+            ->from("violations")
             ->execute()
             ->fetchAll();
         $expected = array(array
@@ -309,7 +309,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_location_table())
+            ->from("violation_locations")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -342,7 +342,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_table())
+            ->from("violations")
             ->execute()
             ->fetchAll();
         $expected = array(array
@@ -357,7 +357,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_location_table())
+            ->from("violation_locations")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -390,7 +390,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_table())
+            ->from("violations")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -415,7 +415,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_location_table())
+            ->from("violation_locations")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -448,7 +448,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_table())
+            ->from("violations")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -473,7 +473,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_location_table())
+            ->from("violation_locations")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -506,7 +506,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_table())
+            ->from("violations")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -531,7 +531,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_location_table())
+            ->from("violation_locations")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -562,7 +562,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_table())
+            ->from("violations")
             ->execute()
             ->fetchAll();
         $expected = array
@@ -579,7 +579,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
         $res = $this->builder()
             ->select("*")
-            ->from($this->db->violation_location_table())
+            ->from("violation_locations")
             ->execute()
             ->fetchAll();
         $expected = array
