@@ -37,6 +37,8 @@ interface Listener {
      *
      * The analyzer will report on rules in the given ruleset afterwards.
      *
+     * TODO: Think about whether this should be reported at all.
+     *
      * @param   Ruleset     $ruleset
      * @return  null
      */
