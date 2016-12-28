@@ -8,24 +8,24 @@ function template_diff_per_rule(array $report) {
 ====================================================================================
  report with emphasis on the diff
 
- commit      : <?= $report["current"]["commit_hash"] ?>
- compared to : <?= $report["previous"]["commit_hash"] ?>
+ commit      : <?= $report["current"]["commit_hash"] ?> 
+ compared to : <?= $report["previous"]["commit_hash"] ?> 
 
  violations
-    total    : <?= $report["violations"]["total"] ?>
-    added    : <?= $report["violations"]["added"] ?>
-    resolved : <?= $report["violations"]["resolved"] ?>
+    total    : <?= $report["violations"]["total"] ?> 
+    added    : <?= $report["violations"]["added"] ?> 
+    resolved : <?= $report["violations"]["resolved"] ?> 
 
 <?php foreach ($report["rules"] as $rule) { ?>
 ------------------------------------------------------------------------------------
- (!) <?= $rule["rule"] ?>
+ (!) <?= wordwrap($rule["rule"], 80, "\n     ", true) ?> 
 ------------------------------------------------------------------------------------
- <?= wordwrap($rule["explanation"], 80, "\n ", true); ?>
+ <?= wordwrap(str_replace("\n", " ", $rule["explanation"]), 80, "\n ", false); ?> 
 
  violations
-    total    : <?= $rule["violations"]["total"] ?>
-    added    : <?= $rule["violations"]["added"] ?>
-    resolved : <?= $rule["violations"]["resolved"] ?>
+    total    : <?= $rule["violations"]["total"] ?> 
+    added    : <?= $rule["violations"]["added"] ?> 
+    resolved : <?= $rule["violations"]["resolved"] ?> 
 
 <?php   foreach ($rule["violations"]["list"] as $v) { ?>
     <?= $v["file"] ?> (l. <?= $v["line_no"] ?>)
