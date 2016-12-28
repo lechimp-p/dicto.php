@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto\Report\Report;
+use Lechimp\Dicto\Report\DiffPerRuleReport;
 
 class ReportMock extends Report {
     public $data = [];
@@ -30,7 +31,9 @@ class ReportMock extends Report {
     }
 }
 
-class ReportTest extends PHPUnit_Framework_TestCase {
+require_once(__DIR__."/ReportTestBase.php");
+
+class ReportTest extends ReportTestBase {
     public function setUp() {
         $this->report = new ReportMock();
     }
@@ -57,5 +60,17 @@ class ReportTest extends PHPUnit_Framework_TestCase {
         rewind($handle);
 
         $this->assertEquals(json_encode($data), stream_get_contents($handle));
+    }
+
+    public function test_diff_per_rule_smoke() {
+        parent::setUp();
+        $this->init_scenario();
+        $report = new DiffPerRuleReport($this->queries, []);
+
+        $handle = fopen("php://temp", "rw+");
+        $report->write($handle);
+        rewind($handle);
+
+        $this->assertNotEmpty(stream_get_contents($handle));
     }
 }
