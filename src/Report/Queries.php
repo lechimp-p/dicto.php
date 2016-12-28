@@ -134,13 +134,19 @@ class Queries {
      */
     public function count_violations_in($run, $rule = null) {
         $b = $this->result_db->builder();
-        $res = $b
+        $q = $b
             ->select("COUNT(*) cnt")
             ->from("runs", "rs")
             ->innerJoin("rs", "violations", "vs",
                 "rs.id >= vs.first_seen AND rs.id <= vs.last_seen")
             ->where("rs.id = ?")
-            ->setParameter(0, $run)
+            ->setParameter(0, $run);
+        if ($rule !== null) {
+            $q = $q
+                ->andWhere("vs.rule_id = ?")
+                ->setParameter(1, $rule);
+        }
+        $res = $q
             ->execute()
             ->fetch();
         if ($res) {
@@ -158,6 +164,30 @@ class Queries {
      * @return  int
      */
     public function count_added_violations($run_former, $run_latter, $rule = null) {
+        $b = $this->result_db->builder();
+        $q = $b
+            ->select("COUNT(*) cnt")
+            ->from("violations", "vs")
+            ->innerJoin("vs", "runs", "rs1",
+                "rs1.id < vs.first_seen")
+            ->innerJoin("vs", "runs", "rs2",
+                "rs2.id >= vs.first_seen")
+            ->where("rs1.id = ?")
+            ->andWhere("rs2.id = ?")
+            ->setParameter(0, $run_former)
+            ->setParameter(1, $run_latter);
+        if ($rule !== null) {
+            $q = $q
+                ->andWhere("vs.rule_id = ?")
+                ->setParameter(2, $rule);
+        }
+        $res = $q
+            ->execute()
+            ->fetch();
+        if ($res) {
+            return (int)$res["cnt"];
+        }
+        throw new \RuntimeException("Result database contains no run with id '$run'.");
     }
 
     /**
@@ -169,32 +199,96 @@ class Queries {
      * @return  int
      */
     public function count_resolved_violations($run_former, $run_latter, $rule = null) {
+        $b = $this->result_db->builder();
+        $q = $b
+            ->select("COUNT(*) cnt")
+            ->from("violations", "vs")
+            ->innerJoin("vs", "runs", "rs1",
+                "rs1.id <= vs.last_seen")
+            ->innerJoin("vs", "runs", "rs2",
+                "rs2.id > vs.last_seen")
+            ->where("rs1.id = ?")
+            ->andWhere("rs2.id = ?")
+            ->setParameter(0, $run_former)
+            ->setParameter(1, $run_latter);
+        if ($rule !== null) {
+            $q = $q
+                ->andWhere("vs.rule_id = ?")
+                ->setParameter(2, $rule);
+        }
+        $res = $q
+            ->execute()
+            ->fetch();
+        if ($res) {
+            return (int)$res["cnt"];
+        }
+        throw new \RuntimeException("Result database contains no run with id '$run'.");
     }
 
     /**
-     * Get the rules that were analysed in a run.
+     * Get the rules that were analyzed in a run.
      *
      * @param   int $run
      * @return  int[]
      */
-    public function analysed_rules($run) {
+    public function analyzed_rules($run) {
+        $b = $this->result_db->builder();
+        $res = $b
+            ->select("rrs.id")
+            ->from("runs", "rs")
+            ->innerJoin("rs", "rules", "rrs",
+                "rs.id >= rrs.first_seen AND rs.id <= rrs.last_seen")
+            ->where("rs.id = ?")
+            ->setParameter(0, $run)
+            ->execute()
+            ->fetchAll();
+        return array_map(function($r) { return $r["id"]; }, $res);
     }
 
     /**
      * Get information about a rule.
      *
+     * TODO: expose more info here.
+     *
      * @param   int $rule
      * @return  array<string,string>    with keys 'rule', 'explanation'
      */
     public function rule_info($rule) {
+        $b = $this->result_db->builder();
+        $res = $b
+            ->select("rule")
+            ->from("rules")
+            ->where("rules.id = ?")
+            ->setParameter(0, $rule)
+            ->execute()
+            ->fetch();
+        if ($res) {
+            return $res;
+        }
+        throw new \RuntimeException("Result database contains no rule with id '$rule'.");
     }
 
     /**
-     * Get the violations off a rule.
+     * Get the violations of a rule.
      *
      * @param   int $rule
-     * @return  array<string,string|int>    with keys 'file', 'line_no', 'introduced_in'
+     * @param   int $run
+     * @return  array<string,string|int>[]  with keys 'file', 'line_no', 'introduced_in'
      */
-    public function violations_of($rule) {
+    public function violations_of($rule, $run) {
+        $b = $this->result_db->builder();
+        return $b
+            ->select("vs.file", "vls.line_no", "vs.first_seen introduced_in")
+            ->from("runs", "rs")
+            ->innerJoin("rs", "violations", "vs",
+                "rs.id >= vs.first_seen AND rs.id <= vs.last_seen")
+            ->innerJoin("vs", "violation_locations", "vls",
+                "vs.id = vls.violation_id AND rs.id = vls.run_id")
+            ->where("rs.id = ?")
+            ->andWhere("vs.rule_id = ?")
+            ->setParameter(0, $run)
+            ->setParameter(1, $rule)
+            ->execute()
+            ->fetchAll();
     }
 }

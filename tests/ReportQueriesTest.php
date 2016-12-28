@@ -149,8 +149,6 @@ class ReportQueriesTest extends PHPUnit_Framework_TestCase {
         $this->db->report_violation(
             new Violation($rule1, "file.php", 42, "file.php_line_42"));
         $this->db->end_rule();
-        $this->db->begin_rule($rule2);
-        $this->db->end_rule();
         $this->db->end_ruleset();
         $this->db->end_run();
 
@@ -187,6 +185,58 @@ class ReportQueriesTest extends PHPUnit_Framework_TestCase {
         $this->db->end_rule();
         $this->db->end_ruleset();
         $this->db->end_run();
+
+        $this->rule1 = $rule1;
+        $this->rule2 = $rule2;
+    }
+
+    // Helper to query ids of known rules.
+    public function query_rule_ids() {
+        $run = $this->queries->last_run_for("#COMMIT_3#");
+        $rules = $this->queries->analyzed_rules($run);
+        $info = $this->queries->rule_info($rules[0]);
+
+        if ($info["rule"] == $this->rule1->pprint()) {
+            return [$rules[0], $rules[1]];
+        }
+        else {
+            return [$rules[1], $rules[0]];
+        }
+    }
+
+    public function test_analyzed_rules() {
+        $this->init_scenario();
+
+        $run = $this->queries->last_run_for("#COMMIT_1#");
+        $this->assertCount(1, $this->queries->analyzed_rules($run));
+
+        $run = $this->queries->last_run_for("#COMMIT_2#");
+        $this->assertCount(2, $this->queries->analyzed_rules($run));
+
+        $run = $this->queries->last_run_for("#COMMIT_3#");
+        $this->assertCount(2, $this->queries->analyzed_rules($run));
+    }
+
+    /**
+     * @depends test_analyzed_rules
+     */
+    public function test_rule_info() {
+        $this->init_scenario();
+
+        $run = $this->queries->last_run_for("#COMMIT_3#");
+        $rules = $this->queries->analyzed_rules($run);
+
+        $rule1 = $this->queries->rule_info($rules[0]);
+        $rule2 = $this->queries->rule_info($rules[1]);
+
+        $this->assertArrayHasKey("rule", $rule1);
+        $this->assertArrayHasKey("rule", $rule2);
+        // TODO: check 'explanation' key
+
+        $this->assertTrue( $rule1["rule"] == $this->rule1->pprint()
+                        || $rule2["rule"] == $this->rule1->pprint());
+        $this->assertTrue( $rule1["rule"] == $this->rule2->pprint()
+                        || $rule2["rule"] == $this->rule2->pprint());
     }
 
     public function test_count_violations_in_run() {
@@ -202,18 +252,147 @@ class ReportQueriesTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(2, $this->queries->count_violations_in($run));
     }
 
-    public function test_count_violations_in_run_and_rule() {
+    /**
+     * @depends test_rule_info
+     */
+    public function test_count_violations_in_run_and_rule($_) {
         $this->init_scenario();
 
-        $this->assertFalse("Where to get the id for rules?");
+        list($rule1, $rule2) = $this->query_rule_ids();
+
         $run = $this->queries->last_run_for("#COMMIT_1#");
-        $this->assertEquals(1, $this->queries->count_violations_in($run));
+        $this->assertEquals(1, $this->queries->count_violations_in($run, $rule1));
+        $this->assertEquals(0, $this->queries->count_violations_in($run, $rule2));
 
         $run = $this->queries->last_run_for("#COMMIT_2#");
-        $this->assertEquals(3, $this->queries->count_violations_in($run));
+        $this->assertEquals(2, $this->queries->count_violations_in($run, $rule1));
+        $this->assertEquals(1, $this->queries->count_violations_in($run, $rule2));
 
         $run = $this->queries->last_run_for("#COMMIT_3#");
-        $this->assertEquals(2, $this->queries->count_violations_in($run));
+        $this->assertEquals(0, $this->queries->count_violations_in($run, $rule1));
+        $this->assertEquals(2, $this->queries->count_violations_in($run, $rule2));
+    }
+
+    public function test_count_added_violations() {
+        $this->init_scenario();
+
+        $run1 = $this->queries->last_run_for("#COMMIT_1#");
+        $run2 = $this->queries->last_run_for("#COMMIT_2#");
+        $run3 = $this->queries->last_run_for("#COMMIT_3#");
+
+        $this->assertEquals(2, $this->queries->count_added_violations($run1, $run2));
+        $this->assertEquals(2, $this->queries->count_added_violations($run2, $run3));
+    }
+
+    public function test_count_added_violations_in_rule() {
+        $this->init_scenario();
+
+        list($rule1, $rule2) = $this->query_rule_ids();
+
+        $run1 = $this->queries->last_run_for("#COMMIT_1#");
+        $run2 = $this->queries->last_run_for("#COMMIT_2#");
+        $run3 = $this->queries->last_run_for("#COMMIT_3#");
+
+        $this->assertEquals(1, $this->queries->count_added_violations($run1, $run2, $rule1));
+        $this->assertEquals(1, $this->queries->count_added_violations($run1, $run2, $rule2));
+        $this->assertEquals(0, $this->queries->count_added_violations($run2, $run3, $rule1));
+        $this->assertEquals(2, $this->queries->count_added_violations($run2, $run3, $rule2));
+    }
+
+    public function test_count_resolved_violations() {
+        $this->init_scenario();
+
+        $run1 = $this->queries->last_run_for("#COMMIT_1#");
+        $run2 = $this->queries->last_run_for("#COMMIT_2#");
+        $run3 = $this->queries->last_run_for("#COMMIT_3#");
+
+        $this->assertEquals(0, $this->queries->count_resolved_violations($run1, $run2));
+        $this->assertEquals(3, $this->queries->count_resolved_violations($run2, $run3));
+    }
+
+    public function test_count_resolved_violations_in_rule() {
+        $this->init_scenario();
+
+        list($rule1, $rule2) = $this->query_rule_ids();
+
+        $run1 = $this->queries->last_run_for("#COMMIT_1#");
+        $run2 = $this->queries->last_run_for("#COMMIT_2#");
+        $run3 = $this->queries->last_run_for("#COMMIT_3#");
+
+        $this->assertEquals(0, $this->queries->count_resolved_violations($run1, $run2, $rule1));
+        $this->assertEquals(0, $this->queries->count_resolved_violations($run1, $run2, $rule2));
+        $this->assertEquals(2, $this->queries->count_resolved_violations($run2, $run3, $rule1));
+        $this->assertEquals(1, $this->queries->count_resolved_violations($run2, $run3, $rule2));
+    }
+
+    public function test_violations_of() {
+        $this->init_scenario();
+
+        list($rule1, $rule2) = $this->query_rule_ids();
+
+        $run1 = $this->queries->last_run_for("#COMMIT_1#");
+        $run2 = $this->queries->last_run_for("#COMMIT_2#");
+        $run3 = $this->queries->last_run_for("#COMMIT_3#");
+
+        $run1_rule1 = $this->queries->violations_of($rule1, $run1);
+        $this->assertCount(1, $run1_rule1);
+        $this->assertContains
+                (   [ "file" => "file.php"
+                    , "line_no" => 42
+                    , "introduced_in" => $run1
+                    ]
+                , $run1_rule1
+                );
+
+        $run1_rule2 = $this->queries->violations_of($rule2, $run1);
+        $this->assertCount(0, $run1_rule2);
+
+        $run2_rule1 = $this->queries->violations_of($rule1, $run2);
+        $this->assertCount(2, $run2_rule1);
+        $this->assertContains
+                (   [ "file" => "file.php"
+                    , "line_no" => 42
+                    , "introduced_in" => $run1
+                    ]
+                , $run2_rule1
+                );
+        $this->assertContains
+                (   [ "file" => "file2.php"
+                    , "line_no" => 23
+                    , "introduced_in" => $run2
+                    ]
+                , $run2_rule1
+                );
+
+        $run2_rule2 = $this->queries->violations_of($rule2, $run2);
+        $this->assertCount(1, $run2_rule2);
+        $this->assertContains
+                (   [ "file" => "file3.php"
+                    , "line_no" => 13
+                    , "introduced_in" => $run2
+                    ]
+                , $run2_rule2
+                );
+
+        $run3_rule1 = $this->queries->violations_of($rule1, $run3);
+        $this->assertCount(0, $run3_rule1);
+
+        $run3_rule2 = $this->queries->violations_of($rule2, $run3);
+        $this->assertCount(2, $run2_rule1);
+        $this->assertContains
+                (   [ "file" => "file.php"
+                    , "line_no" => 42
+                    , "introduced_in" => $run3
+                    ]
+                , $run3_rule2
+                );
+        $this->assertContains
+                (   [ "file" => "file2.php"
+                    , "line_no" => 23
+                    , "introduced_in" => $run3
+                    ]
+                , $run3_rule2
+                );
     }
 
     // TODO: Check what happens if a violation is first found, then resolved,
