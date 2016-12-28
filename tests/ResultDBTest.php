@@ -112,7 +112,9 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
 
     public function test_begin_rule_inserts_rule() {
         $this->db->begin_run("#COMMIT_HASH#");
-        $this->db->begin_rule($this->all_classes_cannot_depend_on_globals());
+        $rule = $this->all_classes_cannot_depend_on_globals()
+            ->withExplanation("EXPLANATION");
+        $this->db->begin_rule($rule);
 
         $res = $this->builder()
             ->select("*")
@@ -122,6 +124,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $expected = array(array
             ( "id" => "1"
             , "rule" => "allClasses cannot depend on allGlobals"
+            , "explanation" => "EXPLANATION"
             , "first_seen" => "1"
             , "last_seen" => "1"
             ));
@@ -170,6 +173,7 @@ class ResultDBTest extends PHPUnit_Framework_TestCase {
         $expected = array(array
             ( "id" => "1"
             , "rule" => "allClasses cannot depend on allGlobals"
+            , "explanation" => null
             , "first_seen" => "1"
             , "last_seen" => "2"
             ));

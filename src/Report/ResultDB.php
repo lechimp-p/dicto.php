@@ -83,10 +83,12 @@ class ResultDB extends DB implements Listener {
                     ( "rule" => "?"
                     , "first_seen" => "?"
                     , "last_seen" => "?"
+                    , "explanation" => "?"
                     ))
                 ->setParameter(0, $rule->pprint())
                 ->setParameter(1, $this->current_run_id)
                 ->setParameter(2, $this->current_run_id)
+                ->setParameter(3, $rule->explanation())
                 ->execute();
             $rule_id = (int)$this->connection->lastInsertId();
         }
@@ -94,9 +96,11 @@ class ResultDB extends DB implements Listener {
             $this->builder()
                 ->update("rules")
                 ->set("last_seen", "?")
+                ->set("explanation", "?")
                 ->where("id = ?")
                 ->setParameter(0, $this->current_run_id)
-                ->setParameter(1, $rule_id)
+                ->setParameter(1, $rule->explanation())
+                ->setParameter(2, $rule_id)
                 ->execute();
         }
         foreach ($rule->variables() as $variable) {
@@ -304,7 +308,11 @@ class ResultDB extends DB implements Listener {
             ( "rule", "string"
             , array("notnull" => true)
             );
-        // TODO: Some field for explanation is missing here.
+
+        $rule_table->addColumn
+            ( "explanation", "string"
+            , array("notnull" => false)
+            );
         $rule_table->addColumn
             ( "first_seen", "integer"
             , array("notnull" => true)

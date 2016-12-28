@@ -248,15 +248,13 @@ class Queries {
     /**
      * Get information about a rule.
      *
-     * TODO: expose more info here.
-     *
      * @param   int $rule
      * @return  array<string,string>    with keys 'rule', 'explanation'
      */
     public function rule_info($rule) {
         $b = $this->result_db->builder();
         $res = $b
-            ->select("rule")
+            ->select("rule", "explanation")
             ->from("rules")
             ->where("rules.id = ?")
             ->setParameter(0, $rule)

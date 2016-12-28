@@ -231,7 +231,8 @@ class ReportQueriesTest extends PHPUnit_Framework_TestCase {
 
         $this->assertArrayHasKey("rule", $rule1);
         $this->assertArrayHasKey("rule", $rule2);
-        // TODO: check 'explanation' key
+        $this->assertArrayHasKey("explanation", $rule1);
+        $this->assertArrayHasKey("explanation", $rule2);
 
         $this->assertTrue( $rule1["rule"] == $this->rule1->pprint()
                         || $rule2["rule"] == $this->rule1->pprint());
