@@ -30,7 +30,7 @@ abstract class Definition {
     }
 
     /**
-     * @return  string
+     * @return  string|null
      */
     public function explanation() {
         return $this->explanation;
