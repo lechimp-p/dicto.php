@@ -20,7 +20,8 @@ class DiffPerRuleReport extends Report {
         $cur_run = $this->queries->current_run();
         $prev_run = $this->queries->previous_run_with_different_commit();
         return
-            [ "current" => $this->queries->run_info($cur_run)
+            [ "run_id"  => $cur_run
+            , "current" => $this->queries->run_info($cur_run)
             , "previous" => $this->queries->run_info($prev_run)
             , "violations" =>
                 [ "total" => $this->queries->count_violations_in($cur_run)
