@@ -185,16 +185,14 @@ class Queries {
                 ->andWhere("vs.rule_id = :rule")
                 ->setParameter("rule", $rule);
         }
-        $res = $q
-            ->execute()
-            ->fetchAll();
-        $res = array_map(function($r) {
-            if ((int)$r["cnt_latter"] < (int)$r["cnt_former"]) {
-                return 0;
+        $rows = $q->execute();
+        $res = 0;
+        while($r = $rows->fetch()) {
+            if ((int)$r["cnt_latter"] > (int)$r["cnt_former"]) {
+                $res += (int)$r["cnt_latter"] - (int)$r["cnt_former"];
             }
-            return (int)$r["cnt_latter"] - (int)$r["cnt_former"];
-        }, $res);
-        return array_sum($res);
+        }
+        return $res;
     }
 
     /**
@@ -225,16 +223,14 @@ class Queries {
                 ->andWhere("vs.rule_id = :rule")
                 ->setParameter("rule", $rule);
         }
-        $res = $q
-            ->execute()
-            ->fetchAll();
-        $res = array_map(function($r) {
-            if ((int)$r["cnt_former"] < (int)$r["cnt_latter"]) {
-                return 0;
+        $rows = $q->execute();
+        $res = 0;
+        while($r = $rows->fetch()) {
+            if ((int)$r["cnt_former"] > (int)$r["cnt_latter"]) {
+                $res += (int)$r["cnt_former"] - (int)$r["cnt_latter"];
             }
-            return (int)$r["cnt_former"] - (int)$r["cnt_latter"];
-        }, $res);
-        return array_sum($res);
+        }
+        return $res;
     }
 
     /**
