@@ -282,7 +282,7 @@ class ReportQueriesTest extends ReportTestBase {
                 );
     }
 
-    public function test_regression_1() {
+    public function test_regression_1_1() {
         // Count had a bug where a similar looking line in the same file
         // was only counted once.
         $rule1 = $this->all_classes_cannot_depend_on_globals();
@@ -303,6 +303,76 @@ class ReportQueriesTest extends ReportTestBase {
 
         $run = $this->queries->current_run();
         $this->assertEquals(2, $this->queries->count_violations_in($run));
+    }
+
+    public function test_regression_1_2() {
+        // see test_regression_1_1
+        $rule1 = $this->all_classes_cannot_depend_on_globals();
+        $vars = $rule1->variables();
+        $ruleset = new Rules\Ruleset($vars, [$rule1]);
+
+        $commit1 = "#COMMIT_1#";
+        $this->db->begin_run($commit1);
+        $this->db->begin_ruleset($ruleset);
+        $this->db->begin_rule($rule1);
+        $this->db->report_violation(
+            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+        $this->db->end_rule();
+        $this->db->end_ruleset();
+        $this->db->end_run();
+
+        $run1 = $this->queries->current_run();
+
+        $commit2 = "#COMMIT_2#";
+        $this->db->begin_run($commit2);
+        $this->db->begin_ruleset($ruleset);
+        $this->db->begin_rule($rule1);
+        $this->db->report_violation(
+            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+        $this->db->report_violation(
+            new Violation($rule1, "file.php", 23, "file.php_line_42"));
+        $this->db->end_rule();
+        $this->db->end_ruleset();
+        $this->db->end_run();
+
+        $run2 = $this->queries->current_run();
+
+        $this->assertEquals(1, $this->queries->count_added_violations($run1, $run2));
+    }
+
+    public function test_regression_1_3() {
+        // see test_regression_1_1
+        $rule1 = $this->all_classes_cannot_depend_on_globals();
+        $vars = $rule1->variables();
+        $ruleset = new Rules\Ruleset($vars, [$rule1]);
+
+        $commit1 = "#COMMIT_1#";
+        $this->db->begin_run($commit1);
+        $this->db->begin_ruleset($ruleset);
+        $this->db->begin_rule($rule1);
+        $this->db->report_violation(
+            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+        $this->db->report_violation(
+            new Violation($rule1, "file.php", 23, "file.php_line_42"));
+        $this->db->end_rule();
+        $this->db->end_ruleset();
+        $this->db->end_run();
+
+        $run1 = $this->queries->current_run();
+
+        $commit2 = "#COMMIT_2#";
+        $this->db->begin_run($commit2);
+        $this->db->begin_ruleset($ruleset);
+        $this->db->begin_rule($rule1);
+        $this->db->report_violation(
+            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+        $this->db->end_rule();
+        $this->db->end_ruleset();
+        $this->db->end_run();
+
+        $run2 = $this->queries->current_run();
+
+        $this->assertEquals(1, $this->queries->count_resolved_violations($run1, $run2));
     }
 
     // TODO: Check what happens if a violation is first found, then resolved,
