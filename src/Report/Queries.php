@@ -168,28 +168,33 @@ class Queries {
     public function count_added_violations($run_former, $run_latter, $rule = null) {
         $b = $this->result_db->builder();
         $q = $b
-            ->select("COUNT(*) cnt")
+            ->select(
+                "(SELECT COUNT (*) ".
+                "FROM violation_locations vls ".
+                "WHERE vls.run_id = :former AND vls.violation_id = vs.id) cnt_former")
+            ->addSelect(
+                "(SELECT COUNT (*) ".
+                "FROM violation_locations vls ".
+                "WHERE vls.run_id = :latter AND vls.violation_id = vs.id) cnt_latter")
             ->from("violations", "vs")
-            ->innerJoin("vs", "runs", "rs1",
-                "rs1.id < vs.first_seen")
-            ->innerJoin("vs", "runs", "rs2",
-                "rs2.id >= vs.first_seen")
-            ->where("rs1.id = ?")
-            ->andWhere("rs2.id = ?")
-            ->setParameter(0, $run_former)
-            ->setParameter(1, $run_latter);
+            ->where("cnt_former < cnt_latter")
+            ->setParameter("former", $run_former)
+            ->setParameter("latter", $run_latter);
         if ($rule !== null) {
             $q = $q
-                ->andWhere("vs.rule_id = ?")
-                ->setParameter(2, $rule);
+                ->andWhere("vs.rule_id = :rule")
+                ->setParameter("rule", $rule);
         }
         $res = $q
             ->execute()
-            ->fetch();
-        if ($res) {
-            return (int)$res["cnt"];
-        }
-        throw new \RuntimeException("Result database contains no run with id '$run'.");
+            ->fetchAll();
+        $res = array_map(function($r) {
+            if ((int)$r["cnt_latter"] < (int)$r["cnt_former"]) {
+                return 0;
+            }
+            return (int)$r["cnt_latter"] - (int)$r["cnt_former"];
+        }, $res);
+        return array_sum($res);
     }
 
     /**
@@ -203,28 +208,33 @@ class Queries {
     public function count_resolved_violations($run_former, $run_latter, $rule = null) {
         $b = $this->result_db->builder();
         $q = $b
-            ->select("COUNT(*) cnt")
+            ->select(
+                "(SELECT COUNT (*) ".
+                "FROM violation_locations vls ".
+                "WHERE vls.run_id = :former AND vls.violation_id = vs.id) cnt_former")
+            ->addSelect(
+                "(SELECT COUNT (*) ".
+                "FROM violation_locations vls ".
+                "WHERE vls.run_id = :latter AND vls.violation_id = vs.id) cnt_latter")
             ->from("violations", "vs")
-            ->innerJoin("vs", "runs", "rs1",
-                "rs1.id <= vs.last_seen")
-            ->innerJoin("vs", "runs", "rs2",
-                "rs2.id > vs.last_seen")
-            ->where("rs1.id = ?")
-            ->andWhere("rs2.id = ?")
-            ->setParameter(0, $run_former)
-            ->setParameter(1, $run_latter);
+            ->where("cnt_former > cnt_latter")
+            ->setParameter("former", $run_former)
+            ->setParameter("latter", $run_latter);
         if ($rule !== null) {
             $q = $q
-                ->andWhere("vs.rule_id = ?")
-                ->setParameter(2, $rule);
+                ->andWhere("vs.rule_id = :rule")
+                ->setParameter("rule", $rule);
         }
         $res = $q
             ->execute()
-            ->fetch();
-        if ($res) {
-            return (int)$res["cnt"];
-        }
-        throw new \RuntimeException("Result database contains no run with id '$run'.");
+            ->fetchAll();
+        $res = array_map(function($r) {
+            if ((int)$r["cnt_former"] < (int)$r["cnt_latter"]) {
+                return 0;
+            }
+            return (int)$r["cnt_former"] - (int)$r["cnt_latter"];
+        }, $res);
+        return array_sum($res);
     }
 
     /**
