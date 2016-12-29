@@ -139,6 +139,8 @@ class Queries {
             ->from("runs", "rs")
             ->innerJoin("rs", "violations", "vs",
                 "rs.id >= vs.first_seen AND rs.id <= vs.last_seen")
+            ->innerJoin("vs", "violation_locations", "vls",
+                "vs.id = vls.violation_id AND rs.id = vls.run_id")
             ->where("rs.id = ?")
             ->setParameter(0, $run);
         if ($rule !== null) {

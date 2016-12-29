@@ -10,6 +10,9 @@
 
 require_once(__DIR__."/ReportTestBase.php");
 
+use Lechimp\Dicto\Rules;
+use Lechimp\Dicto\Analysis\Violation;
+
 class ReportQueriesTest extends ReportTestBase {
     public function test_current_run() {
         $this->db->begin_run("#COMMIT_HASH#");
@@ -277,6 +280,29 @@ class ReportQueriesTest extends ReportTestBase {
                     ]
                 , $run3_rule2
                 );
+    }
+
+    public function test_regression_1() {
+        // Count had a bug where a similar looking line in the same file
+        // was only counted once.
+        $rule1 = $this->all_classes_cannot_depend_on_globals();
+        $vars = $rule1->variables();
+        $ruleset = new Rules\Ruleset($vars, [$rule1]);
+
+        $commit1 = "#COMMIT_1#";
+        $this->db->begin_run($commit1);
+        $this->db->begin_ruleset($ruleset);
+        $this->db->begin_rule($rule1);
+        $this->db->report_violation(
+            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+        $this->db->report_violation(
+            new Violation($rule1, "file.php", 23, "file.php_line_42"));
+        $this->db->end_rule();
+        $this->db->end_ruleset();
+        $this->db->end_run();
+
+        $run = $this->queries->current_run();
+        $this->assertEquals(2, $this->queries->count_violations_in($run));
     }
 
     // TODO: Check what happens if a violation is first found, then resolved,
