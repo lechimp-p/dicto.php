@@ -8,13 +8,16 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\App\App;
+use Lechimp\Dicto\App\AnalysisCommand;
 use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\App\Engine;
 
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+
 require_once(__DIR__."/tempdir.php");
 
-class _App extends App {
+class _AnalysisCommand extends AnalysisCommand {
     public function _load_config(array $paths) {
         return $this->load_config($paths);
     }
@@ -24,13 +27,13 @@ class _App extends App {
     }
 }
 
-class _Config extends Config {
+class __Config extends Config {
     public function __construct() {}
 }
 
-class AppTest extends PHPUnit_Framework_TestCase {
+class AnalysisCommandTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
-        $this->app = new _App();
+        $this->command = new _AnalysisCommand();
 
         $config_params =
             [ "project" =>
@@ -60,7 +63,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
             ->method("runtime_check_assertions")
             ->willReturn(true);
 
-        $this->app->_configure_runtime($config);
+        $this->command->_configure_runtime($config);
 
         $this->assertEquals(true, assert_options(ASSERT_ACTIVE));
         $this->assertEquals(true, assert_options(ASSERT_WARNING));
@@ -84,7 +87,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
             ->method("runtime_check_assertions")
             ->willReturn(false);
 
-        $this->app->_configure_runtime($config);
+        $this->command->_configure_runtime($config);
 
         $this->assertEquals(false, assert_options(ASSERT_ACTIVE));
         $this->assertEquals(false, assert_options(ASSERT_WARNING));
@@ -96,7 +99,7 @@ class AppTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_load_config() {
-        $config = $this->app->_load_config(
+        $config = $this->command->_load_config(
             [ __DIR__."/data/base_config.yaml"
             , __DIR__."/data/additional_config.yaml"
             ]);
@@ -106,15 +109,14 @@ class AppTest extends PHPUnit_Framework_TestCase {
     public function test_run() {
         $config_file_path = "/foo";
         $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
-        $params = array_merge(array("program_name"), $configs);
         $default_schemas =
             [ "Lechimp\\Dicto\\Rules\\DependOn"
             , "Lechimp\\Dicto\\Rules\\Invoke"
             , "Lechimp\\Dicto\\Rules\\ContainText"
             ];
 
-        $app_mock = $this
-            ->getMockBuilder(App::class)
+        $cmd_mock = $this
+            ->getMockBuilder(AnalysisCommand::class)
             ->setMethods(array
                 ( "load_config"
                 , "build_dic"
@@ -128,33 +130,48 @@ class AppTest extends PHPUnit_Framework_TestCase {
             ->setMethods(array("run"))
             ->getMock();
 
-        $app_mock
+        $cmd_mock
             ->expects($this->at(0))
             ->method("load_config")
             ->with
                 ( $this->equalTo($configs)
                 )
-            ->willReturn(new _Config());
+            ->willReturn(new __Config());
 
-        $app_mock
+        $cmd_mock
             ->expects($this->at(1))
             ->method("build_dic")
             ->with
-                ( $this->equalTo(new _Config())
+                ( $this->equalTo(new __Config())
                 )
             ->willReturn(array("engine" => $engine_mock));
 
-        $app_mock
+        $cmd_mock
             ->expects($this->at(2))
             ->method("configure_runtime")
             ->with
-                ( $this->equalTo(new _Config())
+                ( $this->equalTo(new __Config())
                 );
 
         $engine_mock
             ->expects($this->at(0))
             ->method("run");
 
-        $app_mock->run($params);
+        $inp_mock = $this
+            ->getMockBuilder(InputInterface::class)
+            ->getMock();
+        $inp_mock
+            ->expects($this->at(0))
+            ->method("getArgument")
+            ->with
+                ( $this->equalTo("configs")
+                )
+            ->willReturn($configs);
+
+        $outp_mock = $this
+            ->getMockBuilder(OutputInterface::class)
+            ->getMock();
+
+        $cmd_mock->execute($inp_mock, $outp_mock);
     }
 }
