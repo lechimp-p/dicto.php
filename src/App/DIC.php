@@ -17,7 +17,6 @@ use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
-use Symfony\Component\Yaml\Yaml;
 use Pimple\Container;
 use PhpParser\ParserFactory;
 
