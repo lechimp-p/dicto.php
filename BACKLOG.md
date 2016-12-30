@@ -42,3 +42,5 @@
   the current state of the source.
     -> This would also mean that we could also only reindex files that have changed
        between two commits.
+* Time measurement in dicto.php seems to be a bit out of line. It better be moved
+  to the commands.
