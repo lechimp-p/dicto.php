@@ -10,37 +10,13 @@
 
 use Lechimp\Dicto\App\App;
 use Lechimp\Dicto\App\Config;
-use Lechimp\Dicto\App\CLIReportGenerator;
-use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\App\Engine;
-use Lechimp\Dicto\App\RuleLoader;
-use Lechimp\Dicto\App\SourceStatus;
-use Lechimp\Dicto\Rules\Ruleset;
-use Lechimp\Dicto\Report\ResultDB;
-use Lechimp\Dicto\Analysis\CombinedListener;
 
 require_once(__DIR__."/tempdir.php");
 
 class _App extends App {
-    public function _create_dic($config_file_path, $configs) {
-        return $this->create_dic($config_file_path, $configs);
-    }
-
-    public function _load_configs($path) {
-        list($_, $c) = $this->load_configs(array($path));
-        return $c[0];
-    }
-
-    public function _load_schemas(array $schema_classes) {
-        return $this->load_schemas($schema_classes);
-    }
-
-    public function _load_properties(array $property_classes) {
-        return $this->load_properties($property_classes);
-    }
-
-    public function _load_variables(array $variable_classes) {
-        return $this->load_variables($variable_classes);
+    public function _load_config(array $paths) {
+        return $this->load_config($paths);
     }
 
     public function _configure_runtime($config) {
@@ -55,191 +31,20 @@ class _Config extends Config {
 class AppTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->app = new _App();
-    }
 
-    public function test_dic_indexer_factory() {
-        // TODO: remove this odd _load_configs stuff. It should not be necessary.
-        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
-        $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic("/the/path", array($c));
-
-        $this->assertInstanceOf(IndexerFactory::class, $dic["indexer_factory"]);
-    }
-
-    public function test_dic_engine() {
-        // TODO: remove this odd _load_configs stuff. It should not be necessary.
-        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
-        $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic(__DIR__."/data", array($c));
-
-        $this->assertInstanceOf(Engine::class, $dic["engine"]);
-    }
-
-    public function test_dic_cli_report_generator() {
-        // TODO: remove this odd _load_configs stuff. It should not be necessary.
-        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
-        $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic("/the/path", array($c));
-        $dic = $this->app->_create_dic(__DIR__."/data", array($c));
-
-        $this->assertInstanceOf(CLIReportGenerator::class, $dic["analysis_listener"]);
-    }
-
-    public function test_dic_complain_on_no_analysis_listener() {
-        // TODO: remove this odd _load_configs stuff. It should not be necessary.
-        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
-        $c["project"]["storage"] = tempdir();
-        $c["analysis"]["report_stdout"] = false;
-        $dic = $this->app->_create_dic("/the/path", array($c));
-        $dic = $this->app->_create_dic(__DIR__."/data", array($c));
-
-        try {
-            $foo = $dic["analysis_listener"];
-            $this->assertFalse("This should not happen.");
-        }
-        catch (\RuntimeException $e) {
-            $this->assertNotInstanceOf
-                ( \PHPUnit_Framework_ExpectationFailedException::class
-                , $e
-                );
-        }
-    }
-
-    public function test_dic_database_analysis_listener() {
-        // TODO: remove this odd _load_configs stuff. It should not be necessary.
-        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
-        $c["project"]["storage"] = tempdir();
-        $c["analysis"]["report_stdout"] = false;
-        $c["analysis"]["report_database"] = true;
-        $dic = $this->app->_create_dic(__DIR__."/data", array($c));
-
-        $this->assertInstanceOf(ResultDB::class, $dic["analysis_listener"]);
-    }
-
-    public function test_dic_both_analysis_listener() {
-        // TODO: remove this odd _load_configs stuff. It should not be necessary.
-        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
-        $c["project"]["storage"] = tempdir();
-        $c["analysis"]["report_stdout"] = true;
-        $c["analysis"]["report_database"] = true;
-        $dic = $this->app->_create_dic(__DIR__."/data", array($c));
-
-        $this->assertInstanceOf(CombinedListener::class, $dic["analysis_listener"]);
-        $listeners = $dic["analysis_listener"]->listeners();
-        $this->assertInstanceOf(CLIReportGenerator::class, $listeners[0]);
-        $this->assertInstanceOf(ResultDB::class, $listeners[1]);
-    }
-
-    public function test_source_status() {
-        // TODO: remove this odd _load_configs stuff. It should not be necessary.
-        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
-        $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic("/the/path", array($c));
-
-        $this->assertInstanceOf(SourceStatus::class, $dic["source_status"]);
-    }
-
-    public function test_schemas() {
-        // TODO: remove this odd _load_configs stuff. It should not be necessary.
-        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
-        $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic("/the/path", array($c));
-
-        $expected_schemas = array
-            ( new \Lechimp\Dicto\Rules\DependOn
-            , new \Lechimp\Dicto\Rules\Invoke
-            , new \Lechimp\Dicto\Rules\ContainText
-            );
-        $this->assertEquals($expected_schemas, $dic["schemas"]);
-    }
-
-    public function test_load_schemas() {
-        $default_schemas =
-            [ \Lechimp\Dicto\Rules\DependOn::class
-            , \Lechimp\Dicto\Rules\Invoke::class
-            , \Lechimp\Dicto\Rules\ContainText::class
+        $config_params =
+            [ "project" =>
+                [ "root" => "./src"
+                , "rules" => "./rules"
+                , "storage" => tempdir()
+                ]
+            , "analysis" =>
+                [ "ignore" =>
+                    [ ".*\\.omit_me"
+                    ]
+                ]
             ];
-        $schemas = $this->app->_load_schemas($default_schemas);
-        $expected_schemas = array
-            ( new \Lechimp\Dicto\Rules\DependOn
-            , new \Lechimp\Dicto\Rules\Invoke
-            , new \Lechimp\Dicto\Rules\ContainText
-            );
-        $this->assertEquals($expected_schemas, $schemas);
-    }
-
-    public function test_properties() {
-        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
-        $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic("/the/path", array($c));
-
-        $expected_properties =
-            [ new \Lechimp\Dicto\Variables\Name
-            , new \Lechimp\Dicto\Variables\In
-            ];
-        $this->assertEquals($expected_properties, $dic["properties"]);
-    }
-
-    public function test_load_properties() {
-        $default_properties =
-            [ \Lechimp\Dicto\Variables\Name::class
-            , \Lechimp\Dicto\Variables\In::class
-            ];
-        $properties = $this->app->_load_properties($default_properties);
-        $expected_properties =
-            [ new \Lechimp\Dicto\Variables\Name
-            , new \Lechimp\Dicto\Variables\In
-            ];
-        $this->assertEquals($expected_properties, $properties);
-    }
-
-    public function test_variables() {
-        $c = $this->app->_load_configs(__DIR__."/data/base_config.yaml");
-        $c["project"]["storage"] = tempdir();
-        $dic = $this->app->_create_dic("/the/path", array($c));
-
-        $expected_variables = array
-            ( new \Lechimp\Dicto\Variables\Namespaces()
-            , new \Lechimp\Dicto\Variables\Classes()
-            , new \Lechimp\Dicto\Variables\Interfaces()
-            , new \Lechimp\Dicto\Variables\Traits()
-            , new \Lechimp\Dicto\Variables\Functions()
-            , new \Lechimp\Dicto\Variables\Globals()
-            , new \Lechimp\Dicto\Variables\Files()
-            , new \Lechimp\Dicto\Variables\Methods()
-            , new \Lechimp\Dicto\Variables\ErrorSuppressor()
-            , new \Lechimp\Dicto\Variables\Exit_()
-            , new \Lechimp\Dicto\Variables\Die_()
-            , new \Lechimp\Dicto\Variables\Eval_()
-            );
-        $this->assertEquals($expected_variables, $dic["variables"]);
-    }
-
-    public function test_load_variables() {
-        $default_variables = array
-            ( \Lechimp\Dicto\Variables\Classes::class
-            , \Lechimp\Dicto\Variables\Functions::class
-            , \Lechimp\Dicto\Variables\Globals::class
-            , \Lechimp\Dicto\Variables\Files::class
-            , \Lechimp\Dicto\Variables\Methods::class
-            , \Lechimp\Dicto\Variables\ErrorSuppressor::class
-            , \Lechimp\Dicto\Variables\Exit_::class
-            , \Lechimp\Dicto\Variables\Die_::class
-            , \Lechimp\Dicto\Variables\Eval_::class
-            );
-        $variables = $this->app->_load_variables($default_variables);
-        $expected_variables = array
-            ( new \Lechimp\Dicto\Variables\Classes()
-            , new \Lechimp\Dicto\Variables\Functions()
-            , new \Lechimp\Dicto\Variables\Globals()
-            , new \Lechimp\Dicto\Variables\Files()
-            , new \Lechimp\Dicto\Variables\Methods()
-            , new \Lechimp\Dicto\Variables\ErrorSuppressor()
-            , new \Lechimp\Dicto\Variables\Exit_()
-            , new \Lechimp\Dicto\Variables\Die_()
-            , new \Lechimp\Dicto\Variables\Eval_()
-            );
-        $this->assertEquals($expected_variables, $variables);
+        $this->config = new Config(__DIR__."/data", [$config_params]);
     }
 
     public function test_configure_runtime_1() {
@@ -290,6 +95,14 @@ class AppTest extends PHPUnit_Framework_TestCase {
         assert_options(ASSERT_BAIL, $bail);
     }
 
+    public function test_load_config() {
+        $config = $this->app->_load_config(
+            [ __DIR__."/data/base_config.yaml"
+            , __DIR__."/data/additional_config.yaml"
+            ]);
+        $this->assertInstanceOf(Config::class, $config);
+    }
+
     public function test_run() {
         $config_file_path = "/foo";
         $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
@@ -303,10 +116,8 @@ class AppTest extends PHPUnit_Framework_TestCase {
         $app_mock = $this
             ->getMockBuilder(App::class)
             ->setMethods(array
-                ("load_configs"
-                , "load_rules_file"
-                , "create_dic"
-                , "load_schemas"
+                ( "load_config"
+                , "build_dic"
                 , "configure_runtime"
                 ))
             ->getMock();
@@ -317,23 +128,21 @@ class AppTest extends PHPUnit_Framework_TestCase {
             ->setMethods(array("run"))
             ->getMock();
 
-        $cfg_return = ["some_config"];
         $app_mock
             ->expects($this->at(0))
-            ->method("load_configs")
+            ->method("load_config")
             ->with
                 ( $this->equalTo($configs)
                 )
-            ->willReturn(array($config_file_path."/a.yaml", $cfg_return));
+            ->willReturn(new _Config());
 
         $app_mock
             ->expects($this->at(1))
-            ->method("create_dic")
+            ->method("build_dic")
             ->with
-                ( $this->equalTo($config_file_path)
-                , $this->equalTo($cfg_return)
+                ( $this->equalTo(new _Config())
                 )
-            ->willReturn(array("engine" => $engine_mock, "config" => new _Config()));
+            ->willReturn(array("engine" => $engine_mock));
 
         $app_mock
             ->expects($this->at(2))
