@@ -15,6 +15,7 @@ use Symfony\Component\Console\Application;
 
 $app = new \Lechimp\Dicto\App\App();
 
+$app->setAutoExit(false);
 $start_time = microtime(true);
 $app->run();
 $time_elapsed_secs = microtime(true) - $start_time;
