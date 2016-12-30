@@ -207,6 +207,7 @@ class DIC extends Container {
             ("No need to run analysis if no listener is defined.");
     }
 
+    // TODO: This should totally go to config.
     protected function result_database_path(Config $c) {
         return $c->project_storage()."/results.sqlite";
     }
