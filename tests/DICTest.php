@@ -59,19 +59,19 @@ class DICTest extends PHPUnit_Framework_TestCase {
         $this->dic = new _DIC($config);
     }
 
-    public function test_dic_indexer_factory() {
+    public function test_indexer_factory() {
         $this->assertInstanceOf(IndexerFactory::class, $this->dic["indexer_factory"]);
     }
 
-    public function test_dic_engine() {
+    public function test_engine() {
         $this->assertInstanceOf(Engine::class, $this->dic["engine"]);
     }
 
-    public function test_dic_cli_report_generator() {
+    public function test_cli_report_generator() {
         $this->assertInstanceOf(CLIReportGenerator::class, $this->dic["analysis_listener"]);
     }
 
-    public function test_dic_complain_on_no_analysis_listener() {
+    public function test_complain_on_no_analysis_listener() {
         $this->build_dic(false);
 
         try {
@@ -86,13 +86,13 @@ class DICTest extends PHPUnit_Framework_TestCase {
         }
     }
 
-    public function test_dic_database_analysis_listener() {
+    public function test_database_analysis_listener() {
         $this->build_dic(false, true);
 
         $this->assertInstanceOf(ResultDB::class, $this->dic["analysis_listener"]);
     }
 
-    public function test_dic_both_analysis_listener() {
+    public function test_both_analysis_listener() {
         $this->build_dic(true, true);
 
         $this->assertInstanceOf(CombinedListener::class, $this->dic["analysis_listener"]);
