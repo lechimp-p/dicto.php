@@ -8,29 +8,9 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Report\Report;
 use Lechimp\Dicto\Report\DiffPerRuleReport;
 
-class ReportMock extends Report {
-    public $data = [];
-
-    public function __construct(array $config = []) {
-        $this->config = $config;
-    }
-
-    protected function default_template_path() {
-        return __DIR__."/../templates/json.php";
-    }
-
-    public function generate() {
-        return $this->data;
-    }
-
-    public function _template_name($path) {
-        return $this->template_name($path);
-    }
-}
-
+require_once(__DIR__."/ReportMock.php");
 require_once(__DIR__."/ReportTestBase.php");
 
 class ReportTest extends ReportTestBase {

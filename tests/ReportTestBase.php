@@ -17,7 +17,7 @@ use Lechimp\Dicto\Analysis\Violation;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
-class ReportTestBase extends PHPUnit_Framework_TestCase {
+abstract class ReportTestBase extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->connection = DriverManager::getConnection
             ( array
