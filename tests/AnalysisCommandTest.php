@@ -17,23 +17,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 require_once(__DIR__."/tempdir.php");
 
-class _AnalysisCommand extends AnalysisCommand {
-    public function _load_config(array $paths) {
-        return $this->load_config($paths);
-    }
-
-    public function _configure_runtime($config) {
-        return $this->configure_runtime($config);
-    }
-}
-
-class __Config extends Config {
+class _AnalysisCommandTestConfig extends Config {
     public function __construct() {}
 }
 
 class AnalysisCommandTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
-        $this->command = new _AnalysisCommand();
+        $this->command = new AnalysisCommand();
 
         $config_params =
             [ "project" =>
@@ -50,63 +40,7 @@ class AnalysisCommandTest extends PHPUnit_Framework_TestCase {
         $this->config = new Config(__DIR__."/data", [$config_params]);
     }
 
-    public function test_configure_runtime_1() {
-        $active = assert_options(ASSERT_ACTIVE);
-        $warning = assert_options(ASSERT_WARNING);
-        $bail = assert_options(ASSERT_BAIL);
-
-        $config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->setMethods(["runtime_check_assertions"])
-            ->getMock();
-        $config->expects($this->once())
-            ->method("runtime_check_assertions")
-            ->willReturn(true);
-
-        $this->command->_configure_runtime($config);
-
-        $this->assertEquals(true, assert_options(ASSERT_ACTIVE));
-        $this->assertEquals(true, assert_options(ASSERT_WARNING));
-        $this->assertEquals(false, assert_options(ASSERT_BAIL));
-
-        assert_options(ASSERT_ACTIVE, $active);
-        assert_options(ASSERT_WARNING, $warning);
-        assert_options(ASSERT_BAIL, $bail);
-    }
-
-    public function test_configure_runtime_2() {
-        $active = assert_options(ASSERT_ACTIVE);
-        $warning = assert_options(ASSERT_WARNING);
-        $bail = assert_options(ASSERT_BAIL);
-
-        $config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->setMethods(["runtime_check_assertions"])
-            ->getMock();
-        $config->expects($this->once())
-            ->method("runtime_check_assertions")
-            ->willReturn(false);
-
-        $this->command->_configure_runtime($config);
-
-        $this->assertEquals(false, assert_options(ASSERT_ACTIVE));
-        $this->assertEquals(false, assert_options(ASSERT_WARNING));
-        $this->assertEquals(false, assert_options(ASSERT_BAIL));
-
-        assert_options(ASSERT_ACTIVE, $active);
-        assert_options(ASSERT_WARNING, $warning);
-        assert_options(ASSERT_BAIL, $bail);
-    }
-
-    public function test_load_config() {
-        $config = $this->command->_load_config(
-            [ __DIR__."/data/base_config.yaml"
-            , __DIR__."/data/additional_config.yaml"
-            ]);
-        $this->assertInstanceOf(Config::class, $config);
-    }
-
-    public function test_run() {
+    public function test_execute() {
         $config_file_path = "/foo";
         $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
         $default_schemas =
@@ -136,13 +70,13 @@ class AnalysisCommandTest extends PHPUnit_Framework_TestCase {
             ->with
                 ( $this->equalTo($configs)
                 )
-            ->willReturn(new __Config());
+            ->willReturn(new _AnalysisCommandTestConfig());
 
         $cmd_mock
             ->expects($this->at(1))
             ->method("build_dic")
             ->with
-                ( $this->equalTo(new __Config())
+                ( $this->equalTo(new _AnalysisCommandTestConfig())
                 )
             ->willReturn(array("engine" => $engine_mock));
 
@@ -150,7 +84,7 @@ class AnalysisCommandTest extends PHPUnit_Framework_TestCase {
             ->expects($this->at(2))
             ->method("configure_runtime")
             ->with
-                ( $this->equalTo(new __Config())
+                ( $this->equalTo(new _AnalysisCommandTestConfig())
                 );
 
         $engine_mock
