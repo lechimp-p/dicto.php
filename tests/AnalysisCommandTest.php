@@ -22,32 +22,9 @@ class _AnalysisCommandTestConfig extends Config {
 }
 
 class AnalysisCommandTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
-        $this->command = new AnalysisCommand();
-
-        $config_params =
-            [ "project" =>
-                [ "root" => "./src"
-                , "rules" => "./rules"
-                , "storage" => tempdir()
-                ]
-            , "analysis" =>
-                [ "ignore" =>
-                    [ ".*\\.omit_me"
-                    ]
-                ]
-            ];
-        $this->config = new Config(__DIR__."/data", [$config_params]);
-    }
-
     public function test_execute() {
         $config_file_path = "/foo";
         $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
-        $default_schemas =
-            [ "Lechimp\\Dicto\\Rules\\DependOn"
-            , "Lechimp\\Dicto\\Rules\\Invoke"
-            , "Lechimp\\Dicto\\Rules\\ContainText"
-            ];
 
         $cmd_mock = $this
             ->getMockBuilder(AnalysisCommand::class)
