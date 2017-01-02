@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto\App\Config;
+use Lechimp\Dicto\Report;
 
 class ConfigClassTest extends PHPUnit_Framework_TestCase {
     public function test_smoke() {
@@ -134,5 +135,46 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("/the/path/rules", $config->project_rules());
         $this->assertEquals("/the/path/root/dir", $config->project_root());
         $this->assertEquals("/the/path/data", $config->project_storage());
+    }
+
+    public function test_reports() {
+        $config = new Config("/the/path", [
+            [ "project" =>
+                [ "root"    => "/root/dir"
+                , "storage" => "/data"
+                , "rules" => "/rules"
+                ]
+            , "analysis" =>
+                [ "ignore" =>
+                    [ ".*\\.omit_me"
+                    ]
+                ]
+            , "reports" =>
+                [
+                    [ "class" => "DiffPerRule"
+                    , "target" => "default.html"
+                    ]
+                ,   [ "class" => "\Foo\Bar"
+                    , "source" => "foobar.php"
+                    , "target" => "foobar.html"
+                    , "config" => []
+                    ]
+                ]
+            ]]);
+
+        $expected =
+            [ new Report\Config
+                ( "DiffPerRule"
+                , "default.html"
+                , []
+                )
+            , new Report\Config
+                ( "\Foo\Bar"
+                , "foobar.html"
+                , []
+                , "foobar.php"
+                )
+            ];
+        $this->assertEquals($expected, $config->reports());
     }
 }

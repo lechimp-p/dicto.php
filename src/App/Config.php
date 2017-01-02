@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\App;
 
+use Lechimp\Dicto\Report;
+
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -27,6 +29,11 @@ class Config implements ConfigurationInterface {
      * @var array
      */
     protected $values;
+
+    /**
+     * @var Report\Config[]|null
+     */
+    protected $reports = null;
 
     /**
      * @var array
@@ -153,6 +160,24 @@ class Config implements ConfigurationInterface {
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode("reports")
+                    ->prototype("array")
+                        ->children()
+                            ->scalarNode("class")
+                                ->isRequired()
+                            ->end()
+                            ->scalarNode("target")
+                                ->isRequired()
+                            ->end()
+                            ->scalarNode("source")
+                                ->defaultValue(null)
+                            ->end()
+                            ->variableNode("config")
+                                ->defaultValue([])
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ->end();
 
@@ -249,5 +274,24 @@ class Config implements ConfigurationInterface {
      */
     public function runtime_check_assertions() {
         return $this->values["runtime"]["check_assertions"];
+    }
+
+    /**
+     * @return Report\Config[]
+     */
+    public function reports() {
+        if ($this->reports !== null) {
+            return $this->reports;
+        }
+        $this->reports = [];
+        foreach ($this->values["reports"] as $rep) {
+            $this->reports[] = new Report\Config
+                ( $rep["class"]
+                , $rep["target"]
+                , $rep["config"]
+                , $rep["source"]
+                );
+        }
+        return $this->reports;
     }
 }
