@@ -17,6 +17,7 @@ use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
+use Lechimp\Dicto\Report;
 use Pimple\Container;
 use PhpParser\ParserFactory;
 
@@ -101,9 +102,17 @@ class DIC extends Container {
             return new CLIReportGenerator();
         };
 
-        $this["database_analysis_listener"] = function($c) {
+        $this["result_database"] = function($c) {
             $path = $this->result_database_path($c["config"]);
             return $c["database_factory"]->get_result_db($path);
+        };
+
+        $this["report_generator"] = function($c) {
+            return new Report\Generator($c["report_queries"]);
+        };
+
+        $this["report_queries"] = function($c) {
+            return new Report\Queries($c["result_database"]);
         };
 
         $this["source_status"] = function($c) {
@@ -192,14 +201,14 @@ class DIC extends Container {
         if ($stdout && $db) {
             return new CombinedListener
                 ([$c["stdout_analysis_listener"]
-                , $c["database_analysis_listener"]
+                , $c["result_database"]
                 ]);
         }
         elseif($stdout) {
             return $c["stdout_analysis_listener"];
         }
         elseif($db) {
-            return $c["database_analysis_listener"];
+            return $c["result_database"];
         }
 
         throw new \RuntimeException

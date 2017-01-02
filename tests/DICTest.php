@@ -17,6 +17,7 @@ use Lechimp\Dicto\App\RuleLoader;
 use Lechimp\Dicto\App\SourceStatus;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Report\ResultDB;
+use Lechimp\Dicto\Report;
 use Lechimp\Dicto\Analysis\CombinedListener;
 
 require_once(__DIR__."/tempdir.php");
@@ -103,6 +104,10 @@ class DICTest extends PHPUnit_Framework_TestCase {
 
     public function test_source_status() {
         $this->assertInstanceOf(SourceStatus::class, $this->dic["source_status"]);
+    }
+
+    public function test_report_generator() {
+        $this->assertInstanceOf(Report\Generator::class, $this->dic["report_generator"]);
     }
 
     public function test_schemas() {
