@@ -43,7 +43,7 @@ class Config implements ConfigurationInterface {
             [ "ignore"  => []
             , "store_index" => false
             , "report_stdout" => true 
-            , "report_database" => false
+            , "report_database" => true
             ]
         , "rules" =>
             [ "schemas" =>

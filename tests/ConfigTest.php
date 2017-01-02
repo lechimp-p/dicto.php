@@ -44,7 +44,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([], $config->analysis_ignore());
         $this->assertFalse($config->analysis_store_index());
         $this->assertTrue($config->analysis_report_stdout());
-        $this->assertFalse($config->analysis_report_database());
+        $this->assertTrue($config->analysis_report_database());
         $default_schemas =
             [ \Lechimp\Dicto\Rules\DependOn::class
             , \Lechimp\Dicto\Rules\Invoke::class

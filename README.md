@@ -136,9 +136,9 @@ The following fields can be used in the config:
 * **analysis.report_stdout**: A boolean telling whether the results of the
   analysis are written to stdout. Defaults to true.
 * **analysis.report_database**: A boolean telling whether the results of the
-  analysis shoult be written to a database containing results from different
-  runs. This could be used to generate some timelines over the results of the
-  analysis. This is not very well tested and thus defaults to false.
+  analysis should be written to a database containing results from differen
+  runs. Defaults to true. The database can be used to create Reports ranging
+  multiple runs of the analysis.
 
 ## Shortcommings and Outlook
 
