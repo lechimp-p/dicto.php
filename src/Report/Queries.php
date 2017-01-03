@@ -279,7 +279,7 @@ class Queries {
      *
      * @param   int $rule
      * @param   int $run
-     * @return  array<string,string|int>[]  with keys 'file', 'line_no', 'introduced_in'
+     * @return  array<string,(string|int)>[]  with keys 'file', 'line_no', 'introduced_in'
      */
     public function violations_of($rule, $run) {
         $b = $this->result_db->builder();
