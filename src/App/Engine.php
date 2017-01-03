@@ -63,7 +63,7 @@ class Engine {
                                , DBFactory $db_factory
                                , IndexerFactory $indexer_factory
                                , AnalyzerFactory $analyzer_factory
-                               , Listener $report_generator
+                               , Listener $analysis_listener
                                , SourceStatus $source_status
                                ) {
         $this->log = $log;
@@ -71,7 +71,7 @@ class Engine {
         $this->db_factory = $db_factory;
         $this->indexer_factory = $indexer_factory;
         $this->analyzer_factory = $analyzer_factory;
-        $this->report_generator = $report_generator;
+        $this->analysis_listener = $analysis_listener;
         $this->source_status = $source_status;
     }
 
@@ -120,14 +120,14 @@ class Engine {
     protected function run_analysis(Index $index) {
         $this->log->notice("Running analysis...");
         $commit_hash = $this->source_status->commit_hash();
-        $this->report_generator->begin_run($commit_hash);
-        $analyzer = $this->analyzer_factory->build($index, $this->report_generator);
+        $this->analysis_listener->begin_run($commit_hash);
+        $analyzer = $this->analyzer_factory->build($index, $this->analysis_listener);
         $this->with_time_measurement
             ( function ($s) { return "Analysis took $s seconds to run."; }
             , function () use ($analyzer) {
                 $analyzer->run();
             });
-        $this->report_generator->end_run();
+        $this->analysis_listener->end_run();
     }
 
     protected function build_index() {
