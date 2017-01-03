@@ -17,13 +17,13 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command to run an analysis.
  */
-class AnalysisCommand extends Command {
+class AnalyzeCommand extends Command {
     /**
      * @inheritdoc
      */
     public function configure() {
         $this
-            ->setName("analysis")
+            ->setName("analyze")
             ->setDescription
                 ("Runs an analysis"
                 )

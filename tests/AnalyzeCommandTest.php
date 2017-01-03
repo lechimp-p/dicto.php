@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\App\AnalysisCommand;
+use Lechimp\Dicto\App\AnalyzeCommand;
 use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\App\Engine;
 
@@ -17,17 +17,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 require_once(__DIR__."/tempdir.php");
 
-class _AnalysisCommandTestConfig extends Config {
+class _AnalyzeCommandTestConfig extends Config {
     public function __construct() {}
 }
 
-class AnalysisCommandTest extends PHPUnit_Framework_TestCase {
+class AnalyzeCommandTest extends PHPUnit_Framework_TestCase {
     public function test_execute() {
         $config_file_path = "/foo";
         $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
 
         $cmd_mock = $this
-            ->getMockBuilder(AnalysisCommand::class)
+            ->getMockBuilder(AnalyzeCommand::class)
             ->setMethods(array
                 ( "load_config"
                 , "build_dic"
@@ -47,13 +47,13 @@ class AnalysisCommandTest extends PHPUnit_Framework_TestCase {
             ->with
                 ( $this->equalTo($configs)
                 )
-            ->willReturn(new _AnalysisCommandTestConfig());
+            ->willReturn(new _AnalyzeCommandTestConfig());
 
         $cmd_mock
             ->expects($this->at(1))
             ->method("build_dic")
             ->with
-                ( $this->equalTo(new _AnalysisCommandTestConfig())
+                ( $this->equalTo(new _AnalyzeCommandTestConfig())
                 )
             ->willReturn(array("engine" => $engine_mock));
 
@@ -61,7 +61,7 @@ class AnalysisCommandTest extends PHPUnit_Framework_TestCase {
             ->expects($this->at(2))
             ->method("configure_runtime")
             ->with
-                ( $this->equalTo(new _AnalysisCommandTestConfig())
+                ( $this->equalTo(new _AnalyzeCommandTestConfig())
                 );
 
         $engine_mock

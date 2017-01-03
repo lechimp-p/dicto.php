@@ -20,7 +20,7 @@ class App extends Application {
         parent::__construct();
         ini_set('xdebug.max_nesting_level', 200);
 
-        $this->add(new AnalysisCommand());
+        $this->add(new AnalyzeCommand());
         $this->add(new ReportCommand());
     }
 }
