@@ -22,24 +22,44 @@ abstract class Report {
     }
 
     /**
-     * Get the path to the default template file for the report.
+     * Get the default template for the report.
+     *
+     * This could be:
+     *   - a filename, which is then assumed to be in templates-directory of
+     *     dicto or in the current working directory, if not found in dicto
+     *     templates
+     *   - an absolute path
      *
      * @return string
      */
-    abstract protected function default_template_path();
+    abstract protected function default_template();
 
     /**
-     * Get the path to the template file.
+     * Get the name of the template.
      *
-     * Use config["template_path"], fall back to default.
+     * Uses config["template"] or falls back to default template.
      *
      * @return string
      */
-    protected function template_path() {
-        if (isset($this->config["template_path"])) {
-            return $this->config["template_path"];
+    protected function template() {
+        if (isset($this->config["template"])) {
+            return $this->config["template"];
         }
-        return $this->default_template_path();
+        return $this->default_template();
+    }
+
+    /**
+     * Get the path for a template name.
+     *
+     * Just returns, if an absolute path is given. Searches dicto-templates
+     * directory and current working directory in that order, if path is not fully
+     * qualified.
+     *
+     * @param   string  $name
+     * @return  string
+     */
+    protected function template_path($name) {
+        return $name;
     }
 
     /**
@@ -92,7 +112,7 @@ abstract class Report {
      */
     public function write($handle) {
         assert('is_resource($handle)');
-        $template_path = $this->template_path();
+        $template_path = $this->template_path($this->template());
         $template = $this->load_template($template_path);
         $report = $this->generate();
         $printed_report = $template($report);

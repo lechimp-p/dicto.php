@@ -20,7 +20,7 @@ class ReportMock extends Report {
         }
     }
 
-    protected function default_template_path() {
+    protected function default_template() {
         return __DIR__."/../templates/json.php";
     }
 
