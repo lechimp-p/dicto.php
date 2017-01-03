@@ -25,10 +25,41 @@ class ReportTest extends ReportTestBase {
         $this->assertSame($data, $this->report->generate());
     }
 
-    public function test_template_name() {
+    public function test_template_function_name() {
         $this->assertEquals("template_json", $this->report->_template_function_name("json.php"));
         $this->assertEquals("template_json", $this->report->_template_function_name("/foo/bar/json.php"));
         $this->assertEquals("template_foobar", $this->report->_template_function_name("/foo/bar/foobar.php"));
+    }
+
+    public function test_template_path() {
+        $this->assertEquals
+                ( realpath(__DIR__."/../templates/json.php")
+                , $this->report->_template_path("json")
+                );
+        $this->assertEquals
+                ( realpath(__DIR__."/../templates/json.php")
+                , $this->report->_template_path("json")
+                );
+        $this->assertEquals
+                ( realpath(__DIR__."/../dicto.php")
+                , $this->report->_template_path("dicto.php")
+                );
+        $this->assertEquals
+                ( realpath(__FILE__)
+                , $this->report->_template_path(__FILE__)
+                );
+        // Since ReportMock.path == __DIR__:
+        $this->assertEquals
+                ( realpath(__FILE__)
+                , $this->report->_template_path("ReportTest.php")
+                );
+        try {
+            $this->report->_template_path(__DIR__."/foo.bar");
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\InvalidArgumentException $e) {
+            $this->assertTrue(true);
+        }
     }
 
     public function test_write() {

@@ -49,17 +49,35 @@ abstract class Report {
     }
 
     /**
-     * Get the path for a template name.
+     * Get the absolute path for a template.
      *
-     * Just returns, if an absolute path is given. Searches dicto-templates
-     * directory and current working directory in that order, if path is not fully
-     * qualified.
+     * Does only realpath(..) if an absolute path is given. Searches dicto-templates
+     * directory, config-directory and current working directory otherwise.
      *
+     * @throws  \InvalidArgumentException if none of the strategies leads to an
+     *                                    existing file.
      * @param   string  $name
      * @return  string
      */
     protected function template_path($name) {
-        return $name;
+        $path = $name;
+        if (substr($name, 0, 1) !== "/") {
+            $candidates =
+                [ __DIR__."/../../templates/{$name}.php"
+                , __DIR__."/../../templates/{$name}"
+                , $this->config->path()."/{$name}"
+                ];
+            foreach ($candidates as $candidate) {
+                if (file_exists($candidate)) {
+                    $path = $candidate;
+                    break;
+                }
+            }
+        }
+        if (!file_exists($path)) {
+            throw new \InvalidArgumentException("Can't find path to template '$name'.");
+        }
+        return realpath($path);
     }
 
     /**
