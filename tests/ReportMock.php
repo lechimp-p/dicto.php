@@ -9,14 +9,24 @@
  */
 
 use Lechimp\Dicto\Report\Report;
+use Lechimp\Dicto\Report\Config;
+
+class ReportConfigMock extends Config {
+    public function __construct(array $config) {
+        parent::__construct(__DIR__, "", "", $config);
+    }
+}
 
 class ReportMock extends Report {
     public $data = [];
 
-    public function __construct($queries = null, array $config = []) {
+    public function __construct($queries = null, $config = []) {
+        if (is_array($config)) {
+            $config = new ReportConfigMock($config);
+        }
         $this->config = $config;
-        if (isset($config["data"])) {
-            $this->data = $config["data"];
+        if (isset($config->config()["data"])) {
+            $this->data = $config->config()["data"];
         }
     }
 
@@ -30,6 +40,10 @@ class ReportMock extends Report {
 
     public function _template_function_name($path) {
         return $this->template_function_name($path);
+    }
+
+    public function _template_path($name) {
+        return $this->template_path($name);
     }
 }
 

@@ -7,7 +7,7 @@ namespace Lechimp\Dicto\Report;
  */
 abstract class Report {
     /**
-     * @var array<string,mixed>
+     * @var Config
      */
     protected $config;
 
@@ -16,7 +16,7 @@ abstract class Report {
      */
     protected $queries;
 
-    public function __construct(Queries $queries, array $config) {
+    public function __construct(Queries $queries, Config $config) {
         $this->queries = $queries;
         $this->config = $config;
     }
@@ -42,8 +42,8 @@ abstract class Report {
      * @return string
      */
     protected function template() {
-        if (isset($this->config["template"])) {
-            return $this->config["template"];
+        if (isset($this->config->config()["template"])) {
+            return $this->config->config()["template"];
         }
         return $this->default_template();
     }

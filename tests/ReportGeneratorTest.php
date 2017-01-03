@@ -19,8 +19,8 @@ class _Generator extends Generator {
     public function _maybe_load_source($path) {
         return $this->maybe_load_source($path);
     }
-    public function _build_report($class_name, $config) {
-        return $this->build_report($class_name, $config);
+    public function _build_report($config) {
+        return $this->build_report($config);
     }
     public function _open_handle($handle) {
         return $this->open_handle($handle);
@@ -65,10 +65,10 @@ class ReportGeneratorTest extends ReportTestBase {
     }
 
     public function test_build_report() {
-        $report = $this->gen->_build_report("DiffPerRule", []);
+        $report = $this->gen->_build_report(new Config("", "DiffPerRule", "", []));
         $this->assertInstanceOf(DiffPerRuleReport::class, $report);
 
-        $report = $this->gen->_build_report("ReportMock", []);
+        $report = $this->gen->_build_report(new Config("", "ReportMock", "", []));
         $this->assertInstanceOf(ReportMock::class, $report);
     }
 

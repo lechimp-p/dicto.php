@@ -45,7 +45,7 @@ class ReportTest extends ReportTestBase {
     public function test_diff_per_rule_smoke() {
         parent::setUp();
         $this->init_scenario();
-        $report = new DiffPerRuleReport($this->queries, []);
+        $report = new DiffPerRuleReport($this->queries, new ReportConfigMock([]));
 
         $handle = fopen("php://temp", "rw+");
         $report->write($handle);

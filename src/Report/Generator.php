@@ -23,7 +23,7 @@ class Generator {
      */
     public function generate(Config $config) {
         $this->maybe_load_source($config->source_path());
-        $report = $this->build_report($config->class_name(), $config->config());
+        $report = $this->build_report($config);
         $handle = $this->open_handle($config->target());
         $report->write($handle);
         fclose($handle);
@@ -48,13 +48,13 @@ class Generator {
     /**
      * Build a report instance.
      *
-     * @param   string  $class_name
-     * @param   array   $config
+     * @param   Config  $config
      * @throws  \RuntimeException if no corresponding class was found.
      * @throws  \RuntimeException if given class does not inherit from namespace.
      * @return  Report
      */
-    protected function build_report($class_name, array $config) {
+    protected function build_report($config) {
+        $class_name = $config->class_name();
         $fq_name = $this->fully_qualified_class_name($class_name);
         if (!class_exists($fq_name)) {
             throw new \RuntimeException("Class '$class_name' does not a exist.");
