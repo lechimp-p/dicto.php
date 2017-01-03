@@ -10,7 +10,7 @@ class DiffPerRuleReport extends Report {
      * @inheritdoc
      */
     protected function default_template() {
-        return __DIR__."/../../templates/diff_per_rule.php";
+        return "diff_per_rule";
     }
 
     /**
