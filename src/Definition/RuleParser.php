@@ -139,7 +139,7 @@ class RuleParser extends Parser implements ArgumentParser {
 
         // Except
         $table->symbol("except", 10)
-            ->left_denotation_is(function($left, array &$matches) {
+            ->left_denotation_is(function($left) {
                 if (!($left instanceof V\Variable)) {
                     throw new ParserException
                         ("Expected a variable at the left of except.");
@@ -203,7 +203,7 @@ class RuleParser extends Parser implements ArgumentParser {
     protected function add_symbols_for_schemas_to(SymbolTable $table, array &$schemas) {
         foreach ($schemas as $schema) {
             $table->symbol($schema->name())
-                ->null_denotation_is(function(array &$_) use ($schema) {
+                ->null_denotation_is(function() use ($schema) {
                     return $schema;
                 });
         }
