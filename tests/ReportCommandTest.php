@@ -33,7 +33,7 @@ class ReportCommandTest extends PHPUnit_Framework_TestCase {
         $config_file_path = "/foo";
         $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
         $report_name = "foobar";
-        $report = new Report\Config("\\Foo\\Bar", "foobar.html", [], $report_name);
+        $report = new Report\Config("/foo", "\\Foo\\Bar", "foobar.html", [], $report_name);
         $config = (new _ReportCommandTestConfig())
                     ->set_reports([$report]);
 

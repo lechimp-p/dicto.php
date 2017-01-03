@@ -289,7 +289,8 @@ class Config implements ConfigurationInterface {
         $this->reports = [];
         foreach ($this->values["reports"] as $rep) {
             $this->reports[] = new Report\Config
-                ( $rep["class"]
+                ( $this->path()
+                , $rep["class"]
                 , $rep["target"]
                 , $rep["config"]
                 , $rep["name"]

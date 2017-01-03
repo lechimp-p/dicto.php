@@ -168,19 +168,22 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
 
         $expected =
             [ new Report\Config
-                ( "DiffPerRule"
+                ( "/the/path"
+                , "DiffPerRule"
                 , "default.html"
                 , []
                 )
             , new Report\Config
-                ( "\\Foo\\Bar"
+                ( "/the/path"
+                , "\\Foo\\Bar"
                 , "foobar.html"
                 , []
                 , null
                 , "foobar.php"
                 )
             , new Report\Config
-                ( "DiffPerRule"
+                ( "/the/path"
+                , "DiffPerRule"
                 , "default.html"
                 , []
                 , "foo"

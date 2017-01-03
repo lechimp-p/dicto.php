@@ -7,6 +7,11 @@ namespace Lechimp\Dicto\Report;
  */
 class Config {
     /**
+     * @var string
+     */
+    protected $path;
+
+    /**
      * @var string|null
      */
     protected $name;
@@ -32,6 +37,7 @@ class Config {
     protected $config;
 
     /**
+     * @param   string      $path to where the config is
      * @param   string      $class_name to be used for report creation
      * @param   string      $target path to the file to be created
      * @param   array       $config for the report class
@@ -39,15 +45,17 @@ class Config {
      * @param   string|null $source_path of the report class if it needs to be loaded
      *                      explicitely
      */
-    public function __construct($class_name, $target, array $config, $name = null, $source_path = null) {
-        assert('is_string($name) || is_null($name)');
+    public function __construct($path, $class_name, $target, array $config, $name = null, $source_path = null) {
+        assert('is_string($path)');
         assert('is_string($class_name)');
         assert('is_string($target)');
+        assert('is_string($name) || is_null($name)');
         assert('is_string($source_path)');
-        $this->name = $name;
+        $this->path = $path;
         $this->class_name = $class_name;
         $this->target = $target;
         $this->config = $config;
+        $this->name = $name;
         $this->source_path = $source_path;
     }
 
@@ -56,6 +64,13 @@ class Config {
      */
     public function name() {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function path() {
+        return $this->path;
     }
 
     /**
