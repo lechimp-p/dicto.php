@@ -23,17 +23,7 @@ class _AnalyzeCommandTestConfig extends Config {
 
 class AnalyzeCommandTest extends PHPUnit_Framework_TestCase {
     public function test_execute() {
-        $config_file_path = "/foo";
-        $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
-
-        $cmd_mock = $this
-            ->getMockBuilder(AnalyzeCommand::class)
-            ->setMethods(array
-                ( "load_config"
-                , "build_dic"
-                , "configure_runtime"
-                ))
-            ->getMock();
+        $cmd = new AnalyzeCommand();
 
         $engine_mock = $this
             ->getMockBuilder(Engine::class)
@@ -41,28 +31,7 @@ class AnalyzeCommandTest extends PHPUnit_Framework_TestCase {
             ->setMethods(array("run"))
             ->getMock();
 
-        $cmd_mock
-            ->expects($this->at(0))
-            ->method("load_config")
-            ->with
-                ( $this->equalTo($configs)
-                )
-            ->willReturn(new _AnalyzeCommandTestConfig());
-
-        $cmd_mock
-            ->expects($this->at(1))
-            ->method("build_dic")
-            ->with
-                ( $this->equalTo(new _AnalyzeCommandTestConfig())
-                )
-            ->willReturn(array("engine" => $engine_mock));
-
-        $cmd_mock
-            ->expects($this->at(2))
-            ->method("configure_runtime")
-            ->with
-                ( $this->equalTo(new _AnalyzeCommandTestConfig())
-                );
+        $dic = array("engine" => $engine_mock);
 
         $engine_mock
             ->expects($this->at(0))
@@ -71,18 +40,12 @@ class AnalyzeCommandTest extends PHPUnit_Framework_TestCase {
         $inp_mock = $this
             ->getMockBuilder(InputInterface::class)
             ->getMock();
-        $inp_mock
-            ->expects($this->at(0))
-            ->method("getArgument")
-            ->with
-                ( $this->equalTo("configs")
-                )
-            ->willReturn($configs);
 
         $outp_mock = $this
             ->getMockBuilder(OutputInterface::class)
             ->getMock();
 
-        $cmd_mock->execute($inp_mock, $outp_mock);
+        $cmd->pull_deps_from($dic);
+        $cmd->execute($inp_mock, $outp_mock);
     }
 }

@@ -37,14 +37,7 @@ class ReportCommandTest extends PHPUnit_Framework_TestCase {
         $config = (new _ReportCommandTestConfig())
                     ->set_reports([$report]);
 
-        $cmd_mock = $this
-            ->getMockBuilder(ReportCommand::class)
-            ->setMethods(array
-                ( "load_config"
-                , "build_dic"
-                , "configure_runtime"
-                ))
-            ->getMock();
+        $cmd = new ReportCommand;
 
         $gen_mock = $this
             ->getMockBuilder(Report\Generator::class)
@@ -52,30 +45,10 @@ class ReportCommandTest extends PHPUnit_Framework_TestCase {
             ->setMethods(array("generate"))
             ->getMock();
 
-        $cmd_mock
-            ->expects($this->at(0))
-            ->method("load_config")
-            ->with
-                ( $this->equalTo($configs)
-                )
-            ->willReturn($config);
-
-        $cmd_mock
-            ->expects($this->at(1))
-            ->method("build_dic")
-            ->with
-                ( $this->equalTo($config)
-                )
-            ->willReturn(array
-                ( "report_generator" => $gen_mock
-                ));
-
-        $cmd_mock
-            ->expects($this->at(2))
-            ->method("configure_runtime")
-            ->with
-                ( $this->equalTo($config)
-                );
+        $dic = array
+            ( "report_generator" => $gen_mock
+            , "config" => $config
+            );
 
         $gen_mock
             ->expects($this->at(0))
@@ -91,13 +64,6 @@ class ReportCommandTest extends PHPUnit_Framework_TestCase {
             ->expects($this->at(0))
             ->method("getArgument")
             ->with
-                ( $this->equalTo("configs")
-                )
-            ->willReturn($configs);
-        $inp_mock
-            ->expects($this->at(1))
-            ->method("getArgument")
-            ->with
                 ( $this->equalTo("name")
                 )
             ->willReturn($report_name);
@@ -106,6 +72,7 @@ class ReportCommandTest extends PHPUnit_Framework_TestCase {
             ->getMockBuilder(OutputInterface::class)
             ->getMock();
 
-        $cmd_mock->execute($inp_mock, $outp_mock);
+        $cmd->pull_deps_from($dic);
+        $cmd->execute($inp_mock, $outp_mock);
     }
 }

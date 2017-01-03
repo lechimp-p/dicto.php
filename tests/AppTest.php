@@ -1,41 +1,21 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under The MIT License. You should have received 
+ * This software is licensed under The MIT License. You should have received
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\App\Command;
-use Lechimp\Dicto\App\Config;
-use Lechimp\Dicto\App\Engine;
+use Lechimp\Dicto\App\App;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 require_once(__DIR__."/tempdir.php");
 
-class _Command extends Command {
-    /**
-     * @inheritdoc
-     */
-    public function configure() {
-        $this
-            ->setName("test");
-    }
-
-    public function _load_config(array $paths) {
-        return $this->load_config($paths);
-    }
-
-    public function _configure_runtime($config) {
-        return $this->configure_runtime($config);
-    }
-}
-
-class CommandTest extends PHPUnit_Framework_TestCase {
+abstract class AppTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->command = new _Command();
 

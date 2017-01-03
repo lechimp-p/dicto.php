@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\App;
 
+use Lechimp\Dicto\Report;
+
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,6 +20,25 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Command to create a report.
  */
 class ReportCommand extends Command {
+    /**
+     * @var Config|null
+     */
+    protected $config = null;
+
+    /**
+     * @var Report\Generator|null
+     */
+    protected $report_generator = null;
+
+    /**
+     * @inheritdoc
+     */
+    public function pull_deps_from($dic) {
+        $this->config = $dic["config"];
+        $this->report_generator = $dic["report_generator"];
+    }
+
+
     /**
      * @inheritdoc
      */
@@ -46,21 +67,14 @@ class ReportCommand extends Command {
      * @inheritdoc
      */
     public function execute(InputInterface $input, OutputInterface $output) {
-        $config_paths = $input->getArgument("configs");
-        if (count($config_paths) == 0) {
-            $output->writeLn("<error>You need to give the path to at least one config.</error>");
-            return;
-        }
-        $config = $this->load_config($config_paths);
-        $dic = $this->build_dic($config);
-        $this->configure_runtime($config);
+        assert('!is_null($this->config)');
+        assert('!is_null($this->report_generator)');
 
-        $generator = $dic["report_generator"];
         $name = $input->getArgument("name");
-        foreach ($config->reports() as $report) {
+        foreach ($this->config->reports() as $report) {
             if ($report->name() == $name) {
                 $report = $report->with_target("php://stdout");
-                $generator->generate($report);
+                $this->report_generator->generate($report);
             }
         }
     }

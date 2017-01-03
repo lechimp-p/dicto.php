@@ -18,57 +18,10 @@ use Symfony\Component\Yaml\Yaml;
  */
 abstract class Command extends SCommand {
     /**
-     * Configure php runtime.
+     * Pull all dependencies from a DIC.
      *
-     * @param   Config  $config
+     * @param   array|DIC   $dic
      * @return  null
      */
-    protected function configure_runtime(Config $config) {
-        if ($config->runtime_check_assertions()) {
-            assert_options(ASSERT_ACTIVE, true);
-            assert_options(ASSERT_WARNING, true);
-            assert_options(ASSERT_BAIL, false);
-        }
-        else {
-            assert_options(ASSERT_ACTIVE, false);
-            assert_options(ASSERT_WARNING, false);
-            assert_options(ASSERT_BAIL, false);
-        }
-    }
-
-    /**
-     * Load extra configs from yaml files.
-     *
-     * @param   array   $config_file_paths
-     * @return  array
-     */
-    protected function load_config(array $config_file_paths) {
-        $configs_array = array();
-        $config_file_path = null;
-
-        foreach ($config_file_paths as $config_file) {
-            if (!file_exists($config_file)) {
-                throw new \RuntimeException("Unknown config-file '$config_file'");
-            }
-            if ($config_file_path === null) {
-                $config_file_path = $config_file;
-            }
-            $configs_array[] = Yaml::parse(file_get_contents($config_file));
-        }
-
-        $t = explode("/", $config_file_path);
-        array_pop($t);
-        $config_file_path = implode("/", $t);
-
-        return new Config($config_file_path, $configs_array);
-    }
-
-    /**
-     * Build the dependency injection container.
-     *
-     * @return DIC
-     */
-    protected function build_dic(Config $config) {
-        return new DIC($config);
-    }
+    abstract public function pull_deps_from($dic);
 }

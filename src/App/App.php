@@ -23,4 +23,50 @@ class App extends Application {
         $this->add(new AnalyzeCommand());
         $this->add(new ReportCommand());
     }
+
+    /**
+     * Configure php runtime.
+     *
+     * @param   Config  $config
+     * @return  null
+     */
+    protected function configure_runtime(Config $config) {
+        if ($config->runtime_check_assertions()) {
+            assert_options(ASSERT_ACTIVE, true);
+            assert_options(ASSERT_WARNING, true);
+            assert_options(ASSERT_BAIL, false);
+        }
+        else {
+            assert_options(ASSERT_ACTIVE, false);
+            assert_options(ASSERT_WARNING, false);
+            assert_options(ASSERT_BAIL, false);
+        }
+    }
+
+    /**
+     * Load extra configs from yaml files.
+     *
+     * @param   array   $config_file_paths
+     * @return  array
+     */
+    protected function load_config(array $config_file_paths) {
+        $configs_array = array();
+        $config_file_path = null;
+
+        foreach ($config_file_paths as $config_file) {
+            if (!file_exists($config_file)) {
+                throw new \RuntimeException("Unknown config-file '$config_file'");
+            }
+            if ($config_file_path === null) {
+                $config_file_path = $config_file;
+            }
+            $configs_array[] = Yaml::parse(file_get_contents($config_file));
+        }
+
+        $t = explode("/", $config_file_path);
+        array_pop($t);
+        $config_file_path = implode("/", $t);
+
+        return new Config($config_file_path, $configs_array);
+    }
 }

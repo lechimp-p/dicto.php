@@ -19,6 +19,18 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class AnalyzeCommand extends Command {
     /**
+     * @var Engine|null
+     */
+    protected $engine = null;
+
+    /**
+     * @inheritdoc
+     */
+    public function pull_deps_from($dic) {
+        $this->engine = $dic["engine"];
+    }
+
+    /**
      * @inheritdoc
      */
     public function configure() {
@@ -42,14 +54,7 @@ class AnalyzeCommand extends Command {
      * @inheritdoc
      */
     public function execute(InputInterface $input, OutputInterface $output) {
-        $config_paths = $input->getArgument("configs");
-        if (count($config_paths) == 0) {
-            $output->writeLn("<error>You need to give the path to at least one config.</error>");
-            return;
-        }
-        $config = $this->load_config($config_paths);
-        $dic = $this->build_dic($config);
-        $this->configure_runtime($config);
-        $dic["engine"]->run();
+        assert('$this->engine !== null');
+        $this->engine->run();
     }
 }
