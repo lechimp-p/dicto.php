@@ -42,11 +42,12 @@ class DICTest extends PHPUnit_Framework_TestCase {
     }
 
     protected function build_dic($store_results = true) {
+        $this->storage = tempdir();
         $config_params =
             [ "project" =>
                 [ "root" => "./src"
                 , "rules" => "./rules"
-                , "storage" => tempdir()
+                , "storage" => $this->storage
                 ]
             , "analysis" =>
                 [ "store_results" => $store_results
@@ -163,5 +164,17 @@ class DICTest extends PHPUnit_Framework_TestCase {
             , new \Lechimp\Dicto\Variables\Eval_()
             );
         $this->assertEquals($expected_variables, $variables);
+    }
+
+    public function test_result_database() {
+        $this->assertInstanceOf(ResultDB::class, $this->dic["result_database"]);
+        $params = $this->dic["result_database"]->connection()->getParams();
+        $this->assertEquals($this->storage."/results.sqlite", $params["path"]);
+        $this->assertFalse($params["memory"]);
+
+        $this->build_dic(false);
+        $params = $this->dic["result_database"]->connection()->getParams();
+        $this->assertFalse(isset($params["path"]));
+        $this->assertTrue($params["memory"]);
     }
 }

@@ -78,14 +78,20 @@ abstract class DB {
      * @param   string|null $path
      * @return  Connection
      */
-    public static function sqlite_connection($path) {
+    public static function sqlite_connection($path = null) {
         assert('is_string($path) || is_null($path)');
-        return DriverManager::getConnection
-            ( array
-                ( "driver" => "pdo_sqlite"
+        if ($path !== null) {
+            return DriverManager::getConnection
+                (["driver" => "pdo_sqlite"
                 , "memory" => false
                 , "path" => $path
-                )
-            );
+                ]);
+        }
+        else {
+            return DriverManager::getConnection
+                (["driver" => "pdo_sqlite"
+                , "memory" => true
+                ]);
+        }
     }
 }

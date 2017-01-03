@@ -97,8 +97,15 @@ class DIC extends Container {
 
         $this["result_database"] = function($c) {
             // TODO: adjust this to the new analysis.store_results config parameter.
-            $path = $this->result_database_path($c["config"]);
-            $db = new Report\ResultDB(DB\DB::sqlite_connection($path));
+            $config = $c["config"];
+            if ($config->analysis_store_results()) {
+                $path = $this->result_database_path($config);
+                $connection = DB\DB::sqlite_connection($path);
+            }
+            else {
+                $connection = DB\DB::sqlite_connection();
+            }
+            $db = new Report\ResultDB($connection);
             $db->maybe_init_database_schema();
             return $db;
         };
