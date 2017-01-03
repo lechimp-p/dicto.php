@@ -50,7 +50,7 @@ class Config {
         assert('is_string($class_name)');
         assert('is_string($target)');
         assert('is_string($name) || is_null($name)');
-        assert('is_string($source_path)');
+        assert('is_string($source_path) || is_null($source_path)');
         $this->path = $path;
         $this->class_name = $class_name;
         $this->target = $target;
