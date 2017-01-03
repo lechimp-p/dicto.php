@@ -25,7 +25,7 @@ interface ASTVisitor {
      * Return (class => method) mapping for Nodes the Visitor is interested in
      * and the corresponding handlers.
      *
-     * @return  array<string, string>
+     * @return  array<string,string>
      */
     public function visitorJumpLabels();
 }
