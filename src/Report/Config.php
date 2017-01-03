@@ -92,7 +92,7 @@ class Config {
      * @return  self
      */
     public function with_target($target) {
-        assert('isstring($target)');
+        assert('is_string($target)');
         $clone = clone $this;
         $clone->target = $target;
         return $clone;
