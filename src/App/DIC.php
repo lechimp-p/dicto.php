@@ -130,8 +130,6 @@ class DIC extends Container {
         $this["variables"] = function($c) {
             return $this->load_variables($c["config"]->rules_variables());
         };
-
-        return $this;
     }
 
     /**
