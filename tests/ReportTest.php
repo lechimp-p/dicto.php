@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto\Report\DiffPerRuleReport;
+use Lechimp\Dicto\Report\TotalPerRuleReport;
 
 require_once(__DIR__."/ReportMock.php");
 require_once(__DIR__."/ReportTestBase.php");
@@ -71,6 +72,18 @@ class ReportTest extends ReportTestBase {
         rewind($handle);
 
         $this->assertEquals(json_encode($data), stream_get_contents($handle));
+    }
+
+    public function test_total_per_rule_smoke() {
+        parent::setUp();
+        $this->init_scenario();
+        $report = new TotalPerRuleReport($this->queries, new ReportConfigMock([]));
+
+        $handle = fopen("php://temp", "rw+");
+        $report->write($handle);
+        rewind($handle);
+
+        $this->assertNotEmpty(stream_get_contents($handle));
     }
 
     public function test_diff_per_rule_smoke() {
