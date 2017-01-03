@@ -37,7 +37,7 @@ It's not completely finished, but
 * Open `example/ilias.config.yaml` and adjust the project.root variable.
   to the location of your freshly checked out ILIAS repository.
 * Make sure hhvm >=3.15 is installed.
-* Execute `hhvm dicto.php examples/ilias.config.yaml`.
+* Execute `hhvm dicto.php analyze examples/ilias.config.yaml`.
 * Watch dicto.php crunching the ILIAS code base and performing analysis.
 * Check out the analysis results.
 * See how rules are defined in `examples/ilias.rules`. The set of available rules
@@ -46,8 +46,8 @@ It's not completely finished, but
 
 ## How To
 
-Create a rules file and a config.yml. Run `hhvm dicto.php $PATH_TO_CONFIG` where
-$PATH_TO_CONFIG is the location of your config.yml.
+Create a rules file and a config.yml. Run `hhvm dicto.php analyze $PATH_TO_CONFIG` where
+$PATH_TO_CONFIG is the location of your config.yml to analyze your codebase.
 
 ### Writing down rules
 
