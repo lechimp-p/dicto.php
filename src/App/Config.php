@@ -126,6 +126,9 @@ class Config implements ConfigurationInterface {
                         ->booleanNode("store_index")
                             ->isRequired()
                         ->end()
+                        ->booleanNode("store_results")
+                            ->defaultValue(true)
+                        ->end()
                         ->booleanNode("report_stdout")
                             ->isRequired()
                         ->end()
@@ -235,6 +238,13 @@ class Config implements ConfigurationInterface {
      */
     public function analysis_store_index() {
         return $this->values["analysis"]["store_index"];
+    }
+
+    /**
+     * @return  bool
+     */
+    public function analysis_store_results() {
+        return $this->values["analysis"]["store_results"];
     }
 
     /**

@@ -43,6 +43,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(".", $config->project_storage());
         $this->assertEquals([], $config->analysis_ignore());
         $this->assertFalse($config->analysis_store_index());
+        $this->assertTrue($config->analysis_store_results());
         $this->assertTrue($config->analysis_report_stdout());
         $this->assertTrue($config->analysis_report_database());
         $default_schemas =

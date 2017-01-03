@@ -133,6 +133,9 @@ The following fields can be used in the config:
   a database. If set, a new database is created in `project.storage` for every
   commit hash and existing databases are used when analysing the same commit
   again. Defaults to false, i.e. dicto reindexes on every run.
+* **analysis.store_results**: A boolean to determine, if the results of the
+  analysis should be stored in database for analysis spanning more than one
+  run. Defaults to true.
 * **analysis.report_stdout**: A boolean telling whether the results of the
   analysis are written to stdout. Defaults to true.
 * **analysis.report_database**: A boolean telling whether the results of the
