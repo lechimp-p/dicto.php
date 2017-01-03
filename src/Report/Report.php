@@ -42,10 +42,7 @@ abstract class Report {
      * @return string
      */
     protected function template() {
-        if (isset($this->config->config()["template"])) {
-            return $this->config->config()["template"];
-        }
-        return $this->default_template();
+        return $this->custom_config_value("template", $this->default_template());
     }
 
     /**
@@ -135,5 +132,19 @@ abstract class Report {
         $report = $this->generate();
         $printed_report = $template($report);
         fputs($handle, $printed_report);
+    }
+
+    /**
+     * Get value from the custom config or default if it does not exist.
+     *
+     * @param   string      $key
+     * @param   mixed       $default
+     * @return  mixed
+     */
+    protected function custom_config_value($key, $default) {
+        if (isset($this->config->config()[$key])) {
+            return $this->config->config()[$key];
+        }
+        return $default;
     }
 }
