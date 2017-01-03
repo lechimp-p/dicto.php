@@ -54,7 +54,7 @@ class DIC extends Container {
             return new Engine
                 ( $c["log"]
                 , $c["config"]
-                , $c["database_factory"]
+                , $c["indexdb_factory"]
                 , $c["indexer_factory"]
                 , $c["analyzer_factory"]
                 , $c["result_database"]
@@ -66,8 +66,8 @@ class DIC extends Container {
             return new CLILogger();
         };
 
-        $this["database_factory"] = function() {
-            return new DB\Factory();
+        $this["indexdb_factory"] = function() {
+            return new DB\IndexDBFactory();
         };
 
         $this["indexer_factory"] = function($c) {
@@ -98,7 +98,9 @@ class DIC extends Container {
         $this["result_database"] = function($c) {
             // TODO: adjust this to the new analysis.store_results config parameter.
             $path = $this->result_database_path($c["config"]);
-            return $c["database_factory"]->get_result_db($path);
+            $db = new Report\ResultDB(DB\DB::sqlite_connection($path));
+            $db->maybe_init_database_schema();
+            return $db;
         };
 
         $this["report_generator"] = function($c) {

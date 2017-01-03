@@ -76,7 +76,7 @@ class __IndexDB extends NullDB {
     }
 }
 
-class DBFactoryMock extends DB\Factory {
+class IndexDBFactoryMock extends DB\IndexDBFactory {
     public $build_paths = array();
     public $load_paths = array();
     public $index_db_exists = false;
@@ -135,7 +135,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
                 )
             )));
         $this->log = new LoggerMock();
-        $this->db_factory = new DBFactoryMock();
+        $this->db_factory = new IndexDBFactoryMock();
         $this->indexer_factory = new IndexerFactoryMock();
         $this->analyzer_factory = new AnalyzerFactoryMock();
         $this->analysis_listener = new AnalysisListenerMock();

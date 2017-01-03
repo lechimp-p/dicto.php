@@ -8,15 +8,15 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\DB\Factory;
+use Lechimp\Dicto\DB\IndexDBFactory;
 use Lechimp\Dicto\DB\IndexDB;
 use Lechimp\Dicto\Report\ResultDB;
 
 require_once(__DIR__."/tempdir.php");
 
-class DBFactoryTest extends PHPUnit_Framework_TestCase {
+class IndexDBFactoryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
-        $this->factory = new Factory();
+        $this->factory = new IndexDBFactory();
     }
 
     public function test_dont_use_existing_index_db() {
@@ -52,11 +52,5 @@ class DBFactoryTest extends PHPUnit_Framework_TestCase {
     public function test_load_index_db_exists() {
         $db = $this->factory->load_index_db(__DIR__."/data/exists.sqlite");
         $this->assertInstanceOf(IndexDB::class, $db);
-    }
-
-    public function test_get_result_db_create() {
-        $db = $this->factory->get_result_db(tempnam(sys_get_temp_dir(), "dicto.php"));
-        $this->assertInstanceOf(ResultDB::class, $db);
-        $this->assertTrue($db->is_inited());
     }
 }

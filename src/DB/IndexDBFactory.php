@@ -12,7 +12,7 @@ namespace Lechimp\Dicto\DB;
 
 use Lechimp\Dicto\Report\ResultDB;
 
-class Factory {
+class IndexDBFactory {
     /**
      * Create a new database for index at path.
      *
@@ -55,19 +55,6 @@ class Factory {
         $connection = DB::sqlite_connection($path);
         $db = new IndexDB($connection);
         $db->init_sqlite_regexp();
-        return $db;
-    }
-
-    /**
-     * Get a database for results.
-     *
-     * @param   string  $path
-     * @return  ResultDB
-     */
-    public function get_result_db($path) {
-        $connection = DB::sqlite_connection($path);
-        $db = new ResultDB($connection);
-        $db->maybe_init_database_schema();
         return $db;
     }
 }

@@ -61,7 +61,7 @@ class Engine {
 
     public function __construct( Log $log
                                , Config $config
-                               , DB\Factory $db_factory
+                               , DB\IndexDBFactory $db_factory
                                , IndexerFactory $indexer_factory
                                , AnalyzerFactory $analyzer_factory
                                , Listener $analysis_listener
