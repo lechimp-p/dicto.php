@@ -46,7 +46,7 @@ class IndexDBReader {
     protected $other;
 
     /**
-     * @var array<int,mixed>|null
+     * @var array<int|null,mixed>|null
      */
     protected $id_map = null;
 
