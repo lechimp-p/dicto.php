@@ -5,6 +5,7 @@ checks:
 filter:
     excluded_paths:
         - 'tests/*'
+        - 'templates/*'
 build:
     environment:
         php: '5.6'
