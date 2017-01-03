@@ -52,28 +52,27 @@ abstract class Report {
      * @return  \Closure    array -> null
      */
     protected function load_template($template_path) {
-        $tpl_name = $this->template_name($template_path);
-        $tpl_name = "template_$tpl_name";
+        $tpl_fct_name = $this->template_function_name($template_path);
         require_once($template_path);
-        return function (array $report) use ($tpl_name) {
+        return function (array $report) use ($tpl_fct_name) {
             ob_start();
-            $tpl_name($report);
+            $tpl_fct_name($report);
             return ob_get_clean();
         };
     }
 
     /**
-     * Derive the name of the template from a filename.
+     * Derive the name of the template function from a filename.
      *
      * @param   string  $path
      * @return  string
      */
-    protected function template_name($path) {
+    protected function template_function_name($path) {
         $matches = [];
         if (!preg_match("%(.*/)?([^./]+)[.]php%i", $path, $matches)) {
             throw new \RuntimeException("Path '$path' seems not to point to a template.");
         }
-        return $matches[2];
+        return "template_".$matches[2];
     }
 
     /**

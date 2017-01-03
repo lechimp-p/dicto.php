@@ -26,9 +26,9 @@ class ReportTest extends ReportTestBase {
     }
 
     public function test_template_name() {
-        $this->assertEquals("json", $this->report->_template_name("json.php"));
-        $this->assertEquals("json", $this->report->_template_name("/foo/bar/json.php"));
-        $this->assertEquals("foobar", $this->report->_template_name("/foo/bar/foobar.php"));
+        $this->assertEquals("template_json", $this->report->_template_function_name("json.php"));
+        $this->assertEquals("template_json", $this->report->_template_function_name("/foo/bar/json.php"));
+        $this->assertEquals("template_foobar", $this->report->_template_function_name("/foo/bar/foobar.php"));
     }
 
     public function test_write() {

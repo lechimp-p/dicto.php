@@ -28,8 +28,8 @@ class ReportMock extends Report {
         return $this->data;
     }
 
-    public function _template_name($path) {
-        return $this->template_name($path);
+    public function _template_function_name($path) {
+        return $this->template_function_name($path);
     }
 }
 
