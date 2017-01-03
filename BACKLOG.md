@@ -25,6 +25,7 @@
 # Report
 * Introduce some nice way to use different and also custom report generators. That
   would mean to introduce the possibility to add custom classes to the config. 
+* Maybe exchange the current name for reports by something like tags.
 
 # Issues
 * It is inconsistent, that Invoke makes invocations in methods of classes related
