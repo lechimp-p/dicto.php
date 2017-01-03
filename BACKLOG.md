@@ -37,6 +37,7 @@
   to a class.
 * It seems as everything that "invokes" should also "depend on".
 * The ResultDB currently won't know if a run completed.
+* Introduce a "run" command, that first analyzes and then reports.
 
 # Execution plan for introducing git (and further improvements)
 * The engine then somehow needs to figure out what to do based on the last run and
