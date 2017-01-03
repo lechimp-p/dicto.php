@@ -39,8 +39,8 @@ class ReportGeneratorTest extends ReportTestBase {
     public function test_generate() {
         $data = ["foo" => "bar"];
         $temp_file = tempnam(sys_get_temp_dir(), 'dicto.php');
-        $cfg = new Config("foo", "ReportMock", $temp_file,
-            ["data" => $data]);
+        $cfg = new Config("ReportMock", $temp_file,
+            ["data" => $data], "foo");
         $this->gen->generate($cfg);
 
         $output = file_get_contents($temp_file);
