@@ -124,8 +124,8 @@ delimiters.
 The following fields can be used in the config:
 
 * **project.root**(\*): The path to the source code of the project.
-* **project.storage**(\*): A directory where temporary files and results of the
-  analysis are stored.
+* **project.storage**: A directory where temporary files and results of the
+  analysis are stored. Defaults to directory where config file is.
 * **project.rules**(\*): Path to the rules for the project.
 * **analysis.ignore**: A list of regexps, where files are ignored if their path
   matches.

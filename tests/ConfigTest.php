@@ -36,11 +36,11 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $config = new Config("/the/path", [
             [ "project" =>
                 [ "root"    => "/root/dir"
-                , "storage" => "/data"
                 , "rules" => "/rules"
                 ]
             ]]);
 
+        $this->assertEquals(".", $config->project_storage());
         $this->assertEquals([], $config->analysis_ignore());
         $this->assertFalse($config->analysis_store_index());
         $this->assertTrue($config->analysis_report_stdout());

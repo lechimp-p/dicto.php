@@ -109,7 +109,7 @@ class Config implements ConfigurationInterface {
                             ->isRequired()
                         ->end()
                         ->scalarNode("storage")
-                            ->isRequired()
+                            ->defaultValue(".")
                         ->end()
                         ->scalarNode("rules")
                             ->isRequired()
