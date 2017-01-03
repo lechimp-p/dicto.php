@@ -15,6 +15,7 @@ use Lechimp\Dicto\Indexer\IndexerFactory;
 use Lechimp\Dicto\Analysis\Listener;
 use Lechimp\Dicto\Analysis\AnalyzerFactory;
 use Lechimp\Dicto\Analysis\Index;
+use Lechimp\Dicto\DB;
 use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Graph;
 use Psr\Log\LoggerInterface as Log;
@@ -34,7 +35,7 @@ class Engine {
     protected $config;
 
     /**
-     * @var DBFactory
+     * @var DB\Factory
      */
     protected $db_factory;
 
@@ -60,7 +61,7 @@ class Engine {
 
     public function __construct( Log $log
                                , Config $config
-                               , DBFactory $db_factory
+                               , DB\Factory $db_factory
                                , IndexerFactory $indexer_factory
                                , AnalyzerFactory $analyzer_factory
                                , Listener $analysis_listener
@@ -144,7 +145,7 @@ class Engine {
     /**
      * @return  Graph\IndexDB
      */
-    protected function read_index_from(IndexDB $db) {
+    protected function read_index_from(DB\IndexDB $db) {
         $index = null;
         $this->with_time_measurement
             ( function ($s) { return "Loading the index took $s seconds."; }
@@ -181,7 +182,7 @@ class Engine {
      * @return  IndexDB
      */
     protected function force_app_index_db($index) {
-        if ($index instanceof IndexDB) {
+        if ($index instanceof DB\IndexDB) {
             return $index;
         }
         else {

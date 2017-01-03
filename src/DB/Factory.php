@@ -8,12 +8,12 @@
  * a copy of the license along with the code.
  */
 
-namespace Lechimp\Dicto\App;
+namespace Lechimp\Dicto\DB;
 
 use Lechimp\Dicto\Report\ResultDB;
 use Doctrine\DBAL\DriverManager;
 
-class DBFactory {
+class Factory {
     /**
      * Create a new database for index at path.
      *

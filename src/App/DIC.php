@@ -13,6 +13,7 @@ namespace Lechimp\Dicto\App;
 use Lechimp\Dicto\Analysis\CombinedListener;
 use Lechimp\Dicto\Analysis\Listener;
 use Lechimp\Dicto\App\RuleLoader;
+use Lechimp\Dicto\DB;
 use Lechimp\Dicto\Definition\RuleParser;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules as R;
@@ -66,7 +67,7 @@ class DIC extends Container {
         };
 
         $this["database_factory"] = function() {
-            return new DBFactory();
+            return new DB\Factory();
         };
 
         $this["indexer_factory"] = function($c) {

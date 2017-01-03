@@ -13,10 +13,9 @@ use Lechimp\Dicto\Analysis\AnalyzerFactory;
 use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Analysis\Listener;
 use Lechimp\Dicto\App\Config;
-use Lechimp\Dicto\App\DBFactory;
 use Lechimp\Dicto\App\Engine;
-use Lechimp\Dicto\App\IndexDB;
 use Lechimp\Dicto\App\SourceStatus;
+use Lechimp\Dicto\DB;
 use Lechimp\Dicto\Graph;
 use Lechimp\Dicto\Indexer\Indexer;
 use Lechimp\Dicto\Indexer\IndexerFactory;
@@ -77,7 +76,7 @@ class __IndexDB extends NullDB {
     }
 }
 
-class DBFactoryMock extends DBFactory {
+class DBFactoryMock extends DB\Factory {
     public $build_paths = array();
     public $load_paths = array();
     public $index_db_exists = false;
@@ -106,11 +105,11 @@ class SourceStatusMock implements SourceStatus {
 
 class _Engine extends Engine {
     public $read_index_from_called = false;
-    public function read_index_from(IndexDB $db) {
+    public function read_index_from(DB\IndexDB $db) {
         $this->read_index_from_called = true;
         return new Graph\IndexDB();
     }
-    public function _read_index_from(IndexDB $db) {
+    public function _read_index_from(DB\IndexDB $db) {
         return parent::read_index_from($db);
     }
 }

@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-namespace Lechimp\Dicto\App;
+namespace Lechimp\Dicto\DB;
 
 use Lechimp\Dicto\Indexer\Insert;
 

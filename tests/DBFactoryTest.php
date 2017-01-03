@@ -8,15 +8,15 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\App\DBFactory;
-use Lechimp\Dicto\App\IndexDB;
-use Lechimp\Dicto\App\ResultDB;
+use Lechimp\Dicto\DB\Factory;
+use Lechimp\Dicto\DB\IndexDB;
+use Lechimp\Dicto\Report\ResultDB;
 
 require_once(__DIR__."/tempdir.php");
 
-abstract class DBFactoryTest extends PHPUnit_Framework_TestCase {
+class DBFactoryTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
-        $this->factory = new DBFactory();
+        $this->factory = new Factory();
     }
 
     public function test_dont_use_existing_index_db() {

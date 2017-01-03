@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\App\IndexDB;
+use Lechimp\Dicto\DB\IndexDB;
 
 class NullDB extends IndexDB {
     public function __construct() {
