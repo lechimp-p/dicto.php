@@ -11,6 +11,7 @@
 namespace Lechimp\Dicto\DB;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DriverManager;
 
 abstract class DB {
     /**
@@ -69,4 +70,22 @@ abstract class DB {
     }
 
     abstract public function init_database_schema();
+
+    /**
+     * Build pdo_sqlite connection to some file if path is given or
+     * to memory instead.
+     *
+     * @param   string|null $path
+     * @return  Connection
+     */
+    public static function sqlite_connection($path) {
+        assert('is_string($path) || is_null($path)');
+        return DriverManager::getConnection
+            ( array
+                ( "driver" => "pdo_sqlite"
+                , "memory" => false
+                , "path" => $path
+                )
+            );
+    }
 }

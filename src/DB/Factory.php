@@ -11,7 +11,6 @@
 namespace Lechimp\Dicto\DB;
 
 use Lechimp\Dicto\Report\ResultDB;
-use Doctrine\DBAL\DriverManager;
 
 class Factory {
     /**
@@ -53,7 +52,7 @@ class Factory {
         if (!$this->index_db_exists($path)) {
             throw new \RuntimeException("There is no index database at '$path'");
         }
-        $connection = $this->build_connection($path);
+        $connection = DB::sqlite_connection($path);
         $db = new IndexDB($connection);
         $db->init_sqlite_regexp();
         return $db;
@@ -66,20 +65,9 @@ class Factory {
      * @return  ResultDB
      */
     public function get_result_db($path) {
-        $connection = $this->build_connection($path);
+        $connection = DB::sqlite_connection($path);
         $db = new ResultDB($connection);
         $db->maybe_init_database_schema();
         return $db;
-    }
-
-    protected function build_connection($path) {
-        assert('is_string($path)');
-        return DriverManager::getConnection
-            ( array
-                ( "driver" => "pdo_sqlite"
-                , "memory" => false
-                , "path" => $path
-                )
-            );
     }
 }
