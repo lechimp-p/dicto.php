@@ -56,7 +56,7 @@ class DIC extends Container {
                 , $c["database_factory"]
                 , $c["indexer_factory"]
                 , $c["analyzer_factory"]
-                , $c["analysis_listener"]
+                , $c["result_database"]
                 , $c["source_status"]
                 );
         };
@@ -94,15 +94,8 @@ class DIC extends Container {
             return (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         };
 
-        $this["analysis_listener"] = function($c) {
-            return $this->build_analysis_listener($c);
-        };
-
-        $this["stdout_analysis_listener"] = function() {
-            return new CLIReportGenerator();
-        };
-
         $this["result_database"] = function($c) {
+            // TODO: adjust this to the new analysis.store_results config parameter.
             $path = $this->result_database_path($c["config"]);
             return $c["database_factory"]->get_result_db($path);
         };
@@ -184,33 +177,6 @@ class DIC extends Container {
             $variables[] = $variable;
         }
         return $variables;
-    }
-
-    /**
-     * Build the listeners for analysis.
-     *
-     * @param   Container       $c
-     * @return  Listener
-     */
-    public function build_analysis_listener(Container $c) {
-        $config = $c["config"];
-        $stdout = $config->analysis_report_stdout();
-        $db = $config->analysis_report_database();
-        if ($stdout && $db) {
-            return new CombinedListener
-                ([$c["stdout_analysis_listener"]
-                , $c["result_database"]
-                ]);
-        }
-        elseif($stdout) {
-            return $c["stdout_analysis_listener"];
-        }
-        elseif($db) {
-            return $c["result_database"];
-        }
-
-        throw new \RuntimeException
-            ("No need to run analysis if no listener is defined.");
     }
 
     // TODO: This should totally go to config.

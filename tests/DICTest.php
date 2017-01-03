@@ -41,7 +41,7 @@ class DICTest extends PHPUnit_Framework_TestCase {
         $this->build_dic();
     }
 
-    protected function build_dic($report_stdout = true, $report_database = false) {
+    protected function build_dic($store_results = true) {
         $config_params =
             [ "project" =>
                 [ "root" => "./src"
@@ -49,8 +49,7 @@ class DICTest extends PHPUnit_Framework_TestCase {
                 , "storage" => tempdir()
                 ]
             , "analysis" =>
-                [ "report_stdout" => $report_stdout
-                , "report_database" => $report_database
+                [ "store_results" => $store_results
                 , "ignore" =>
                     [ ".*\\.omit_me"
                     ]
@@ -66,40 +65,6 @@ class DICTest extends PHPUnit_Framework_TestCase {
 
     public function test_engine() {
         $this->assertInstanceOf(Engine::class, $this->dic["engine"]);
-    }
-
-    public function test_cli_report_generator() {
-        $this->assertInstanceOf(CLIReportGenerator::class, $this->dic["analysis_listener"]);
-    }
-
-    public function test_complain_on_no_analysis_listener() {
-        $this->build_dic(false);
-
-        try {
-            $foo = $dic["analysis_listener"];
-            $this->assertFalse("This should not happen.");
-        }
-        catch (\RuntimeException $e) {
-            $this->assertNotInstanceOf
-                ( \PHPUnit_Framework_ExpectationFailedException::class
-                , $e
-                );
-        }
-    }
-
-    public function test_database_analysis_listener() {
-        $this->build_dic(false, true);
-
-        $this->assertInstanceOf(ResultDB::class, $this->dic["analysis_listener"]);
-    }
-
-    public function test_both_analysis_listener() {
-        $this->build_dic(true, true);
-
-        $this->assertInstanceOf(CombinedListener::class, $this->dic["analysis_listener"]);
-        $listeners = $this->dic["analysis_listener"]->listeners();
-        $this->assertInstanceOf(CLIReportGenerator::class, $listeners[0]);
-        $this->assertInstanceOf(ResultDB::class, $listeners[1]);
     }
 
     public function test_source_status() {
