@@ -73,6 +73,17 @@ class Config {
     }
 
     /**
+     * @param   string
+     * @return  self
+     */
+    public function with_target($target) {
+        assert('isstring($target)');
+        $clone = clone $this;
+        $clone->target = $target;
+        return $clone;
+    }
+
+    /**
      * @return array
      */
     public function config() {
