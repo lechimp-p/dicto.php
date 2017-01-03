@@ -21,5 +21,6 @@ class App extends Application {
         ini_set('xdebug.max_nesting_level', 200);
 
         $this->add(new AnalysisCommand());
+        $this->add(new ReportCommand());
     }
 }
