@@ -173,7 +173,15 @@ function template_diff_per_rule_bootstrap(array $report) {
                 }
 ?>
                                         <li class="list-group-item <?=$cl?>">
-                                            <?= $v["file"] ?> (l. <?= $v["line_no"] ?>)
+                                            <?=$v["file"]?> (l. <?=$v["line_no"]?>)
+<?php           if ($v["url"] !== null) { ?>
+                                            <a href="<?=$v["url"]?>">
+                                                <span
+                                                    class="glyphicon glyphicon-zoom-in"
+                                                    aria-hidden="true">
+                                                </span>
+                                            </a>
+<?php           } ?>
                                         </li>
 <?php       } ?>
                                     </ul>
