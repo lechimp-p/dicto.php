@@ -154,10 +154,14 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
                     [ "class" => "DiffPerRule"
                     , "target" => "default.html"
                     ]
-                ,   [ "class" => "\Foo\Bar"
+                ,   [ "class" => "\\Foo\\Bar"
                     , "source" => "foobar.php"
                     , "target" => "foobar.html"
                     , "config" => []
+                    ]
+                ,   [ "name" => "foo"
+                    , "class" => "DiffPerRule"
+                    , "target" => "default.html"
                     ]
                 ]
             ]]);
@@ -169,12 +173,29 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
                 , []
                 )
             , new Report\Config
-                ( "\Foo\Bar"
+                ( "\\Foo\\Bar"
                 , "foobar.html"
                 , []
+                , null
                 , "foobar.php"
+                )
+            , new Report\Config
+                ( "DiffPerRule"
+                , "default.html"
+                , []
+                , "foo"
                 )
             ];
         $this->assertEquals($expected, $config->reports());
+
+        $r1 = $config->reports()[1];
+        $this->assertEquals("\\Foo\\Bar", $r1->class_name());
+        $this->assertEquals("foobar.html", $r1->target());
+        $this->assertEquals([], $r1->config());
+        $this->assertEquals(null, $r1->name());
+        $this->assertEquals("foobar.php", $r1->source_path());
+
+        $r2 = $config->reports()[2];
+        $this->assertEquals("foo", $r2->name());
     }
 }

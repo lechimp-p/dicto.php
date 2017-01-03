@@ -163,6 +163,9 @@ class Config implements ConfigurationInterface {
                 ->arrayNode("reports")
                     ->prototype("array")
                         ->children()
+                            ->scalarNode("name")
+                                ->defaultValue(null)
+                            ->end()
                             ->scalarNode("class")
                                 ->isRequired()
                             ->end()
@@ -289,6 +292,7 @@ class Config implements ConfigurationInterface {
                 ( $rep["class"]
                 , $rep["target"]
                 , $rep["config"]
+                , $rep["name"]
                 , $rep["source"]
                 );
         }
