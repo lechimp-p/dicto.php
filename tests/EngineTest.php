@@ -11,7 +11,7 @@
 use Lechimp\Dicto\Analysis\Analyzer;
 use Lechimp\Dicto\Analysis\AnalyzerFactory;
 use Lechimp\Dicto\Analysis\Index;
-use Lechimp\Dicto\Analysis\ReportGenerator;
+use Lechimp\Dicto\Analysis\Listener;
 use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\App\DBFactory;
 use Lechimp\Dicto\App\Engine;
@@ -25,19 +25,19 @@ use Lechimp\Dicto\Rules\RuleSet;
 use Doctrine\DBAL\DriverManager;
 use Psr\Log\LogLevel;
 
-require_once(__DIR__."/ReportGeneratorMock.php");
+require_once(__DIR__."/AnalysisListenerMock.php");
 require_once(__DIR__."/LoggerMock.php");
 require_once(__DIR__."/tempdir.php");
 require_once(__DIR__."/NullDB.php");
 
 class AnalyzerFactoryMock extends AnalyzerFactory {
     public $analyzer_mocks = array();
-    public $report_generators = array();
+    public $analysis_listeners = array();
     public function __construct() {}
-    public function build(Index $index, ReportGenerator $report_generator) {
+    public function build(Index $index, Listener $analysis_listener) {
         $analyzer_mock = new AnalyzerMock();
         $this->analyzer_mocks[] = $analyzer_mock;
-        $this->report_generators[] = $report_generator;
+        $this->analysis_listeners[] = $analysis_listener;
         return $analyzer_mock;
     }
 }
@@ -139,7 +139,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->db_factory = new DBFactoryMock();
         $this->indexer_factory = new IndexerFactoryMock();
         $this->analyzer_factory = new AnalyzerFactoryMock();
-        $this->report_generator = new ReportGeneratorMock();
+        $this->analysis_listener = new AnalysisListenerMock();
         $this->source_status = new SourceStatusMock();
         $this->engine = new _Engine
             ( $this->log
@@ -147,7 +147,7 @@ class EngineTest extends PHPUnit_Framework_TestCase {
             , $this->db_factory
             , $this->indexer_factory
             , $this->analyzer_factory
-            , $this->report_generator
+            , $this->analysis_listener
             , $this->source_status
             );
     }
@@ -197,27 +197,27 @@ class EngineTest extends PHPUnit_Framework_TestCase {
         $this->assertTrue($this->engine->read_index_from_called);
     }
 
-    public function test_call_begin_run_on_report_generator() {
+    public function test_call_begin_run_on_analysis_listener() {
         $commit_hash = uniqid();
         $this->source_status->commit_hash = $commit_hash;
 
         $this->engine->run();
 
-        $this->assertEquals($commit_hash, $this->report_generator->begin_run_called_with);
+        $this->assertEquals($commit_hash, $this->analysis_listener->begin_run_called_with);
     }
 
-    public function test_call_end_run_on_report_generator() {
+    public function test_call_end_run_on_analysis_listener() {
         $this->engine->run();
 
-        $this->assertTrue($this->report_generator->end_run_called);
+        $this->assertTrue($this->analysis_listener->end_run_called);
     }
 
-    public function test_passes_report_generator_to_analyzer_factory() {
+    public function test_passes_analysis_listener_to_analyzer_factory() {
         $this->engine->run();
 
         $this->assertSame
-            ( $this->analyzer_factory->report_generators[0]
-            , $this->report_generator
+            ( $this->analyzer_factory->analysis_listeners[0]
+            , $this->analysis_listener
             );
     }
 }

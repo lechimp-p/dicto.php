@@ -14,35 +14,35 @@ use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
 
 /**
- * Combines multiple report generators into one.
+ * Combines multiple listeners into one.
  */
-class CombinedReportGenerators implements ReportGenerator {
+class CombinedListener implements Listener {
     /**
-     * @var ReportGenerator[]
+     * @var Listener[]
      */
-    protected $generators;
+    protected $listeners;
 
     /**
-     * @param   ReportGenerator[]
+     * @param   Listener[]  $listeners
      */
-    public function __construct(array $generators) {
-        $this->generators = array_map(function(ReportGenerator $g) {
-            return $g;
-        }, $generators);
+    public function __construct(array $listeners) {
+        $this->listeners = array_map(function(Listener $l) {
+            return $l;
+        }, $listeners);
     }
 
     /**
-     * @return  ReportGenerator[]
+     * @return  Listener[]
      */
-    public function generators() {
-        return $this->generators;
+    public function listeners() {
+        return $this->listeners;
     }
 
     /**
      * @inheritdocs
      */
     public function begin_run($commit_hash) {
-        foreach ($this->generators as $g) {
+        foreach ($this->listeners as $g) {
             $g->begin_run($commit_hash);
         }
     }
@@ -51,7 +51,7 @@ class CombinedReportGenerators implements ReportGenerator {
      * @inheritdocs
      */
     public function end_run() {
-        foreach ($this->generators as $g) {
+        foreach ($this->listeners as $g) {
             $g->end_run();
         }
     }
@@ -60,7 +60,7 @@ class CombinedReportGenerators implements ReportGenerator {
      * @inheritdocs
      */
     public function begin_ruleset(Ruleset $ruleset) {
-        foreach ($this->generators as $g) {
+        foreach ($this->listeners as $g) {
             $g->begin_ruleset($ruleset);
         }
     }
@@ -69,7 +69,7 @@ class CombinedReportGenerators implements ReportGenerator {
      * @inheritdocs
      */
     public function end_ruleset() {
-        foreach ($this->generators as $g) {
+        foreach ($this->listeners as $g) {
             $g->end_ruleset();
         }
     }
@@ -78,7 +78,7 @@ class CombinedReportGenerators implements ReportGenerator {
      * @inheritdocs
      */
     public function begin_rule(Rule $rule) {
-        foreach ($this->generators as $g) {
+        foreach ($this->listeners as $g) {
             $g->begin_rule($rule);
         }
     }
@@ -87,7 +87,7 @@ class CombinedReportGenerators implements ReportGenerator {
      * @inheritdocs
      */
     public function end_rule() {
-        foreach ($this->generators as $g) {
+        foreach ($this->listeners as $g) {
             $g->end_rule();
         }
     }
@@ -96,7 +96,7 @@ class CombinedReportGenerators implements ReportGenerator {
      * @inheritdocs
      */
     public function report_violation(Violation $violation) {
-        foreach ($this->generators as $g) {
+        foreach ($this->listeners as $g) {
             $g->report_violation($violation);
         }
     }

@@ -9,6 +9,7 @@
  */
 
 use Lechimp\Dicto\App\Config;
+use Lechimp\Dicto\Report;
 
 class ConfigClassTest extends PHPUnit_Framework_TestCase {
     public function test_smoke() {
@@ -43,7 +44,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals([], $config->analysis_ignore());
         $this->assertFalse($config->analysis_store_index());
         $this->assertTrue($config->analysis_report_stdout());
-        $this->assertFalse($config->analysis_report_database());
+        $this->assertTrue($config->analysis_report_database());
         $default_schemas =
             [ \Lechimp\Dicto\Rules\DependOn::class
             , \Lechimp\Dicto\Rules\Invoke::class
@@ -134,5 +135,70 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("/the/path/rules", $config->project_rules());
         $this->assertEquals("/the/path/root/dir", $config->project_root());
         $this->assertEquals("/the/path/data", $config->project_storage());
+    }
+
+    public function test_reports() {
+        $config = new Config("/the/path", [
+            [ "project" =>
+                [ "root"    => "/root/dir"
+                , "storage" => "/data"
+                , "rules" => "/rules"
+                ]
+            , "analysis" =>
+                [ "ignore" =>
+                    [ ".*\\.omit_me"
+                    ]
+                ]
+            , "reports" =>
+                [
+                    [ "class" => "DiffPerRule"
+                    , "target" => "default.html"
+                    ]
+                ,   [ "class" => "\\Foo\\Bar"
+                    , "source" => "foobar.php"
+                    , "target" => "foobar.html"
+                    , "config" => []
+                    ]
+                ,   [ "name" => "foo"
+                    , "class" => "DiffPerRule"
+                    , "target" => "default.html"
+                    ]
+                ]
+            ]]);
+
+        $expected =
+            [ new Report\Config
+                ( "/the/path"
+                , "DiffPerRule"
+                , "default.html"
+                , []
+                )
+            , new Report\Config
+                ( "/the/path"
+                , "\\Foo\\Bar"
+                , "foobar.html"
+                , []
+                , null
+                , "foobar.php"
+                )
+            , new Report\Config
+                ( "/the/path"
+                , "DiffPerRule"
+                , "default.html"
+                , []
+                , "foo"
+                )
+            ];
+        $this->assertEquals($expected, $config->reports());
+
+        $r1 = $config->reports()[1];
+        $this->assertEquals("\\Foo\\Bar", $r1->class_name());
+        $this->assertEquals("foobar.html", $r1->target());
+        $this->assertEquals([], $r1->config());
+        $this->assertEquals(null, $r1->name());
+        $this->assertEquals("foobar.php", $r1->source_path());
+
+        $r2 = $config->reports()[2];
+        $this->assertEquals("foo", $r2->name());
     }
 }

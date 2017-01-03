@@ -35,20 +35,20 @@ class Analyzer {
     protected $index;
 
     /**
-     * @var ReportGenerator
+     * @var Listener
      */
-    protected $generator;
+    protected $listener;
 
     public function __construct
                         ( Log $log
                         , Ruleset $ruleset
                         , Index $index
-                        , ReportGenerator $generator
+                        , Listener $listener
                         ) {
         $this->log = $log;
         $this->ruleset = $ruleset;
         $this->index = $index;
-        $this->generator = $generator;
+        $this->listener = $listener;
     }
 
     /**
@@ -57,20 +57,20 @@ class Analyzer {
      * @return  null
      */
     public function run() {
-        $this->generator->begin_ruleset($this->ruleset);
+        $this->listener->begin_ruleset($this->ruleset);
         foreach ($this->ruleset->rules() as $rule) {
             $this->log->info("checking: ".$rule->pprint());
-            $this->generator->begin_rule($rule);
+            $this->listener->begin_rule($rule);
             $queries = $rule->compile($this->index);
             foreach ($queries as $query) {
                 $results = $query->run(["rule" => $rule]);
                 foreach ($results as $row) {
-                    $this->generator->report_violation($this->build_violation($row));
+                    $this->listener->report_violation($this->build_violation($row));
                 }
             }
-            $this->generator->end_rule();
+            $this->listener->end_rule();
         }
-        $this->generator->end_ruleset();
+        $this->listener->end_ruleset();
     }
 
     public function build_violation($info) {

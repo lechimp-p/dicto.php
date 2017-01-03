@@ -12,7 +12,7 @@ namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\Indexer\InsertTwice;
 use Lechimp\Dicto\Indexer\IndexerFactory;
-use Lechimp\Dicto\Analysis\ReportGenerator;
+use Lechimp\Dicto\Analysis\Listener;
 use Lechimp\Dicto\Analysis\AnalyzerFactory;
 use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Indexer\Insert;
@@ -49,9 +49,9 @@ class Engine {
     protected $analyzer_factory;
 
     /**
-     * @var ReportGenerator
+     * @var Listener
      */
-    protected $report_generator;
+    protected $analysis_listener;
 
     /**
      * @var SourceStatus
@@ -63,7 +63,7 @@ class Engine {
                                , DBFactory $db_factory
                                , IndexerFactory $indexer_factory
                                , AnalyzerFactory $analyzer_factory
-                               , ReportGenerator $report_generator
+                               , Listener $report_generator
                                , SourceStatus $source_status
                                ) {
         $this->log = $log;

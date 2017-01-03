@@ -21,7 +21,7 @@ use Lechimp\Dicto\Indexer\Indexer;
 use PhpParser\ParserFactory;
 
 require_once(__DIR__."/LoggerMock.php");
-require_once(__DIR__."/ReportGeneratorMock.php");
+require_once(__DIR__."/AnalysisListenerMock.php");
 require_once(__DIR__."/IndexerExpectations.php");
 
 abstract class RuleTest extends PHPUnit_Framework_TestCase {
@@ -50,7 +50,7 @@ abstract class RuleTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $this->db = new IndexDB();
 
-        $this->rp = new ReportGeneratorMock();
+        $this->al = new AnalysisListenerMock();
         $this->log = new LoggerMock();
         $lexer = new \PhpParser\Lexer\Emulative
             (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
@@ -68,9 +68,9 @@ abstract class RuleTest extends PHPUnit_Framework_TestCase {
         $this->indexer->index_content("source.php", $source);
 
         $ruleset = new R\Ruleset($rule->variables(), array($rule));
-        $analyzer = new Dicto\Analysis\Analyzer($this->log, $ruleset, $this->db, $this->rp);
+        $analyzer = new Dicto\Analysis\Analyzer($this->log, $ruleset, $this->db, $this->al);
         $analyzer->run();
-        return $this->rp->violations;
+        return $this->al->violations;
     }
 
     public function parse($rules) {

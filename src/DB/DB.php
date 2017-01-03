@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-namespace Lechimp\Dicto\App;
+namespace Lechimp\Dicto\DB;
 
 use Doctrine\DBAL\Connection;
 
@@ -27,6 +27,13 @@ abstract class DB {
      */
     public function builder() {
         return $this->connection->createQueryBuilder();
+    }
+
+    /**
+     * @return Connection
+     */
+    public function connection() {
+        return $this->connection;
     }
 
     /**

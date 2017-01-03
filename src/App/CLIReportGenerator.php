@@ -10,12 +10,13 @@
 
 namespace Lechimp\Dicto\App;
 
-use Lechimp\Dicto\Analysis\ReportGenerator;
+use Lechimp\Dicto\Analysis\Listener;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
 
-class CLIReportGenerator implements ReportGenerator {
+# TODO: Rename this or move this to Report namespace.
+class CLIReportGenerator implements Listener {
     protected $lines = array();
     protected $current_rule = null;
     protected $current_violations = [];

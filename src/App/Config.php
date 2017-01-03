@@ -10,6 +10,8 @@
 
 namespace Lechimp\Dicto\App;
 
+use Lechimp\Dicto\Report;
+
 use Symfony\Component\Config\Definition\Processor;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
@@ -29,6 +31,11 @@ class Config implements ConfigurationInterface {
     protected $values;
 
     /**
+     * @var Report\Config[]|null
+     */
+    protected $reports = null;
+
+    /**
      * @var array
      */
     protected $defaults =
@@ -36,7 +43,7 @@ class Config implements ConfigurationInterface {
             [ "ignore"  => []
             , "store_index" => false
             , "report_stdout" => true 
-            , "report_database" => false
+            , "report_database" => true
             ]
         , "rules" =>
             [ "schemas" =>
@@ -153,6 +160,27 @@ class Config implements ConfigurationInterface {
                         ->end()
                     ->end()
                 ->end()
+                ->arrayNode("reports")
+                    ->prototype("array")
+                        ->children()
+                            ->scalarNode("name")
+                                ->defaultValue(null)
+                            ->end()
+                            ->scalarNode("class")
+                                ->isRequired()
+                            ->end()
+                            ->scalarNode("target")
+                                ->isRequired()
+                            ->end()
+                            ->scalarNode("source")
+                                ->defaultValue(null)
+                            ->end()
+                            ->variableNode("config")
+                                ->defaultValue([])
+                            ->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ->end();
 
@@ -249,5 +277,26 @@ class Config implements ConfigurationInterface {
      */
     public function runtime_check_assertions() {
         return $this->values["runtime"]["check_assertions"];
+    }
+
+    /**
+     * @return Report\Config[]
+     */
+    public function reports() {
+        if ($this->reports !== null) {
+            return $this->reports;
+        }
+        $this->reports = [];
+        foreach ($this->values["reports"] as $rep) {
+            $this->reports[] = new Report\Config
+                ( $this->path()
+                , $rep["class"]
+                , $rep["target"]
+                , $rep["config"]
+                , $rep["name"]
+                , $rep["source"]
+                );
+        }
+        return $this->reports;
     }
 }

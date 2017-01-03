@@ -8,18 +8,18 @@
  * a copy of the license along with the code.
  */
 
-namespace Lechimp\Dicto\App;
+namespace Lechimp\Dicto\Report;
 
-use Lechimp\Dicto\Analysis\ReportGenerator;
+use Lechimp\Dicto\Analysis\Listener;
 use Lechimp\Dicto\Analysis\Violation;
+use Lechimp\Dicto\DB\DB;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
 use Lechimp\Dicto\Variables\Variable;
 use Doctrine\DBAL\Schema;
-use Doctrine\DBAL\Types\Type;
 use Doctrine\DBAL\Schema\Synchronizer\SingleDatabaseSynchronizer;
 
-class ResultDB extends DB implements ReportGenerator {
+class ResultDB extends DB implements Listener {
     /**
      * @var int|null
      */
@@ -30,7 +30,7 @@ class ResultDB extends DB implements ReportGenerator {
      */
     private $current_rule_id = null;
 
-    // ReportGenerator implementation
+    // Analysis\Listener implementation
 
     /**
      * Announce to start a new run of the analysis now.
@@ -41,7 +41,7 @@ class ResultDB extends DB implements ReportGenerator {
     public function begin_run($commit_hash) {
         assert('is_string($commit_hash)');
         $this->builder()
-            ->insert($this->run_table())
+            ->insert("runs")
             ->values(array
                 ( "commit_hash" => "?"
                 ))
@@ -78,25 +78,29 @@ class ResultDB extends DB implements ReportGenerator {
         $rule_id = $this->rule_id($rule);
         if ($rule_id === null) {
             $this->builder()
-                ->insert($this->rule_table())
+                ->insert("rules")
                 ->values(array
                     ( "rule" => "?"
                     , "first_seen" => "?"
                     , "last_seen" => "?"
+                    , "explanation" => "?"
                     ))
                 ->setParameter(0, $rule->pprint())
                 ->setParameter(1, $this->current_run_id)
                 ->setParameter(2, $this->current_run_id)
+                ->setParameter(3, $rule->explanation())
                 ->execute();
             $rule_id = (int)$this->connection->lastInsertId();
         }
         else {
             $this->builder()
-                ->update($this->rule_table())
+                ->update("rules")
                 ->set("last_seen", "?")
+                ->set("explanation", "?")
                 ->where("id = ?")
                 ->setParameter(0, $this->current_run_id)
-                ->setParameter(1, $rule_id)
+                ->setParameter(1, $rule->explanation())
+                ->setParameter(2, $rule_id)
                 ->execute();
         }
         foreach ($rule->variables() as $variable) {
@@ -121,7 +125,7 @@ class ResultDB extends DB implements ReportGenerator {
         $violation_id = $this->violation_id($violation);
         if ($violation_id === null) {
             $this->builder()
-                ->insert($this->violation_table())
+                ->insert("violations")
                 ->values(array
                     ( "rule_id" => "?"
                     , "file" => "?"
@@ -139,7 +143,7 @@ class ResultDB extends DB implements ReportGenerator {
         }
         else {
             $this->builder()
-                ->update($this->violation_table())
+                ->update("violations")
                 ->set("last_seen", "?")
                 ->where("id = ?")
                 ->setParameter(0, $this->current_run_id)
@@ -148,7 +152,7 @@ class ResultDB extends DB implements ReportGenerator {
         }
 
         $this->builder()
-            ->insert($this->violation_location_table())
+            ->insert("violation_locations")
             ->values(array
                 ( "violation_id" => "?"
                 , "run_id"  => "?"
@@ -170,7 +174,7 @@ class ResultDB extends DB implements ReportGenerator {
     protected function rule_id(Rule $rule) {
         $res = $this->builder()
             ->select("id")
-            ->from($this->rule_table())
+            ->from("rules")
             ->where("rule = ?")
             ->setParameter(0, $rule->pprint())
             ->execute()
@@ -190,7 +194,7 @@ class ResultDB extends DB implements ReportGenerator {
     protected function variable_id(Variable $var) {
         $res = $this->builder()
             ->select("id")
-            ->from($this->variable_table())
+            ->from("variables")
             ->where($this->builder()->expr()->andX
                 ( "name = ?"
                 , "meaning = ?"
@@ -221,7 +225,7 @@ class ResultDB extends DB implements ReportGenerator {
     protected function insert_variable(Variable $var) {
         assert('$this->current_run_id !== null');
         $this->builder()
-            ->insert($this->variable_table())
+            ->insert("variables")
             ->values(array
                 ( "name" => "?"
                 , "meaning" => "?"
@@ -240,7 +244,7 @@ class ResultDB extends DB implements ReportGenerator {
         assert('is_integer($var_id)');
         assert('$this->current_run_id !== null');
         $this->builder()
-            ->update($this->variable_table())
+            ->update("variables")
             ->set("last_seen", "?")
             ->where("id = ?")
             ->setParameter(0, $this->current_run_id)
@@ -255,7 +259,7 @@ class ResultDB extends DB implements ReportGenerator {
     protected function violation_id(Violation $violation) {
         $res = $this->builder()
             ->select("id")
-            ->from($this->violation_table())
+            ->from("violations")
             ->where($this->builder()->expr()->andX
                 ( "rule_id = ?"
                 , "file = ?"
@@ -274,34 +278,10 @@ class ResultDB extends DB implements ReportGenerator {
         }
     }
 
-    // Names
-
-    public function run_table() {
-        return "runs";    
-    }
-
-    public function variable_table() {
-        return "variables";
-    }
-
-    public function rule_table() {
-        return "rules";
-    }
-
-    public function violation_table() {
-        return "violations";
-    }
-
-    public function violation_location_table() {
-        return "violation_locations";
-    }
-
     // Creation of database.
 
-    public function init_database_schema() {
-        $schema = new Schema\Schema();
-
-        $run_table = $schema->createTable($this->run_table());
+    protected function init_run_table(Schema\Schema $schema) {
+        $run_table = $schema->createTable("runs");
         $run_table->addColumn
             ("id", "integer"
             , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
@@ -312,10 +292,14 @@ class ResultDB extends DB implements ReportGenerator {
             );
         // TODO: maybe add time
         // TODO: do we need some other meta information per run of the analysis? 
+        // TODO: Might be a good idea to store config and rules file here
         $run_table->setPrimaryKey(array("id"));
 
+        return $run_table;
+    }
 
-        $rule_table = $schema->createTable($this->rule_table());
+    protected function init_rule_table(Schema\Schema $schema, Schema\Table $run_table) {
+        $rule_table = $schema->createTable("rules");
         $rule_table->addColumn
             ( "id", "integer"
             , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
@@ -323,6 +307,11 @@ class ResultDB extends DB implements ReportGenerator {
         $rule_table->addColumn
             ( "rule", "string"
             , array("notnull" => true)
+            );
+
+        $rule_table->addColumn
+            ( "explanation", "string"
+            , array("notnull" => false)
             );
         $rule_table->addColumn
             ( "first_seen", "integer"
@@ -345,8 +334,11 @@ class ResultDB extends DB implements ReportGenerator {
             , array("id")
             );
 
-        
-        $variable_table = $schema->createTable($this->variable_table());
+        return $rule_table;
+    }
+
+    public function init_variable_table(Schema\Schema $schema) {
+        $variable_table = $schema->createTable("variables");
         $variable_table->addColumn
             ( "id", "integer"
             , array("notnull" => true)
@@ -359,6 +351,7 @@ class ResultDB extends DB implements ReportGenerator {
             ( "meaning", "string"
             , array("notnull" => true)
             );
+        // TODO: Some field for explanation is missing here.
         $variable_table->addColumn
             ( "first_seen", "integer"
             , array("notnull" => true)
@@ -369,8 +362,11 @@ class ResultDB extends DB implements ReportGenerator {
             );
         $variable_table->setPrimaryKey(array("id"));
 
+        return $variable_table;
+    }
 
-        $violation_table = $schema->createTable($this->violation_table());
+    protected function init_violation_table(Schema\Schema $schema, Schema\Table $run_table, Schema\Table $rule_table) {
+        $violation_table = $schema->createTable("violations");
         $violation_table->addColumn
             ( "id", "integer"
             , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
@@ -413,9 +409,11 @@ class ResultDB extends DB implements ReportGenerator {
             , array("id")
             );
 
+        return $violation_table;
+    }
 
-        $violation_location_table = $schema->createTable($this->violation_location_table());
-
+    protected function init_violation_location_table(Schema\Schema $schema, Schema\Table $run_table, Schema\Table $violation_table) {
+        $violation_location_table = $schema->createTable("violation_locations");
         $violation_location_table->addColumn
             ( "id", "integer"
             , array("notnull" => true, "unsigned" => true, "autoincrement" => true)
@@ -443,6 +441,17 @@ class ResultDB extends DB implements ReportGenerator {
             , array("run_id")
             , array("id")
             );
+        return $violation_location_table;
+    }
+
+    public function init_database_schema() {
+        $schema = new Schema\Schema();
+
+        $run_table = $this->init_run_table($schema);
+        $rule_table = $this->init_rule_table($schema, $run_table);
+        $this->init_variable_table($schema);
+        $violation_table = $this->init_violation_table($schema, $run_table, $rule_table);
+        $this->init_violation_location_table($schema, $run_table, $violation_table);
 
         $sync = new SingleDatabaseSynchronizer($this->connection);
         $sync->createSchema($schema);

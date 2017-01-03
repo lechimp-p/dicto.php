@@ -25,6 +25,7 @@
 # Report
 * Introduce some nice way to use different and also custom report generators. That
   would mean to introduce the possibility to add custom classes to the config. 
+* Maybe exchange the current name for reports by something like tags.
 
 # Issues
 * It is inconsistent, that Invoke makes invocations in methods of classes related
@@ -35,9 +36,12 @@
   not be able to analyse that rule correctly, as method_references are not related
   to a class.
 * It seems as everything that "invokes" should also "depend on".
+* The ResultDB currently won't know if a run completed.
 
 # Execution plan for introducing git (and further improvements)
 * The engine then somehow needs to figure out what to do based on the last run and
   the current state of the source.
     -> This would also mean that we could also only reindex files that have changed
        between two commits.
+* Time measurement in dicto.php seems to be a bit out of line. It better be moved
+  to the commands.

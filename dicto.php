@@ -1,3 +1,4 @@
+#!/usr/bin/env hhvm
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
@@ -10,10 +11,13 @@
 
 require_once(__DIR__."/vendor/autoload.php");
 
+use Symfony\Component\Console\Application;
+
 $app = new \Lechimp\Dicto\App\App();
 
+$app->setAutoExit(false);
 $start_time = microtime(true);
-$app->run($_SERVER["argv"]);
+$app->run();
 $time_elapsed_secs = microtime(true) - $start_time;
 
 echo "execution time:    ".$time_elapsed_secs."s\n";
