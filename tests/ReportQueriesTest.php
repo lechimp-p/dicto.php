@@ -40,7 +40,7 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals($first_run, $prev_run);
     }
 
-    public function test_previous_run_with_different_commit() {
+    public function test_run_with_different_commit_before() {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
         $first_run = $this->queries->last_run();
@@ -49,7 +49,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->begin_run("#COMMIT_HASH2#");
         $this->db->end_run();
 
-        $prev_run = $this->queries->previous_run_with_different_commit();
+        $cur_run = $this->queries->last_run();
+        $prev_run = $this->queries->run_with_different_commit_before($cur_run);
 
         $this->assertEquals($first_run, $prev_run);
     }

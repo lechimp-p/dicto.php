@@ -82,19 +82,21 @@ class Queries {
     }
 
     /**
-     * Get the id of previous run with another commit id as current run.
+     * Get the id of the run before the given run that has another commit as the
+     * given run.
      *
+     * @param   int     $run
      * @return  int
      */
-    public function previous_run_with_different_commit() {
-        $cur = $this->last_run();
-        $commit_hash = $this->run_info($cur)["commit_hash"];
+    public function run_with_different_commit_before($run) {
+        $commit_hash = $this->run_info($run)["commit_hash"];
         $b = $this->result_db->builder();
         $res = $b
             ->select("id")
             ->from("runs")
-            ->where("commit_hash <> ?")
+            ->where("commit_hash <> ? AND id < ?")
             ->setParameter(0, $commit_hash)
+            ->setParameter(1, $run)
             ->orderBy("id", "DESC")
             ->setMaxResults(1)
             ->execute()
