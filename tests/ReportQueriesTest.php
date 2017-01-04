@@ -26,7 +26,7 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertGreaterThan($cur_run, $next_run);
     }
 
-    public function test_previous_run() {
+    public function test_run_before() {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
         $first_run = $this->queries->last_run();
@@ -34,7 +34,7 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->end_run();
 
         $cur_run = $this->queries->last_run();
-        $prev_run = $this->queries->previous_run();
+        $prev_run = $this->queries->run_before($cur_run);
 
         $this->assertGreaterThan($prev_run, $cur_run);
         $this->assertEquals($first_run, $prev_run);

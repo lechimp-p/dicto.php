@@ -59,25 +59,26 @@ class Queries {
     }
 
     /**
-     * Get the id of the previous run.
+     * Get the id of a run before the given run.
      *
+     * @param   int     $run
      * @return  int
      */
-    public function previous_run() {
+    public function run_before($run) {
         $b = $this->result_db->builder();
         $res = $b
             ->select("id")
             ->from("runs")
+            ->where("id < ?")
+            ->setParameter(0, $run)
             ->orderBy("id", "DESC")
-            ->setMaxResults(2)
+            ->setMaxResults(1)
             ->execute();
-        // Drop current
-        $res->fetch();
         $res = $res->fetch();
         if ($res) {
             return (int)$res["id"];
         }
-        throw new \RuntimeException("Result database contains no previous run.");
+        throw new \RuntimeException("Result database contains no run before '$run'.");
     }
 
     /**
