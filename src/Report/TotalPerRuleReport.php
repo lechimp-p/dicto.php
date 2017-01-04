@@ -25,7 +25,7 @@ class TotalPerRuleReport extends Report {
      * @inheritdoc
      */
     public function generate() {
-        $cur_run = $this->queries->current_run();
+        $cur_run = $this->queries->last_run();
         $source_url = $this->source_url();
         $current = $this->queries->run_info($cur_run);
         return

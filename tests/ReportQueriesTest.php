@@ -14,14 +14,14 @@ use Lechimp\Dicto\Rules;
 use Lechimp\Dicto\Analysis\Violation;
 
 class ReportQueriesTest extends ReportTestBase {
-    public function test_current_run() {
+    public function test_last_run() {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
-        $cur_run = $this->queries->current_run();
+        $cur_run = $this->queries->last_run();
 
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
-        $next_run = $this->queries->current_run();
+        $next_run = $this->queries->last_run();
 
         $this->assertGreaterThan($cur_run, $next_run);
     }
@@ -29,11 +29,11 @@ class ReportQueriesTest extends ReportTestBase {
     public function test_previous_run() {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
-        $first_run = $this->queries->current_run();
+        $first_run = $this->queries->last_run();
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
 
-        $cur_run = $this->queries->current_run();
+        $cur_run = $this->queries->last_run();
         $prev_run = $this->queries->previous_run();
 
         $this->assertGreaterThan($prev_run, $cur_run);
@@ -43,7 +43,7 @@ class ReportQueriesTest extends ReportTestBase {
     public function test_previous_run_with_different_commit() {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
-        $first_run = $this->queries->current_run();
+        $first_run = $this->queries->last_run();
         $this->db->begin_run("#COMMIT_HASH2#");
         $this->db->end_run();
         $this->db->begin_run("#COMMIT_HASH2#");
@@ -57,19 +57,19 @@ class ReportQueriesTest extends ReportTestBase {
     public function test_last_run_for() {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
-        $run1 = $this->queries->current_run();
+        $run1 = $this->queries->last_run();
 
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
-        $run2 = $this->queries->current_run();
+        $run2 = $this->queries->last_run();
 
         $this->db->begin_run("#COMMIT_HASH2#");
         $this->db->end_run();
-        $run3 = $this->queries->current_run();
+        $run3 = $this->queries->last_run();
 
         $this->db->begin_run("#COMMIT_HASH3#");
         $this->db->end_run();
-        $run4 = $this->queries->current_run();
+        $run4 = $this->queries->last_run();
 
         $qrun2 = $this->queries->last_run_for("#COMMIT_HASH#");
         $qrun3 = $this->queries->last_run_for("#COMMIT_HASH2#");
@@ -83,7 +83,7 @@ class ReportQueriesTest extends ReportTestBase {
         $hash = "#COMMIT_HASH#";
         $this->db->begin_run($hash);
         $this->db->end_run();
-        $run = $this->queries->current_run();
+        $run = $this->queries->last_run();
 
         $info = $this->queries->run_info($run);
  
@@ -301,7 +301,7 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->end_ruleset();
         $this->db->end_run();
 
-        $run = $this->queries->current_run();
+        $run = $this->queries->last_run();
         $this->assertEquals(2, $this->queries->count_violations_in($run));
     }
 
@@ -321,7 +321,7 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->end_ruleset();
         $this->db->end_run();
 
-        $run1 = $this->queries->current_run();
+        $run1 = $this->queries->last_run();
 
         $commit2 = "#COMMIT_2#";
         $this->db->begin_run($commit2);
@@ -335,7 +335,7 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->end_ruleset();
         $this->db->end_run();
 
-        $run2 = $this->queries->current_run();
+        $run2 = $this->queries->last_run();
 
         $this->assertEquals(1, $this->queries->count_added_violations($run1, $run2));
     }
@@ -358,7 +358,7 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->end_ruleset();
         $this->db->end_run();
 
-        $run1 = $this->queries->current_run();
+        $run1 = $this->queries->last_run();
 
         $commit2 = "#COMMIT_2#";
         $this->db->begin_run($commit2);
@@ -370,7 +370,7 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->end_ruleset();
         $this->db->end_run();
 
-        $run2 = $this->queries->current_run();
+        $run2 = $this->queries->last_run();
 
         $this->assertEquals(1, $this->queries->count_resolved_violations($run1, $run2));
     }

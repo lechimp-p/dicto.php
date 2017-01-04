@@ -16,15 +16,38 @@ class Queries {
     }
 
     /**
-     * Get the id of the current run.
+     * Get the id of the last run.
      *
      * @return  int
      */
-    public function current_run() {
+    public function last_run() {
         $b = $this->result_db->builder();
         $res = $b
             ->select("id")
             ->from("runs")
+            ->orderBy("id", "DESC")
+            ->setMaxResults(1)
+            ->execute()
+            ->fetch();
+        if ($res) {
+            return (int)$res["id"];
+        }
+        throw new \RuntimeException("Result database contains no runs.");
+    }
+
+    /**
+     * Get the id of the last run for a certain commit.
+     *
+     * @param   string  $commit_hash
+     * @return  int|null
+     */
+    public function last_run_for($commit_hash) {
+        $b = $this->result_db->builder();
+        $res = $b
+            ->select("id")
+            ->from("runs")
+            ->where("commit_hash = ?")
+            ->setParameter(0, $commit_hash)
             ->orderBy("id", "DESC")
             ->setMaxResults(1)
             ->execute()
@@ -63,7 +86,7 @@ class Queries {
      * @return  int
      */
     public function previous_run_with_different_commit() {
-        $cur = $this->current_run();
+        $cur = $this->last_run();
         $commit_hash = $this->run_info($cur)["commit_hash"];
         $b = $this->result_db->builder();
         $res = $b
@@ -79,29 +102,6 @@ class Queries {
             return (int)$res["id"];
         }
         throw new \RuntimeException("Result database contains previous run with a different commit.");
-    }
-
-    /**
-     * Get the id of the last run for a certain commit.
-     *
-     * @param   string  $commit_hash
-     * @return  int|null
-     */
-    public function last_run_for($commit_hash) {
-        $b = $this->result_db->builder();
-        $res = $b
-            ->select("id")
-            ->from("runs")
-            ->where("commit_hash = ?")
-            ->setParameter(0, $commit_hash)
-            ->orderBy("id", "DESC")
-            ->setMaxResults(1)
-            ->execute()
-            ->fetch();
-        if ($res) {
-            return (int)$res["id"];
-        }
-        throw new \RuntimeException("Result database contains no runs.");
     }
 
     /**

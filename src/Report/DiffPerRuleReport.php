@@ -24,7 +24,7 @@ class DiffPerRuleReport extends Report {
      * @inheritdoc
      */
     public function generate() {
-        $cur_run = $this->queries->current_run();
+        $cur_run = $this->queries->last_run();
         $prev_run = $this->queries->previous_run_with_different_commit();
         $source_url = $this->source_url();
         $current = $this->queries->run_info($cur_run);
