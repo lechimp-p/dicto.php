@@ -55,7 +55,7 @@ class Queries {
         if ($res) {
             return (int)$res["id"];
         }
-        throw new \RuntimeException("Result database contains no runs.");
+        throw new \RuntimeException("Result database contains no run for commit '$commit_hash'.");
     }
 
     /**
