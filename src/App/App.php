@@ -11,6 +11,10 @@
 namespace Lechimp\Dicto\App;
 
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command as SCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * The App to be run from a script.
@@ -19,9 +23,33 @@ class App extends Application {
     public function __construct() {
         parent::__construct();
         ini_set('xdebug.max_nesting_level', 200);
+        $this->add_commands();
+    }
 
+    protected function add_commands() {
         $this->add(new AnalyzeCommand());
         $this->add(new ReportCommand());
+    }
+
+    /**
+     * Overwritten from base class to load configs, condfigure the runtime
+     * and build the DIC, if the command is an command specific to dicto.
+     *
+     * @inheritdoc
+     */
+    public function doRunCommand(SCommand $command, InputInterface $input, OutputInterface $output) {
+        if ($command instanceof Command) {
+            $command->mergeApplicationDefinition();
+            if ($command->getDefinition()->hasArgument("configs")) {
+                $input->bind($command->getDefinition());
+                $configs = $input->getArgument("configs");
+                $config = $this->load_config($configs);
+                $this->configure_runtime($config);
+                $dic = $this->build_dic($config);
+                $command->pull_deps_from($dic);
+            }
+        }
+        return parent::doRunCommand($command, $input, $output);
     }
 
     /**
@@ -68,5 +96,15 @@ class App extends Application {
         $config_file_path = implode("/", $t);
 
         return new Config($config_file_path, $configs_array);
+    }
+
+    /**
+     * Build the dependency injection container.
+     *
+     * @param   Config
+     * @return  DIC
+     */
+    protected function build_dic(Config $config) {
+        return new DIC($config);
     }
 }

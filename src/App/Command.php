@@ -11,7 +11,6 @@
 namespace Lechimp\Dicto\App;
 
 use Symfony\Component\Console\Command\Command as SCommand;
-use Symfony\Component\Yaml\Yaml;
 
 /**
  * Base class for Commands.
@@ -23,5 +22,6 @@ abstract class Command extends SCommand {
      * @param   array|DIC   $dic
      * @return  null
      */
-    abstract public function pull_deps_from($dic);
+    public function pull_deps_from($dic) {
+    }
 }
