@@ -59,7 +59,7 @@ class Queries {
     }
 
     /**
-     * Get the id of a run before the given run.
+     * Get the id of the run before the given run.
      *
      * @param   int     $run
      * @return  int
