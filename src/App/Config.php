@@ -60,108 +60,126 @@ class Config implements ConfigurationInterface {
         //       to rules.*-arrays
         $tree_builder = new TreeBuilder();
         $root = $tree_builder->root("dicto");
-        $root
-            ->children()
-                ->arrayNode("project")
-                    ->children()
-                        ->scalarNode("root")
-                            ->isRequired()
-                        ->end()
-                        ->scalarNode("storage")
-                            ->defaultValue(".")
-                        ->end()
-                        ->scalarNode("rules")
-                            ->isRequired()
-                        ->end()
-                    ->end()
-                ->end()
-                ->arrayNode("analysis")
-                    ->children()
-                        ->arrayNode("ignore")
-                            ->prototype("scalar")
-                            ->end()
-                            ->defaultValue([])
-                        ->end()
-                        ->booleanNode("store_index")
-                            ->defaultValue(false)
-                        ->end()
-                        ->booleanNode("store_results")
-                            ->defaultValue(true)
-                        ->end()
-                    ->end()
-                    ->addDefaultsIfNotSet()
-                ->end()
-                ->arrayNode("rules")
-                    ->children()
-                        ->arrayNode("schemas")
-                            ->prototype("scalar")
-                            ->end()
-                            ->defaultValue
-                                ([\Lechimp\Dicto\Rules\DependOn::class
-                                , \Lechimp\Dicto\Rules\Invoke::class
-                                , \Lechimp\Dicto\Rules\ContainText::class
-                                ])
-                        ->end()
-                        ->arrayNode("properties")
-                            ->prototype("scalar")
-                            ->end()
-                            ->defaultValue
-                                ([\Lechimp\Dicto\Variables\Name::class
-                                , \Lechimp\Dicto\Variables\In::class
-                                ])
-                        ->end()
-                        ->arrayNode("variables")
-                            ->prototype("scalar")
-                            ->end()
-                            ->defaultValue
-                                ([\Lechimp\Dicto\Variables\Namespaces::class
-                                , \Lechimp\Dicto\Variables\Classes::class
-                                , \Lechimp\Dicto\Variables\Interfaces::class
-                                , \Lechimp\Dicto\Variables\Traits::class
-                                , \Lechimp\Dicto\Variables\Functions::class
-                                , \Lechimp\Dicto\Variables\Globals::class
-                                , \Lechimp\Dicto\Variables\Files::class
-                                , \Lechimp\Dicto\Variables\Methods::class
-                                , \Lechimp\Dicto\Variables\ErrorSuppressor::class
-                                , \Lechimp\Dicto\Variables\Exit_::class
-                                , \Lechimp\Dicto\Variables\Die_::class
-                                , \Lechimp\Dicto\Variables\Eval_::class
-                                ])
-                        ->end()
-                    ->end()
-                    ->addDefaultsIfNotSet()
-                ->end()
-                ->arrayNode("runtime")
-                    ->children()
-                        ->booleanNode("check_assertions")
-                            ->defaultValue(false)
-                        ->end()
-                    ->end()
-                    ->addDefaultsIfNotSet()
-                ->end()
-                ->arrayNode("reports")
-                    ->prototype("array")
-                        ->children()
-                            ->scalarNode("name")
-                            ->defaultValue(null)
-                        ->end()
-                        ->scalarNode("class")
-                            ->isRequired()
-                        ->end()
-                        ->scalarNode("target")
-                            ->isRequired()
-                        ->end()
-                        ->scalarNode("source")
-                            ->defaultValue(null)
-                        ->end()
-                        ->variableNode("config")
-                            ->defaultValue([])
-                        ->end()
-                    ->end()
-                ->end()
-            ->end();
-
+        $c = $root->children();
+        $this->add_project_node($c);
+        $this->add_analysis_node($c);
+        $this->add_rules_node($c);
+        $this->add_runtime_node($c);
+        $this->add_reports_node($c);
+        $c->end();
         return $tree_builder;
+    }
+
+    protected function add_project_node($c) {
+        $c->arrayNode("project")
+            ->children()
+                ->scalarNode("root")
+                    ->isRequired()
+                ->end()
+                ->scalarNode("storage")
+                    ->defaultValue(".")
+                ->end()
+                ->scalarNode("rules")
+                    ->isRequired()
+                ->end()
+            ->end()
+        ->end();
+    }
+
+    protected function add_analysis_node($c) {
+        $c->arrayNode("analysis")
+            ->children()
+                ->arrayNode("ignore")
+                    ->prototype("scalar")
+                    ->end()
+                    ->defaultValue([])
+                ->end()
+                ->booleanNode("store_index")
+                    ->defaultValue(false)
+                ->end()
+                ->booleanNode("store_results")
+                    ->defaultValue(true)
+                ->end()
+            ->end()
+            ->addDefaultsIfNotSet()
+        ->end();
+    }
+
+    protected function add_rules_node($c) {
+        $c->arrayNode("rules")
+            ->children()
+                ->arrayNode("schemas")
+                    ->prototype("scalar")
+                    ->end()
+                    ->defaultValue
+                        ([\Lechimp\Dicto\Rules\DependOn::class
+                        , \Lechimp\Dicto\Rules\Invoke::class
+                        , \Lechimp\Dicto\Rules\ContainText::class
+                        ])
+                ->end()
+                ->arrayNode("properties")
+                    ->prototype("scalar")
+                    ->end()
+                    ->defaultValue
+                        ([\Lechimp\Dicto\Variables\Name::class
+                        , \Lechimp\Dicto\Variables\In::class
+                        ])
+                ->end()
+                ->arrayNode("variables")
+                    ->prototype("scalar")
+                    ->end()
+                    ->defaultValue
+                        ([\Lechimp\Dicto\Variables\Namespaces::class
+                        , \Lechimp\Dicto\Variables\Classes::class
+                        , \Lechimp\Dicto\Variables\Interfaces::class
+                        , \Lechimp\Dicto\Variables\Traits::class
+                        , \Lechimp\Dicto\Variables\Functions::class
+                        , \Lechimp\Dicto\Variables\Globals::class
+                        , \Lechimp\Dicto\Variables\Files::class
+                        , \Lechimp\Dicto\Variables\Methods::class
+                        , \Lechimp\Dicto\Variables\ErrorSuppressor::class
+                        , \Lechimp\Dicto\Variables\Exit_::class
+                        , \Lechimp\Dicto\Variables\Die_::class
+                        , \Lechimp\Dicto\Variables\Eval_::class
+                        ])
+                ->end()
+            ->end()
+            ->addDefaultsIfNotSet()
+        ->end();
+    }
+
+    protected function add_runtime_node($c) {
+        $c->arrayNode("runtime")
+            ->children()
+                ->booleanNode("check_assertions")
+                    ->defaultValue(false)
+                ->end()
+            ->end()
+            ->addDefaultsIfNotSet()
+        ->end();
+    }
+
+    protected function add_reports_node($c) {
+        $c->arrayNode("reports")
+            ->prototype("array")
+                ->children()
+                    ->scalarNode("name")
+                    ->defaultValue(null)
+                ->end()
+                ->scalarNode("class")
+                    ->isRequired()
+                ->end()
+                ->scalarNode("target")
+                    ->isRequired()
+                ->end()
+                ->scalarNode("source")
+                    ->defaultValue(null)
+                ->end()
+                ->variableNode("config")
+                    ->defaultValue([])
+                ->end()
+            ->end()
+        ->end();
     }
 
     /**
