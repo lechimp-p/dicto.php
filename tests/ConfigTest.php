@@ -11,7 +11,7 @@
 use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\Report;
 
-class ConfigClassTest extends PHPUnit_Framework_TestCase {
+class ConfigTest extends PHPUnit_Framework_TestCase {
     public function test_smoke() {
         $config = new Config("/the/path", [
             [ "project" =>
@@ -168,14 +168,15 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             , "reports" =>
                 [
                     [ "class" => "DiffPerRule"
-                    , "target" => "default.html"
+                    , "name" => "foobar"
                     ]
                 ,   [ "class" => "\\Foo\\Bar"
+                    , "name" => "foo"
                     , "source" => "foobar.php"
                     , "target" => "foobar.html"
                     , "config" => []
                     ]
-                ,   [ "name" => "foo"
+                ,   [ "name" => "bar"
                     , "class" => "DiffPerRule"
                     , "target" => "default.html"
                     ]
@@ -186,15 +187,16 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
             [ new Report\Config
                 ( "/the/path"
                 , "DiffPerRule"
-                , "default.html"
+                , null
                 , []
+                , "foobar"
                 )
             , new Report\Config
                 ( "/the/path"
                 , "\\Foo\\Bar"
                 , "foobar.html"
                 , []
-                , null
+                , "foo" 
                 , "foobar.php"
                 )
             , new Report\Config
@@ -202,7 +204,7 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
                 , "DiffPerRule"
                 , "default.html"
                 , []
-                , "foo"
+                , "bar"
                 )
             ];
         $this->assertEquals($expected, $config->reports());
@@ -211,10 +213,10 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("\\Foo\\Bar", $r1->class_name());
         $this->assertEquals("foobar.html", $r1->target());
         $this->assertEquals([], $r1->config());
-        $this->assertEquals(null, $r1->name());
+        $this->assertEquals("foo", $r1->name());
         $this->assertEquals("foobar.php", $r1->source_path());
 
         $r2 = $config->reports()[2];
-        $this->assertEquals("foo", $r2->name());
+        $this->assertEquals("bar", $r2->name());
     }
 }
