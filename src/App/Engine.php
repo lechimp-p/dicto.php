@@ -35,7 +35,7 @@ class Engine {
     protected $config;
 
     /**
-     * @var DB\Factory
+     * @var DB\IndexDBFactory
      */
     protected $db_factory;
 
