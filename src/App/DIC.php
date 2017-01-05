@@ -74,11 +74,7 @@ class DIC extends Container {
             return new \Lechimp\Dicto\Indexer\IndexerFactory
                 ( $c["log"]
                 , $c["php_parser"]
-                , array
-                    ( new \Lechimp\Dicto\Rules\ContainText()
-                    , new \Lechimp\Dicto\Rules\DependOn()
-                    , new \Lechimp\Dicto\Rules\Invoke()
-                    )
+                , $c["schemas"]
                 );
         };
 
