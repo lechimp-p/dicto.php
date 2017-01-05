@@ -96,7 +96,6 @@ class DIC extends Container {
         };
 
         $this["result_database"] = function($c) {
-            // TODO: adjust this to the new analysis.store_results config parameter.
             $config = $c["config"];
             if ($config->analysis_store_results()) {
                 $path = $this->result_database_path($config);
