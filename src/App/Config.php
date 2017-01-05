@@ -36,44 +36,6 @@ class Config implements ConfigurationInterface {
     protected $reports = null;
 
     /**
-     * @var array
-     */
-    protected $defaults =
-        [ "analysis" =>
-            [ "ignore"  => []
-            , "store_index" => false
-            ]
-        , "rules" =>
-            [ "schemas" =>
-                [ \Lechimp\Dicto\Rules\DependOn::class
-                , \Lechimp\Dicto\Rules\Invoke::class
-                , \Lechimp\Dicto\Rules\ContainText::class
-                ]
-            , "properties" =>
-                [ \Lechimp\Dicto\Variables\Name::class
-                , \Lechimp\Dicto\Variables\In::class
-                ]
-            , "variables" =>
-                [ \Lechimp\Dicto\Variables\Namespaces::class
-                , \Lechimp\Dicto\Variables\Classes::class
-                , \Lechimp\Dicto\Variables\Interfaces::class
-                , \Lechimp\Dicto\Variables\Traits::class
-                , \Lechimp\Dicto\Variables\Functions::class
-                , \Lechimp\Dicto\Variables\Globals::class
-                , \Lechimp\Dicto\Variables\Files::class
-                , \Lechimp\Dicto\Variables\Methods::class
-                , \Lechimp\Dicto\Variables\ErrorSuppressor::class
-                , \Lechimp\Dicto\Variables\Exit_::class
-                , \Lechimp\Dicto\Variables\Die_::class
-                , \Lechimp\Dicto\Variables\Eval_::class
-                ]
-            ]
-        , "runtime" =>
-            [ "check_assertions" => false
-            ]
-        ];
-
-    /**
      * Build the configuration from nested arrays using a processor.
      *
      * @param   string  $path
@@ -85,7 +47,6 @@ class Config implements ConfigurationInterface {
         }
         $this->path = $path;
         $processor = new \Symfony\Component\Config\Definition\Processor();
-        $values = array_merge([$this->defaults], $values);
         $this->values = $processor->processConfiguration($this, $values);
     }
 
@@ -119,65 +80,86 @@ class Config implements ConfigurationInterface {
                         ->arrayNode("ignore")
                             ->prototype("scalar")
                             ->end()
-                            ->isRequired()
+                            ->defaultValue([])
                         ->end()
                         ->booleanNode("store_index")
-                            ->isRequired()
+                            ->defaultValue(false)
                         ->end()
                         ->booleanNode("store_results")
                             ->defaultValue(true)
                         ->end()
                     ->end()
+                    ->addDefaultsIfNotSet()
                 ->end()
                 ->arrayNode("rules")
                     ->children()
                         ->arrayNode("schemas")
                             ->prototype("scalar")
                             ->end()
-                            ->isRequired()
+                            ->defaultValue
+                                ([\Lechimp\Dicto\Rules\DependOn::class
+                                , \Lechimp\Dicto\Rules\Invoke::class
+                                , \Lechimp\Dicto\Rules\ContainText::class
+                                ])
                         ->end()
                         ->arrayNode("properties")
                             ->prototype("scalar")
                             ->end()
-                            ->isRequired()
+                            ->defaultValue
+                                ([\Lechimp\Dicto\Variables\Name::class
+                                , \Lechimp\Dicto\Variables\In::class
+                                ])
                         ->end()
                         ->arrayNode("variables")
                             ->prototype("scalar")
                             ->end()
-                            ->isRequired()
+                            ->defaultValue
+                                ([\Lechimp\Dicto\Variables\Namespaces::class
+                                , \Lechimp\Dicto\Variables\Classes::class
+                                , \Lechimp\Dicto\Variables\Interfaces::class
+                                , \Lechimp\Dicto\Variables\Traits::class
+                                , \Lechimp\Dicto\Variables\Functions::class
+                                , \Lechimp\Dicto\Variables\Globals::class
+                                , \Lechimp\Dicto\Variables\Files::class
+                                , \Lechimp\Dicto\Variables\Methods::class
+                                , \Lechimp\Dicto\Variables\ErrorSuppressor::class
+                                , \Lechimp\Dicto\Variables\Exit_::class
+                                , \Lechimp\Dicto\Variables\Die_::class
+                                , \Lechimp\Dicto\Variables\Eval_::class
+                                ])
                         ->end()
                     ->end()
+                    ->addDefaultsIfNotSet()
                 ->end()
                 ->arrayNode("runtime")
                     ->children()
                         ->booleanNode("check_assertions")
-                            ->isRequired()
+                            ->defaultValue(false)
                         ->end()
                     ->end()
+                    ->addDefaultsIfNotSet()
                 ->end()
                 ->arrayNode("reports")
                     ->prototype("array")
                         ->children()
                             ->scalarNode("name")
-                                ->defaultValue(null)
-                            ->end()
-                            ->scalarNode("class")
-                                ->isRequired()
-                            ->end()
-                            ->scalarNode("target")
-                                ->isRequired()
-                            ->end()
-                            ->scalarNode("source")
-                                ->defaultValue(null)
-                            ->end()
-                            ->variableNode("config")
-                                ->defaultValue([])
-                            ->end()
+                            ->defaultValue(null)
+                        ->end()
+                        ->scalarNode("class")
+                            ->isRequired()
+                        ->end()
+                        ->scalarNode("target")
+                            ->isRequired()
+                        ->end()
+                        ->scalarNode("source")
+                            ->defaultValue(null)
+                        ->end()
+                        ->variableNode("config")
+                            ->defaultValue([])
                         ->end()
                     ->end()
                 ->end()
-            ->end()
-        ->end();
+            ->end();
 
         return $tree_builder;
     }
