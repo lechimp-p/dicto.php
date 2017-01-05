@@ -2,57 +2,69 @@
 [![Scrutinizer](https://scrutinizer-ci.com/g/lechimp-p/dicto.php/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/lechimp-p/dicto.php)
 [![Coverage](https://scrutinizer-ci.com/g/lechimp-p/dicto.php/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/lechimp-p/dicto.php)
 
-# dicto checks architectural rules.
+# dicto.php checks architectural rules.
 
 **This is an implementation of [dicto](http://scg.unibe.ch/dicto) in and for PHP.**
 
-## Motivation
+## What's is this good for?
 
-I'm a member of the [ILIAS](http://www.ilias.de) Open Source Community. ILIAS is
-a LMS (Learning Managment System) which recently had its 18th birthday. In an
-effort to refactor and streamline its old code base, some other ILIAS devs and
-me have introduced [dicto](http://scg.unibe.ch/dicto) to the ILIAS development process.
+dicto.php helps you to maintain or enforce architectural rules in you software
+project. Take for example an application that should implement the [MVC](https://en.wikipedia.org/wiki/Model–view–controller)
+pattern. The rules for the pattern might be phrased like this:
 
-dicto is a tool that allows developers to express architectural rules in a
-natural-like language and then finds violations of these rules within a code base.
-It's written in Smalltalk and utilizes off-the-shelf tools for the analysis work.
+```
+Model = Classes with name:".*Model"
+View  = Classes with name:".*View"
+Controller = Classes with name:".*Controller"
 
-While working with dicto inside the community it became apparent to me that broad
-adoption is hindered by the fact that it is written in Smalltalk and few people
-want to run Smalltalk on their machines. Furthermore, even less people know how
-to modify the code for common tasks like adding new rules. Currently, dicto is
-kind of intangible.
+Controller must depend on Model
+Model must depend on View
+View cannot depend on {Model, Controller}
+```
 
-This is an attempt to re-implement the great original idea (thanks A.C. and O.T.!)
-in PHP. General goals were to make the tool accessible for PHP programmers and
-make it easy to execute in a standard PHP environment.
+dicto.php finds and reports violations of rules like this, so you can take
+actions to resolve the underlying problems. Its syntax for rules almost reads
+like prose, so you can use the exact same rule definitions for communicating
+with other people about how your project should be structured.
+
+[Read more about my use-case here.](#motivation)
 
 ## Try it out
 
-It's not completely finished, but
+This is [not feature complete](#shortcommings-and-outlook), but
 
 * Clone this project and checkout the master branch.
 * Clone [ILIAS](https://github.com/ILIAS-eLearning/ILIAS) as an example
   analysis target.
-* Open `example/ilias.config.yaml` and adjust the project.root variable.
-  to the location of your freshly checked out ILIAS repository.
-* Make sure hhvm >=3.15 is installed.
+* Open `example/ilias.config.yaml` and adjust the `project.root` variable.
+  to the location of your freshly checked out ILIAS repository. Adjust
+  `project.storage` to a location where dicto.php can store its stuff.
+* Make sure hhvm >=3.15 is installed. PHP 5.6 and 7 work as well, but hhvm
+  currently delivers the best performance.
 * Execute `hhvm dicto.php analyze examples/ilias.config.yaml`.
-* Watch dicto.php crunching the ILIAS code base and performing analysis.
-* Check out the analysis results.
-* See how rules are defined in `examples/ilias.rules`. The set of available rules
-  and variables is not complete and things might not work as expected.
-* If you are lazy, here are some [example analysis results](https://gist.github.com/lechimp-p/1e62ce404adc34491db53b78eb69962b).
+* Watch dicto.php crunching the ILIAS codebase and performing analysis.
+* Check out the analysis results by running `hhvm dicto.php report total
+  examples/ilias.config.yaml`. If you are lazy, here are some
+  [example analysis results](https://gist.github.com/lechimp-p/1e62ce404adc34491db53b78eb69962b).
+* See how the rules are defined in `examples/ilias.rules`. The set of available
+  rules and variables is not complete and things might not work as expected.
+* If you feel adventurous resolve one of the reported violations, commit the
+  change and run the analysis again. Yes, it is okay of you just delete a
+  line to try it out.
+* Run `hhvm dicto.php report diff examples/ilias.config.yaml > report.html`
+  and see how you did in your browser.
 
 ## How To
 
-Create a rules file and a config.yml. Run `hhvm dicto.php analyze $PATH_TO_CONFIG` where
-$PATH_TO_CONFIG is the location of your config.yml to analyze your codebase.
+Create a [rules file](#writing-down-rule) and a [config.yaml](#config). Run
+`hhvm dicto.php analyze config.yaml` to analyze your codebase. Generate a
+[report](#reports) by using `hhvm dicto.php report $REPORT_NAME config.yaml`.
 
 ### Writing down rules
 
 The rules file has two basic type of entities, variables and rules. A variable
-describes entities in your codebase, while rules put constraints on variables.
+describes entities in your codebase, while rules put constraints on entities
+described by variables.
 
 #### Variables
 
@@ -129,13 +141,59 @@ The following fields can be used in the config:
 * **project.rules**(\*): Path to the rules for the project.
 * **analysis.ignore**: A list of regexps, where files are ignored if their path
   matches.
-* **analysis.store_index**: A boolean to determine, if the index is stored in
-  a database. If set, a new database is created in `project.storage` for every
-  commit hash and existing databases are used when analysing the same commit
-  again. Defaults to false, i.e. dicto reindexes on every run.
-* **analysis.store_results**: A boolean to determine, if the results of the
-  analysis should be stored in database for analysis spanning more than one
-  run. Defaults to true.
+
+### Reports
+
+Dicto comes with two predefined reports:
+
+* **DiffPerRule**: Shows the violations that were introduced and resolved between
+  two commits, broken down to the single rules.
+* **TotalPerRule**: Shows all violations that were found in a certain commit,
+  broken down to the single rules as well.
+
+Both reports can be rendered too a text suitable for you terminal. The `DiffPerRule`
+report can also be rendered to a HTML page.
+
+To use the reports you need to define them in your `config.yml` as `reports`
+field containing multiple entries of the following form:
+
+* **name**(\*): How do you want to refer to the report?
+* **class**(\*): Use `"DiffPerRule"` or `"TotalPerRule"` for one of the predefined
+  reports. Use `$YOUR_CLASS_NAME` with the `source` field to generate a report
+  you defined.
+* **source**: Path the source file that need to be included to generate your own
+  report.
+* **config**: A free form configuration array for the report. `TotalPerRule` and
+  `DiffPerRule` support the `template` field that lets you use another template
+  for the rendering of the report. `DiffPerRule` also supports the `source_url`
+  field that lets you create a link where people could see the line containing
+  the violation online. Look into the [example config](example/ilias.config.yaml)
+  to see how the params are used.
+
+#### Customizing
+
+sooooon.....
+
+## Motivation
+
+I'm a member of the [ILIAS](http://www.ilias.de) Open Source Community. ILIAS is
+a LMS (Learning Managment System) which recently had its 18th birthday. In an
+effort to refactor and streamline its old code base, some other ILIAS devs and
+me have introduced [dicto](http://scg.unibe.ch/dicto) to the ILIAS development process.
+
+dicto is a tool that allows developers to express architectural rules in a
+natural-like language and then finds violations of these rules within a code base.
+It's written in Smalltalk and utilizes off-the-shelf tools for the analysis work.
+
+While working with dicto inside the community it became apparent to me that broad
+adoption is hindered by the fact that it is written in Smalltalk and few people
+want to run Smalltalk on their machines. Furthermore, even less people know how
+to modify the code for common tasks like adding new rules. Currently, dicto is
+kind of intangible.
+
+This is an attempt to re-implement the great original idea (thanks A.C. and O.T.!)
+in PHP. General goals were to make the tool accessible for PHP programmers and
+make it easy to execute in a standard PHP environment.
 
 ## Shortcommings and Outlook
 
