@@ -24,7 +24,7 @@ class IndexDBFactory {
         if (file_exists($path)) {
             throw new \RuntimeException("File at '$path' already exists, can't build database.");
         }
-        $connection = $this->build_connection($path);
+        $connection = DB::sqlite_connection($path);
         $db = new IndexDB($connection);
         $db->init_sqlite_regexp();
         $db->init_database_schema();

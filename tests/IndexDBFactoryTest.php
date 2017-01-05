@@ -19,6 +19,11 @@ class IndexDBFactoryTest extends PHPUnit_Framework_TestCase {
         $this->factory = new IndexDBFactory();
     }
 
+    public function test_build_index_db() {
+        $db = $this->factory->build_index_db(tempdir()."/some_database.sqlite");
+        $this->assertInstanceOf(IndexDB::class, $db);
+    }
+
     public function test_dont_use_existing_index_db() {
         try {
             $this->factory->build_index_db(__DIR__."/data/exists.sqlite");
