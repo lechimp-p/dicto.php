@@ -73,6 +73,23 @@ class ConfigClassTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals(false, $config->runtime_check_assertions());
     }
 
+    public function test_overwrite_lists() {
+        $config = new Config("/the/path", [
+            [ "project" =>
+                [ "root"    => "/root/dir"
+                , "rules" => "/rules"
+                ]
+            , "rules" =>
+                [ "schemas" => []
+                , "properties" => []
+                , "variables" => []
+                ]
+            ]]);
+        $this->assertEquals([], $config->rules_schemas());
+        $this->assertEquals([], $config->rules_properties());
+        $this->assertEquals([], $config->rules_variables());
+    }
+
     public function test_runtime_config() {
         $config = new Config("/the/path", [
             [ "project" =>

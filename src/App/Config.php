@@ -56,8 +56,6 @@ class Config implements ConfigurationInterface {
      * @inheritdocs
      */
     public function getConfigTreeBuilder() {
-        // TODO: maybe change definition in a way that does not append
-        //       to rules.*-arrays
         $tree_builder = new TreeBuilder();
         $root = $tree_builder->root("dicto");
         $c = $root->children();
