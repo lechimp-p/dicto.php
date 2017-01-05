@@ -168,7 +168,7 @@ class Config implements ConfigurationInterface {
                     ->isRequired()
                 ->end()
                 ->scalarNode("target")
-                    ->isRequired()
+                    ->defaultValue(null)
                 ->end()
                 ->scalarNode("source")
                     ->defaultValue(null)

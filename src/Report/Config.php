@@ -22,7 +22,7 @@ class Config {
     protected $class_name;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $target;
 
@@ -39,16 +39,16 @@ class Config {
     /**
      * @param   string      $path to where the config is
      * @param   string      $class_name to be used for report creation
-     * @param   string      $target path to the file to be created
+     * @param   string|null      $target path to the file to be created
      * @param   array       $config for the report class
      * @param   string|null $name to target the report in commands etc.
      * @param   string|null $source_path of the report class if it needs to be loaded
      *                      explicitely
      */
-    public function __construct($path, $class_name, $target, array $config, $name = null, $source_path = null) {
+    public function __construct($path, $class_name, $target = null, array $config = [], $name = null, $source_path = null) {
         assert('is_string($path)');
         assert('is_string($class_name)');
-        assert('is_string($target)');
+        assert('is_string($target) || is_null($target)');
         assert('is_string($name) || is_null($name)');
         assert('is_string($source_path) || is_null($source_path)');
         $this->path = $path;
