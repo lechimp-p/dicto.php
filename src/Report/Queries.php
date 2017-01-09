@@ -104,7 +104,7 @@ class Queries {
         if ($res) {
             return (int)$res["id"];
         }
-        throw new \RuntimeException("Result database contains previous run with a different commit.");
+        throw new \RuntimeException("Result database contains no run before '$run' with a different commit.");
     }
 
     /**
