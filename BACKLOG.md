@@ -28,6 +28,7 @@
 * Maybe exchange the current name for reports by something like tags.
 
 # Issues
+* Write some paragraph in the README about other similar yet different projects.
 * It is inconsistent, that Invoke makes invocations in methods of classes related
   to the class itself, but `only XYZClasses can invoke` also flags the methods in
   XYZClasses.
