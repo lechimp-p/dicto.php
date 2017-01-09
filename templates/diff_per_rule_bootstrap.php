@@ -175,7 +175,7 @@ function template_diff_per_rule_bootstrap(array $report) {
                                         <li class="list-group-item <?=$cl?>">
                                             <?=$v["file"]?> (l. <?=$v["line_no"]?>)
 <?php           if ($v["url"] !== null) { ?>
-                                            <a href="<?=$v["url"]?>">
+                                            <a href="<?=$v["url"]?>" target="_blank">
                                                 <span
                                                     class="glyphicon glyphicon-zoom-in"
                                                     aria-hidden="true">
