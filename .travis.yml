@@ -6,3 +6,10 @@ php:
     - hhvm-3.15
 install: composer install
 script: ./run_tests.sh
+before_deploy: php build_phar.php
+deploy:
+    provider: releases
+    file: "dicto.phar"
+    skip_cleanup: true
+    on:
+        tags: true
