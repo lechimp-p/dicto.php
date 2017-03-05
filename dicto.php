@@ -1,4 +1,4 @@
-#!/usr/bin/env hhvm
+#!/usr/bin/env php
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
