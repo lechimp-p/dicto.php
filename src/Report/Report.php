@@ -74,7 +74,7 @@ abstract class Report {
         if (!file_exists($path)) {
             throw new \InvalidArgumentException("Can't find path to template '$name'.");
         }
-        return realpath($path);
+        return $path;
     }
 
     /**

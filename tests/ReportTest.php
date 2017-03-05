@@ -35,24 +35,24 @@ class ReportTest extends ReportTestBase {
     public function test_template_path() {
         $this->assertEquals
                 ( realpath(__DIR__."/../templates/json.php")
-                , $this->report->_template_path("json")
+                , realpath($this->report->_template_path("json"))
                 );
         $this->assertEquals
                 ( realpath(__DIR__."/../templates/json.php")
-                , $this->report->_template_path("json")
+                , realpath($this->report->_template_path("json"))
                 );
         $this->assertEquals
                 ( realpath(__DIR__."/../dicto.php")
-                , $this->report->_template_path("dicto.php")
+                , realpath($this->report->_template_path("dicto.php"))
                 );
         $this->assertEquals
                 ( realpath(__FILE__)
-                , $this->report->_template_path(__FILE__)
+                , realpath($this->report->_template_path(__FILE__))
                 );
         // Since ReportMock.path == __DIR__:
         $this->assertEquals
                 ( realpath(__FILE__)
-                , $this->report->_template_path("ReportTest.php")
+                , realpath($this->report->_template_path("ReportTest.php"))
                 );
         try {
             $this->report->_template_path(__DIR__."/foo.bar");
