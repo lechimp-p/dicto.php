@@ -1,4 +1,4 @@
-language: php 
+language: php
 dist: trusty
 php:
     - 5.6
@@ -9,8 +9,11 @@ script: ./run_tests.sh
 before_deploy: php build_phar.php
 deploy:
     provider: releases
-    file: "dicto.phar"
+    api_key:
+        secure: ZvM2HKvUU/45zxd6RCKkNJaJN4DgezklZEiWu+QhUv+pLbRAD4qeph/pK+yDDyTR19aeY2aOYmHPEHGMyH6vnaDfiWvZuAJLySaXQckmrK76QStcqPE7Scid7Mh30InZmUS/MzWlYted9ZAOc4p91eRRTwTwbdMVdfZI6DiPBhOi4NBSfaabjdy2kKor6DdM3vllw91NKCO21vofGwDm2wvQd77Olg2xJ/KDV9ET6Rt+QT5T6VMDZAwIhcxfod2ZK+RKvIkauugoh3hnNRCdcVR5HflTMphI6AFaX3UVMPoE4XISR3+6wOcuNT9EGQ9BNTVmq3plUrPW3VVsZjqLkJd1AhRAVPZDL1/MWoG+tfprMxzXOh+GK5YCX37O5PEKYCa4XcB0gc/xLo74BW2RFSW4LSa9UwB2kZxcdjMbhb+Ed1qi1qBW4zzrFrm2Ccm/607qbE29YPZcLCqiw3DTxfWzR1rvlWLZFwZZ3GmKQDt3jDIAH4JupkzHE/4z9XJh0qtnyJIa8RQcS/WRnE7pif3FwpwSqOR4v4euF7DRPSBI74B0/YoiVDktrQwV1BKubkg20UHF4gPsjsbs5P9RDqjzYFUsqAjP4qDQZDijk/9vytwVJAgEQf40DBfmR5Ib7cD9eT5uQKDOWrQCRs7aW0v3AYILl14hk2MTAnWQrDI=
+    file: dicto.phar
     skip_cleanup: true
     on:
+        php: 5.6
         tags: true
-    php: 5.6
+        repo: lechimp-p/dicto.php
