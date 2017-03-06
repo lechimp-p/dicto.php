@@ -16,7 +16,6 @@
   big global config.
 * DBFactory is a misnomer. Its more like a manager, which is a very non descriptive
   word.
-* Introduce a RegExp class to put checking for validity in one place.
 * Use custom rules in indexer test.
 * Engine starts to become a mess, maybe it could be refactored to use some different
   classes.
