@@ -21,6 +21,7 @@
 * Use custom rules in indexer test.
 * Engine starts to become a mess, maybe it could be refactored to use some different
   classes.
+* Introduce folders in tests
 
 # Report
 * Introduce some nice way to use different and also custom report generators. That
