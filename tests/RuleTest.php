@@ -85,8 +85,7 @@ abstract class RuleTest extends PHPUnit_Framework_TestCase {
                 , new V\Files()
                 , new V\Methods()
                 , new V\ErrorSuppressor()
-                , new V\Exit_()
-                , new V\Die_()
+                , new V\ExitOrDie()
                 )
             , array
                 ( $this->schema()

@@ -36,8 +36,7 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
                 , new V\Files()
                 , new V\Methods()
                 , new V\ErrorSuppressor()
-                , new V\Exit_()
-                , new V\Die_()
+                , new V\ExitOrDie()
                 )
             , array
                 ( new R\ContainText()
@@ -252,6 +251,14 @@ class RuleParserTest extends PHPUnit_Framework_TestCase {
             , new V\In
             , array(new V\Classes())
             );
+        $this->assertEquals($expected, $res);
+    }
+
+    public function test_exit_or_die() {
+        $this->parser->which_expression = "variable";
+        $res = $this->parse("ExitOrDie");
+
+        $expected = new V\ExitOrDie();
         $this->assertEquals($expected, $res);
     }
 

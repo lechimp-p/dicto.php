@@ -13,7 +13,7 @@ namespace Lechimp\Dicto\Variables;
 use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Graph\PredicateFactory;
 
-abstract class LanguageConstruct extends Variable {
+class LanguageConstruct extends Variable {
     /**
      * @var string
      */

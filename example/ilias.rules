@@ -15,7 +15,6 @@ _GUIClasses = Classes with name:".*GUI.*"
 GUIClasses = {_GUIClasses, Methods in: _GUIClasses}
 triggerError = Functions with name:"trigger_error"
 raiseError = Functions with name:"raiseError"
-exitOrDie = {Exit, Die}
 ilTopLevelException = Classes with name:"ilException"
 ilExceptions = Classes with name:"il.*Exception*"
 ilExceptionsWithoutTopLevelException = ilExceptions except ilTopLevelException
@@ -51,7 +50,7 @@ WholeIliasCodebase cannot invoke triggerError
  * Exception: Currently if you want to output json you most likely have
  * to use exit() at the moment.
  */
-WholeIliasCodebase cannot invoke exitOrDie
+WholeIliasCodebase cannot invoke ExitOrDie
 
 /**
  * The error and exception handler of ILIAS should not be overridden!

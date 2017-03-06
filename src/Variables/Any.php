@@ -21,8 +21,8 @@ class Any extends Variable {
      */
     protected $variables;
 
-    public function __construct(array $variables) {
-        parent::__construct();
+    public function __construct(array $variables, $name = null) {
+        parent::__construct($name);
         $this->variables = array_map(function(Variable $v) { return $v; }, $variables);
     }
 

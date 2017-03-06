@@ -426,8 +426,7 @@ CODE;
             , new V\Classes
             , new R\Invoke()
             , array(new V\Any(
-                [ new V\Exit_()
-                , new V\Die_()
+                [ new V\ExitOrDie()
                 ]))
             );
     }

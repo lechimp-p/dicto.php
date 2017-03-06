@@ -10,14 +10,15 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Lechimp\Dicto\Graph\Node;
+use Lechimp\Dicto\Variables\Any;
+use Lechimp\Dicto\Variables\LanguageConstructs;
 
-class Die_ extends LanguageConstruct {
-    public function __construct($name = null) {
-        if ($name === null) {
-            $name = "Die";
-        }
-        parent::__construct("die", $name);
+class ExitOrDie extends Any {
+    public function __construct() {
+        parent::__construct(
+            [ new LanguageConstruct("die", "die")
+            , new LanguageConstruct("exit", "exit")
+            ], "ExitOrDie");
     }
 }
 

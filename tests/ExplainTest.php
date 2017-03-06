@@ -52,8 +52,7 @@ class ExplainTest extends PHPUnit_Framework_TestCase {
             , new Vars\Globals("GLOBALS")
             , new Vars\Files("FILES")
             , new Vars\Methods("METHODS")
-            , new Vars\Exit_("EXIT_")
-            , new Vars\Die_("DIE_")
+            , new Vars\ExitOrDie("EXITORDIE")
             , new Vars\ErrorSuppressor("ERROR_SUPPRESSOR")
             , new Vars\Everything("EVERYTHING")
             );
