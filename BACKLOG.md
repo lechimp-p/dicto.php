@@ -4,7 +4,6 @@
   with the relations i defined so far?
 
 # Definition
-* Expose `everything` in definition language.
 * Make syntax errors in rules being outputted more nicely.
 
 # DB

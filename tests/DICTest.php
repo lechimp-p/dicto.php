@@ -123,7 +123,8 @@ class DICTest extends PHPUnit_Framework_TestCase {
 
     public function test_variables() {
         $expected_variables = array
-            ( new \Lechimp\Dicto\Variables\Namespaces()
+            ( new \Lechimp\Dicto\Variables\Everything()
+            , new \Lechimp\Dicto\Variables\Namespaces()
             , new \Lechimp\Dicto\Variables\Classes()
             , new \Lechimp\Dicto\Variables\Interfaces()
             , new \Lechimp\Dicto\Variables\Traits()

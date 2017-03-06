@@ -13,6 +13,10 @@ namespace Lechimp\Dicto\Variables;
 use Lechimp\Dicto\Graph\PredicateFactory;
 
 class Everything extends Variable {
+    public function __construct() {
+        parent::__construct("Everything");
+    }
+
     /**
      * @inheritdocs
      */

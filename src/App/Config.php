@@ -127,7 +127,8 @@ class Config implements ConfigurationInterface {
                     ->prototype("scalar")
                     ->end()
                     ->defaultValue
-                        ([\Lechimp\Dicto\Variables\Namespaces::class
+                        ([\Lechimp\Dicto\Variables\Everything::class
+                        , \Lechimp\Dicto\Variables\Namespaces::class
                         , \Lechimp\Dicto\Variables\Classes::class
                         , \Lechimp\Dicto\Variables\Interfaces::class
                         , \Lechimp\Dicto\Variables\Traits::class
