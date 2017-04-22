@@ -25,7 +25,7 @@ use Lechimp\Dicto\Rules as R;
  * string = '"..."'
  * atom = [a-z ]...
  * name = [A-Z] [a-z]...
- * def = name | "{" def,... "}" | def ("with"|"having") property | def "except" def
+ * def = name | "{" def,... "}" | def property | def "except" def
  * property = atom ((name|string|atom)...)?
  * statement = def qualifier rule
  * rule = atom ((name|string|atom)...)?
