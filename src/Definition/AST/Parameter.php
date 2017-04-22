@@ -11,24 +11,7 @@
 namespace Lechimp\Dicto\Definition\AST;
 
 /**
- * A name of a variable.
+ * Tags a parameter for a rule or a property.
  */
-class Name extends Definition implements Parameter {
-    /**
-     * @var string
-     */
-    protected $name;
-
-    public function __construct($name) {
-        assert('is_string($name)');
-        $this->name = $name;
-    }
-
-    /**
-     * @return  string
-     */
-    public function __toString() {
-        return $this->name;
-    }
+interface Parameter { 
 }
-

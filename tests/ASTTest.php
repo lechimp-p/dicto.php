@@ -166,4 +166,13 @@ class ASTTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($a, $p->id());
         $this->assertEquals([], $p->parameters());
     }
+
+    public function test_parameters() {
+        $d = $this->definition();
+        $a = $this->f->atom("atom");
+        $n = $this->f->name("NAME");
+        $s = $this->f->string_value("a string");
+        $p = $this->f->property($d, $a, [$a, $n, $s]);
+        $this->assertEquals([$a, $n, $s], $p->parameters());
+    }
 }

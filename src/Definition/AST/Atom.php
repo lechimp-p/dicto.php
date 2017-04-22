@@ -15,7 +15,7 @@ namespace Lechimp\Dicto\Definition\AST;
  *
  * Atoms look like ^[a-z]+(\s+[a-z]+)?$
  */
-class Atom extends Definition {
+class Atom extends Definition implements Parameter {
     /**
      * @var string
      */

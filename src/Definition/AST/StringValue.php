@@ -13,7 +13,7 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * Just a string...
  */
-class StringValue extends Node {
+class StringValue extends Node implements Parameter {
     /**
      * @var string
      */
