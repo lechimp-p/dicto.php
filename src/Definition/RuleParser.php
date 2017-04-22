@@ -16,6 +16,17 @@ use Lechimp\Dicto\Rules as R;
 
 /**
  * Parser for Rulesets.
+ *
+ * The grammar looks like this:
+ *
+ * explanation = '/ ** ... * /'
+ * comment = '//..' | '/ * ... * /'
+ * assignment = name "=" def
+ * string = '"..."'
+ * def = name | "{" def,... "}" | name ("with"|"having") property | def "except" def
+ * property = name ":" string,..
+ * statement = name qualifier rule
+ * rule = (name|string)...
  */
 class RuleParser extends Parser implements ArgumentParser {
     const EXPLANATION_RE = "[/][*][*](([^*]|([*][^/]))*)[*][/]";
