@@ -19,6 +19,7 @@
 * Engine starts to become a mess, maybe it could be refactored to use some different
   classes.
 * Introduce folders in tests
+* Rename Property::arguments to Property::parameters. Seems to be a better fit.
 
 # Report
 * Introduce some nice way to use different and also custom report generators. That
