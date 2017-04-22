@@ -94,12 +94,20 @@ class ASTTest extends PHPUnit_Framework_TestCase {
         $a = $this->f->atom("atom");
         $p = $this->f->property($d, $a, []);
         $this->assertInstanceOf(AST\Property::class, $p);
-        $this->assertEquals($p->left(), $d);
-        $this->assertEquals($p->id(), $a);
-        $this->assertEquals($p->parameters(), []);
+        $this->assertInstanceOf(AST\Definition::class, $p);
+        $this->assertEquals($d, $p->left());
+        $this->assertEquals($a, $p->id());
+        $this->assertEquals([], $p->parameters());
     }
 
     public function test_except() {
+        $l = $this->definition();
+        $r = $this->definition();
+        $e = $this->f->except($l, $r);
+        $this->assertInstanceOf(AST\Except::class, $e);
+        $this->assertInstanceOf(AST\Definition::class, $e);
+        $this->assertEquals($l, $e->left());
+        $this->assertEquals($r, $e->right());
     }
 
     public function test_any() {

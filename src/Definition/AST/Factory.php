@@ -57,6 +57,15 @@ class Factory extends Node {
     }
 
     /**
+     * @param   Definition  $left
+     * @param   Definition  $right
+     * @return  Except
+     */
+    public function except(Definition $left, Definition $right) {
+        return new Except($left, $right);
+    }
+
+    /**
      * @param   Name        $name
      * @param   Definition  $definition
      * @return  Assignment
