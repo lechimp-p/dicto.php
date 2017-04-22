@@ -37,5 +37,13 @@ class Factory extends Node {
     public function name($name) {
         return new Name($name);
     }
-}
 
+    /**
+     * @param   Name        $name
+     * @param   Definition  $definition
+     * @return  Assignment
+     */
+    public function assignment(Name $name, Definition $definition) {
+        return new Assignment($name, $definition);
+    }
+}
