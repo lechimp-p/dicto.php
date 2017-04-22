@@ -13,7 +13,7 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * A name of a variable.
  */
-class Name extends Definition implements Parameter {
+class Name extends Definition {
     /**
      * @var string
      */
