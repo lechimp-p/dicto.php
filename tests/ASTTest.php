@@ -33,4 +33,11 @@ class ASTTest extends PHPUnit_Framework_TestCase {
         $r = $this->f->root([$e1, $e2]);
         $this->assertEquals([$e1, $e2], $r->lines());
     }
+
+    public function test_name() { 
+        $n = $this->f->name("NAME");
+        $this->assertInstanceOf(AST\Definition::class, $n);
+        $this->assertInstanceOf(AST\Name::class, $n);
+        $this->assertEquals("NAME", "$n");
+    }
 }

@@ -29,5 +29,13 @@ class Factory extends Node {
     public function explanation($content) {
         return new Explanation($content);
     }
+
+    /**
+     * @param   string  $name
+     * @return  Name
+     */
+    public function name($name) {
+        return new Name($name);
+    }
 }
 
