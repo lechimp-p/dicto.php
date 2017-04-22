@@ -66,6 +66,15 @@ class Factory extends Node {
     }
 
     /**
+     * @param   Definition[] $definitions
+     * @return  Any
+     * @return  Any
+     */
+    public function any(array $definitions) {
+        return new Any($definitions);
+    }
+
+    /**
      * @param   Name        $name
      * @param   Definition  $definition
      * @return  Assignment

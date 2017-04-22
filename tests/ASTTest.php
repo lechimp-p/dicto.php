@@ -111,6 +111,12 @@ class ASTTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_any() {
+        $b = $this->definition();
+        $c = $this->definition();
+        $a = $this->f->any([$b, $c]);
+        $this->assertInstanceOf(AST\Any::class, $a);
+        $this->assertInstanceOf(AST\Definition::class, $a);
+        $this->assertEquals([$b, $c], $a->definitions());
     }
 
     public function test_assignment() {
