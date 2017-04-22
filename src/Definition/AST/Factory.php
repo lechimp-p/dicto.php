@@ -82,4 +82,25 @@ class Factory extends Node {
     public function assignment(Name $name, Definition $definition) {
         return new Assignment($name, $definition);
     }
+
+    /**
+     * @return  Qualifier
+     */
+    public function must() {
+        return new Qualifier(Qualifier::MUST);
+    }
+
+    /**
+     * @return  Qualifier
+     */
+    public function cannot() {
+        return new Qualifier(Qualifier::CANNOT);
+    }
+
+    /**
+     * @return  Qualifier
+     */
+    public function only_X_can() {
+        return new Qualifier(Qualifier::ONLY_X_CAN);
+    }
 }

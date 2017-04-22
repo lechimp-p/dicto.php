@@ -27,7 +27,7 @@ use Lechimp\Dicto\Rules as R;
  * name = [A-Z] [a-z]...
  * def = name | "{" def,... "}" | def ("with"|"having") property | def "except" def
  * property = atom (":" string,..)?
- * statement = name qualifier rule
+ * statement = def qualifier rule
  * rule = atom (":" (Name|string|atom)...)
  */
 class RuleParser extends Parser implements ArgumentParser {

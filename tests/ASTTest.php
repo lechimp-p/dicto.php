@@ -128,4 +128,22 @@ class ASTTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($a->name(), $n);
         $this->assertEquals($a->definition(), $d);
     }
+
+    public function test_must() {
+        $m = $this->f->must();
+        $this->assertInstanceOf(AST\Qualifier::class, $m);
+        $this->assertEquals(AST\Qualifier::MUST, $m->which());
+    }
+
+    public function test_cannot() {
+        $m = $this->f->cannot();
+        $this->assertInstanceOf(AST\Qualifier::class, $m);
+        $this->assertEquals(AST\Qualifier::CANNOT, $m->which());
+    }
+
+    public function test_only_X_can() {
+        $m = $this->f->only_X_can();
+        $this->assertInstanceOf(AST\Qualifier::class, $m);
+        $this->assertEquals(AST\Qualifier::ONLY_X_CAN, $m->which());
+    }
 }
