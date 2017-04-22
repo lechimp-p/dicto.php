@@ -39,6 +39,24 @@ class Factory extends Node {
     }
 
     /**
+     * @param   string  $atom
+     * @return  Name
+     */
+    public function atom($atom) {
+        return new Atom($atom);
+    }
+
+    /**
+     * @param   Definition  $left
+     * @param   Atom        $id
+     * @param   Parameter[] $parameters
+     * @return  Property
+     */
+    public function property(Definition $left, Atom $id, array $parameters) {
+        return new Property($left, $id, $parameters);
+    }
+
+    /**
      * @param   Name        $name
      * @param   Definition  $definition
      * @return  Assignment

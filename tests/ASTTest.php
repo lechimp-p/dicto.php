@@ -15,6 +15,12 @@ class ASTTest extends PHPUnit_Framework_TestCase {
         $this->f = new AST\Factory();
     }
 
+    protected function definition() {
+        return $this
+            ->getMockBuilder(AST\Definition::class)
+            ->getMock();
+    }
+
     public function test_root() {
         $r = $this->f->root([]);
         $this->assertInstanceOf(AST\Root::class, $r);
@@ -41,11 +47,67 @@ class ASTTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("NAME", "$n");
     }
 
+    public function test_atom() {
+        $a = $this->f->atom("atom");
+        $this->assertInstanceOf(AST\Atom::class, $a);
+        $this->assertEquals("atom", "$a");
+    }
+
+    public function test_atom2() {
+        $a = $this->f->atom("at om");
+        $this->assertInstanceOf(AST\Atom::class, $a);
+        $this->assertEquals("at om", "$a");
+    }
+
+    public function test_no_atom() {
+        try {
+            $this->f->atom("ATOM");
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\InvalidArgumentException $e) {
+            $this->assertTrue(true);
+        }
+    }
+
+    public function test_no_atom2() {
+        try {
+            $this->f->atom("a=");
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\InvalidArgumentException $e) {
+            $this->assertTrue(true);
+        }
+    }
+
+    public function test_no_atom3() {
+        try {
+            $this->f->atom("a8");
+            $this->assertFalse("This should not happen.");
+        }
+        catch (\InvalidArgumentException $e) {
+            $this->assertTrue(true);
+        }
+    }
+
+    public function test_property() {
+        $d = $this->definition();
+        $a = $this->f->atom("atom");
+        $p = $this->f->property($d, $a, []);
+        $this->assertInstanceOf(AST\Property::class, $p);
+        $this->assertEquals($p->left(), $d);
+        $this->assertEquals($p->id(), $a);
+        $this->assertEquals($p->parameters(), []);
+    }
+
+    public function test_except() {
+    }
+
+    public function test_any() {
+    }
+
     public function test_assignment() {
         $n = $this->f->name("LEFT");
-        $d = $this
-            ->getMockBuilder(AST\Definition::class)
-            ->getMock();
+        $d = $this->definition();
         $a = $this->f->assignment($n, $d);
         $this->assertInstanceOf(AST\Assignment::class, $a);
         $this->assertInstanceOf(AST\Line::class, $a);

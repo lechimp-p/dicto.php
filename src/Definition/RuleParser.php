@@ -23,10 +23,12 @@ use Lechimp\Dicto\Rules as R;
  * comment = '//..' | '/ * ... * /'
  * assignment = name "=" def
  * string = '"..."'
- * def = name | "{" def,... "}" | name ("with"|"having") property | def "except" def
- * property = name ":" string,..
+ * atom = [a-z ]...
+ * name = [A-Z] [a-z]...
+ * def = name | "{" def,... "}" | def ("with"|"having") property | def "except" def
+ * property = atom (":" string,..)?
  * statement = name qualifier rule
- * rule = (name|string)...
+ * rule = atom (":" (Name|string|atom)...)
  */
 class RuleParser extends Parser implements ArgumentParser {
     const EXPLANATION_RE = "[/][*][*](([^*]|([*][^/]))*)[*][/]";
