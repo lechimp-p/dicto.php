@@ -11,23 +11,9 @@
 namespace Lechimp\Dicto\Definition\AST;
 
 /**
- * Factory for AST nodes.
+ * A line in the rules doc. Must not physically be a 'line', instead this is
+ * a distinct piece of info in the rules.
  */
-class Factory extends Node {
-    /**
-     * @param   Line[]  $lines
-     * @return  Root
-     */
-    public function root(array $lines) {  
-        return new Root($lines);
-    }
-
-    /**
-     * @param   string  $content
-     * @return  Explanation
-     */
-    public function explanation($content) {
-        return new Explanation($content);
-    }
+abstract class Line extends Node {
 }
 

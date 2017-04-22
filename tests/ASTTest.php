@@ -20,4 +20,17 @@ class ASTTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf(AST\Root::class, $r);
         $this->assertEquals([], $r->lines());
     }
+
+    public function test_explanation() {
+        $e = $this->f->explanation("EXPLANATION");
+        $this->assertInstanceOf(AST\Explanation::class, $e);
+        $this->assertEquals("EXPLANATION", $e->content());
+    }
+
+    public function test_root2() {
+        $e1 = $this->f->explanation("1");
+        $e2 = $this->f->explanation("2");
+        $r = $this->f->root([$e1, $e2]);
+        $this->assertEquals([$e1, $e2], $r->lines());
+    }
 }
