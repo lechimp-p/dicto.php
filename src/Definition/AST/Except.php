@@ -11,7 +11,7 @@
 namespace Lechimp\Dicto\Definition\AST;
 
 /**
- * An except-left.
+ * An except-definition.
  */
 class Except extends Definition { 
     /**
