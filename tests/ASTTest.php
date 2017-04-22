@@ -89,6 +89,13 @@ class ASTTest extends PHPUnit_Framework_TestCase {
         }
     }
 
+    public function test_string() {
+        $s = "this IS a string 12 43 $%&/()=";
+        $v = $this->f->string_value($s);
+        $this->assertInstanceOf(AST\StringValue::class, $v);
+        $this->assertEquals($s, "$v");
+    }
+
     public function test_property() {
         $d = $this->definition();
         $a = $this->f->atom("atom");

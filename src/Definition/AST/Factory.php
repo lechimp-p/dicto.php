@@ -47,6 +47,14 @@ class Factory extends Node {
     }
 
     /**
+     * @param   string  $string
+     * @return  StringValue
+     */
+    public function string_value($string) {
+        return new StringValue($string);
+    }
+
+    /**
      * @param   Definition  $left
      * @param   Atom        $id
      * @param   Parameter[] $parameters
