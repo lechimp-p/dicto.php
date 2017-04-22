@@ -146,4 +146,17 @@ class ASTTest extends PHPUnit_Framework_TestCase {
         $this->assertInstanceOf(AST\Qualifier::class, $m);
         $this->assertEquals(AST\Qualifier::ONLY_X_CAN, $m->which());
     }
+
+    public function test_rule() {
+        $d = $this->definition();
+        $q = $this->f->must();
+        $a = $this->f->atom("atom");
+        $p = $this->f->rule($d, $q, $a, []);
+        $this->assertInstanceOf(AST\Rule::class, $p);
+        $this->assertInstanceOf(AST\Line::class, $p);
+        $this->assertEquals($d, $p->left());
+        $this->assertEquals($q, $p->qualifier());
+        $this->assertEquals($a, $p->id());
+        $this->assertEquals([], $p->parameters());
+    }
 }

@@ -103,4 +103,15 @@ class Factory extends Node {
     public function only_X_can() {
         return new Qualifier(Qualifier::ONLY_X_CAN);
     }
+
+    /**
+     * @param   Definition  $left
+     * @param   Qualifier   $qualifier
+     * @param   Atom        $id
+     * @param   Parameter[] $parameters
+     * @return  Property
+     */
+    public function rule(Definition $left, Qualifier $qualifier, Atom $id, array $parameters) {
+        return new Rule($left, $qualifier, $id, $parameters);
+    }
 }
