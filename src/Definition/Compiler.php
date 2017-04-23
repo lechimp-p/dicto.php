@@ -306,12 +306,12 @@ class Compiler implements ArgumentParser {
     protected function next_current_parameter($class) {
         if (count($this->current_parameters) == 0) {
             // TODO: add location info
-            throw new \ParserException("Tried to fetch an argument, but none was left.");
+            throw new \ParserException("Tried to fetch a parameter, but none was left.");
         }
         $arg = array_shift($this->current_parameters);
         if (!($arg instanceof $class)) {
             // TODO: add location info
-            throw new \ParserException("Tried to fetch a '%class' argument but next is '".get_class($arg)."'");
+            throw new \ParserException("Tried to fetch a '%class' parameter but next is '".get_class($arg)."'");
         }
         return $arg;
     }
