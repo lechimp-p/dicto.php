@@ -59,6 +59,12 @@ class ASTTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals("at om", "$a");
     }
 
+    public function test_atom3() {
+        $a = $this->f->atom("at om om");
+        $this->assertInstanceOf(AST\Atom::class, $a);
+        $this->assertEquals("at om om", "$a");
+    }
+
     public function test_no_atom() {
         try {
             $this->f->atom("ATOM");

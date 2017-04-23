@@ -13,7 +13,7 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * An atom is something like a keyword and not a name.
  *
- * Atoms look like ^[a-z]+(\s+[a-z]+)?$
+ * Atoms look like ^[a-z]+(\s+[a-z]+)*$
  */
 class Atom extends Definition {
     /**
@@ -40,7 +40,7 @@ class Atom extends Definition {
      * @return  null
      */
     protected function check($atom) {
-        if (preg_match("%^[a-z]+(\s+[a-z]+)?$%", $atom) !== 1) {
+        if (preg_match("%^[a-z]+(\s+[a-z]+)*$%", $atom) !== 1) {
             throw new \InvalidArgumentException("Invalid atom '$atom'");
         }
     }
