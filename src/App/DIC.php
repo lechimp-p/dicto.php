@@ -14,7 +14,7 @@ use Lechimp\Dicto\Analysis\CombinedListener;
 use Lechimp\Dicto\Analysis\Listener;
 use Lechimp\Dicto\App\RuleLoader;
 use Lechimp\Dicto\DB;
-use Lechimp\Dicto\Definition\RuleParser;
+use Lechimp\Dicto\Definition\RuleBuilder;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
@@ -43,7 +43,7 @@ class DIC extends Container {
         };
 
         $this["rule_parser"] = function($c) {
-            return new RuleParser
+            return new RuleBuilder
                 ( $c["variables"]
                 , $c["schemas"]
                 , $c["properties"]

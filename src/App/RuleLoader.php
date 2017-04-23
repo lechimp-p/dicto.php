@@ -11,16 +11,16 @@
 namespace Lechimp\Dicto\App;
 
 use Lechimp\Dicto\Rule\Ruleset;
-use Lechimp\Dicto\Definition\RuleParser;
+use Lechimp\Dicto\Definition\RuleBuilder;
 use Lechimp\Dicto\Definition\ParserException;
 
 class RuleLoader {
     /**
-     * @var RuleParser
+     * @var RuleBuilder
      */
     protected $parser;
 
-    public function __construct(RuleParser $parser) {
+    public function __construct(RuleBuilder $parser) {
         $this->parser = $parser;
     }
 

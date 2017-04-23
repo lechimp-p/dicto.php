@@ -9,12 +9,12 @@
  */
 
 use Lechimp\Dicto\Regexp;
-use Lechimp\Dicto\Definition\RuleParser;
+use Lechimp\Dicto\Definition\RuleBuilder;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Rules as R;
 
-class _RuleParser extends RuleParser {
+class _RuleBuilder extends RuleBuilder {
     // Makes testing easier.
     public $which_expression = "root";
     public function root() {
@@ -23,9 +23,9 @@ class _RuleParser extends RuleParser {
     }
 }
 
-class RuleParserTest extends PHPUnit_Framework_TestCase {
+class RuleBuilderTest extends PHPUnit_Framework_TestCase {
     public function setUp() {
-        $this->parser = new _RuleParser
+        $this->parser = new _RuleBuilder
             ( array
                 ( new V\Namespaces()
                 , new V\Classes()

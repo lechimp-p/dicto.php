@@ -9,7 +9,7 @@
  */
 
 use Lechimp\Dicto as Dicto;
-use Lechimp\Dicto\Definition\RuleParser;
+use Lechimp\Dicto\Definition\RuleBuilder;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Graph\IndexDB;
@@ -74,7 +74,7 @@ abstract class RuleTest extends PHPUnit_Framework_TestCase {
     }
 
     public function parse($rules) {
-        $parser = new RuleParser
+        $parser = new RuleBuilder
             ( array
                 ( new V\Namespaces()
                 , new V\Classes()

@@ -30,7 +30,7 @@ use Lechimp\Dicto\Rules as R;
  * statement = def qualifier rule
  * rule = atom ((name|string|atom)...)?
  */
-class RuleParser extends Parser implements ArgumentParser {
+class RuleBuilder extends Parser implements ArgumentParser {
     const EXPLANATION_RE = "[/][*][*](([^*]|([*][^/]))*)[*][/]";
     const SINGLE_LINE_COMMENT_RE = "[/][/]([^\n]*)";
     const MULTI_LINE_COMMENT_RE = "[/][*](([^*]|([*][^/]))*)[*][/]";
