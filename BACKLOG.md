@@ -20,6 +20,7 @@
   classes.
 * Introduce folders in tests
 * Rename Property::arguments to Property::parameters. Seems to be a better fit.
+* Rename "definition" in AST to "variable".
 
 # Report
 * Introduce some nice way to use different and also custom report generators. That
