@@ -156,6 +156,8 @@ class Compiler implements ArgumentParser {
         $definitions = $node->definitions();
 
         // short circuit for any with only one element.
+        // TODO: this should become part of some transformation pass of
+        // the AST.
         if (count($definitions) == 1) {
             return $this->compile_definition($definitions[0]);
         }
