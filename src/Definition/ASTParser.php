@@ -10,68 +10,40 @@
 
 namespace Lechimp\Dicto\Definition;
 
-use Lechimp\Dicto\Rules\Ruleset;
-use Lechimp\Dicto\Variables as V;
-use Lechimp\Dicto\Rules as R;
-
 /**
- * Builds Rulesets from strings.
+ * Parser for Rulesets.
+ *
+ * The grammar looks like this:
+ *
+ * explanation = '/ ** ... * /'
+ * comment = '//..' | '/ * ... * /'
+ * assignment = name "=" def
+ * string = '"..."'
+ * atom = [a-z ]...
+ * name = [A-Z] [a-z]...
+ * def = name | "{" def,... "}" | def property | def "except" def
+ * property = atom ((name|string|atom)...)?
+ * statement = def qualifier rule
+ * rule = atom ((name|string|atom)...)?
  */
-class RuleBuilder extends Parser implements ArgumentParser {
+class ASTParser extends Parser {
     const EXPLANATION_RE = "[/][*][*](([^*]|([*][^/]))*)[*][/]";
     const SINGLE_LINE_COMMENT_RE = "[/][/]([^\n]*)";
     const MULTI_LINE_COMMENT_RE = "[/][*](([^*]|([*][^/]))*)[*][/]";
-    const ASSIGNMENT_RE = "(\w+)\s*=\s*";
-    const STRING_RE = "[\"]((([\\\\][\"])|[^\"])+)[\"]";
     const RULE_MODE_RE = "must|can(not)?";
+    const STRING_RE = "[\"]((([\\\\][\"])|[^\"])+)[\"]";
+    const NAME_RE = "[A-Z][A-Za-z_]+";
+    const ATOM_RE = "[a-z ]+";
+    const ASSIGNMENT_RE = "(".self::NAME_RE.")\s*=\s*";
+    const ATOM_HEAD_RE = "(".self::ATOM_RE.")\s*:\s*";
 
     /**
-     * @var V\Variable[]
+     * @var AST\Factory
      */
-    protected $predefined_variables;
+    protected $ast_factory;
 
-    /**
-     * @var R\Schema[]
-     */
-    protected $schemas;
-
-    /**
-     * @var R\Property[]
-     */
-    protected $properties;
-
-    /**
-     * @var V\Variable[]
-     */
-    protected $variables = array();
-
-    /**
-     * @var R\Rule[]
-     */
-    protected $rules = array();
-
-    /**
-     * @var string|null
-     */
-    protected $last_explanation = null;
-
-    /**
-     * @param   V\Variable[]    $predefined_variables
-     * @param   R\Schema[]      $schemas
-     * @param   V\Property[]    $properties
-     */
-    public function __construct( array $predefined_variables
-                               , array $schemas
-                               , array $properties) {
-        $this->predefined_variables = array_map(function(V\Variable $v) {
-            return $v;
-        }, $predefined_variables);
-        $this->schemas = array_map(function(R\Schema $s) {
-            return $s;
-        }, $schemas);
-        $this->properties = array_map(function(V\Property $p) {
-            return $p;
-        }, $properties);
+    public function __construct(AST\Factory $ast_factory) {
+        $this->ast_factory = $ast_factory;
         parent::__construct();
     }
 
@@ -87,16 +59,33 @@ class RuleBuilder extends Parser implements ArgumentParser {
 
         $this->add_symbols_for_rules_to($table);
 
-        // Strings
-        $table->symbol(self::STRING_RE);
-
         // Assignment 
         $table->symbol(self::ASSIGNMENT_RE);
 
+        // Strings
+        $table->symbol(self::STRING_RE);
+
         // Names
-        $table->literal("\w+", function (array &$matches) {
-                return $this->get_variable($matches[0]);
+        $table->literal(self::NAME_RE, function (array &$matches) {
+            return $this->ast_factory->name($matches[0]);
+        });
+
+        // Head of a property or rule
+        $table->symbol(self::ATOM_HEAD_RE, 20)
+            ->left_denotation_is(function ($left, &$matches) {
+                if (!($left instanceof AST\Definition)) {
+                    throw new ParserException
+                        ("Expected a variable at the left of \"{$matches[0]}\".");
+                }
+                $id = $this->ast_factory->atom($matches[1]);
+                $arguments = $this->arguments();
+                return $this->ast_factory->property($left, $id, $arguments);
+            })
+            ->null_denotation_is(function (&$matches) {
+                return $this->ast_factory->atom($matches[1]);
             });
+
+
 
         // End of statement
         $table->symbol("\n");
@@ -125,11 +114,7 @@ class RuleBuilder extends Parser implements ArgumentParser {
                     $arr[] = $this->variable(0);
                     if ($this->is_current_token_operator("}")) {
                         $this->advance_operator("}");
-                        // short circuit
-                        if (count($arr) == 1) {
-                            return $arr[0];
-                        }
-                        return new V\Any($arr);
+                        return $this->ast_factory->any($arr);
                     }
                     $this->advance_operator(",");
                 }
@@ -140,36 +125,13 @@ class RuleBuilder extends Parser implements ArgumentParser {
         // Except
         $table->symbol("except", 10)
             ->left_denotation_is(function($left) {
-                if (!($left instanceof V\Variable)) {
+                if (!($left instanceof AST\Definition)) {
                     throw new ParserException
                         ("Expected a variable at the left of except.");
                 }
                 $right = $this->variable(10);
-                return new V\Except($left, $right);
+                return $this->ast_factory->except($left, $right);
             });
-
-        $this->add_symbols_for_properties_to($table, $this->properties);
-    }
-
-    /**
-     * @param   SymbolTable     $table
-     * @param   V\Property[]    $properties
-     * @return  null
-     */
-    protected function add_symbols_for_properties_to(SymbolTable $table, array &$properties) {
-        foreach ($properties as $property) {
-            $table->symbol($property->parse_as().":", 20)
-                ->left_denotation_is(function($left) use ($property) {
-                    if (!($left instanceof V\Variable)) {
-                        throw new ParserException
-                            ("Expected a variable at the left of \"with name:\".");
-                    }
-                    $this->is_start_of_rule_arguments = true;
-                    $arguments = $property->fetch_arguments($this);
-                    assert('is_array($arguments)');
-                    return new V\WithProperty($left, $property, $arguments);
-                });
-        }
     }
 
     /**
@@ -182,31 +144,16 @@ class RuleBuilder extends Parser implements ArgumentParser {
         $table->symbol(self::RULE_MODE_RE, 0)
             ->null_denotation_is(function (array &$matches) {
                 if ($matches[0] == "can") {
-                    return R\Rule::MODE_ONLY_CAN;
+                    return $this->ast_factory->only_X_can();
                 }
                 if ($matches[0] == "must") {
-                    return R\Rule::MODE_MUST;
+                    return $this->ast_factory->must();
                 }
                 if ($matches[0] == "cannot") {
-                    return R\Rule::MODE_CANNOT;
+                    return $this->ast_factory->cannot();
                 }
                 throw new \LogicException("Unexpected \"".$matches[0]."\".");
             });
-        $this->add_symbols_for_schemas_to($table, $this->schemas);
-    }
-
-    /**
-     * @param   SymbolTable     $table
-     * @param   R\Schema[]    $schemas
-     * @return  null
-     */
-    protected function add_symbols_for_schemas_to(SymbolTable $table, array &$schemas) {
-        foreach ($schemas as $schema) {
-            $table->symbol($schema->name())
-                ->null_denotation_is(function() use ($schema) {
-                    return $schema;
-                });
-        }
     }
 
     // IMPLEMENTATION OF Parser
@@ -217,7 +164,6 @@ class RuleBuilder extends Parser implements ArgumentParser {
     public function parse($source) {
         $this->variables = array();
         $this->rules = array();
-        $this->add_predefined_variables();
         return parent::parse($source);
     }
 
@@ -228,6 +174,7 @@ class RuleBuilder extends Parser implements ArgumentParser {
      * @return  Ruleset 
      */
     protected function root() {
+        $lines = [];
         while (true) {
             // drop empty lines
             while ($tok = $this->is_current_token_to_be_dropped()) {
@@ -237,10 +184,9 @@ class RuleBuilder extends Parser implements ArgumentParser {
                 break;
             }
 
-            $this->top_level_statement();
+            $lines[] = $this->top_level_statement();
         }
-        $this->purge_predefined_variables();
-        return new Ruleset($this->variables, $this->rules);
+        return $this->ast_factory->root($lines);
     }
 
     /**
@@ -253,18 +199,16 @@ class RuleBuilder extends Parser implements ArgumentParser {
         // ..an explanation
         if ($this->is_current_token_matched_by(self::EXPLANATION_RE)) {
             $m = $this->current_match();
-            $this->last_explanation = $this->trim_explanation($m[1]);
             $this->advance(self::EXPLANATION_RE);
+            return $this->ast_factory->explanation($this->trim_explanation($m[1]));
         }
         // ..an assignment to a variable.
         elseif ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {
-            $this->variable_assignment();
-            $this->last_explanation = null;
+            return $this->variable_assignment();
         }
         // ..or a rule declaration
         else {
-            $this->rule_declaration();
-            $this->last_explanation = null;
+            return $this->rule_declaration();
         }
     }
 
@@ -318,14 +262,12 @@ class RuleBuilder extends Parser implements ArgumentParser {
      * @return  string
      */
     protected function string() {
-        if (!$this->is_current_token_matched_by(self::STRING_RE)) {
-            throw new ParserException("Expected string.");
-        }
         $m = $this->current_match();
         $this->fetch_next_token();
-        return  str_replace("\\\"", "\"",
-                    str_replace("\\n", "\n",
-                        $m[1]));
+        return $this->ast_factory->string_value
+            (str_replace("\\\"", "\"",
+                str_replace("\\n", "\n",
+                    $m[1])));
     }
 
     /**
@@ -346,11 +288,40 @@ class RuleBuilder extends Parser implements ArgumentParser {
             $left = $t->left_denotation($left, $m);
         }
 
-        if (!($left instanceof V\Variable)) {
+        if (!($left instanceof AST\Definition)) {
             throw new ParserException("Expected variable.");
         }
 
         return $left;
+    }
+
+    /**
+     * Fetch some arguments from the stream.
+     *
+     * @return  array   of atoms, variables or strings
+     */
+    protected function arguments() {
+        $args = [];
+        while (true) {
+            // An argument is either
+            // ..a string
+            if ($this->is_current_token_matched_by(self::STRING_RE)) {
+                $m = $this->current_match();
+                $this->fetch_next_token();
+                $args[] = $this->ast_factory->string_value
+                    (str_replace("\\\"", "\"",
+                        str_replace("\\n", "\n",
+                            $m[1])));
+            }
+            // ..a name
+            if ($this->is_current_token_matched_by(self::NAME_RE)) {
+                $args[] = $this->variable(0);
+            }
+            else {
+                break;
+            }
+        }
+        return $args; 
     }
 
     /**
@@ -362,11 +333,11 @@ class RuleBuilder extends Parser implements ArgumentParser {
         $t = $this->current_symbol();
         $m = $this->current_match();
         $this->fetch_next_token();
-        $schema = $t->null_denotation($m);
-        if (!($schema instanceof R\Schema)) {
+        $id = $t->null_denotation($m);
+        if (!($id instanceof AST\Atom)) {
             throw new ParserException("Expected name of a rule schema.");
         }
-        return $schema;
+        return $id;
     }
 
     // TOP LEVEL STATEMENTS
@@ -378,12 +349,10 @@ class RuleBuilder extends Parser implements ArgumentParser {
      */
     protected function variable_assignment() {
         $m = $this->current_match(); 
+        $name = $this->ast_factory->name($m[1]);
         $this->fetch_next_token();
         $def = $this->variable();
-        if ($this->last_explanation !== null) {
-            $def = $def->withExplanation($this->last_explanation);
-        }
-        $this->add_variable($m[1], $def);
+        return $this->ast_factory->assignment($name, $def);
     }
 
     /**
@@ -398,97 +367,8 @@ class RuleBuilder extends Parser implements ArgumentParser {
         $var = $this->variable();
         $mode = $this->rule_mode();
         $schema = $this->schema();
-        $this->is_start_of_rule_arguments = true;
-        $arguments = $schema->fetch_arguments($this);
+        $arguments = $this->arguments();
         assert('is_array($arguments)');
-        $rule = new R\Rule($mode, $var, $schema, $arguments);
-        if ($this->last_explanation !== null) {
-            $rule= $rule->withExplanation($this->last_explanation);
-        }
-        $this->rules[] = $rule;
-    }
-
-
-    // HANDLING OF VARIABLES
-
-    /**
-     * Add a variable to the variables currently known.
-     *
-     * @param   string      $name
-     * @param   V\Variable  $def
-     * @return null
-     */
-    protected function add_variable($name, V\Variable $def) {
-        assert('is_string($name)');
-        if (array_key_exists($name, $this->variables)) {
-            throw new ParserException("Variable '$name' already defined.");
-        }
-        assert('$def instanceof Lechimp\\Dicto\\Variables\\Variable');
-        $this->variables[$name] = $def->withName($name);
-    }
-
-    /**
-     * Get a predefined variable.
-     *
-     * @param   string  $name
-     * @return  V\Variable
-     */
-    protected function get_variable($name) {
-        if (!array_key_exists($name, $this->variables)) {
-            throw new ParserException("Unknown variable '$name'.");
-        }
-        return $this->variables[$name];
-    }
-
-    /**
-     * Add all predefined variables to the current set of variables.
-     *
-     * @return null
-     */
-    protected function add_predefined_variables() {
-        foreach ($this->predefined_variables as $predefined_var) {
-            $this->add_variable($predefined_var->name(), $predefined_var);
-        }
-    }
-
-    /**
-     * Purge all predefined variables from the current set of variables.
-     *
-     * @return null
-     */
-    protected function purge_predefined_variables() {
-        foreach ($this->predefined_variables as $predefined_var) {
-            unset($this->variables[$predefined_var->name()]);
-        }
-    }
-
-    // IMPLEMENTATION OF ArgumentParser
-
-    /**
-     * @var bool
-     */
-    protected $is_start_of_rule_arguments = false;
-
-    protected function maybe_fetch_argument_delimiter() {
-        if (!$this->is_start_of_rule_arguments) {
-            $this->advance_operator(",");
-            $this->is_start_of_rule_arguments = false;
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function fetch_string() {
-        $this->maybe_fetch_argument_delimiter();
-        return $this->string();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function fetch_variable() {
-        $this->maybe_fetch_argument_delimiter();
-        return $this->variable();
+        return $this->ast_factory->rule($var, $mode, $schema, $arguments);
     }
 }
