@@ -107,42 +107,6 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res->variables());
     }
 
-    public function test_classes_in_namespaces_with_name_1() {
-        $this->parser->which_expression = "variable";
-        $res = $this->parse("Classes in: Namespaces with name: \"foo.*\"");
-
-        $expected = new V\WithProperty
-            ( new V\Classes
-            , new V\In
-            , array
-                ( new V\WithProperty
-                    ( new V\Namespaces
-                    , new V\Name
-                    , array(new Regexp("foo.*"))
-                    )
-                )
-            );
-
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_classes_in_namespaces_with_name_2() {
-        $this->parser->which_expression = "variable";
-        $res = $this->parse("{Classes in: Namespaces} with name: \"foo.*\"");
-
-        $expected = new V\WithProperty
-            ( new V\WithProperty
-                ( new V\Classes
-                , new V\In
-                , array(new V\Namespaces)
-                )
-            , new V\Name
-            , array(new Regexp("foo.*"))
-            );
-
-        $this->assertEquals($expected, $res);
-    }
-
     public function test_variables() {
         $res = $this->parse("AllClasses = Classes\nAllFunctions = Functions");
 
@@ -152,79 +116,6 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
             );
 
         $this->assertEquals($expected, $res->variables());
-    }
-
-    public function test_any_short_circuit() {
-        $this->parser->which_expression = "variable";
-        $res = $this->parse("{Classes}");
-
-        $expected = new V\Classes();
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_any() {
-        $this->parser->which_expression = "variable";
-        $res = $this->parse("{Classes, Functions}");
-
-        $expected = new V\Any(array
-            ( new V\Classes()
-            , new V\Functions()
-            ));
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_except() {
-        $this->parser->which_expression = "variable";
-        $res = $this->parse("Classes except Functions");
-
-        $expected = new V\Except
-            ( new V\Classes()
-            , new V\Functions()
-            );
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_any_except() {
-        $this->parser->which_expression = "variable";
-        $res = $this->parse("{Classes except Functions, Methods} except Globals");
-
-        $expected = new V\Except
-            ( new V\Any(array
-                ( new V\Except
-                    ( new V\Classes()
-                    , new V\Functions()
-                    )
-                , new V\Methods()
-                ))
-            , new V\Globals()
-            );
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_except_binding() {
-        $this->parser->which_expression = "variable";
-        $res = $this->parse("Classes except Functions except Methods");
-
-        $expected = new V\Except
-            ( new V\Except
-                ( new V\Classes()
-                , new V\Functions()
-                )
-            , new V\Methods()
-            );
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_with_name() {
-        $this->parser->which_expression = "variable";
-        $res = $this->parse("Classes with name:\"foo\"");
-
-        $expected = new V\WithProperty
-            ( new V\Classes()
-            , new V\Name
-            , array(new Regexp("foo"))
-            );
-        $this->assertEquals($expected, $res);
     }
 
     public function test_with_name_assignment() {
@@ -240,54 +131,6 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
             );
         $this->assertEquals($expected, $res->variables());
 
-    }
-
-    public function test_methods_in_classes() {
-        $this->parser->which_expression = "variable";
-        $res = $this->parse("Methods in: Classes");
-
-        $expected = new V\WithProperty
-            ( new V\Methods()
-            , new V\In
-            , array(new V\Classes())
-            );
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_exit_or_die() {
-        $this->parser->which_expression = "variable";
-        $res = $this->parse("ExitOrDie");
-
-        $expected = new V\ExitOrDie();
-        $this->assertEquals($expected, $res);
-    }
-
-    public function test_string() {
-        $this->parser->which_expression = "string";
-        $res = $this->parse("\"foo\"");
-
-        $this->assertEquals("foo", $res);
-    }
-
-    public function test_string_escaped_quote() {
-        $this->parser->which_expression = "string";
-        $res = $this->parse("\"foo\\\"\"");
-
-        $this->assertEquals("foo\"", $res);
-    }
-
-    public function test_string_escaped_newline() {
-        $this->parser->which_expression = "string";
-        $res = $this->parse("\"foo\\n\"");
-
-        $this->assertEquals("foo\n", $res);
-    }
-
-    public function test_string_with_star_and_dot() {
-        $this->parser->which_expression = "string";
-        $res = $this->parse("\"A.*\"");
-
-        $this->assertEquals("A.*", $res);
     }
 
     public function test_classes_cannot_contain_text() {
@@ -426,7 +269,7 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_explain_rules() {
-        $res = $this->parser->parse("/** Explanation */\nClasses cannot contain text \"name\"");
+        $res = $this->parse("/** Explanation */\nClasses cannot contain text \"name\"");
 
         $res = $res->rules()[0];
         $this->assertInstanceOf(R\Rule::class, $res);
