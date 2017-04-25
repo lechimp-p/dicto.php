@@ -49,6 +49,16 @@ class ASTParserTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($expected, $res);
     }
 
+    public function test_single_char_variables() {
+        $res = $this->parse("A = B");
+
+        $expected = $this->f->root
+            ([$this->f->assignment
+                ( $this->f->name("A")
+                , $this->f->name("B")
+                )
+            ]);
+    }
 
     public function test_classes_in_namespaces_with_name_1() {
         $this->parser->which_expression = "variable";

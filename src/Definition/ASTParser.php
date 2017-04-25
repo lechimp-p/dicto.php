@@ -32,8 +32,8 @@ class ASTParser extends Parser {
     const MULTI_LINE_COMMENT_RE = "[/][*](([^*]|([*][^/]))*)[*][/]";
     const RULE_MODE_RE = "must|can(not)?";
     const STRING_RE = "[\"]((([\\\\][\"])|[^\"])+)[\"]";
-    const NAME_RE = "[A-Z][A-Za-z_]+";
-    const ATOM_RE = "[a-z ]+";
+    const NAME_RE = "[A-Z][A-Za-z_]*";
+    const ATOM_RE = "[a-z ]*";
     const ASSIGNMENT_RE = "(".self::NAME_RE.")\s*=\s*";
     const ATOM_HEAD_RE = "(".self::ATOM_RE.")\s*:\s*";
 
@@ -239,8 +239,6 @@ class ASTParser extends Parser {
             preg_replace("%\s*\n\s*([*]\s*)?%s", "\n", $content)
         );
     }
-
-    // EXPRESSION TYPES
 
     /**
      * Fetch a rule mode from the stream.
