@@ -368,6 +368,13 @@ class ASTParser extends Parser {
         $schema = $this->schema();
         $arguments = $this->arguments();
         assert('is_array($arguments)');
-        return $this->ast_factory->rule($var, $mode, $schema, $arguments);
+        return $this->ast_factory->rule
+            ( $mode
+            , $this->ast_factory->property
+                ( $var
+                , $schema
+                , $arguments
+                )
+            );
     }
 }

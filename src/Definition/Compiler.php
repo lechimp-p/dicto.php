@@ -123,12 +123,19 @@ class Compiler implements ArgumentParser {
     }
 
     protected function compile_rule(AST\Rule $node) {
-        $schema = $this->get_schema("".$node->id());
+        $property = $node->definition();
+        // TODO: This is morally wrong. In general all rules are existence rules
+        // so I should push the schema into the definition of the targeted variables
+        // on the interpretation side as well.
+        if (!($property instanceof AST\Property)) {
+            throw new \LogicException("Expected definition of rule to be AST\Property");
+        }
+        $schema = $this->get_schema("".$property->id());
         $rule = new R\Rule
             ( $this->compile_qualifier($node->qualifier())
-            , $this->compile_definition($node->left())
+            , $this->compile_definition($property->left())
             , $schema
-            , $this->compile_parameters($schema, $node->parameters())
+            , $this->compile_parameters($schema, $property->parameters())
             );
         if ($this->last_explanation !== null) {
             $rule = $rule->withExplanation($this->last_explanation->content());

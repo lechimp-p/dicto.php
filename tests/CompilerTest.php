@@ -369,10 +369,12 @@ class CompilerTest extends PHPUnit_Framework_TestCase {
         $res = $this->compile
             ( $this->f->root
                 ([$this->f->rule
-                    ( $this->f->name("Classes")
-                    , $this->f->cannot()
-                    , $this->f->atom("contain text")
-                    , [$this->f->string_value("foo")]
+                    ( $this->f->cannot()
+                    , $this->f->property
+                        ( $this->f->name("Classes")
+                        , $this->f->atom("contain text")
+                        , [$this->f->string_value("foo")]
+                        )
                     )
                 ])
             );
@@ -392,10 +394,12 @@ class CompilerTest extends PHPUnit_Framework_TestCase {
         $res = $this->compile
             ( $this->f->root
                 ([$this->f->rule
-                    ( $this->f->name("Classes")
-                    , $this->f->must()
-                    , $this->f->atom("contain text")
-                    , [$this->f->string_value("foo")]
+                    ( $this->f->must()
+                    , $this->f->property
+                        ( $this->f->name("Classes")
+                        , $this->f->atom("contain text")
+                        , [$this->f->string_value("foo")]
+                        )
                     )
                 ])
             );
@@ -415,10 +419,12 @@ class CompilerTest extends PHPUnit_Framework_TestCase {
         $res = $this->compile
             ( $this->f->root
                 ([$this->f->rule
-                    ( $this->f->name("Classes")
-                    , $this->f->only_X_can()
-                    , $this->f->atom("contain text")
-                    , [$this->f->string_value("foo")]
+                    ( $this->f->only_X_can()
+                    , $this->f->property
+                        ( $this->f->name("Classes")
+                        , $this->f->atom("contain text")
+                        , [$this->f->string_value("foo")]
+                        )
                     )
                 ])
             );
@@ -438,13 +444,15 @@ class CompilerTest extends PHPUnit_Framework_TestCase {
         $res = $this->compile
             ( $this->f->root
                 ([$this->f->rule
-                    ( $this->f->any
-                        ([$this->f->name("Classes")
-                        , $this->f->name("Methods")
-                        ])
-                    , $this->f->only_X_can()
-                    , $this->f->atom("contain text")
-                    , [$this->f->string_value("foo")]
+                    ( $this->f->only_X_can()
+                    , $this->f->property
+                        ( $this->f->any
+                            ([$this->f->name("Classes")
+                            , $this->f->name("Methods")
+                            ])
+                        , $this->f->atom("contain text")
+                        , [$this->f->string_value("foo")]
+                        )
                     )
                 ])
             );
@@ -467,17 +475,19 @@ class CompilerTest extends PHPUnit_Framework_TestCase {
         $res = $this->compile
             ( $this->f->root
                 ([$this->f->rule
-                    ( $this->f->any
-                        ([$this->f->name("Classes")
-                        , $this->f->property
-                            ( $this->f->name("Methods")
-                            , $this->f->atom("in")
-                            , [$this->f->name("Classes")]
-                            )
-                        ])
-                    , $this->f->only_X_can()
-                    , $this->f->atom("contain text")
-                    , [$this->f->string_value("foo")]
+                    ( $this->f->only_X_can()
+                    , $this->f->property
+                        ( $this->f->any
+                            ([$this->f->name("Classes")
+                            , $this->f->property
+                                ( $this->f->name("Methods")
+                                , $this->f->atom("in")
+                                , [$this->f->name("Classes")]
+                                )
+                            ])
+                        , $this->f->atom("contain text")
+                        , [$this->f->string_value("foo")]
+                        )
                     )
                 ])
             );
@@ -521,10 +531,12 @@ class CompilerTest extends PHPUnit_Framework_TestCase {
             ( $this->f->root
                 ([$this->f->explanation("Explanation")
                 , $this->f->rule
-                    ( $this->f->name("Classes")
-                    , $this->f->cannot()
-                    , $this->f->atom("contain text")
-                    , [$this->f->string_value("name")]
+                    ( $this->f->cannot()
+                    , $this->f->property
+                        ( $this->f->name("Classes")
+                        , $this->f->atom("contain text")
+                        , [$this->f->string_value("name")]
+                        )
                     )
                 ])
             );

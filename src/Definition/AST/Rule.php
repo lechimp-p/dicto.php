@@ -15,39 +15,20 @@ namespace Lechimp\Dicto\Definition\AST;
  */
 class Rule extends Line {
     /**
-     * @var Definition 
-     */
-    protected $left;
-
-    /**
      * @var Qualifier
      */
     protected $qualifier;
 
     /**
-     * @var Atom
+     * @var Definition
      */
-    protected $id;
+    protected $definition;
 
-    /**
-     * @var Parameter[]
-     */
-    protected $parameters;
-
-    public function __construct(Definition $left, Qualifier $qualifier, Atom $id, array $parameters) {
-        $this->left = $left;
+    // A rule is just the qualification over the existence of entities
+    // according to some definition.
+    public function __construct(Qualifier $qualifier, Definition $definition) {
         $this->qualifier = $qualifier;
-        $this->id = $id;
-        $this->parameters = array_map(function(Parameter $p) {
-            return $p;
-        }, $parameters);
-    }
-
-    /**
-     * @return  Definition 
-     */
-    public function left() {
-        return $this->left;
+        $this->definition = $definition;
     }
 
     /**
@@ -58,17 +39,10 @@ class Rule extends Line {
     }
 
     /**
-     * @return  Atom 
+     * @return  Definition
      */
-    public function id() {
-        return $this->id;
-    }
-
-    /**
-     * @return  Parameter[] 
-     */
-    public function parameters() {
-        return $this->parameters;
+    public function definition() {
+        return $this->definition;
     }
 }
 

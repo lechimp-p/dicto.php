@@ -119,7 +119,7 @@ class Factory extends Node {
      * @param   Parameter[] $parameters
      * @return  Property
      */
-    public function rule(Definition $left, Qualifier $qualifier, Atom $id, array $parameters) {
-        return new Rule($left, $qualifier, $id, $parameters);
+    public function rule(Qualifier $qualifier, Definition $definition) {
+        return new Rule($qualifier, $definition);
     }
 }

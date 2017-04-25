@@ -163,14 +163,11 @@ class ASTTest extends PHPUnit_Framework_TestCase {
     public function test_rule() {
         $d = $this->definition();
         $q = $this->f->must();
-        $a = $this->f->atom("atom");
-        $p = $this->f->rule($d, $q, $a, []);
-        $this->assertInstanceOf(AST\Rule::class, $p);
-        $this->assertInstanceOf(AST\Line::class, $p);
-        $this->assertEquals($d, $p->left());
-        $this->assertEquals($q, $p->qualifier());
-        $this->assertEquals($a, $p->id());
-        $this->assertEquals([], $p->parameters());
+        $r = $this->f->rule($q, $d);
+        $this->assertInstanceOf(AST\Rule::class, $r);
+        $this->assertInstanceOf(AST\Line::class, $r);
+        $this->assertEquals($q, $r->qualifier());
+        $this->assertEquals($d, $r->definition());
     }
 
     public function test_parameters() {
