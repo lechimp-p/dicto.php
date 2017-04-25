@@ -21,6 +21,12 @@
 * Introduce folders in tests
 * Rename Property::arguments to Property::parameters. Seems to be a better fit.
 * Rename "definition" in AST to "variable".
+* RuleBuilder could go away.
+
+# ASTParser
+* Seems to be a bit clunky, since I derived it from RuleBuilder. Maybe rewrite.
+* Record source code locations to improve error output in Compiler.
+* Some tests are missing, e.g. for {..} in a argument list.
 
 # Report
 * Introduce some nice way to use different and also custom report generators. That
