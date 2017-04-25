@@ -17,43 +17,16 @@ use Lechimp\Dicto\Rules as R;
 /**
  * Builds Rulesets from strings.
  */
-class RuleBuilder extends Parser implements ArgumentParser {
-    const EXPLANATION_RE = "[/][*][*](([^*]|([*][^/]))*)[*][/]";
-    const SINGLE_LINE_COMMENT_RE = "[/][/]([^\n]*)";
-    const MULTI_LINE_COMMENT_RE = "[/][*](([^*]|([*][^/]))*)[*][/]";
-    const ASSIGNMENT_RE = "(\w+)\s*=\s*";
-    const STRING_RE = "[\"]((([\\\\][\"])|[^\"])+)[\"]";
-    const RULE_MODE_RE = "must|can(not)?";
+class RuleBuilder {
+    /**
+     * @var ASTParser
+     */
+    protected $parser;
 
     /**
-     * @var V\Variable[]
+     * @var Compiler
      */
-    protected $predefined_variables;
-
-    /**
-     * @var R\Schema[]
-     */
-    protected $schemas;
-
-    /**
-     * @var R\Property[]
-     */
-    protected $properties;
-
-    /**
-     * @var V\Variable[]
-     */
-    protected $variables = array();
-
-    /**
-     * @var R\Rule[]
-     */
-    protected $rules = array();
-
-    /**
-     * @var string|null
-     */
-    protected $last_explanation = null;
+    protected $compiler;
 
     /**
      * @param   V\Variable[]    $predefined_variables
@@ -63,432 +36,43 @@ class RuleBuilder extends Parser implements ArgumentParser {
     public function __construct( array $predefined_variables
                                , array $schemas
                                , array $properties) {
-        $this->predefined_variables = array_map(function(V\Variable $v) {
-            return $v;
-        }, $predefined_variables);
-        $this->schemas = array_map(function(R\Schema $s) {
-            return $s;
-        }, $schemas);
-        $this->properties = array_map(function(V\Property $p) {
-            return $p;
-        }, $properties);
-        parent::__construct();
+        $this->parser = $this->build_parser();
+        $this->compiler = $this->build_compiler($predefined_variables, $schemas, $properties);
     }
 
-    // Definition of symbols in the parser
-
     /**
-     * @inheritdocs
+     * @return AST\Factory
      */
-    protected function add_symbols_to(SymbolTable $table) {
-        $this->add_symbols_for_comments($table);
-
-        $this->add_symbols_for_variables_to($table);
-
-        $this->add_symbols_for_rules_to($table);
-
-        // Strings
-        $table->symbol(self::STRING_RE);
-
-        // Assignment 
-        $table->symbol(self::ASSIGNMENT_RE);
-
-        // Names
-        $table->literal("\w+", function (array &$matches) {
-                return $this->get_variable($matches[0]);
-            });
-
-        // End of statement
-        $table->symbol("\n");
+    protected function build_factory() {
+        return new AST\Factory();
     }
 
     /**
-     * @param   SymbolTable
-     * @return  null
+     * @return ASTParser
      */
-    protected function add_symbols_for_comments(SymbolTable $table) {
-        $table->symbol(self::EXPLANATION_RE);
-        $table->symbol(self::SINGLE_LINE_COMMENT_RE);
-        $table->symbol(self::MULTI_LINE_COMMENT_RE);
+    protected function build_parser() {
+        return new ASTParser($this->build_factory());
     }
 
     /**
-     * @param   SymbolTable
-     * @return  null
-     */
-    protected function add_symbols_for_variables_to(SymbolTable $table) {
-        // Any
-        $table->operator("{")
-            ->null_denotation_is(function() {
-                $arr = array();
-                while(true) {
-                    $arr[] = $this->variable(0);
-                    if ($this->is_current_token_operator("}")) {
-                        $this->advance_operator("}");
-                        // short circuit
-                        if (count($arr) == 1) {
-                            return $arr[0];
-                        }
-                        return new V\Any($arr);
-                    }
-                    $this->advance_operator(",");
-                }
-            });
-        $table->operator("}");
-        $table->operator(",");
-
-        // Except
-        $table->symbol("except", 10)
-            ->left_denotation_is(function($left) {
-                if (!($left instanceof V\Variable)) {
-                    throw new ParserException
-                        ("Expected a variable at the left of except.");
-                }
-                $right = $this->variable(10);
-                return new V\Except($left, $right);
-            });
-
-        $this->add_symbols_for_properties_to($table, $this->properties);
-    }
-
-    /**
-     * @param   SymbolTable     $table
+     * @param   V\Variable[]    $predefined_variables
+     * @param   R\Schema[]      $schemas
      * @param   V\Property[]    $properties
-     * @return  null
+     * @return  Compiler
      */
-    protected function add_symbols_for_properties_to(SymbolTable $table, array &$properties) {
-        foreach ($properties as $property) {
-            $table->symbol($property->parse_as().":", 20)
-                ->left_denotation_is(function($left) use ($property) {
-                    if (!($left instanceof V\Variable)) {
-                        throw new ParserException
-                            ("Expected a variable at the left of \"with name:\".");
-                    }
-                    $this->is_start_of_rule_arguments = true;
-                    $arguments = $property->fetch_arguments($this);
-                    assert('is_array($arguments)');
-                    return new V\WithProperty($left, $property, $arguments);
-                });
-        }
-    }
-
-    /**
-     * @param   SymbolTable
-     * @return  null
-     */
-    protected function add_symbols_for_rules_to(SymbolTable $table) {
-        // Rules
-        $table->symbol("only");
-        $table->symbol(self::RULE_MODE_RE, 0)
-            ->null_denotation_is(function (array &$matches) {
-                if ($matches[0] == "can") {
-                    return R\Rule::MODE_ONLY_CAN;
-                }
-                if ($matches[0] == "must") {
-                    return R\Rule::MODE_MUST;
-                }
-                if ($matches[0] == "cannot") {
-                    return R\Rule::MODE_CANNOT;
-                }
-                throw new \LogicException("Unexpected \"".$matches[0]."\".");
-            });
-        $this->add_symbols_for_schemas_to($table, $this->schemas);
-    }
-
-    /**
-     * @param   SymbolTable     $table
-     * @param   R\Schema[]    $schemas
-     * @return  null
-     */
-    protected function add_symbols_for_schemas_to(SymbolTable $table, array &$schemas) {
-        foreach ($schemas as $schema) {
-            $table->symbol($schema->name())
-                ->null_denotation_is(function() use ($schema) {
-                    return $schema;
-                });
-        }
-    }
-
-    // IMPLEMENTATION OF Parser
-
-    /**
-     * @return  Ruleset
-     */
-    public function parse($source) {
-        $this->variables = array();
-        $this->rules = array();
-        $this->add_predefined_variables();
-        return parent::parse($source);
-    }
-
-    /**
-     * Root expression for the parser is some whitespace or comment where a
-     * top level statement is in the middle.
-     *
-     * @return  Ruleset 
-     */
-    protected function root() {
-        while (true) {
-            // drop empty lines
-            while ($tok = $this->is_current_token_to_be_dropped()) {
-                $this->advance($tok);
-            }
-            if ($this->is_end_of_file_reached()) {
-                break;
-            }
-
-            $this->top_level_statement();
-        }
-        $this->purge_predefined_variables();
-        return new Ruleset($this->variables, $this->rules);
-    }
-
-    /**
-     * Parses the top level statements in the rules file.
-     *
-     * @return  null
-     */
-    public function top_level_statement() {
-        // A top level statements is either..
-        // ..an explanation
-        if ($this->is_current_token_matched_by(self::EXPLANATION_RE)) {
-            $m = $this->current_match();
-            $this->last_explanation = $this->trim_explanation($m[1]);
-            $this->advance(self::EXPLANATION_RE);
-        }
-        // ..an assignment to a variable.
-        elseif ($this->is_current_token_matched_by(self::ASSIGNMENT_RE)) {
-            $this->variable_assignment();
-            $this->last_explanation = null;
-        }
-        // ..or a rule declaration
-        else {
-            $this->rule_declaration();
-            $this->last_explanation = null;
-        }
-    }
-
-    /**
-     * Returns currently matched whitespace or comment token if there is any.
-     *
-     * @return string|null
-     */
-    public function is_current_token_to_be_dropped() {
-        if ($this->is_current_token_matched_by("\n")) {
-            return "\n";
-        }
-        if ($this->is_current_token_matched_by(self::SINGLE_LINE_COMMENT_RE)) {
-            return self::SINGLE_LINE_COMMENT_RE;
-        }
-        if ($this->is_current_token_matched_by(self::MULTI_LINE_COMMENT_RE)) {
-            return self::MULTI_LINE_COMMENT_RE;
-        }
-        return null;
+    protected function build_compiler( array $predefined_variables
+                                     , array $schemas
+                                     , array $properties) {
+        return new Compiler($predefined_variables, $schemas, $properties);
     }
 
     /**
      * @param   string
-     * @return  string
+     * @return  Ruleset
      */
-    protected function trim_explanation($content) {
-        return trim(
-            preg_replace("%\s*\n\s*([*]\s*)?%s", "\n", $content)
-        );
-    }
-
-    // EXPRESSION TYPES
-
-    /**
-     * Fetch a rule mode from the stream.
-     *
-     * @return mixed
-     */
-    protected function rule_mode() {
-        $this->is_current_token_matched_by(self::RULE_MODE_RE);
-        $t = $this->current_symbol();
-        $m = $this->current_match();
-        $this->fetch_next_token();
-        $mode = $t->null_denotation($m);
-        return $mode;
-    }
-
-    /**
-     * Fetch a string from the stream.
-     *
-     * @return  string
-     */
-    protected function string() {
-        if (!$this->is_current_token_matched_by(self::STRING_RE)) {
-            throw new ParserException("Expected string.");
-        }
-        $m = $this->current_match();
-        $this->fetch_next_token();
-        return  str_replace("\\\"", "\"",
-                    str_replace("\\n", "\n",
-                        $m[1]));
-    }
-
-    /**
-     * Fetch a variable from the stream.
-     *
-     * @return  V\Variable
-     */
-    protected function variable($right_binding_power = 0) {
-        $t = $this->current_symbol();
-        $m = $this->current_match();
-        $this->fetch_next_token();
-        $left = $t->null_denotation($m);
-
-        while ($right_binding_power < $this->token[0]->binding_power()) {
-            $t = $this->current_symbol();
-            $m = $this->current_match();
-            $this->fetch_next_token();
-            $left = $t->left_denotation($left, $m);
-        }
-
-        if (!($left instanceof V\Variable)) {
-            throw new ParserException("Expected variable.");
-        }
-
-        return $left;
-    }
-
-    /**
-     * Fetch a rule schema and its arguments from the stream.
-     *
-     * @return  array   (R\Schema, array)
-     */
-    protected function schema() {
-        $t = $this->current_symbol();
-        $m = $this->current_match();
-        $this->fetch_next_token();
-        $schema = $t->null_denotation($m);
-        if (!($schema instanceof R\Schema)) {
-            throw new ParserException("Expected name of a rule schema.");
-        }
-        return $schema;
-    }
-
-    // TOP LEVEL STATEMENTS
-
-    /**
-     * Process a variable assignment.
-     *
-     * @return  null
-     */
-    protected function variable_assignment() {
-        $m = $this->current_match(); 
-        $this->fetch_next_token();
-        $def = $this->variable();
-        if ($this->last_explanation !== null) {
-            $def = $def->withExplanation($this->last_explanation);
-        }
-        $this->add_variable($m[1], $def);
-    }
-
-    /**
-     * Process a rule declaration.
-     *
-     * @return  null
-     */
-    protected function rule_declaration() {
-        if ($this->is_current_token_matched_by("only")) {
-            $this->advance("only");
-        }
-        $var = $this->variable();
-        $mode = $this->rule_mode();
-        $schema = $this->schema();
-        $this->is_start_of_rule_arguments = true;
-        $arguments = $schema->fetch_arguments($this);
-        assert('is_array($arguments)');
-        $rule = new R\Rule($mode, $var, $schema, $arguments);
-        if ($this->last_explanation !== null) {
-            $rule= $rule->withExplanation($this->last_explanation);
-        }
-        $this->rules[] = $rule;
-    }
-
-
-    // HANDLING OF VARIABLES
-
-    /**
-     * Add a variable to the variables currently known.
-     *
-     * @param   string      $name
-     * @param   V\Variable  $def
-     * @return null
-     */
-    protected function add_variable($name, V\Variable $def) {
-        assert('is_string($name)');
-        if (array_key_exists($name, $this->variables)) {
-            throw new ParserException("Variable '$name' already defined.");
-        }
-        assert('$def instanceof Lechimp\\Dicto\\Variables\\Variable');
-        $this->variables[$name] = $def->withName($name);
-    }
-
-    /**
-     * Get a predefined variable.
-     *
-     * @param   string  $name
-     * @return  V\Variable
-     */
-    protected function get_variable($name) {
-        if (!array_key_exists($name, $this->variables)) {
-            throw new ParserException("Unknown variable '$name'.");
-        }
-        return $this->variables[$name];
-    }
-
-    /**
-     * Add all predefined variables to the current set of variables.
-     *
-     * @return null
-     */
-    protected function add_predefined_variables() {
-        foreach ($this->predefined_variables as $predefined_var) {
-            $this->add_variable($predefined_var->name(), $predefined_var);
-        }
-    }
-
-    /**
-     * Purge all predefined variables from the current set of variables.
-     *
-     * @return null
-     */
-    protected function purge_predefined_variables() {
-        foreach ($this->predefined_variables as $predefined_var) {
-            unset($this->variables[$predefined_var->name()]);
-        }
-    }
-
-    // IMPLEMENTATION OF ArgumentParser
-
-    /**
-     * @var bool
-     */
-    protected $is_start_of_rule_arguments = false;
-
-    protected function maybe_fetch_argument_delimiter() {
-        if (!$this->is_start_of_rule_arguments) {
-            $this->advance_operator(",");
-            $this->is_start_of_rule_arguments = false;
-        }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function fetch_string() {
-        $this->maybe_fetch_argument_delimiter();
-        return $this->string();
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function fetch_variable() {
-        $this->maybe_fetch_argument_delimiter();
-        return $this->variable();
+    public function parse($source) {
+        assert('is_string($source)');
+        $ast = $this->parser->parse($source);
+        return $this->compiler->compile($ast);
     }
 }
