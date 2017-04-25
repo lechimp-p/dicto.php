@@ -26,7 +26,7 @@ class DependOnTest extends RuleTest {
     // Parsing
 
     public function test_classes_cannot_depend_on_functions() {
-        $res = $this->parse("Classes cannot depend on Functions");
+        $res = $this->parse("Classes cannot depend on: Functions");
 
         $expected = array
             ( new R\Rule

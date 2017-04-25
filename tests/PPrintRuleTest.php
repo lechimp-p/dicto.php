@@ -41,15 +41,15 @@ class PPrintRuleTest extends PHPUnit_Framework_TestCase {
 A = Classes
 B = Classes
 
-A must depend on B
-A cannot depend on B
-only A can depend on B
-A must invoke B
-A cannot invoke B
-only A can invoke B
-A must contain text "foo"
-A cannot contain text "foo"
-only A can contain text "foo"
+A must depend on: B
+A cannot depend on: B
+only A can depend on: B
+A must invoke: B
+A cannot invoke: B
+only A can invoke: B
+A must contain text: "foo"
+A cannot contain text: "foo"
+only A can contain text: "foo"
 
 RULES;
         $ruleset = $parser->parse($rules);

@@ -26,7 +26,7 @@ class InvokeTest extends RuleTest {
     // Parsing
 
     public function test_classes_cannot_invoke_functions() {
-        $res = $this->parse("Classes cannot invoke Functions");
+        $res = $this->parse("Classes cannot invoke: Functions");
 
         $expected = array
             ( new R\Rule

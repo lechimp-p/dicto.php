@@ -134,7 +134,7 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_classes_cannot_contain_text() {
-        $res = $this->parser->parse("Classes cannot contain text \"foo\"");
+        $res = $this->parser->parse("Classes cannot contain text: \"foo\"");
 
         $expected = array
             ( new R\Rule
@@ -148,7 +148,7 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_classes_must_contain_text() {
-        $res = $this->parser->parse("Classes must contain text \"foo\"");
+        $res = $this->parser->parse("Classes must contain text: \"foo\"");
 
         $expected = array
             ( new R\Rule
@@ -162,7 +162,7 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_only_classes_can_contain_text() {
-        $res = $this->parser->parse("only Classes can contain text \"foo\"");
+        $res = $this->parser->parse("only Classes can contain text: \"foo\"");
 
         $expected = array
             ( new R\Rule
@@ -176,7 +176,7 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_only_classes_and_methods_can_contain_text() {
-        $res = $this->parser->parse("only {Classes, Methods} can contain text \"foo\"");
+        $res = $this->parser->parse("only {Classes, Methods} can contain text: \"foo\"");
 
         $expected = array
             ( new R\Rule
@@ -193,7 +193,7 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_only_classes_and_methods_in_classes_can_contain_text() {
-        $res = $this->parser->parse("only {Classes, Methods in: Classes} can contain text \"foo\"");
+        $res = $this->parser->parse("only {Classes, Methods in: Classes} can contain text: \"foo\"");
 
         $expected = array
             ( new R\Rule
@@ -214,7 +214,7 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_classes_with_name_must_contain_text() {
-        $res = $this->parser->parse("Classes with name: \"foo\" must contain text \"foo\"");
+        $res = $this->parser->parse("Classes with name: \"foo\" must contain text: \"foo\"");
 
         $expected = array
             ( new R\Rule
@@ -232,7 +232,7 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_classes_and_functions_must_contain_text() {
-        $res = $this->parser->parse("{Classes,Functions} must contain text \"foo\"");
+        $res = $this->parser->parse("{Classes,Functions} must contain text: \"foo\"");
 
         $expected = array
             ( new R\Rule
@@ -269,7 +269,7 @@ class RuleBuilderTest extends PHPUnit_Framework_TestCase {
     }
 
     public function test_explain_rules() {
-        $res = $this->parse("/** Explanation */\nClasses cannot contain text \"name\"");
+        $res = $this->parse("/** Explanation */\nClasses cannot contain text: \"name\"");
 
         $res = $res->rules()[0];
         $this->assertInstanceOf(R\Rule::class, $res);
