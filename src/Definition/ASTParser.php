@@ -313,7 +313,8 @@ class ASTParser extends Parser {
                         str_replace("\\n", "\n",
                             $m[1])));
             }
-            // ..a name
+            // ..a variable
+            // TODO: this won't do with {..}
             if ($this->is_current_token_matched_by(self::NAME_RE)) {
                 $args[] = $this->variable(0);
             }
