@@ -10,9 +10,6 @@
 
 namespace Lechimp\Dicto\Indexer;
 
-use Lechimp\Dicto\Variables\Variable;
-use PhpParser\Node as N;
-
 /**
  * Visitor that wraps an ASTVisitor to make it compatible with PhpParser.
  */
