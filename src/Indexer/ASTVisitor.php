@@ -10,9 +10,6 @@
 
 namespace Lechimp\Dicto\Indexer;
 
-use Lechimp\Dicto\Variables\Variable;
-use PhpParser\Node as N;
-
 /**
  * Interface to implement Rules that visit the AST.
  *
