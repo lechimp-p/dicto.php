@@ -35,13 +35,52 @@ function template_diff_per_rule_bootstrap(array $report) {
         crossorigin="anonymous">
     <script
         src="https://code.jquery.com/jquery-2.2.4.min.js"
+		integrity="sha384-rY/jv8mMhqDabXSo+UCggqKtdmBfd3qC2/KvyTDNQ6PcUJXaxK1tMepoQda4g5vB"
         crossorigin="anonymous">
     </script> 
     <script
         src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
         crossorigin="anonymous">
-    </script> 
+    </script>
+	<script>
+		function showElement(item) {
+			item.style.display = "";
+		}
+
+		function hideElement(item) {
+			item.style.display = "none";
+		}
+
+		function searchRules(searchTerm) {
+			var rules = document.querySelectorAll(".rule");
+
+			//foreach rule
+			for(var i = 0; i < rules.length; i++) {
+				var ruleViolations = rules[i].querySelectorAll(".rule-violations .list-group-item");
+				var hiddenViolations = 0;
+
+				//hide not matching violations
+				for(var y = 0; y < ruleViolations.length; y++) {
+					var violation = ruleViolations[y];
+
+					if(violation.innerHTML.toUpperCase().indexOf(searchTerm.toUpperCase()) > -1)
+						showElement(violation);
+					else {
+						hideElement(violation);
+						hiddenViolations++;
+					}
+				}
+
+				//hide empty rules
+				if(hiddenViolations === ruleViolations.length)
+					hideElement(rules[i]);
+				else
+					showElement(rules[i]);
+
+			}
+		}
+	</script>
 </head>
 <body>
     <div class="container">
@@ -115,6 +154,22 @@ function template_diff_per_rule_bootstrap(array $report) {
                 </div>
             </div>
         </div>
+
+	    <div class="panel-group">
+		    <div class="row">
+			    <div class="col-lg-12">
+				    <input
+						    type="text"
+						    class="form-control"
+						    id="search-field"
+						    name="search-field"
+						    placeholder="Search for file names ..."
+						    oninput="searchRules(this.value)"
+				    />
+			    </div>
+		    </div>
+	    </div>
+
         <div
             class="panel-group"
             id="rules-accordion"
@@ -137,7 +192,7 @@ function template_diff_per_rule_bootstrap(array $report) {
                 $class = "success";
             }
 ?>
-            <div class="panel panel-<?=$class?>">
+            <div class="panel panel-<?=$class?> rule">
                 <div class="panel-heading" role="tab" id="rule_<?=$i?>_heading">
                     <h4 class="panel-title">
                         <a
@@ -147,7 +202,7 @@ function template_diff_per_rule_bootstrap(array $report) {
                             href="#rule_<?=$i?>"
                             aria-expanded="<?=$i==1?"true":"false"?>"
                             aria-controls"#rule_<?=$i?>">
-                            <?=htmlentities(wordwrap($rule["rule"], 80, " ", true))?> 
+                            <?=htmlentities(wordwrap($rule["rule"], 80, " ", true))?>
                         </a>
                     </h4>
                 </div>
@@ -163,7 +218,7 @@ function template_diff_per_rule_bootstrap(array $report) {
                                     <div class="well well-sm">
                                         <?= htmlentities(str_replace("\n", " ", $rule["explanation"])) ?> 
                                     </div>
-                                    <ul class="list-group">
+                                    <ul class="list-group rule-violations">
 <?php       foreach ($rule["violations"]["list"] as $v) {
                 if ($v["introduced_in"] == $report["run_id"]) {
                     $cl = "list-group-item-danger";
