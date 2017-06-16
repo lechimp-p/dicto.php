@@ -52,7 +52,7 @@ class DiffPerRuleReport extends Report {
                                     if ($source_url !== null) {
                                         $v["url"] = $this->make_url
                                                         ( $source_url
-                                                        , $current["commit_hash"]
+                                                        , (isset($v["resolved_in"])) ? $v["resolved_in"] : $current["commit_hash"]
                                                         , $v["file"]
                                                         , $v["line_no"]
                                                         );
@@ -62,8 +62,12 @@ class DiffPerRuleReport extends Report {
                                     }
                                     return $v;
                                 }
-                                , $this->queries->violations_of($rule, $cur_run)
+                                ,
+                                array_merge(
+                                    $this->queries->violations_of($rule, $cur_run),
+                                    $this->queries->resolved_violations_of($rule, $cur_run)
                                 )
+                            )
                             ]
                         ];
                 }

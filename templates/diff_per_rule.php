@@ -28,7 +28,7 @@ function template_diff_per_rule(array $report) {
     resolved : <?= $rule["violations"]["resolved"] ?> 
 
 <?php   foreach ($rule["violations"]["list"] as $v) { ?>
-    <?= $v["file"] ?> (l. <?= $v["line_no"] ?>)
+    <?= $v["file"] ?> (l. <?= $v["line_no"] ?>) <?= (isset($v["resolved_in"]) ? "Resolved" : "") . "\n" ?>
 <?php   } ?>
 
 <?php }
