@@ -1,5 +1,19 @@
 <?php
 
+/**
+ * Example report entry:
+ * [19180] => Array ...
+ * [19181] => Array
+ *  (
+ *       [file] => webservice/soap/classes/class.ilSoapTestAdministration.php
+ *       [line_no] => 140
+ *       [introduced_in] => 2
+ *       [url] => https://github.com/ILIAS-eLearning/ILIAS/blob/9db77d8a61af49d229bf2444712f18b20941d8d5/webservice/soap/classes/class.ilSoapTestAdministration.php#L140
+ *   )
+ *
+ * @param array $report
+ * @return void
+ */
 function template_diff_per_rule_bootstrap(array $report) {
     $total = $report["violations"]["total"];
     $resolved = $report["violations"]["resolved"];
@@ -23,6 +37,7 @@ function template_diff_per_rule_bootstrap(array $report) {
     else {
         $msg = '<p class="text-danger">You added some violations. Please take care of the code!</p>';
     }
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -44,6 +59,12 @@ function template_diff_per_rule_bootstrap(array $report) {
         crossorigin="anonymous">
     </script>
     <script>
+
+        var searchData = {
+            violationsOverviewTotalTag: null,
+            violationsOverviewAddedTag: null
+        };
+
         function showElement(item) {
             item.style.display = "";
         }
@@ -52,34 +73,89 @@ function template_diff_per_rule_bootstrap(array $report) {
             item.style.display = "none";
         }
 
+        function initSearch() {
+            searchData.violationsOverviewTotalTag = document.querySelector("#violations-overview-total");
+            searchData.violationsOverviewAddedTag = document.querySelector("#violations-overview-added");
+            searchData.violationsOverviewResolvedTag = document.querySelector("#violations-overview-resolved");
+        }
+
+        function setViolationOverviewTotal(value) {
+            searchData.violationsOverviewTotalTag.innerHTML = Number(value);
+        }
+
+        function setViolationOverviewAdded(value) {
+            searchData.violationsOverviewAddedTag.innerHTML = Number(value);
+        }
+
+        function setViolationOverviewResolved(value) {
+            searchData.violationsOverviewResolvedTag.innerHTML = Number(value);
+        }
+
         function searchRules(searchTerm) {
             var rules = document.querySelectorAll(".rule");
 
+            var totalOverviewViolations = 0;
+            var addedOverviewViolations = 0;
+            var resolvedOverviewViolations = 0;
+
             //foreach rule
             for (var i = 0; i < rules.length; i++) {
+                var totalViolationTag = rules[i].querySelector(".violation-total");
+                var addedViolationTag = rules[i].querySelector(".violation-added");
+                var resolvedViolationTag = rules[i].querySelector(".violation-resolved");
                 var ruleViolations = rules[i].querySelectorAll(".rule-violations .list-group-item");
-                var hiddenViolations = 0;
+
+                var totalViolations = 0;
+                var addedViolations = 0;
+                var resolvedViolations = 0;
 
                 //hide not matching violations
                 for (var y = 0; y < ruleViolations.length; y++) {
                     var violation = ruleViolations[y];
 
-                    if (violation.innerHTML.toUpperCase().indexOf(searchTerm.toUpperCase()) > -1)
+                    if (violation.innerHTML.toUpperCase().indexOf(searchTerm.toUpperCase()) > -1) {
                         showElement(violation);
+                        if(violation.classList.contains('list-group-item-danger')) {
+                            addedViolations++;
+                        }
+
+                        //resolved violation are no violations at all but should
+                        // be rendered therefore don't increment the total if we get a resolved violation.
+                        if(violation.classList.contains('list-group-item-success')) {
+                            resolvedViolations++;
+                        }
+                        else
+                        {
+                            totalViolations++;
+                        }
+                    }
+
                     else {
                         hideElement(violation);
-                        hiddenViolations++;
                     }
                 }
 
                 //hide empty rules
-                if (hiddenViolations === ruleViolations.length)
+                if (totalViolations === 0 && resolvedViolations === 0)
                     hideElement(rules[i]);
                 else
                     showElement(rules[i]);
 
+                totalViolationTag.innerHTML = totalViolations;
+                addedViolationTag.innerHTML = addedViolations;
+                resolvedViolationTag.innerHTML = resolvedViolations;
+
+                totalOverviewViolations += totalViolations;
+                addedOverviewViolations += addedViolations;
+                resolvedOverviewViolations += resolvedViolations;
             }
+
+            setViolationOverviewTotal(totalOverviewViolations);
+            setViolationOverviewAdded(addedOverviewViolations);
+            setViolationOverviewResolved(resolvedOverviewViolations)
         }
+
+        $(document).ready(function() {initSearch()});
     </script>
 </head>
 <body>
@@ -128,15 +204,15 @@ function template_diff_per_rule_bootstrap(array $report) {
                                         <ul class="list-group">
                                             <li class="list-group-item">
                                                 <strong>total</strong>
-                                                <span class="badge"><?=$total?></span>
+                                                <span class="badge" id="violations-overview-total"><?=$total?></span>
                                             </li>
                                             <li class="list-group-item <?=$resolved>0?"list-group-item-success":""?>">
                                                 resolved
-                                                <span class="badge"><?=$resolved?></span>
+                                                <span class="badge" id="violations-overview-resolved"><?=$resolved?></span>
                                             </li>
                                             <li class="list-group-item <?=$added>0?"list-group-item-danger":""?>">
                                                 added 
-                                                <span class="badge"><?=$added?></span>
+                                                <span class="badge" id="violations-overview-added"><?=$added?></span>
                                             </li>
                                         </ul>
                                     </div>
@@ -213,9 +289,13 @@ function template_diff_per_rule_bootstrap(array $report) {
                                     </div>
                                     <ul class="list-group rule-violations">
 <?php       foreach ($rule["violations"]["list"] as $v) {
-                if ($v["introduced_in"] == $report["run_id"]) {
+                if(isset($v["resolved_in"])) {
+                    $cl = "list-group-item-success";
+                }
+                else if ($v["introduced_in"] == $report["run_id"]) {
                     $cl = "list-group-item-danger";
                 }
+
                 else {
                     $cl = "";
                 }
@@ -243,15 +323,15 @@ function template_diff_per_rule_bootstrap(array $report) {
                                             <ul class="list-group">
                                                 <li class="list-group-item">
                                                     <strong>total</strong>
-                                                    <span class="badge"><?=$total?></span>
+                                                    <span class="badge violation-total"><?=$total?></span>
                                                 </li>
                                                 <li class="list-group-item <?=$resolved>0?"list-group-item-success":""?>">
                                                     resolved
-                                                    <span class="badge"><?=$resolved?></span>
+                                                    <span class="badge violation-resolved"><?=$resolved?></span>
                                                 </li>
                                                 <li class="list-group-item <?=$added>0?"list-group-item-danger":""?>">
                                                     added 
-                                                    <span class="badge"><?=$added?></span>
+                                                    <span class="badge violation-added"><?=$added?></span>
                                                 </li>
                                             </ul>
                                         </div>

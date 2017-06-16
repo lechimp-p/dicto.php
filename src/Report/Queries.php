@@ -300,4 +300,29 @@ class Queries {
             ->execute()
             ->fetchAll();
     }
+
+    /**
+     * Get all resolved violations of the given rule.
+     *
+     * @param int $rule
+     * @param int $run
+     *
+     * @return  array<string,(string|int)>[]  with keys 'file', 'line_no', 'introduced_in'
+     */
+    public function resolved_violations_of($rule, $run) {
+        $b = $this->result_db->builder();
+
+        return $b
+            ->select('vs.file', 'vls.line_no', 'rs.commit_hash AS resolved_in')
+            ->from('violation_locations', 'vls')
+            ->innerJoin('vls', 'violations', 'vs', 'vs.id = vls.violation_id')
+            ->innerJoin('vs', 'runs', 'rs', 'vs.last_seen = rs.id')
+            ->innerJoin('vs', 'rules', 'ru', 'ru.id = vs.rule_id')
+            ->where('vs.last_seen < ?')
+            ->andWhere('ru.id = ?')
+            ->setParameter(0, (int)$run)
+            ->setParameter(1, (int)$rule)
+            ->execute()
+            ->fetchAll();
+    }
 }
