@@ -316,7 +316,7 @@ class Queries {
         $b = $this->result_db->builder();
 
         return $b
-            ->select('vs.file', 'vls.line_no', 'vs.first_seen introduced_in', 'vs.last_seen+1 resolved_in')
+            ->select('vs.file', 'vls.line_no', 'vs.first_seen introduced_in', 'vs.last_seen last_seen_in')
             ->from('violations', 'vs')
             ->innerJoin('vs', 'violation_locations', 'vls',
                 'vs.id = vls.violation_id AND vls.run_id = vs.last_seen')

@@ -304,7 +304,7 @@ class ReportQueriesTest extends ReportTestBase {
                 (   [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run1
-                    , "resolved_in" => $run3
+                    , "last_seen_in" => $run2
                     ]
                 , $run2_3_rule1
                 );
@@ -312,7 +312,7 @@ class ReportQueriesTest extends ReportTestBase {
                 (   [ "file" => "file2.php"
                     , "line_no" => 23
                     , "introduced_in" => $run2
-                    , "resolved_in" => $run3
+                    , "last_seen_in" => $run2
                     ]
                 , $run2_3_rule1
                 );
@@ -323,7 +323,7 @@ class ReportQueriesTest extends ReportTestBase {
                 (   [ "file" => "file3.php"
                     , "line_no" => 13
                     , "introduced_in" => $run2
-                    , "resolved_in" => $run3
+                    , "last_seen_in" => $run2
                     ]
                 , $run2_3_rule2
                 );
@@ -334,7 +334,7 @@ class ReportQueriesTest extends ReportTestBase {
                 (   [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run1
-                    , "resolved_in" => $run3
+                    , "last_seen_in" => $run2
                     ]
                 , $run2_3_rule1
                 );
