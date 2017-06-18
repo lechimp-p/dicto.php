@@ -89,7 +89,7 @@ class Indexer {
      * @return  Flightcontrol
      */
     public function init_flightcontrol($path) {
-        $adapter = new Local($path, LOCK_EX, Local::SKIP_LINKS);
+        $adapter = new Local(realpath($path), LOCK_EX, Local::SKIP_LINKS);
         $flysystem = new Filesystem($adapter);
         return new Flightcontrol($flysystem);
     }
