@@ -66,14 +66,16 @@ class Compiler implements ArgumentParser {
         }, $predefined_variables);
 
         $this->schemas = [];
-        foreach ($schemas as $schema) (function(R\Schema $s) {
+        $loop = function(R\Schema $s) {
             $this->schemas[$s->name()] = $s;
-        })($schema);
+        };
+        foreach ($schemas as $schema) $loop($schema);
 
         $this->properties = [];
-        foreach ($properties as $property) (function(V\Property $p) {
+        $loop = function(V\Property $p) {
             $this->properties[$p->parse_as()] = $p;
-        })($property);
+        };
+        foreach ($properties as $property) $loop($property);
     }
 
     /**
