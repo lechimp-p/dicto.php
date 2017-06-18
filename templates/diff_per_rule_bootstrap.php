@@ -244,7 +244,7 @@ function template_diff_per_rule_bootstrap(array $report) {
                             class="form-control"
                             id="search-field"
                             name="search-field"
-                            placeholder="Search for file names ..."
+                            placeholder="Search for filenames ..."
                             oninput="onSearchInput(this.value)"
                     />
                 </div>
