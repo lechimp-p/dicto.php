@@ -112,11 +112,11 @@ function template_diff_per_rule_bootstrap(array $report) {
 
                 //hide empty rules
                 if (totalViolations === 0 && resolvedViolations === 0) {
-                    violation.classList.remove("no-display");
-                    violation.classList.add("no-display");
+                    rules[i].classList.remove("no-display");
+                    rules[i].classList.add("no-display");
                 }
                 else {
-                    violation.classList.remove("no-display");
+                    rules[i].classList.remove("no-display");
                 }
 
                 totalTag.innerHTML = totalViolations;
