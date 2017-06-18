@@ -28,6 +28,7 @@ class DiffPerRuleReport extends Report {
         $prev_run = $this->queries->run_with_different_commit_before($cur_run);
         $source_url = $this->source_url();
         $current = $this->queries->run_info($cur_run);
+        $previous = $this->queries->run_info($prev_run);
         return
             [ "run_id"  => $cur_run
             , "current" => $current
@@ -38,7 +39,7 @@ class DiffPerRuleReport extends Report {
                 , "resolved" => $this->queries->count_resolved_violations($prev_run, $cur_run)
                 ]
             , "rules" => array_map
-                ( function($rule) use ($cur_run, $prev_run, $current, $source_url) {
+                ( function($rule) use ($cur_run, $prev_run, $current, $previous, $source_url) {
                     $rule_info = $this->queries->rule_info($rule);
                     return
                         [ "rule" => $rule_info["rule"]
@@ -48,11 +49,11 @@ class DiffPerRuleReport extends Report {
                             , "added" => $this->queries->count_added_violations($prev_run, $cur_run, $rule)
                             , "resolved" => $this->queries->count_resolved_violations($prev_run, $cur_run, $rule)
                             , "list" => array_map
-                                ( function($v) use ($current, $source_url) {
+                                ( function($v) use ($current, $previous, $source_url) {
                                     if ($source_url !== null) {
                                         $v["url"] = $this->make_url
                                                         ( $source_url
-                                                        , (isset($v["resolved_in"])) ? $v["resolved_in"] : $current["commit_hash"]
+                                                        , (isset($v["last_seen_in"])) ? $v["last_seen_in"] : $previous["commit_hash"]
                                                         , $v["file"]
                                                         , $v["line_no"]
                                                         );
@@ -65,7 +66,7 @@ class DiffPerRuleReport extends Report {
                                 ,
                                 array_merge(
                                     $this->queries->violations_of($rule, $cur_run),
-                                    $this->queries->resolved_violations_of($rule, $cur_run)
+                                    $this->queries->resolved_violations($rule, $prev_run, $cur_run)
                                 )
                             )
                             ]
