@@ -136,12 +136,10 @@ function template_diff_per_rule_bootstrap(array $report) {
                 else {
                     rules[i].classList.add("panel-success");
                 }
-
                 totalOverviewViolations += totalViolations;
                 addedOverviewViolations += addedViolations;
                 resolvedOverviewViolations += resolvedViolations;
             }
-
 
             var totalTag = document.querySelector("#violations-overview-total");
             var addedTag = document.querySelector("#violations-overview-added");
