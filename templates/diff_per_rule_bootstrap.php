@@ -65,6 +65,9 @@ function template_diff_per_rule_bootstrap(array $report) {
             violationsOverviewAddedTag: null
         };
 
+        var debounce_timeout = null;
+        var debounce_time = 150; // ms
+
         function showElement(item) {
             item.style.display = "";
         }
@@ -155,6 +158,14 @@ function template_diff_per_rule_bootstrap(array $report) {
             setViolationOverviewResolved(resolvedOverviewViolations)
         }
 
+        function onSearchInput(value) {
+            clearTimeout(debounce_timeout);
+            setTimeout(function() {
+                debounce_timeout = null;
+                searchRules(value);
+            }, debounce_time);
+        }
+
         $(document).ready(function() {initSearch()});
     </script>
 </head>
@@ -233,7 +244,7 @@ function template_diff_per_rule_bootstrap(array $report) {
                             id="search-field"
                             name="search-field"
                             placeholder="Search for file names ..."
-                            oninput="searchRules(this.value)"
+                            oninput="onSearchInput(this.value)"
                     />
                 </div>
             </div>
