@@ -29,6 +29,7 @@ class DiffPerRuleReport extends Report {
         $source_url = $this->source_url();
         $current = $this->queries->run_info($cur_run);
         $previous = $this->queries->run_info($prev_run);
+
         return
             [ "run_id"  => $cur_run
             , "current" => $current
@@ -41,6 +42,25 @@ class DiffPerRuleReport extends Report {
             , "rules" => array_map
                 ( function($rule) use ($cur_run, $prev_run, $current, $previous, $source_url) {
                     $rule_info = $this->queries->rule_info($rule);
+                    $violations = array_merge
+                        ( $this->queries->violations_of($rule, $cur_run)
+                        , $this->queries->resolved_violations($rule, $prev_run, $cur_run)
+                        );
+                    usort($violations, function($l, $r) {
+                        $file_cmp = strcmp($l["file"], $r["file"]);
+                        if ($file_cmp == 0) {
+                            if ($l["line_no"] == $r["line_no"]) {
+                                return 0;
+                            }
+                            if ($l["line_no"] < $r["line_no"]) {
+                                return -1;
+                            }
+                            else {
+                                return 1;
+                            }
+                        }
+                        return $file_cmp;
+                    });
                     return
                         [ "rule" => $rule_info["rule"]
                         , "explanation" => $rule_info["explanation"]
@@ -63,13 +83,8 @@ class DiffPerRuleReport extends Report {
                                     }
                                     return $v;
                                 }
-                                ,
-                                array_merge(
-                                    $this->queries->violations_of($rule, $cur_run),
-                                    $this->queries->resolved_violations($rule, $prev_run, $cur_run)
-                                )
-                            )
-                            ]
+                                , $violations
+                            )]
                         ];
                 }
                 , $this->queries->analyzed_rules($cur_run)
