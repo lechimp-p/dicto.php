@@ -194,7 +194,7 @@ class Compiler implements ArgumentParser {
     }
 
     protected function compile_parameters($prop_or_schema, array $parameters) {
-        assert('$prop_or_schema instanceof Lechimp\Dicto\Variable\Property || $prop_or_schema instanceof Lechimp\Dicto\Rules\Rule');
+        assert('$prop_or_schema instanceof Lechimp\Dicto\Variable\Property || $prop_or_schema instanceof Lechimp\Dicto\Rules\Schema');
         // TODO: rename fetch_arguments to fetch_parameters
         $this->current_parameters = $parameters;
         $parameters = $prop_or_schema->fetch_arguments($this);
