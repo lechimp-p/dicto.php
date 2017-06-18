@@ -302,26 +302,31 @@ class Queries {
     }
 
     /**
-     * Get all resolved violations of the given rule.
+     * Get all resolved violations of the given rule between the two given runs.
+     *
+     * I.e.: get violations that existed in run_former but do no exist in run_latter.
      *
      * @param int $rule
-     * @param int $run
+     * @param int $run_former
+     * @param int $run_latter
      *
-     * @return  array<string,(string|int)>[]  with keys 'file', 'line_no', 'introduced_in'
+     * @return  array<string,(string|int)>[]  with keys 'file', 'line_no', 'introduced_in', 'resolved_in'
      */
-    public function resolved_violations_of($rule, $run) {
+    public function resolved_violations($rule, $run_former, $run_latter) {
         $b = $this->result_db->builder();
 
         return $b
-            ->select('vs.file', 'vls.line_no', 'rs.commit_hash AS resolved_in')
-            ->from('violation_locations', 'vls')
-            ->innerJoin('vls', 'violations', 'vs', 'vs.id = vls.violation_id')
-            ->innerJoin('vs', 'runs', 'rs', 'vs.last_seen = rs.id')
+            ->select('vs.file', 'vls.line_no', 'vs.first_seen introduced_in', 'vs.last_seen+1 resolved_in')
+            ->from('violations', 'vs')
+            ->innerJoin('vs', 'violation_locations', 'vls',
+                'vs.id = vls.violation_id AND vls.run_id = vs.last_seen')
             ->innerJoin('vs', 'rules', 'ru', 'ru.id = vs.rule_id')
-            ->where('vs.last_seen < ?')
-            ->andWhere('ru.id = ?')
-            ->setParameter(0, (int)$run)
-            ->setParameter(1, (int)$rule)
+            ->where('vs.first_seen <= :former')
+            ->andWhere('vs.last_seen < :latter')
+            ->andWhere('ru.id = :rule')
+            ->setParameter(0, $run_former)
+            ->setParameter(1, $run_latter)
+            ->setParameter(2, $rule)
             ->execute()
             ->fetchAll();
     }

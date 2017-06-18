@@ -283,6 +283,66 @@ class ReportQueriesTest extends ReportTestBase {
                 );
     }
 
+    public function test_resolved_violations() {
+        $this->init_scenario();
+
+        list($rule1, $rule2) = $this->query_rule_ids();
+
+        $run1 = $this->queries->last_run_for("#COMMIT_1#");
+        $run2 = $this->queries->last_run_for("#COMMIT_2#");
+        $run3 = $this->queries->last_run_for("#COMMIT_3#");
+
+        $run1_2_rule1 = $this->queries->resolved_violations($rule1, $run1, $run2);
+        $this->assertCount(0, $run1_2_rule1);
+
+        $run1_2_rule2 = $this->queries->resolved_violations($rule2, $run1, $run2);
+        $this->assertCount(0, $run1_2_rule2);
+
+        $run2_3_rule1 = $this->queries->resolved_violations($rule1, $run2, $run3);
+        $this->assertCount(2, $run2_3_rule1);
+        $this->assertContains
+                (   [ "file" => "file.php"
+                    , "line_no" => 42
+                    , "introduced_in" => $run1
+                    , "resolved_in" => $run3
+                    ]
+                , $run2_3_rule1
+                );
+        $this->assertContains
+                (   [ "file" => "file2.php"
+                    , "line_no" => 23
+                    , "introduced_in" => $run2
+                    , "resolved_in" => $run3
+                    ]
+                , $run2_3_rule1
+                );
+
+        $run2_3_rule2 = $this->queries->resolved_violations($rule2, $run2, $run3);
+        $this->assertCount(1, $run2_3_rule2);
+        $this->assertContains
+                (   [ "file" => "file3.php"
+                    , "line_no" => 13
+                    , "introduced_in" => $run2
+                    , "resolved_in" => $run3
+                    ]
+                , $run2_3_rule2
+                );
+
+        $run1_3_rule1 = $this->queries->resolved_violations($rule1, $run1, $run3);
+        $this->assertCount(1, $run1_3_rule1);
+        $this->assertContains
+                (   [ "file" => "file.php"
+                    , "line_no" => 42
+                    , "introduced_in" => $run1
+                    , "resolved_in" => $run3
+                    ]
+                , $run2_3_rule1
+                );
+
+        $run1_3_rule2 = $this->queries->resolved_violations($rule2, $run1, $run3);
+        $this->assertCount(0, $run1_3_rule2);
+    }
+
     public function test_regression_1_1() {
         // Count had a bug where a similar looking line in the same file
         // was only counted once.
