@@ -8,6 +8,7 @@
  *       [file] => webservice/soap/classes/class.ilSoapTestAdministration.php
  *       [line_no] => 140
  *       [introduced_in] => 2
+ *       [last_seen_in] => 2
  *       [url] => https://github.com/ILIAS-eLearning/ILIAS/blob/9db77d8a61af49d229bf2444712f18b20941d8d5/webservice/soap/classes/class.ilSoapTestAdministration.php#L140
  *   )
  *
@@ -300,7 +301,7 @@ function template_diff_per_rule_bootstrap(array $report) {
                                     </div>
                                     <ul class="list-group rule-violations">
 <?php       foreach ($rule["violations"]["list"] as $v) {
-                if(isset($v["resolved_in"])) {
+                if(isset($v["last_seen_in"])) {
                     $cl = "list-group-item-success";
                 }
                 else if ($v["introduced_in"] == $report["run_id"]) {
