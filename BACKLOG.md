@@ -22,6 +22,8 @@
 * Rename Property::arguments to Property::parameters. Seems to be a better fit.
 * Rename "definition" in AST to "variable".
 * RuleBuilder could go away.
+* bootstrap-template for diff-per-rule report needs cleanup (factoring out some functions
+  in JS, unify logic for colors and messages between php and JS)
 
 # ASTParser
 * Seems to be a bit clunky, since I derived it from RuleBuilder. Maybe rewrite.

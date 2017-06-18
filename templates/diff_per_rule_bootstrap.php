@@ -21,22 +21,22 @@ function template_diff_per_rule_bootstrap(array $report) {
     $added = $report["violations"]["added"];
     $diff = $resolved - $added;
     if ($resolved == 0 && $added == 0) {
-        $msg = '<p>Nothing new...</p>';
+        $msg = 0;
     }
     else if ($diff == 0) {
-        $msg = '<p>You added and removed violations, but no change in total. Maybe you refactored some code?"</p>';
+        $msg = 1;
     }
     else if ($diff > 0 && $added == 0) {
-        $msg = '<p class="text-success">You resolved some violations. Great Success!</p>';
+        $msg = 2;
     }
     else if ($diff > 0) {
-        $msg = '<p class="text-success">You resolved more violations than you added. Nice!</p>';
+        $msg = 3;
     }
     else if ($diff < 0 && $resolved != 0) {
-        $msg = '<p class="text-danger">You added more violations than you resolved. Don\'t give up!</p>';
+        $msg = 4;
     }
     else {
-        $msg = '<p class="text-danger">You added some violations. Please take care of the code!</p>';
+        $msg = 5;
     }
 
 ?>
@@ -61,52 +61,23 @@ function template_diff_per_rule_bootstrap(array $report) {
     </script>
     <script>
 
-        var searchData = {
-            violationsOverviewTotalTag: null,
-            violationsOverviewAddedTag: null
-        };
-
         var debounce_timeout = null;
         var debounce_time = 150; // ms
 
-        function showElement(item) {
-            item.style.display = "";
-        }
-
-        function hideElement(item) {
-            item.style.display = "none";
-        }
-
-        function initSearch() {
-            searchData.violationsOverviewTotalTag = document.querySelector("#violations-overview-total");
-            searchData.violationsOverviewAddedTag = document.querySelector("#violations-overview-added");
-            searchData.violationsOverviewResolvedTag = document.querySelector("#violations-overview-resolved");
-        }
-
-        function setViolationOverviewTotal(value) {
-            searchData.violationsOverviewTotalTag.innerHTML = Number(value);
-        }
-
-        function setViolationOverviewAdded(value) {
-            searchData.violationsOverviewAddedTag.innerHTML = Number(value);
-        }
-
-        function setViolationOverviewResolved(value) {
-            searchData.violationsOverviewResolvedTag.innerHTML = Number(value);
-        }
-
-        function searchRules(searchTerm) {
+        function filterRules(searchTerm) {
             var rules = document.querySelectorAll(".rule");
 
             var totalOverviewViolations = 0;
             var addedOverviewViolations = 0;
             var resolvedOverviewViolations = 0;
 
+            var diff = 0;
+
             //foreach rule
             for (var i = 0; i < rules.length; i++) {
-                var totalViolationTag = rules[i].querySelector(".violation-total");
-                var addedViolationTag = rules[i].querySelector(".violation-added");
-                var resolvedViolationTag = rules[i].querySelector(".violation-resolved");
+                var totalTag = rules[i].querySelector(".violation-total");
+                var addedTag = rules[i].querySelector(".violation-added");
+                var resolvedTag = rules[i].querySelector(".violation-resolved");
                 var ruleViolations = rules[i].querySelectorAll(".rule-violations .list-group-item");
 
                 var totalViolations = 0;
@@ -118,57 +89,109 @@ function template_diff_per_rule_bootstrap(array $report) {
                     var violation = ruleViolations[y];
 
                     if (violation.innerHTML.toUpperCase().indexOf(searchTerm.toUpperCase()) > -1) {
-                        showElement(violation);
+                        violation.classList.remove("no-display");
                         if(violation.classList.contains('list-group-item-danger')) {
                             addedViolations++;
                         }
 
-                        //resolved violation are no violations at all but should
+                        // resolved violation are no violations at all but should
                         // be rendered therefore don't increment the total if we get a resolved violation.
                         if(violation.classList.contains('list-group-item-success')) {
                             resolvedViolations++;
                         }
-                        else
-                        {
+                        else {
                             totalViolations++;
                         }
                     }
 
                     else {
-                        hideElement(violation);
+                        violation.classList.remove("no-display");
+                        violation.classList.add("no-display");
                     }
                 }
 
                 //hide empty rules
-                if (totalViolations === 0 && resolvedViolations === 0)
-                    hideElement(rules[i]);
-                else
-                    showElement(rules[i]);
+                if (totalViolations === 0 && resolvedViolations === 0) {
+                    violation.classList.remove("no-display");
+                    violation.classList.add("no-display");
+                }
+                else {
+                    violation.classList.remove("no-display");
+                }
 
-                totalViolationTag.innerHTML = totalViolations;
-                addedViolationTag.innerHTML = addedViolations;
-                resolvedViolationTag.innerHTML = resolvedViolations;
+                totalTag.innerHTML = totalViolations;
+                addedTag.innerHTML = addedViolations;
+                resolvedTag.innerHTML = resolvedViolations;
+
+                rules[i].classList.remove("panel-default");
+                rules[i].classList.remove("panel-danger");
+                rules[i].classList.remove("panel-success");
+                diff = resolvedViolations - addedViolations;
+                if (diff == 0) {
+                    rules[i].classList.add("panel-default");
+                }
+                else if (diff < 0) {
+                    rules[i].classList.add("panel-danger");
+                }
+                else {
+                    rules[i].classList.add("panel-success");
+                }
 
                 totalOverviewViolations += totalViolations;
                 addedOverviewViolations += addedViolations;
                 resolvedOverviewViolations += resolvedViolations;
             }
 
-            setViolationOverviewTotal(totalOverviewViolations);
-            setViolationOverviewAdded(addedOverviewViolations);
-            setViolationOverviewResolved(resolvedOverviewViolations)
+
+            var totalTag = document.querySelector("#violations-overview-total");
+            var addedTag = document.querySelector("#violations-overview-added");
+            var resolvedTag = document.querySelector("#violations-overview-resolved");
+
+            totalTag.innerHTML = Number(totalOverviewViolations);
+            addedTag.innerHTML = Number(addedOverviewViolations);
+            resolvedTag.innerHTML = Number(resolvedOverviewViolations);
+
+            diff = resolvedOverviewViolations - addedOverviewViolations;
+            var msg = 0;
+            if (resolvedOverviewViolations == 0 && addedOverviewViolations == 0) {
+                msg = 0;
+            }
+            else if (diff == 0) {
+                msg = 1;
+            }
+            else if (diff > 0 && addedOverviewViolations == 0) {
+                msg = 2;
+            }
+            else if (diff > 0) {
+                msg = 3;
+            }
+            else if (diff < 0 && resolvedOverviewViolations != 0) {
+                msg = 4;
+            }
+            else {
+                msg = 5;
+            }
+
+            var messages = document.querySelector("#violations-overview-message").children;
+            for(var i = 0; i < messages.length; i++) {
+                messages[i].classList.remove("no-display");
+                if (i != msg) {
+                    messages[i].classList.add("no-display");
+                }
+            }
         }
 
         function onSearchInput(value) {
             clearTimeout(debounce_timeout);
             setTimeout(function() {
                 debounce_timeout = null;
-                searchRules(value);
+                filterRules(value);
             }, debounce_time);
         }
-
-        $(document).ready(function() {initSearch()});
     </script>
+    <style type="text/css">
+        .no-display { display:none; }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -186,6 +209,22 @@ function template_diff_per_rule_bootstrap(array $report) {
                 <small>automated architectural tests</small>
             </h1>
         </div>
+
+        <div class="panel-group">
+            <div class="row">
+                <div class="col-lg-12">
+                    <input
+                            type="text"
+                            class="form-control"
+                            id="search-field"
+                            name="search-field"
+                            placeholder="Filter by filename ..."
+                            oninput="onSearchInput(this.value)"
+                    />
+                </div>
+            </div>
+        </div>
+
         <div class="panel-group">
             <div class="panel panel-primary">
                 <div class="panel-heading">
@@ -203,8 +242,28 @@ function template_diff_per_rule_bootstrap(array $report) {
                                     <dt>compared to</dt>
                                     <dd><?= $report["previous"]["commit_hash"] ?></dd>
                                 </dl>
-                                <div class="jumbotron">
-                                    <?=$msg?>
+                                <div class="jumbotron" id="violations-overview-message">
+                                    <p <?=($msg!=0)?'class="no-display"':""?>>
+                                        Nothing new...
+                                    </p>
+                                    <p <?=($msg!=1)?'class="no-display"':""?>>
+                                        You added and removed violations, but no change
+                                        in total. Maybe you refactored some code?
+                                    </p>
+                                    <p class="text-success<?=($msg!=2)?' no-display':""?>">
+                                        You resolved some violations. Great Success!
+                                    </p>
+                                    <p class="text-success<?=($msg!=3)?' no-display':""?>">
+                                        You resolved more violations than you added. Nice!
+                                    </p>
+                                    <p class="text-danger<?=($msg!=4)?' no-display':""?>">
+                                        You added more violations than you resolved. Don't
+                                        give up!
+                                    </p>
+                                    <p class="text-danger<?=($msg!=5)?' no-display':""?>">
+                                        You added some violations. Please take care of the
+                                        code!
+                                    </p>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -232,21 +291,6 @@ function template_diff_per_rule_bootstrap(array $report) {
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="panel-group">
-            <div class="row">
-                <div class="col-lg-12">
-                    <input
-                            type="text"
-                            class="form-control"
-                            id="search-field"
-                            name="search-field"
-                            placeholder="Search for filenames ..."
-                            oninput="onSearchInput(this.value)"
-                    />
                 </div>
             </div>
         </div>
