@@ -73,7 +73,7 @@ class DiffPerRuleReport extends Report {
                                     if ($source_url !== null) {
                                         $v["url"] = $this->make_url
                                                         ( $source_url
-                                                        , (isset($v["last_seen_in"])) ? $v["last_seen_in"] : $previous["commit_hash"]
+                                                        , (isset($v["last_seen_in"])) ? $previous["commit_hash"] : $current["commit_hash"]
                                                         , $v["file"]
                                                         , $v["line_no"]
                                                         );
