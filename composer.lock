@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "faba15b6646891ff95280874baa92ee3",
-    "content-hash": "e98f1a1401c5aced1c99467428d55ed4",
+    "hash": "4adfc15e5eedbf7b229bf8a937421ce3",
+    "content-hash": "d17ab24209e247670dea2d88c9df0d9e",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -358,33 +358,33 @@
         },
         {
             "name": "doctrine/inflector",
-            "version": "v1.2.0",
+            "version": "v1.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/inflector.git",
-                "reference": "e11d84c6e018beedd929cff5220969a3c6d1d462"
+                "reference": "90b2128806bfde671b6952ab8bea493942c1fdae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/inflector/zipball/e11d84c6e018beedd929cff5220969a3c6d1d462",
-                "reference": "e11d84c6e018beedd929cff5220969a3c6d1d462",
+                "url": "https://api.github.com/repos/doctrine/inflector/zipball/90b2128806bfde671b6952ab8bea493942c1fdae",
+                "reference": "90b2128806bfde671b6952ab8bea493942c1fdae",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0"
+                "php": ">=5.3.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.2"
+                "phpunit/phpunit": "4.*"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.2.x-dev"
+                    "dev-master": "1.1.x-dev"
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Doctrine\\Common\\Inflector\\": "lib/Doctrine/Common/Inflector"
+                "psr-0": {
+                    "Doctrine\\Common\\Inflector\\": "lib/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -421,7 +421,7 @@
                 "singularize",
                 "string"
             ],
-            "time": "2017-07-22 12:18:28"
+            "time": "2015-11-06 14:35:42"
         },
         {
             "name": "doctrine/lexer",
