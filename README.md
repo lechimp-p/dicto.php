@@ -41,17 +41,17 @@ This is [not feature complete](#shortcommings-and-outlook), but
   `project.storage` to a location where dicto.php can store its stuff.
 * Make sure hhvm >=3.15 is installed. PHP 5.6 and 7 work as well, but hhvm
   currently delivers the best performance.
-* Execute `hhvm dicto.php analyze examples/ilias.config.yaml`.
+* Execute `hhvm dicto.php analyze example/ilias.config.yaml`.
 * Watch dicto.php crunching the ILIAS codebase and performing analysis.
 * Check out the analysis results by running `hhvm dicto.php report total
-  examples/ilias.config.yaml`. If you are lazy, here are some
+  example/ilias.config.yaml`. If you are lazy, here are some
   [example analysis results](https://gist.github.com/lechimp-p/1e62ce404adc34491db53b78eb69962b).
-* See how the rules are defined in `examples/ilias.rules`. The set of available
+* See how the rules are defined in `example/ilias.rules`. The set of available
   rules and variables is not complete and things might not work as expected.
 * If you feel adventurous resolve one of the reported violations, commit the
   change and run the analysis again. Yes, it is okay of you just delete a
   line to try it out.
-* Run `hhvm dicto.php report diff examples/ilias.config.yaml > report.html`
+* Run `hhvm dicto.php report diff example/ilias.config.yaml > report.html`
   and see how you did in your browser.
 
 ## How To
