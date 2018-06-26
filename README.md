@@ -41,6 +41,7 @@ This is [not feature complete](#shortcommings-and-outlook), but
   `project.storage` to a location where dicto.php can store its stuff.
 * Make sure hhvm >=3.15 is installed. PHP 5.6 and 7 work as well, but hhvm
   currently delivers the best performance.
+* Make sure to have git >=2.0.0 installed.
 * Execute `hhvm dicto.php analyze example/ilias.config.yaml`.
 * Watch dicto.php crunching the ILIAS codebase and performing analysis.
 * Check out the analysis results by running `hhvm dicto.php report total
@@ -68,7 +69,8 @@ described by variables.
 
 #### Variables
 
-A variable is defined by using the form
+A variable is defined by using the form (note, they must be written in
+UpperCamelCase/PascalCase in order to be parsed properly):
 
 * **`MyNewVariable = $SOME_ENTITIES`**
 
@@ -111,12 +113,12 @@ as used when defining variables.
 Currently there are three different statements that could be used to express
 rules on on the codebase:
 
-* **`$ENTITIES cannot depend on $OTHER_ENTITIES`**: If the defined $ENTITIES either
+* **`$ENTITIES cannot depend on: $OTHER_ENTITIES`**: If the defined $ENTITIES either
   call the `$OTHER_ENTITIES` or read or write to it (if it is a global) that is
   a violation.
-* **`$ENTITIES must invoke $OTHER_ENTITIES`**: If the $ENTITIES do not call the
+* **`$ENTITIES must invoke: $OTHER_ENTITIES`**: If the $ENTITIES do not call the
   `$OTHER_ENTITIES`, that is a violation.
-* **`only $ENTITIES can contain text "$REGEXP"`**: If any other than `$ENTITIES`
+* **`only $ENTITIES can contain text: "$REGEXP"`**: If any other than `$ENTITIES`
   contain a text that matches the given `$REGEXP` (according to `preg_match`,
   no regexp delimiters), that is a violation.
 
