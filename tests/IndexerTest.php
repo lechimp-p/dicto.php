@@ -419,6 +419,62 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
+    public function test_anonymous_class() {
+        $source = <<<PHP
+<?php
+class AClass{
+    public function a_method() {
+        new class {
+            function b_method() {
+            }
+        };
+    }
+}
+PHP;
+        $insert_mock = $this->getInsertMock();
+
+        $this->expect_file($insert_mock, "source.php", $source)
+            ->willReturn("file23");
+
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("_class")
+            ->withConsecutive
+                ([$this->equalTo("AClass")
+                , $this->equalTo("file23")
+                , $this->equalTo(2)
+                , $this->equalTo(9)
+                ]
+                ,[$this->equalTo("")
+                , $this->equalTo("file23")
+                , $this->equalTo(4)
+                , $this->equalTo(7)
+                ])
+            ->willReturnOnConsecutiveCalls
+                ("class42", "class19");
+
+        $insert_mock
+            ->expects($this->exactly(2))
+            ->method("_method")
+            ->withConsecutive
+                ([$this->equalTo("a_method")
+                , $this->equalTo("class42")
+                , $this->equalTo("file23")
+                , $this->equalTo(3)
+                , $this->equalTo(8)
+                ]
+                ,[$this->equalTo("b_method")
+                , $this->equalTo("class19")
+                , $this->equalTo("file23")
+                , $this->equalTo(5)
+                , $this->equalTo(6)
+                ])
+            ->willReturnOnConsecutiveCalls
+                ("a_method", "b_method");
+
+        $indexer = $this->indexer($insert_mock);
+        $indexer->index_content("source.php", $source);
+    }
 
     // TODO: Write a test on methods in interfaces and traits. Do they get popped
     //       from the location?

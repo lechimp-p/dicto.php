@@ -43,9 +43,9 @@ class LocationImpl implements Location {
     protected $namespace = null;
 
     /**
-     * @var mixed|null
+     * @var mixed[]
      */
-    protected $class_interface_trait = null;
+    protected $class_interface_trait = [];
 
     /**
      * @var mixed[]
@@ -82,7 +82,11 @@ class LocationImpl implements Location {
      * @inheritdocs
      */
     public function _class_interface_trait() {
-        return $this->class_interface_trait;
+        $c = count($this->class_interface_trait);
+        if ($c == 0) {
+            return null;
+        }
+        return $this->class_interface_trait[$c-1];
     }
 
     /**
@@ -147,7 +151,7 @@ class LocationImpl implements Location {
             $this->namespace = $handle;
         }
         else if (in_array($type, [Variable::CLASS_TYPE, Variable::INTERFACE_TYPE, Variable::TRAIT_TYPE])) {
-            $this->class_interface_trait = $handle;
+            $this->class_interface_trait[] = $handle;
         }
         else if (in_array($type, [Variable::METHOD_TYPE, Variable::FUNCTION_TYPE])) {
             $this->function_method[] = $handle;
@@ -166,8 +170,8 @@ class LocationImpl implements Location {
         if (count($this->function_method) > 0) {
             array_pop($this->function_method);
         }
-        else if ($this->class_interface_trait !== null) {
-            $this->class_interface_trait = null;
+        else if (count($this->class_interface_trait) > 0) {
+            array_pop($this->class_interface_trait);
         }
         else if ($this->namespace !== null) {
             $this->namespace = null;
