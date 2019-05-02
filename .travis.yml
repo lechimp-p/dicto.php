@@ -1,9 +1,9 @@
 language: php
 dist: trusty
 php:
-    - 5.6
     - 7.0
-    - hhvm-3.15
+    - 7.1
+    - 7.2
 install: composer install
 script: ./run_tests.sh
 before_deploy: php build_phar.php
