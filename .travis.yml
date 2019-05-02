@@ -5,15 +5,15 @@ php:
     - 7.1
     - 7.2
 install: composer install
-script: ./run_tests.sh
+script: "./run_tests.sh"
 before_deploy: php build_phar.php
 deploy:
     provider: releases
     api_key:
-        secure: ZvM2HKvUU/45zxd6RCKkNJaJN4DgezklZEiWu+QhUv+pLbRAD4qeph/pK+yDDyTR19aeY2aOYmHPEHGMyH6vnaDfiWvZuAJLySaXQckmrK76QStcqPE7Scid7Mh30InZmUS/MzWlYted9ZAOc4p91eRRTwTwbdMVdfZI6DiPBhOi4NBSfaabjdy2kKor6DdM3vllw91NKCO21vofGwDm2wvQd77Olg2xJ/KDV9ET6Rt+QT5T6VMDZAwIhcxfod2ZK+RKvIkauugoh3hnNRCdcVR5HflTMphI6AFaX3UVMPoE4XISR3+6wOcuNT9EGQ9BNTVmq3plUrPW3VVsZjqLkJd1AhRAVPZDL1/MWoG+tfprMxzXOh+GK5YCX37O5PEKYCa4XcB0gc/xLo74BW2RFSW4LSa9UwB2kZxcdjMbhb+Ed1qi1qBW4zzrFrm2Ccm/607qbE29YPZcLCqiw3DTxfWzR1rvlWLZFwZZ3GmKQDt3jDIAH4JupkzHE/4z9XJh0qtnyJIa8RQcS/WRnE7pif3FwpwSqOR4v4euF7DRPSBI74B0/YoiVDktrQwV1BKubkg20UHF4gPsjsbs5P9RDqjzYFUsqAjP4qDQZDijk/9vytwVJAgEQf40DBfmR5Ib7cD9eT5uQKDOWrQCRs7aW0v3AYILl14hk2MTAnWQrDI=
+        secure: xCeUHwx0yuhtdgpVtT3GhQ6NoPQ657nwEUf8ouv2PXK7Aqp9bZ9+UKudKW0157L86uDJIQ5C0/4sLOksW3S2LDL5phO33OIdrlO7liNDQiRt8ccNRF76Y1pCwEEtDw9SJQfGS8DJ6zZq8Cvgu6yropeOT3XAOVcOzN9NetH4QsaQAfkdj9QIiFYKit1ea58CIqkrQqUWEkzbYwCRTcWbeVwT8UxyEnYaJUzxVnLN/u09N9xKxD385nYRxQgzPH4+MQN0fKFpP+85NGme4SMvTHxAxgIR7o6OqyVdIUiNhd3U8kYcW3SE6vBnGYiYPBUldSMMJv5ofW7gwzk04lBcYG3r6HrxNBhJWlJTcymsmdXZZ0Kz4Pbwk2bKWlye/JdZjxtjjV3rPW2BE51WGuIhsP5NQjcEq8Ebre/C0Hr6OgByqNYLZvMvUwwyEqNaZ8kpjeY2He8xsWJ/e9nvXNDUStQ2sTtVi6c0HcCUNsVrhUL9rr11fuC1Ey+73IZQNyYywLFCynKY43LbLopPRodzAw6819VbllQ9lVRQpgRsHjtj1Eo0Bs2afyQUx5sozQLcXCh1s30+0y2DHu4tS2vDH3aKQGOc9BTm3wouUjYvIEbrH9zQtYsPg9IhdaYyRKrHrLzkBVhZ+qWz3TzaOm+BeYu99n7Xxk44YYIPIlpiRbs=
     file: dicto.phar
     skip_cleanup: true
     on:
-        php: 5.6
+        php: 7.0
         tags: true
         repo: lechimp-p/dicto.php
