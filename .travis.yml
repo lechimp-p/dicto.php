@@ -3,7 +3,6 @@ dist: trusty
 php:
     - 7.0
     - 7.1
-    - 7.2
 install: composer install
 script: "./run_tests.sh"
 before_deploy: php build_phar.php
