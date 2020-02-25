@@ -39,12 +39,11 @@ This is [not feature complete](#shortcommings-and-outlook), but
 * Open `example/ilias.config.yaml` and adjust the `project.root` variable.
   to the location of your freshly checked out ILIAS repository. Adjust
   `project.storage` to a location where dicto.php can store its stuff.
-* Make sure hhvm >=3.15 is installed. PHP 5.6 and 7 work as well, but hhvm
-  currently delivers the best performance.
+* Make sure php >= 7.0 is installed
 * Make sure to have git >=2.0.0 installed.
-* Execute `hhvm dicto.php analyze example/ilias.config.yaml`.
+* Execute `php dicto.php analyze example/ilias.config.yaml`.
 * Watch dicto.php crunching the ILIAS codebase and performing analysis.
-* Check out the analysis results by running `hhvm dicto.php report total
+* Check out the analysis results by running `php dicto.php report total
   example/ilias.config.yaml`. If you are lazy, here are some
   [example analysis results](https://gist.github.com/lechimp-p/1e62ce404adc34491db53b78eb69962b).
 * See how the rules are defined in `example/ilias.rules`. The set of available
@@ -52,14 +51,14 @@ This is [not feature complete](#shortcommings-and-outlook), but
 * If you feel adventurous resolve one of the reported violations, commit the
   change and run the analysis again. Yes, it is okay of you just delete a
   line to try it out.
-* Run `hhvm dicto.php report diff example/ilias.config.yaml > report.html`
+* Run `php dicto.php report diff example/ilias.config.yaml > report.html`
   and see how you did in your browser.
 
 ## How To
 
 Create a [rules file](#writing-down-rule) and a [config.yaml](#config). Run
-`hhvm dicto.php analyze config.yaml` to analyze your codebase. Generate a
-[report](#reports) by using `hhvm dicto.php report $REPORT_NAME config.yaml`.
+`php dicto.php analyze config.yaml` to analyze your codebase. Generate a
+[report](#reports) by using `php dicto.php report $REPORT_NAME config.yaml`.
 
 ### Writing down rules
 
