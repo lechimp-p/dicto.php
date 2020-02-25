@@ -1,3 +1,24 @@
+Skip to content
+Search or jump to…
+
+Pull requests
+Issues
+Marketplace
+Explore
+ 
+@lauraquellmalz 
+lauraquellmalz
+/
+dicto.php
+forked from lechimp-p/dicto.php
+0
+07
+ Code Pull requests 0 Actions Projects 0 Wiki Security Insights Settings
+dicto.php/example/ilias.rules
+@lechimp-p lechimp-p unified Exit and Die to 'ExitOrDie'
+b83e98e on Mar 6, 2017
+119 lines (104 sloc)  4.28 KB
+ 
 /*
  * dicto rules from the FOSS Learning Managment System
  *
@@ -117,3 +138,15 @@ IliasTemplateFiles cannot contain text "javascript\s*:"
  * Used to detect inline JavaScript events, e.g. <a onclick="alert('HelloWorld');">x</a>
  */
 IliasTemplateFiles cannot contain text "on(blur|change|click|dblclick|focus|keydown|keypress|keyup|load|mousemove|mouseup|mousedown|mouseenter|mouseleave|mouseout|mouseover|mousewheel|resize|select|submit|unload|wheel|scroll)"
+© 2020 GitHub, Inc.
+Terms
+Privacy
+Security
+Status
+Help
+Contact GitHub
+Pricing
+API
+Training
+Blog
+About
