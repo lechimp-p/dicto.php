@@ -4,7 +4,7 @@
     "description": "An implementation of the dicto-tool (scg.unibe.ch/dicto) in and for PHP.",
     "keywords": [],
     "type": "script",
-    "license": "MIT",
+    "license": "GPL-3.0-or-later",
     "homepage": "https://github.com/lechimp-p/dicto.php",
     "authors": [
         {
