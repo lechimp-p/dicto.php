@@ -28,7 +28,7 @@ class _ReportCommandTestConfig extends Config {
 }
 
 
-class ReportCommandTest extends PHPUnit_Framework_TestCase {
+class ReportCommandTest extends \PHPUnit\Framework\TestCase {
     public function test_execute() {
         $config_file_path = "/foo";
         $configs = array("/foo/a.yaml", "b.yaml", "c.yaml");
@@ -51,7 +51,7 @@ class ReportCommandTest extends PHPUnit_Framework_TestCase {
             );
 
         $gen_mock
-            ->expects($this->at(0))
+            ->expects($this->once())
             ->method("generate")
             ->with
                 ($this->equalTo($report->with_target("php://stdout"))
@@ -61,7 +61,7 @@ class ReportCommandTest extends PHPUnit_Framework_TestCase {
             ->getMockBuilder(InputInterface::class)
             ->getMock();
         $inp_mock
-            ->expects($this->at(0))
+            ->expects($this->once())
             ->method("getArgument")
             ->with
                 ( $this->equalTo("name")

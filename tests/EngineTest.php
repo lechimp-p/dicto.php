@@ -114,8 +114,8 @@ class _Engine extends Engine {
     }
 }
 
-class EngineTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class EngineTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->build_engine_with_store_index_set_to(false);
     }
 

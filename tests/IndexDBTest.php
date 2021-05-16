@@ -29,8 +29,8 @@ class _IndexDB extends IndexDB {
     }
 }
 
-class IndexDBTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class IndexDBTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->connection = DriverManager::getConnection(
             [ "driver" => "pdo_sqlite"
             , "memory" => true

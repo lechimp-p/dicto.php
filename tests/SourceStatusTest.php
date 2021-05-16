@@ -10,8 +10,8 @@
 
 use Lechimp\Dicto\App\SourceStatusGit;
 
-class SourceStatusTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class SourceStatusTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->repo_path = __DIR__."/..";
     }
 
@@ -29,7 +29,7 @@ class SourceStatusTest extends PHPUnit_Framework_TestCase {
 
         $source_status = $this->source_status_git();
 
-        $this->assertInternalType("string", $source_status->commit_hash());
+        $this->assertIsString($source_status->commit_hash());
         $this->assertEquals($expected[0], $source_status->commit_hash());       
     }
 }

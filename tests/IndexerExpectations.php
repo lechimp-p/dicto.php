@@ -56,7 +56,7 @@ trait IndexerExpectations {
             ->expects($this->once())
             ->method("_file")
             ->with
-                ( $this->identicalTo($name)
+                ( $this->equalTo($name)
                 , $this->equalTo($source)
                 );
     }
@@ -66,7 +66,7 @@ trait IndexerExpectations {
             ->expects($this->once())
             ->method("_namespace")
             ->with
-                ( $this->identicalTo($name)
+                ( $this->equalTo($name)
                 );
     }
 
@@ -77,7 +77,7 @@ trait IndexerExpectations {
         if ($namespace === null) {
             return $mock
                 ->with
-                    ( $this->identicalTo($name)
+                    ( $this->equalTo($name)
                     , $this->equalTo($file)
                     , $this->equalTo($start_line)
                     , $this->equalTo($end_line)
@@ -86,7 +86,7 @@ trait IndexerExpectations {
         else {
             return $mock
                 ->with
-                    ( $this->identicalTo($name)
+                    ( $this->equalTo($name)
                     , $this->equalTo($file)
                     , $this->equalTo($start_line)
                     , $this->equalTo($end_line)
@@ -102,7 +102,7 @@ trait IndexerExpectations {
         if ($namespace === null) {
             return $mock
                 ->with
-                    ( $this->identicalTo($name)
+                    ( $this->equalTo($name)
                     , $this->equalTo($file)
                     , $this->equalTo($start_line)
                     , $this->equalTo($end_line)
@@ -111,7 +111,7 @@ trait IndexerExpectations {
         else {
             return $mock
                 ->with
-                    ( $this->identicalTo($name)
+                    ( $this->equalTo($name)
                     , $this->equalTo($file)
                     , $this->equalTo($start_line)
                     , $this->equalTo($end_line)
@@ -127,7 +127,7 @@ trait IndexerExpectations {
         if ($namespace === null) {
             return $mock
                 ->with
-                    ( $this->identicalTo($name)
+                    ( $this->equalTo($name)
                     , $this->equalTo($file)
                     , $this->equalTo($start_line)
                     , $this->equalTo($end_line)
@@ -136,7 +136,7 @@ trait IndexerExpectations {
         else {
             return $mock
                 ->with
-                    ( $this->identicalTo($name)
+                    ( $this->equalTo($name)
                     , $this->equalTo($file)
                     , $this->equalTo($start_line)
                     , $this->equalTo($end_line)
@@ -150,7 +150,7 @@ trait IndexerExpectations {
             ->expects($this->once())
             ->method("_method")
             ->with
-                ( $this->identicalTo($name)
+                ( $this->equalTo($name)
                 , $this->equalTo($class)
                 , $this->equalTo($file)
                 , $this->equalTo($start_line)
@@ -163,7 +163,7 @@ trait IndexerExpectations {
             ->expects($this->once())
             ->method("_function")
             ->with
-                ( $this->identicalTo($name)
+                ( $this->equalTo($name)
                 , $this->equalTo($file)
                 , $this->equalTo($start_line)
                 , $this->equalTo($end_line)

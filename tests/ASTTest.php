@@ -10,8 +10,8 @@
 
 use Lechimp\Dicto\Definition\AST;
 
-class ASTTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class ASTTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->f = new AST\Factory();
     }
 

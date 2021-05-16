@@ -24,7 +24,7 @@ require_once(__DIR__."/LoggerMock.php");
 require_once(__DIR__."/AnalysisListenerMock.php");
 require_once(__DIR__."/IndexerExpectations.php");
 
-abstract class RuleTest extends PHPUnit_Framework_TestCase {
+abstract class RuleTest extends \PHPUnit\Framework\TestCase {
     use IndexerExpectations;
 
     /**
@@ -47,7 +47,7 @@ abstract class RuleTest extends PHPUnit_Framework_TestCase {
         return $indexer;
     }
 
-    public function setUp() {
+    public function setUp() : void {
         $this->db = new IndexDB();
 
         $this->al = new AnalysisListenerMock();

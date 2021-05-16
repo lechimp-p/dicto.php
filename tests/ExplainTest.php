@@ -12,7 +12,7 @@ use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Rules;
 use Lechimp\Dicto\Variables as Vars;
 
-class ExplainTest extends PHPUnit_Framework_TestCase {
+class ExplainTest extends \PHPUnit\Framework\TestCase {
     /**
      * @dataProvider    explainable_provider
      */

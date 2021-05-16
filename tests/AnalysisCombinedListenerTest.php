@@ -15,8 +15,8 @@ use Lechimp\Dicto\Rules\Rule;
 
 require_once(__DIR__."/AnalysisListenerMock.php");
 
-class AnalysisCombinedListenerGeneratorsTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class AnalysisCombinedListenerTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->al1 = new AnalysisListenerMock();
         $this->al2 = new AnalysisListenerMock();
         $this->c = new CombinedListener([$this->al1, $this->al2]);

@@ -11,7 +11,7 @@
 use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\Report;
 
-class ConfigTest extends PHPUnit_Framework_TestCase {
+class ConfigTest extends \PHPUnit\Framework\TestCase {
     public function test_smoke() {
         $config = new Config("/the/path", [
             [ "project" =>

@@ -14,8 +14,8 @@ use Lechimp\Dicto\Report\ResultDB;
 
 require_once(__DIR__."/tempdir.php");
 
-class IndexDBFactoryTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class IndexDBFactoryTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->factory = new IndexDBFactory();
     }
 
@@ -30,7 +30,7 @@ class IndexDBFactoryTest extends PHPUnit_Framework_TestCase {
             $this->assertFalse("This should not happen.");
         }
         catch (\RuntimeException $e) {
-            $this->assertNotInstanceOf(PHPUnit_Framework_Exception::class, $e);
+            $this->assertNotInstanceOf(\PHPUnit\Framework\Exception::class, $e);
         }
     }
 
@@ -50,7 +50,7 @@ class IndexDBFactoryTest extends PHPUnit_Framework_TestCase {
             $this->assertFalse("This should not happen.");
         }
         catch (\RuntimeException $e) {
-            $this->assertNotInstanceOf(PHPUnit_Framework_Exception::class, $e);
+            $this->assertNotInstanceOf(\PHPUnit\Framework\Exception::class, $e);
         }
     }
 

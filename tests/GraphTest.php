@@ -11,8 +11,8 @@
 use Lechimp\Dicto\Graph\Graph;
 use Lechimp\Dicto\Graph\Node;
 
-class GraphTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class GraphTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->g = new Graph(); 
     }
 

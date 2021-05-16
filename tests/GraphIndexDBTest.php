@@ -15,8 +15,8 @@ use Lechimp\Dicto\Graph\Node;
 use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\Relation;
 
-class GraphIndexDBTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class GraphIndexDBTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->db = new IndexDB();
         $this->f = new PredicateFactory();
     }

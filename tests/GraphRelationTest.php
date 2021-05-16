@@ -11,7 +11,7 @@
 use Lechimp\Dicto\Graph\Relation;
 use Lechimp\Dicto\Graph\Node;
 
-class GraphRelationTest extends PHPUnit_Framework_TestCase {
+class GraphRelationTest extends \PHPUnit\Framework\TestCase {
     public function test_type() {
         $t = new Node(0, "some_type", []);
         $e = new Relation("a_type", array(), $t);

@@ -56,8 +56,8 @@ class Config implements ConfigurationInterface {
      * @inheritdocs
      */
     public function getConfigTreeBuilder() {
-        $tree_builder = new TreeBuilder();
-        $root = $tree_builder->root("dicto");
+        $tree_builder = new TreeBuilder("dicto");
+        $root = $tree_builder->getRootNode();
         $c = $root->children();
         $this->add_project_node($c);
         $this->add_analysis_node($c);

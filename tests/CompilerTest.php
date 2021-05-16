@@ -24,8 +24,8 @@ class _Compiler extends Compiler {
     }
 }
 
-class CompilerTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class CompilerTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->f = new AST\Factory();
         $this->compiler = new _Compiler
             ( array

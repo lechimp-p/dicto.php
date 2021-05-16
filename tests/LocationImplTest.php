@@ -21,7 +21,7 @@ class _LocationImpl extends LocationImpl {
     }
 }
 
-class LocationTest extends PHPUnit_Framework_TestCase {
+class LocationImplTest extends \PHPUnit\Framework\TestCase {
     public function location($file, $content) {
         return new _LocationImpl($file, $content);
     }

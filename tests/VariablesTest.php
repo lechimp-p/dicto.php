@@ -11,7 +11,7 @@
 use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Variables as V;
 
-class VariablesTest extends PHPUnit_Framework_TestCase {
+class VariablesTest extends \PHPUnit\Framework\TestCase {
     /**
      * @dataProvider    var_test_cases_provider
      */

@@ -13,8 +13,8 @@ use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\Predicate;
 use Lechimp\Dicto\Graph\Graph;
 
-class GraphPredicateTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class GraphPredicateTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->f = new PredicateFactory();
         $this->g = new Graph();
     }

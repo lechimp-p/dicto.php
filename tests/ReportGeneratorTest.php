@@ -31,7 +31,7 @@ class _Generator extends Generator {
 }
 
 class ReportGeneratorTest extends ReportTestBase {
-    public function setUp() {
+    public function setUp() : void {
         parent::setUp();
         $this->gen = new _Generator($this->queries);
     }
@@ -55,7 +55,7 @@ class ReportGeneratorTest extends ReportTestBase {
         }
         catch (\RuntimeException $e) {
             $this->assertNotInstanceOf
-                ( \PHPUnit_Framework_ExpectationFailedException::class
+                ( \PHPUnit\Framework\ExpectationFailedException::class
                 , $e
                 );
         }
@@ -79,7 +79,7 @@ class ReportGeneratorTest extends ReportTestBase {
         }
         catch (\RuntimeException $e) {
             $this->assertNotInstanceOf
-                ( \PHPUnit_Framework_ExpectationFailedException::class
+                ( \PHPUnit\Framework\ExpectationFailedException::class
                 , $e
                 );
         }

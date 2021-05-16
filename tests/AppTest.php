@@ -43,6 +43,7 @@ class _Command extends Command {
      */
     public function execute(InputInterface $input, OutputInterface $output) {
         $this->executed = true;
+        return 0;
     }
 }
 
@@ -63,6 +64,7 @@ class _Command2 extends Command {
      */
     public function execute(InputInterface $input, OutputInterface $output) {
         $this->executed = true;
+        return 0;
     }
 }
 
@@ -90,8 +92,8 @@ class _App extends App {
 }
 
 
-class AppTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class AppTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->app = new _App();
 
         $config_params =
@@ -183,20 +185,20 @@ class AppTest extends PHPUnit_Framework_TestCase {
             ->getMock();
 
         $app_mock
-            ->expects($this->at(0))
+            ->expects($this->once())
             ->method("load_config")
             ->with($this->equalTo($configs))
             ->willReturn($this->config);
 
         $app_mock
-            ->expects($this->at(1))
+            ->expects($this->once())
             ->method("configure_runtime")
             ->with($this->equalTo($this->config));
 
         $dic = ["this is the" => "dic"];
 
         $app_mock
-            ->expects($this->at(2))
+            ->expects($this->once())
             ->method("build_dic")
             ->with($this->equalTo($this->config))
             ->willReturn($dic);

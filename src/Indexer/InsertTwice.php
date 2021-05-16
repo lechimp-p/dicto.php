@@ -70,8 +70,8 @@ class InsertTwice implements Insert {
      * @inheritdocs
      */
     public function _class($name, $file, $start_line, $end_line, $namespace = null) {
-        $id1 = $this->insert1->_class($name, $file[0], $start_line, $end_line, $namespace[0]);
-        $id2 = $this->insert2->_class($name, $file[1], $start_line, $end_line, $namespace[1]);
+        $id1 = $this->insert1->_class($name, $file[0], $start_line, $end_line, $namespace[0] ?? null);
+        $id2 = $this->insert2->_class($name, $file[1], $start_line, $end_line, $namespace[1] ?? null);
         return [$id1, $id2];
     }
 
@@ -79,8 +79,8 @@ class InsertTwice implements Insert {
      * @inheritdocs
      */
     public function _interface($name, $file, $start_line, $end_line, $namespace = null) {
-        $id1 = $this->insert1->_interface($name, $file[0], $start_line, $end_line, $namespace[0]);
-        $id2 = $this->insert2->_interface($name, $file[1], $start_line, $end_line, $namespace[1]);
+        $id1 = $this->insert1->_interface($name, $file[0], $start_line, $end_line, $namespace[0] ?? null);
+        $id2 = $this->insert2->_interface($name, $file[1], $start_line, $end_line, $namespace[1] ?? null);
         return [$id1, $id2];
     }
 
@@ -106,8 +106,8 @@ class InsertTwice implements Insert {
      * @inheritdocs
      */
     public function _function($name, $file, $start_line, $end_line, $namespace = null) {
-        $id1 = $this->insert1->_function($name, $file[0], $start_line, $end_line, $namespace[0]);
-        $id2 = $this->insert2->_function($name, $file[1], $start_line, $end_line, $namespace[1]);
+        $id1 = $this->insert1->_function($name, $file[0], $start_line, $end_line, $namespace[0] ?? null);
+        $id2 = $this->insert2->_function($name, $file[1], $start_line, $end_line, $namespace[1] ?? null);
         return [$id1, $id2];
     }
 

@@ -23,8 +23,8 @@ class _RuleBuilder extends RuleBuilder {
     }
 }
 
-class RuleBuilderTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class RuleBuilderTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->parser = new _RuleBuilder
             ( array
                 ( new V\Namespaces()

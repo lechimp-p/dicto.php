@@ -12,7 +12,7 @@ namespace Lechimp\Dicto\Indexer;
 
 use Lechimp\Dicto\Regexp;
 use Psr\Log\LoggerInterface as Log;
-use League\Flysystem\Adapter\Local;
+use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Filesystem;
 use Lechimp\Flightcontrol\Flightcontrol;
 use Lechimp\Flightcontrol\File;
@@ -89,7 +89,7 @@ class Indexer {
      * @return  Flightcontrol
      */
     public function init_flightcontrol($path) {
-        $adapter = new Local(realpath($path), LOCK_EX, Local::SKIP_LINKS);
+        $adapter = new LocalFilesystemAdapter(realpath($path), null, LOCK_EX, LocalFilesystemAdapter::SKIP_LINKS);
         $flysystem = new Filesystem($adapter);
         return new Flightcontrol($flysystem);
     }

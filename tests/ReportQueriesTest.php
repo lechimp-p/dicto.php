@@ -224,12 +224,12 @@ class ReportQueriesTest extends ReportTestBase {
 
         $run1_rule1 = $this->queries->violations_of($rule1, $run1);
         $this->assertCount(1, $run1_rule1);
-        $this->assertContains
+        $this->assertEquals
                 (   [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run1
                     ]
-                , $run1_rule1
+                , $run1_rule1[0]
                 );
 
         $run1_rule2 = $this->queries->violations_of($rule2, $run1);
@@ -237,29 +237,29 @@ class ReportQueriesTest extends ReportTestBase {
 
         $run2_rule1 = $this->queries->violations_of($rule1, $run2);
         $this->assertCount(2, $run2_rule1);
-        $this->assertContains
+        $this->assertEquals
                 (   [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run1
                     ]
-                , $run2_rule1
+                , $run2_rule1[0]
                 );
-        $this->assertContains
+        $this->assertEquals
                 (   [ "file" => "file2.php"
                     , "line_no" => 23
                     , "introduced_in" => $run2
                     ]
-                , $run2_rule1
+                , $run2_rule1[1]
                 );
 
         $run2_rule2 = $this->queries->violations_of($rule2, $run2);
         $this->assertCount(1, $run2_rule2);
-        $this->assertContains
+        $this->assertEquals
                 (   [ "file" => "file3.php"
                     , "line_no" => 13
                     , "introduced_in" => $run2
                     ]
-                , $run2_rule2
+                , $run2_rule2[0]
                 );
 
         $run3_rule1 = $this->queries->violations_of($rule1, $run3);
@@ -267,19 +267,19 @@ class ReportQueriesTest extends ReportTestBase {
 
         $run3_rule2 = $this->queries->violations_of($rule2, $run3);
         $this->assertCount(2, $run2_rule1);
-        $this->assertContains
+        $this->assertEquals
                 (   [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run3
                     ]
-                , $run3_rule2
+                , $run3_rule2[0]
                 );
-        $this->assertContains
+        $this->assertEquals
                 (   [ "file" => "file2.php"
                     , "line_no" => 23
                     , "introduced_in" => $run3
                     ]
-                , $run3_rule2
+                , $run3_rule2[1]
                 );
     }
 
@@ -300,43 +300,43 @@ class ReportQueriesTest extends ReportTestBase {
 
         $run2_3_rule1 = $this->queries->resolved_violations($rule1, $run2, $run3);
         $this->assertCount(2, $run2_3_rule1);
-        $this->assertContains
+        $this->assertEquals
                 (   [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run1
                     , "last_seen_in" => $run2
                     ]
-                , $run2_3_rule1
+                , $run2_3_rule1[0]
                 );
-        $this->assertContains
+        $this->assertEquals
                 (   [ "file" => "file2.php"
                     , "line_no" => 23
                     , "introduced_in" => $run2
                     , "last_seen_in" => $run2
                     ]
-                , $run2_3_rule1
+                , $run2_3_rule1[1]
                 );
 
         $run2_3_rule2 = $this->queries->resolved_violations($rule2, $run2, $run3);
         $this->assertCount(1, $run2_3_rule2);
-        $this->assertContains
+        $this->assertEquals
                 (   [ "file" => "file3.php"
                     , "line_no" => 13
                     , "introduced_in" => $run2
                     , "last_seen_in" => $run2
                     ]
-                , $run2_3_rule2
+                , $run2_3_rule2[0]
                 );
 
         $run1_3_rule1 = $this->queries->resolved_violations($rule1, $run1, $run3);
         $this->assertCount(1, $run1_3_rule1);
-        $this->assertContains
+        $this->assertEquals
                 (   [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run1
                     , "last_seen_in" => $run2
                     ]
-                , $run2_3_rule1
+                , $run2_3_rule1[0]
                 );
 
         $run1_3_rule2 = $this->queries->resolved_violations($rule2, $run1, $run3);

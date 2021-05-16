@@ -21,7 +21,7 @@ class _AnalyzeCommandTestConfig extends Config {
     public function __construct() {}
 }
 
-class AnalyzeCommandTest extends PHPUnit_Framework_TestCase {
+class AnalyzeCommandTest extends \PHPUnit\Framework\TestCase {
     public function test_execute() {
         $cmd = new AnalyzeCommand();
 
@@ -34,7 +34,7 @@ class AnalyzeCommandTest extends PHPUnit_Framework_TestCase {
         $dic = array("engine" => $engine_mock);
 
         $engine_mock
-            ->expects($this->at(0))
+            ->expects($this->once())
             ->method("run");
 
         $inp_mock = $this

@@ -36,8 +36,8 @@ class _DIC extends DIC {
     }
 }
 
-class DICTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class DICTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->build_dic();
     }
 

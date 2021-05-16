@@ -11,7 +11,7 @@
 use Lechimp\Dicto\Definition\Symbol;
 use Lechimp\Dicto\Definition\ParserException;
 
-class SymbolText extends PHPUnit_Framework_TestCase {
+class SymbolTest extends \PHPUnit\Framework\TestCase {
     public function test_valid_regexp_only() {
         try {
             new Symbol("(a", 10);

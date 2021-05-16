@@ -15,7 +15,7 @@ require_once(__DIR__."/ReportMock.php");
 require_once(__DIR__."/ReportTestBase.php");
 
 class ReportTest extends ReportTestBase {
-    public function setUp() {
+    public function setUp() : void {
         $this->report = new ReportMock();
     }
 

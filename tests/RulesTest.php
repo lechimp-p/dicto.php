@@ -13,7 +13,7 @@ use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Rules as Rules;
 use Lechimp\Dicto\Variables as Vars;
 
-class RulesTest extends PHPUnit_Framework_TestCase {
+class RulesTest extends \PHPUnit\Framework\TestCase {
     public function test_checked_on() {
         $rule =
             new Rules\Rule

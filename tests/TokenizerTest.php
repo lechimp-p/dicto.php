@@ -22,8 +22,8 @@ class SymbolTableMock extends SymbolTable {
     }
 }
 
-class TokenizerTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class TokenizerTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->symbol_table = new SymbolTableMock();
     }
 

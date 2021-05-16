@@ -19,19 +19,17 @@
         "psr-4" : { "Lechimp\\Dicto\\" : "src" }
     },
     "require": {
-        "nikic/php-parser" : "2.1.*",
+        "nikic/php-parser" : "^4.10",
         "pimple/pimple" : "3.0.*",
         "doctrine/dbal" : "2.5.*",
         "doctrine/inflector" : "1.1.*",
-        "lechimp-p/flightcontrol" : "0.12.0",
-        "symfony/config" : "3.2.*",
-        "symfony/console" : "3.2.*",
-        "symfony/yaml" : "3.2.*",
-        "psr/log" : "1.0.0"
+        "symfony/config" : "^5.2",
+        "symfony/console" : "^5.2",
+        "symfony/yaml" : "^5.2",
+        "psr/log" : "1.0.0",
+        "lechimp-p/flightcontrol": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit" : "^5.7",
-        "phpdocumentor/reflection-docblock": "2.*",
-        "phpunit/php-token-stream": "1.*"
+        "phpunit/phpunit" : "^9.5"
     }
 }

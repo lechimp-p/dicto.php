@@ -13,8 +13,8 @@ use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Graph\IndexDB;
 use Lechimp\Dicto\Graph\PredicateFactory;
 
-class VariableCompilationTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class VariableCompilationTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->db = new IndexDB();
         $this->f = new PredicateFactory();
     }

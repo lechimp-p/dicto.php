@@ -15,8 +15,8 @@ use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\Relation;
 use Lechimp\Dicto\Graph\Query;
 
-class Graph_QueryTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class GraphQueryTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->g = new Graph(); 
         $this->f = new PredicateFactory();
     }

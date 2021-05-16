@@ -10,7 +10,7 @@
 
 use Lechimp\Dicto\Regexp;
 
-class RegexpTest extends PHPUnit_Framework_TestCase {
+class RegexpTest extends \PHPUnit\Framework\TestCase {
     public function regexp($str) {
         return new Regexp($str);
     }

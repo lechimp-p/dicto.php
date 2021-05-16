@@ -20,8 +20,8 @@ use Psr\Log\LogLevel;
 require_once(__DIR__."/LoggerMock.php");
 require_once(__DIR__."/AnalysisListenerMock.php");
 
-class AnalyzerTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class AnalyzerTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->al = new AnalysisListenerMock();
         $this->log = new LoggerMock();
         $this->query_mocks = [];

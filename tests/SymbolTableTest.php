@@ -11,8 +11,8 @@
 use Lechimp\Dicto\Definition\Symbol;
 use Lechimp\Dicto\Definition\SymbolTable;
 
-class SymbolTableTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class SymbolTableTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->symbol_table = new SymbolTable();
     }
 

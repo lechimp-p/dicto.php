@@ -21,8 +21,8 @@ class _ASTParser extends ASTParser {
     }
 }
 
-class ASTParserTest extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+class ASTParserTest extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->f = new AST\Factory();
         $this->parser = new _ASTParser($this->f);
     }
@@ -58,6 +58,8 @@ class ASTParserTest extends PHPUnit_Framework_TestCase {
                 , $this->f->name("B")
                 )
             ]);
+
+        $this->assertEquals($expected, $res);
     }
 
     public function test_classes_in_namespaces_with_name_1() {

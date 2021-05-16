@@ -42,7 +42,7 @@ class Invoke extends Relation implements ASTVisitor {
 
     public function enterMethodCall(Insert $insert, Location $location, N\Expr\MethodCall $node) {
         // The 'name' could also be a variable like in $this->$method();
-        if (is_string($node->name)) {
+        if ($node->name instanceof N\Identifier) {
             $method_reference = $insert->_method_reference
                 ( $node->name
                 , $location->_file()

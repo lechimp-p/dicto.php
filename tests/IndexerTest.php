@@ -12,7 +12,7 @@ use Lechimp\Dicto;
 
 require_once(__DIR__."/IndexerExpectations.php");
 
-class IndexerTest extends PHPUnit_Framework_TestCase {
+class IndexerTest extends \PHPUnit\Framework\TestCase {
     use IndexerExpectations;
 
     public function test_file_empty() {

@@ -13,7 +13,7 @@ use Lechimp\Dicto\Graph\Entity;
 class TestEntity extends Entity {
 }
 
-class GraphEntityTest extends PHPUnit_Framework_TestCase {
+class GraphEntityTest extends \PHPUnit\Framework\TestCase {
     public function test_type() {
         $e = new TestEntity("a_type", array());
 

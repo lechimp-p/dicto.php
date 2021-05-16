@@ -17,8 +17,8 @@ use Lechimp\Dicto\Analysis\Violation;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
-abstract class ReportTestBase extends PHPUnit_Framework_TestCase {
-    public function setUp() {
+abstract class ReportTestBase extends \PHPUnit\Framework\TestCase {
+    public function setUp() : void {
         $this->connection = DriverManager::getConnection
             ( array
                 ( "driver" => "pdo_sqlite"
