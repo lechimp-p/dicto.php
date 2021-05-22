@@ -1,0 +1,25 @@
+name: Checks and Tests
+on: [pull_request, push]
+jobs:
+  phpunit:
+    runs-on: ubuntu-latest
+    outputs:
+      all: ${{ steps.changes.outputs.all }}
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [7.3, 7.4, 8.0]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, fileinfo
+          tools: composer@v2
+          coverage: none
+      - name: Install Dependencies
+        run: composer install --no-interaction --no-progress
+      - name: PHPUnit Tests
+        run: ./run_tests.sh
