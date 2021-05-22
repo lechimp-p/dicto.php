@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -13,7 +13,8 @@ namespace Lechimp\Dicto;
 /**
  * Small wrapper around preg.
  */
-class Regexp {
+class Regexp
+{
     /**
      * @var string
      */
@@ -24,9 +25,10 @@ class Regexp {
      */
     protected $delim = "%";
 
-    public function __construct($regexp) {
+    public function __construct($regexp)
+    {
         assert('is_string($regexp)');
-        if (@preg_match($this->delim.$regexp.$this->delim, "") === false) {
+        if (@preg_match($this->delim . $regexp . $this->delim, "") === false) {
             throw new \InvalidArgumentException("Invalid regexp '$regexp'");
         }
         $this->regexp = $regexp;
@@ -35,7 +37,8 @@ class Regexp {
     /**
      * @return  string
      */
-    public function raw() {
+    public function raw()
+    {
         return $this->regexp;
     }
 
@@ -47,12 +50,12 @@ class Regexp {
      * @param   array|null  $matches
      * @return  bool
      */
-    public function match($str, $dotall = false, &$matches = null) {
+    public function match($str, $dotall = false, &$matches = null)
+    {
         if (!$dotall) {
-            return preg_match($this->delim."^".$this->regexp.'$'.$this->delim, $str, $matches) === 1;
-        }
-        else {
-            return preg_match($this->delim."^".$this->regexp.'$'.$this->delim."s", $str, $matches) === 1;
+            return preg_match($this->delim . "^" . $this->regexp . '$' . $this->delim, $str, $matches) === 1;
+        } else {
+            return preg_match($this->delim . "^" . $this->regexp . '$' . $this->delim . "s", $str, $matches) === 1;
         }
     }
 
@@ -64,12 +67,12 @@ class Regexp {
      * @param   array|null  $matches
      * @return  bool
      */
-    public function match_beginning($str, $dotall = false, &$matches = null) {
+    public function match_beginning($str, $dotall = false, &$matches = null)
+    {
         if (!$dotall) {
-            return preg_match($this->delim."^".$this->regexp.$this->delim, $str, $matches) === 1;
-        }
-        else {
-            return preg_match($this->delim."^".$this->regexp.$this->delim."s", $str, $matches) === 1;
+            return preg_match($this->delim . "^" . $this->regexp . $this->delim, $str, $matches) === 1;
+        } else {
+            return preg_match($this->delim . "^" . $this->regexp . $this->delim . "s", $str, $matches) === 1;
         }
     }
 
@@ -81,13 +84,12 @@ class Regexp {
      * @param   array|null  $matches
      * @return  bool
      */
-    public function search($str, $dotall = false, &$matches = null) {
+    public function search($str, $dotall = false, &$matches = null)
+    {
         if (!$dotall) {
-            return preg_match($this->delim.$this->regexp.$this->delim, $str, $matches) === 1;
-        }
-        else {
-            return preg_match($this->delim.$this->regexp.$this->delim."s", $str, $matches) === 1;
+            return preg_match($this->delim . $this->regexp . $this->delim, $str, $matches) === 1;
+        } else {
+            return preg_match($this->delim . $this->regexp . $this->delim . "s", $str, $matches) === 1;
         }
     }
 }
-

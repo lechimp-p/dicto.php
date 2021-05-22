@@ -12,26 +12,28 @@ use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\Indexer;
 use PhpParser\ParserFactory;
 
-require_once(__DIR__."/LoggerMock.php");
+require_once(__DIR__ . "/LoggerMock.php");
 
 use Lechimp\Dicto\Indexer\ASTVisitor;
 
-trait IndexerExpectations {
-    protected function indexer(Insert $insert_mock, ASTVisitor $visitor = null) {
-        $lexer = new \PhpParser\Lexer\Emulative
-            (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
+trait IndexerExpectations
+{
+    protected function indexer(Insert $insert_mock, ASTVisitor $visitor = null)
+    {
+        $lexer = new \PhpParser\Lexer\Emulative(["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         $logger_mock = new LoggerMock();
-        $indexer = new Indexer
-            ( $logger_mock
-            , $parser
-            , $insert_mock
-            , $visitor !== null ? [$visitor] : []
+        $indexer = new Indexer(
+                $logger_mock,
+                $parser,
+                $insert_mock,
+                $visitor !== null ? [$visitor] : []
             );
         return $indexer;
     }
 
-    public function getInsertMock() {
+    public function getInsertMock()
+    {
         return $this
             ->getMockBuilder(Lechimp\Dicto\Indexer\Insert::class)
             ->setMethods(
@@ -47,126 +49,131 @@ trait IndexerExpectations {
                 , "_method_reference"
                 , "_function_reference"
                 , "_relation"
-                ])
+                ]
+            )
             ->getMock();
     }
 
-    public function expect_file($insert_mock, $name, $source) {
+    public function expect_file($insert_mock, $name, $source)
+    {
         return $insert_mock
             ->expects($this->once())
             ->method("_file")
-            ->with
-                ( $this->equalTo($name)
-                , $this->equalTo($source)
+            ->with(
+                    $this->equalTo($name),
+                    $this->equalTo($source)
                 );
     }
 
-    public function expect_namespace($insert_mock, $name) {
+    public function expect_namespace($insert_mock, $name)
+    {
         return $insert_mock
             ->expects($this->once())
             ->method("_namespace")
-            ->with
-                ( $this->equalTo($name)
+            ->with(
+                    $this->equalTo($name)
                 );
     }
 
-    public function expect_class($insert_mock, $name, $file, $start_line, $end_line, $namespace = null) {
+    public function expect_class($insert_mock, $name, $file, $start_line, $end_line, $namespace = null)
+    {
         $mock = $insert_mock
             ->expects($this->once())
             ->method("_class");
         if ($namespace === null) {
             return $mock
-                ->with
-                    ( $this->equalTo($name)
-                    , $this->equalTo($file)
-                    , $this->equalTo($start_line)
-                    , $this->equalTo($end_line)
+                ->with(
+                        $this->equalTo($name),
+                        $this->equalTo($file),
+                        $this->equalTo($start_line),
+                        $this->equalTo($end_line)
                     );
-        }
-        else {
+        } else {
             return $mock
-                ->with
-                    ( $this->equalTo($name)
-                    , $this->equalTo($file)
-                    , $this->equalTo($start_line)
-                    , $this->equalTo($end_line)
-                    , $this->equalTo($namespace)
+                ->with(
+                        $this->equalTo($name),
+                        $this->equalTo($file),
+                        $this->equalTo($start_line),
+                        $this->equalTo($end_line),
+                        $this->equalTo($namespace)
                     );
         }
     }
 
-    public function expect_interface($insert_mock, $name, $file, $start_line, $end_line, $namespace = null) {
+    public function expect_interface($insert_mock, $name, $file, $start_line, $end_line, $namespace = null)
+    {
         $mock = $insert_mock
             ->expects($this->once())
             ->method("_interface");
         if ($namespace === null) {
             return $mock
-                ->with
-                    ( $this->equalTo($name)
-                    , $this->equalTo($file)
-                    , $this->equalTo($start_line)
-                    , $this->equalTo($end_line)
+                ->with(
+                        $this->equalTo($name),
+                        $this->equalTo($file),
+                        $this->equalTo($start_line),
+                        $this->equalTo($end_line)
                     );
-        }
-        else {
+        } else {
             return $mock
-                ->with
-                    ( $this->equalTo($name)
-                    , $this->equalTo($file)
-                    , $this->equalTo($start_line)
-                    , $this->equalTo($end_line)
-                    , $this->equalTo($namespace)
+                ->with(
+                        $this->equalTo($name),
+                        $this->equalTo($file),
+                        $this->equalTo($start_line),
+                        $this->equalTo($end_line),
+                        $this->equalTo($namespace)
                     );
         }
     }
 
-    public function expect_trait($insert_mock, $name, $file, $start_line, $end_line, $namespace = null) {
+    public function expect_trait($insert_mock, $name, $file, $start_line, $end_line, $namespace = null)
+    {
         $mock = $insert_mock
             ->expects($this->once())
             ->method("_trait");
         if ($namespace === null) {
             return $mock
-                ->with
-                    ( $this->equalTo($name)
-                    , $this->equalTo($file)
-                    , $this->equalTo($start_line)
-                    , $this->equalTo($end_line)
+                ->with(
+                        $this->equalTo($name),
+                        $this->equalTo($file),
+                        $this->equalTo($start_line),
+                        $this->equalTo($end_line)
                     );
-        }
-        else {
+        } else {
             return $mock
-                ->with
-                    ( $this->equalTo($name)
-                    , $this->equalTo($file)
-                    , $this->equalTo($start_line)
-                    , $this->equalTo($end_line)
-                    , $this->equalTo($namespace)
+                ->with(
+                        $this->equalTo($name),
+                        $this->equalTo($file),
+                        $this->equalTo($start_line),
+                        $this->equalTo($end_line),
+                        $this->equalTo($namespace)
                     );
         }
     }
 
-    public function expect_method($insert_mock, $name, $class, $file, $start_line, $end_line) {
+    public function expect_method($insert_mock, $name, $class, $file, $start_line, $end_line)
+    {
         return $insert_mock
             ->expects($this->once())
             ->method("_method")
-            ->with
-                ( $this->equalTo($name)
-                , $this->equalTo($class)
-                , $this->equalTo($file)
-                , $this->equalTo($start_line)
-                , $this->equalTo($end_line)
+            ->with(
+                    $this->equalTo($name),
+                    $this->equalTo($class),
+                    $this->equalTo($file),
+                    $this->equalTo($start_line),
+                    $this->equalTo($end_line)
                 );
     }
 
-    public function expect_function($insert_mock, $name, $file, $start_line, $end_line) {
+    public function expect_function($insert_mock, $name, $file, $start_line, $end_line)
+    {
         return $insert_mock
             ->expects($this->once())
             ->method("_function")
-            ->with
-                ( $this->equalTo($name)
-                , $this->equalTo($file)
-                , $this->equalTo($start_line)
-                , $this->equalTo($end_line)
+            ->with(
+                    $this->equalTo($name),
+                    $this->equalTo($file),
+                    $this->equalTo($start_line),
+                    $this->equalTo($end_line)
                 );
     }
 }

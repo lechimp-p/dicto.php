@@ -8,9 +8,13 @@
  * a copy of the license along with the code.
  */
 
-class CallsClosure {
-    public function call_a_closure() {
-        $foo = function($i) { return $i; };
+class CallsClosure
+{
+    public function call_a_closure()
+    {
+        $foo = function ($i) {
+            return $i;
+        };
         $foo();
-    }    
+    }
 }

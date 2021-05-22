@@ -13,9 +13,10 @@ namespace Lechimp\Dicto\Indexer;
 use Lechimp\Dicto\Analysis\Variable;
 
 /**
- * This is how to insert new entries in the index. 
+ * This is how to insert new entries in the index.
  */
-interface Insert {
+interface Insert
+{
     /**
      * Store a file in the database.
      *

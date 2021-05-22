@@ -5,18 +5,20 @@ namespace Lechimp\Dicto\Report;
 /**
  * Base class for reports.
  */
-abstract class Report {
+abstract class Report
+{
     /**
      * @var Config
      */
     protected $config;
 
     /**
-     * @var Queries 
+     * @var Queries
      */
     protected $queries;
 
-    public function __construct(Queries $queries, Config $config) {
+    public function __construct(Queries $queries, Config $config)
+    {
         $this->queries = $queries;
         $this->config = $config;
     }
@@ -41,7 +43,8 @@ abstract class Report {
      *
      * @return string
      */
-    protected function template() {
+    protected function template()
+    {
         return $this->custom_config_value("template", $this->default_template());
     }
 
@@ -56,13 +59,14 @@ abstract class Report {
      * @param   string  $name
      * @return  string
      */
-    protected function template_path($name) {
+    protected function template_path($name)
+    {
         $path = $name;
         if (substr($name, 0, 1) !== "/") {
             $candidates =
-                [ __DIR__."/../../templates/{$name}.php"
-                , __DIR__."/../../templates/{$name}"
-                , $this->config->path()."/{$name}"
+                [ __DIR__ . "/../../templates/{$name}.php"
+                , __DIR__ . "/../../templates/{$name}"
+                , $this->config->path() . "/{$name}"
                 ];
             foreach ($candidates as $candidate) {
                 if (file_exists($candidate)) {
@@ -86,7 +90,8 @@ abstract class Report {
      * @param   string  $template_path
      * @return  \Closure    array -> null
      */
-    protected function load_template($template_path) {
+    protected function load_template($template_path)
+    {
         $tpl_fct_name = $this->template_function_name($template_path);
         require_once($template_path);
         return function (array $report) use ($tpl_fct_name) {
@@ -102,12 +107,13 @@ abstract class Report {
      * @param   string  $path
      * @return  string
      */
-    protected function template_function_name($path) {
+    protected function template_function_name($path)
+    {
         $matches = [];
         if (!preg_match("%(.*/)?([^./]+)[.]php%i", $path, $matches)) {
             throw new \RuntimeException("Path '$path' seems not to point to a template.");
         }
-        return "template_".$matches[2];
+        return "template_" . $matches[2];
     }
 
     /**
@@ -115,7 +121,7 @@ abstract class Report {
      *
      * Should return a structured array containing the information in the report.
      *
-     * @return array 
+     * @return array
      */
     abstract public function generate();
 
@@ -125,7 +131,8 @@ abstract class Report {
      * @param   resource    $handle
      * @return  null
      */
-    public function write($handle) {
+    public function write($handle)
+    {
         assert('is_resource($handle)');
         $template_path = $this->template_path($this->template());
         $template = $this->load_template($template_path);
@@ -141,7 +148,8 @@ abstract class Report {
      * @param   mixed       $default
      * @return  mixed
      */
-    protected function custom_config_value($key, $default) {
+    protected function custom_config_value($key, $default)
+    {
         if (isset($this->config->config()[$key])) {
             return $this->config->config()[$key];
         }

@@ -13,14 +13,16 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * Root node of the AST.
  */
-class Root extends Node {
+class Root extends Node
+{
     /**
      * @var Line[]
      */
-    protected $lines; 
+    protected $lines;
 
-    public function __construct(array $lines) {
-        $this->lines = array_map(function(Line $l) {
+    public function __construct(array $lines)
+    {
+        $this->lines = array_map(function (Line $l) {
             return $l;
         }, $lines);
     }
@@ -28,7 +30,8 @@ class Root extends Node {
     /**
      * @return  Line[]
      */
-    public function lines() {
+    public function lines()
+    {
         return $this->lines;
     }
 }

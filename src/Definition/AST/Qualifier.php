@@ -13,7 +13,8 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * A qualifier is either must, cannot or only X can.
  */
-class Qualifier extends Node {
+class Qualifier extends Node
+{
     const MUST = "MUST";
     const CANNOT = "CANNOT";
     const ONLY_X_CAN = "ONLY_X_CAN";
@@ -23,7 +24,8 @@ class Qualifier extends Node {
      */
     protected $which;
 
-    public function __construct($which) {
+    public function __construct($which)
+    {
         assert('in_array($which, ["MUST", "CANNOT", "ONLY_X_CAN"])');
         $this->which = $which;
     }
@@ -31,7 +33,8 @@ class Qualifier extends Node {
     /**
      * @return  string
      */
-    public function which() {
+    public function which()
+    {
         return $this->which;
     }
 }

@@ -17,11 +17,12 @@ use Lechimp\Dicto\Analysis\Violation;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
-abstract class ReportTestBase extends \PHPUnit\Framework\TestCase {
-    public function setUp() : void {
-        $this->connection = DriverManager::getConnection
-            ( array
-                ( "driver" => "pdo_sqlite"
+abstract class ReportTestBase extends \PHPUnit\Framework\TestCase
+{
+    public function setUp() : void
+    {
+        $this->connection = DriverManager::getConnection(
+                array( "driver" => "pdo_sqlite"
                 //, "path" => "/home/lechimp/dt.sqlite"
                 , "memory" => true
                 )
@@ -33,25 +34,28 @@ abstract class ReportTestBase extends \PHPUnit\Framework\TestCase {
 
     // Some example rules
 
-    public function all_classes_cannot_depend_on_globals() {
-        return new Rules\Rule
-            ( Rules\Rule::MODE_CANNOT
-            , new Vars\Classes("allClasses")
-            , new Rules\DependOn()
-            , array(new Vars\Globals("allGlobals"))
+    public function all_classes_cannot_depend_on_globals()
+    {
+        return new Rules\Rule(
+                Rules\Rule::MODE_CANNOT,
+                new Vars\Classes("allClasses"),
+                new Rules\DependOn(),
+                array(new Vars\Globals("allGlobals"))
             );
     }
 
-    public function all_classes_cannot_invoke_functions() {
-        return new Rules\Rule
-            ( Rules\Rule::MODE_CANNOT
-            , new Vars\Classes("allClasses")
-            , new Rules\Invoke()
-            , array(new Vars\Functions("allFunctions"))
+    public function all_classes_cannot_invoke_functions()
+    {
+        return new Rules\Rule(
+                Rules\Rule::MODE_CANNOT,
+                new Vars\Classes("allClasses"),
+                new Rules\Invoke(),
+                array(new Vars\Functions("allFunctions"))
             );
     }
 
-    protected function init_scenario() {
+    protected function init_scenario()
+    {
         // Some scenario containing two rules, three runs
         // and different violations.
         $rule1 = $this->all_classes_cannot_depend_on_globals();
@@ -65,7 +69,8 @@ abstract class ReportTestBase extends \PHPUnit\Framework\TestCase {
         $this->db->begin_ruleset($ruleset);
         $this->db->begin_rule($rule1);
         $this->db->report_violation(
-            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+            new Violation($rule1, "file.php", 42, "file.php_line_42")
+        );
         $this->db->end_rule();
         $this->db->end_ruleset();
         $this->db->end_run();
@@ -77,13 +82,16 @@ abstract class ReportTestBase extends \PHPUnit\Framework\TestCase {
         $this->db->begin_ruleset($ruleset);
         $this->db->begin_rule($rule1);
         $this->db->report_violation(
-            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+            new Violation($rule1, "file.php", 42, "file.php_line_42")
+        );
         $this->db->report_violation(
-            new Violation($rule1, "file2.php", 23, "file2.php_line_23"));
+            new Violation($rule1, "file2.php", 23, "file2.php_line_23")
+        );
         $this->db->end_rule();
         $this->db->begin_rule($rule2);
         $this->db->report_violation(
-            new Violation($rule2, "file3.php", 13, "file2.php_line_13"));
+            new Violation($rule2, "file3.php", 13, "file2.php_line_13")
+        );
         $this->db->end_rule();
         $this->db->end_ruleset();
         $this->db->end_run();
@@ -97,9 +105,11 @@ abstract class ReportTestBase extends \PHPUnit\Framework\TestCase {
         $this->db->end_rule();
         $this->db->begin_rule($rule2);
         $this->db->report_violation(
-            new Violation($rule2, "file.php", 42, "file.php_line_42"));
+            new Violation($rule2, "file.php", 42, "file.php_line_42")
+        );
         $this->db->report_violation(
-            new Violation($rule2, "file2.php", 23, "file2.php_line_23"));
+            new Violation($rule2, "file2.php", 23, "file2.php_line_23")
+        );
         $this->db->end_rule();
         $this->db->end_ruleset();
         $this->db->end_run();
@@ -109,15 +119,15 @@ abstract class ReportTestBase extends \PHPUnit\Framework\TestCase {
     }
 
     // Helper to query ids of known rules.
-    public function query_rule_ids() {
+    public function query_rule_ids()
+    {
         $run = $this->queries->last_run_for("#COMMIT_3#");
         $rules = $this->queries->analyzed_rules($run);
         $info = $this->queries->rule_info($rules[0]);
 
         if ($info["rule"] == $this->rule1->pprint()) {
             return [$rules[0], $rules[1]];
-        }
-        else {
+        } else {
             return [$rules[1], $rules[0]];
         }
     }

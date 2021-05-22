@@ -17,7 +17,8 @@ use Lechimp\Dicto\Rules as R;
 /**
  * Compiles an AST to a ruleset.
  */
-class Compiler implements ArgumentParser {
+class Compiler implements ArgumentParser
+{
     /**
      * @var V\Variable[]
      */
@@ -58,24 +59,27 @@ class Compiler implements ArgumentParser {
      * @param   R\Schema[]      $schemas
      * @param   V\Property[]    $properties
      */
-    public function __construct( array $predefined_variables
-                               , array $schemas
-                               , array $properties) {
-        $this->predefined_variables = array_map(function(V\Variable $v) {
+    public function __construct(array $predefined_variables, array $schemas, array $properties)
+    {
+        $this->predefined_variables = array_map(function (V\Variable $v) {
             return $v;
         }, $predefined_variables);
 
         $this->schemas = [];
-        $loop = function(R\Schema $s) {
+        $loop = function (R\Schema $s) {
             $this->schemas[$s->name()] = $s;
         };
-        foreach ($schemas as $schema) $loop($schema);
+        foreach ($schemas as $schema) {
+            $loop($schema);
+        }
 
         $this->properties = [];
-        $loop = function(V\Property $p) {
+        $loop = function (V\Property $p) {
             $this->properties[$p->parse_as()] = $p;
         };
-        foreach ($properties as $property) $loop($property);
+        foreach ($properties as $property) {
+            $loop($property);
+        }
     }
 
     /**
@@ -84,7 +88,8 @@ class Compiler implements ArgumentParser {
      * @param   AST\Node    $node
      * @return  mixed
      */
-    public function compile(AST\Root $node) {
+    public function compile(AST\Root $node)
+    {
         $this->variables = array();
         $this->rules = array();
         $this->current_parameters = [];
@@ -92,39 +97,39 @@ class Compiler implements ArgumentParser {
         return $this->compile_root($node);
     }
 
-    protected function compile_root(AST\Root $node) {
+    protected function compile_root(AST\Root $node)
+    {
         foreach ($node->lines() as $line) {
             if ($line instanceof AST\Assignment) {
                 $this->compile_assignment($line);
                 $this->last_explanation = null;
-            }
-            else if ($line instanceof AST\Rule) {
+            } elseif ($line instanceof AST\Rule) {
                 $this->compile_rule($line);
                 $this->last_explanation = null;
-            }
-            else if ($line instanceof AST\Explanation) {
+            } elseif ($line instanceof AST\Explanation) {
                 $this->last_explanation = $line;
-            }
-            else {
-                throw new \LogicException("Can't compile '".get_class($line)."'");
+            } else {
+                throw new \LogicException("Can't compile '" . get_class($line) . "'");
             }
         }
         $this->purge_predefined_variables();
         return new Ruleset($this->variables, $this->rules);
     }
 
-    protected function compile_assignment(AST\Assignment $node) {
+    protected function compile_assignment(AST\Assignment $node)
+    {
         $def = $this->compile_definition($node->definition());
         if ($this->last_explanation !== null) {
             $def = $def->withExplanation($this->last_explanation->content());
         }
-        $this->add_variable
-            ("".$node->name()
-            , $def
+        $this->add_variable(
+                "" . $node->name(),
+                $def
             );
     }
 
-    protected function compile_rule(AST\Rule $node) {
+    protected function compile_rule(AST\Rule $node)
+    {
         $property = $node->definition();
         // TODO: This is morally wrong. In general all rules are existence rules
         // so I should push the schema into the definition of the targeted variables
@@ -132,12 +137,12 @@ class Compiler implements ArgumentParser {
         if (!($property instanceof AST\Property)) {
             throw new \LogicException("Expected definition of rule to be AST\Property");
         }
-        $schema = $this->get_schema("".$property->id());
-        $rule = new R\Rule
-            ( $this->compile_qualifier($node->qualifier())
-            , $this->compile_definition($property->left())
-            , $schema
-            , $this->compile_parameters($schema, $property->parameters())
+        $schema = $this->get_schema("" . $property->id());
+        $rule = new R\Rule(
+                $this->compile_qualifier($node->qualifier()),
+                $this->compile_definition($property->left()),
+                $schema,
+                $this->compile_parameters($schema, $property->parameters())
             );
         if ($this->last_explanation !== null) {
             $rule = $rule->withExplanation($this->last_explanation->content());
@@ -145,7 +150,8 @@ class Compiler implements ArgumentParser {
         $this->rules[] = $rule;
     }
 
-    protected function compile_definition(AST\Definition $node) {
+    protected function compile_definition(AST\Definition $node)
+    {
         if ($node instanceof AST\Name) {
             return $this->get_variable("$node");
         }
@@ -158,10 +164,11 @@ class Compiler implements ArgumentParser {
         if ($node instanceof AST\Property) {
             return $this->compile_property($node);
         }
-        throw new \LogicException("Can't compile '".get_class($node)."'");
+        throw new \LogicException("Can't compile '" . get_class($node) . "'");
     }
 
-    protected function compile_any(AST\Any $node) {
+    protected function compile_any(AST\Any $node)
+    {
         $definitions = $node->definitions();
 
         // short circuit for any with only one element.
@@ -171,29 +178,32 @@ class Compiler implements ArgumentParser {
             return $this->compile_definition($definitions[0]);
         }
 
-        return new V\Any
-            (array_map
-                ( [$this, "compile_definition"]
-                , $definitions
+        return new V\Any(
+                array_map(
+                    [$this, "compile_definition"],
+                    $definitions
                 )
             );
     }
 
-    protected function compile_except(AST\Except $node) {
-        return new V\Except
-            ( $this->compile_definition($node->left())
-            , $this->compile_definition($node->right())
+    protected function compile_except(AST\Except $node)
+    {
+        return new V\Except(
+                $this->compile_definition($node->left()),
+                $this->compile_definition($node->right())
             );
     }
 
-    protected function compile_property(AST\Property $node) {
+    protected function compile_property(AST\Property $node)
+    {
         $variable = $this->compile_definition($node->left());
-        $property = $this->get_property("".$node->id());
+        $property = $this->get_property("" . $node->id());
         $parameters = $this->compile_parameters($property, $node->parameters());
         return new V\WithProperty($variable, $property, $parameters);
     }
 
-    protected function compile_parameters($prop_or_schema, array $parameters) {
+    protected function compile_parameters($prop_or_schema, array $parameters)
+    {
         assert('$prop_or_schema instanceof Lechimp\Dicto\Variables\Property || $prop_or_schema instanceof Lechimp\Dicto\Rules\Schema');
         // TODO: rename fetch_arguments to fetch_parameters
         $this->current_parameters = $parameters;
@@ -205,7 +215,8 @@ class Compiler implements ArgumentParser {
         return $parameters;
     }
 
-    protected function compile_qualifier(AST\Qualifier $node) {
+    protected function compile_qualifier(AST\Qualifier $node)
+    {
         $which = $node->which();
         if ($which === AST\Qualifier::MUST) {
             return R\Rule::MODE_MUST;
@@ -226,7 +237,8 @@ class Compiler implements ArgumentParser {
      * @param   V\Variable  $def
      * @return null
      */
-    protected function add_variable($name, V\Variable $def) {
+    protected function add_variable($name, V\Variable $def)
+    {
         assert('is_string($name)');
         if (array_key_exists($name, $this->variables)) {
             throw new ParserException("Variable '$name' already defined.");
@@ -241,7 +253,8 @@ class Compiler implements ArgumentParser {
      * @param   string  $name
      * @return  V\Variable
      */
-    protected function get_variable($name) {
+    protected function get_variable($name)
+    {
         if (!array_key_exists($name, $this->variables)) {
             throw new ParserException("Unknown variable '$name'.");
         }
@@ -254,7 +267,8 @@ class Compiler implements ArgumentParser {
      * @param   string  $name
      * @return  V\Property
      */
-    protected function get_property($name) {
+    protected function get_property($name)
+    {
         if (!array_key_exists($name, $this->properties)) {
             throw new ParserException("Unknown property '$name'.");
         }
@@ -267,7 +281,8 @@ class Compiler implements ArgumentParser {
      * @param   string  $name
      * @return  V\Schema
      */
-    protected function get_schema($name) {
+    protected function get_schema($name)
+    {
         if (!array_key_exists($name, $this->schemas)) {
             throw new ParserException("Unknown schema '$name'.");
         }
@@ -279,7 +294,8 @@ class Compiler implements ArgumentParser {
      *
      * @return null
      */
-    protected function add_predefined_variables() {
+    protected function add_predefined_variables()
+    {
         foreach ($this->predefined_variables as $predefined_var) {
             $this->add_variable($predefined_var->name(), $predefined_var);
         }
@@ -290,7 +306,8 @@ class Compiler implements ArgumentParser {
      *
      * @return null
      */
-    protected function purge_predefined_variables() {
+    protected function purge_predefined_variables()
+    {
         foreach ($this->predefined_variables as $predefined_var) {
             unset($this->variables[$predefined_var->name()]);
         }
@@ -301,20 +318,23 @@ class Compiler implements ArgumentParser {
     /**
      * @inheritdoc
      */
-    public function fetch_string() {
+    public function fetch_string()
+    {
         $node = $this->next_current_parameter(AST\StringValue::class);
-        return "".$node;
+        return "" . $node;
     }
 
     /**
      * @inheritdoc
      */
-    public function fetch_variable() {
+    public function fetch_variable()
+    {
         $node = $this->next_current_parameter(AST\Definition::class);
         return $this->compile_definition($node);
     }
 
-    protected function next_current_parameter($class) {
+    protected function next_current_parameter($class)
+    {
         if (count($this->current_parameters) == 0) {
             // TODO: add location info
             throw new \ParserException("Tried to fetch a parameter, but none was left.");
@@ -322,7 +342,7 @@ class Compiler implements ArgumentParser {
         $arg = array_shift($this->current_parameters);
         if (!($arg instanceof $class)) {
             // TODO: add location info
-            throw new \ParserException("Tried to fetch a '%class' parameter but next is '".get_class($arg)."'");
+            throw new \ParserException("Tried to fetch a '%class' parameter but next is '" . get_class($arg) . "'");
         }
         return $arg;
     }

@@ -8,12 +8,15 @@
  * a copy of the license along with the code.
  */
 
-class A3 {
-    public function use_global_by_keyword() {
+class A3
+{
+    public function use_global_by_keyword()
+    {
         global $glob;
-    }    
+    }
 
-    public function use_global_by_array() {
+    public function use_global_by_array()
+    {
         $glob = $GLOBALS["glob"];
-    }    
+    }
 }

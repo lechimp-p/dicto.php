@@ -13,18 +13,20 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * An except-definition.
  */
-class Except extends Definition { 
+class Except extends Definition
+{
     /**
      * @var Definition
      */
-    protected  $left;
+    protected $left;
 
     /**
      * @var Definition
      */
-    protected  $right;
+    protected $right;
 
-    public function __construct(Definition $left, Definition $right) {
+    public function __construct(Definition $left, Definition $right)
+    {
         $this->left = $left;
         $this->right = $right;
     }
@@ -32,14 +34,16 @@ class Except extends Definition {
     /**
      * @return Definition
      */
-    public function left() {
+    public function left()
+    {
         return $this->left;
     }
 
     /**
      * @return Definition
      */
-    public function right() {
+    public function right()
+    {
         return $this->right;
     }
 }

@@ -11,22 +11,26 @@
 use Lechimp\Dicto\Graph\Relation;
 use Lechimp\Dicto\Graph\Node;
 
-class GraphRelationTest extends \PHPUnit\Framework\TestCase {
-    public function test_type() {
+class GraphRelationTest extends \PHPUnit\Framework\TestCase
+{
+    public function test_type()
+    {
         $t = new Node(0, "some_type", []);
         $e = new Relation("a_type", array(), $t);
 
         $this->assertEquals("a_type", $e->type());
     }
 
-    public function test_properties() {
+    public function test_properties()
+    {
         $t = new Node(0, "some_type", []);
         $e = new Relation("a_type", ["prop" => "value"], $t);
 
         $this->assertEquals(["prop" => "value"], $e->properties());
     }
 
-    public function test_target() {
+    public function test_target()
+    {
         $t = new Node(0, "some_type", []);
         $e = new Relation("a_type", ["prop" => "value"], $t);
 

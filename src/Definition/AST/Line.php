@@ -14,6 +14,6 @@ namespace Lechimp\Dicto\Definition\AST;
  * A line in the rules doc. Must not physically be a 'line', instead this is
  * a distinct piece of info in the rules.
  */
-abstract class Line extends Node {
+abstract class Line extends Node
+{
 }
-

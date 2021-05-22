@@ -1,21 +1,23 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
 use Lechimp\Dicto\App\Config;
 use Lechimp\Dicto\Report;
 
-class ConfigTest extends \PHPUnit\Framework\TestCase {
-    public function test_smoke() {
+class ConfigTest extends \PHPUnit\Framework\TestCase
+{
+    public function test_smoke()
+    {
         $config = new Config("/the/path", [
             [ "project" =>
-                [ "root"    => "/root/dir"
+                [ "root" => "/root/dir"
                 , "storage" => "/data"
                 , "rules" => "/rules"
                 ]
@@ -32,10 +34,11 @@ class ConfigTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals("/the/path", $config->path());
     }
 
-    public function test_defaults() {
+    public function test_defaults()
+    {
         $config = new Config("/the/path", [
             [ "project" =>
-                [ "root"    => "/root/dir"
+                [ "root" => "/root/dir"
                 , "rules" => "/rules"
                 ]
             ]]);
@@ -73,10 +76,11 @@ class ConfigTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(false, $config->runtime_check_assertions());
     }
 
-    public function test_overwrite_lists() {
+    public function test_overwrite_lists()
+    {
         $config = new Config("/the/path", [
             [ "project" =>
-                [ "root"    => "/root/dir"
+                [ "root" => "/root/dir"
                 , "rules" => "/rules"
                 ]
             , "rules" =>
@@ -90,15 +94,16 @@ class ConfigTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals([], $config->rules_variables());
     }
 
-    public function test_runtime_config() {
+    public function test_runtime_config()
+    {
         $config = new Config("/the/path", [
             [ "project" =>
-                [ "root"    => "/root/dir"
+                [ "root" => "/root/dir"
                 , "storage" => "/data"
                 , "rules" => "/rules"
                 ]
             , "runtime" =>
-                [ "check_assertions"  => true
+                [ "check_assertions" => true
                 ]
             ]]);
 
@@ -106,15 +111,17 @@ class ConfigTest extends \PHPUnit\Framework\TestCase {
     }
 
 
-    public function test_merge() {
-        $config = new Config("/the/path",
+    public function test_merge()
+    {
+        $config = new Config(
+            "/the/path",
             [
                 [ "project" =>
                     [ "storage" => "/data"
                     , "rules" => "/rules"
                     ]
                 ]
-            , 
+            ,
                 [ "project" =>
                     [ "root" => "/root/dir"
                     , "rules" => "/other_rules"
@@ -126,7 +133,8 @@ class ConfigTest extends \PHPUnit\Framework\TestCase {
                     , "store_index" => true
                     ]
                 ]
-            ]);
+            ]
+        );
         $this->assertEquals("/other_rules", $config->project_rules());
         $this->assertEquals("/root/dir", $config->project_root());
         $this->assertEquals("/data", $config->project_storage());
@@ -134,10 +142,11 @@ class ConfigTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue($config->analysis_store_index());
     }
 
-    public function test_path_resolution() {
+    public function test_path_resolution()
+    {
         $config = new Config("/the/path/", [
             [ "project" =>
-                [ "root"    => "./root/dir"
+                [ "root" => "./root/dir"
                 , "storage" => "./data"
                 , "rules" => "./rules"
                 ]
@@ -153,10 +162,11 @@ class ConfigTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals("/the/path/data", $config->project_storage());
     }
 
-    public function test_reports() {
+    public function test_reports()
+    {
         $config = new Config("/the/path", [
             [ "project" =>
-                [ "root"    => "/root/dir"
+                [ "root" => "/root/dir"
                 , "storage" => "/data"
                 , "rules" => "/rules"
                 ]
@@ -184,27 +194,27 @@ class ConfigTest extends \PHPUnit\Framework\TestCase {
             ]]);
 
         $expected =
-            [ new Report\Config
-                ( "/the/path"
-                , "DiffPerRule"
-                , null
-                , []
-                , "foobar"
+            [ new Report\Config(
+                    "/the/path",
+                    "DiffPerRule",
+                    null,
+                    [],
+                    "foobar"
                 )
-            , new Report\Config
-                ( "/the/path"
-                , "\\Foo\\Bar"
-                , "foobar.html"
-                , []
-                , "foo" 
-                , "foobar.php"
+            , new Report\Config(
+                    "/the/path",
+                    "\\Foo\\Bar",
+                    "foobar.html",
+                    [],
+                    "foo",
+                    "foobar.php"
                 )
-            , new Report\Config
-                ( "/the/path"
-                , "DiffPerRule"
-                , "default.html"
-                , []
-                , "bar"
+            , new Report\Config(
+                    "/the/path",
+                    "DiffPerRule",
+                    "default.html",
+                    [],
+                    "bar"
                 )
             ];
         $this->assertEquals($expected, $config->reports());

@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -23,7 +23,8 @@ use Psr\Log\LoggerInterface as Log;
 /**
  * The Engine of the App drives the analysis process.
  */
-class Engine {
+class Engine
+{
     /**
      * @var Log
      */
@@ -59,14 +60,15 @@ class Engine {
      */
     protected $source_status;
 
-    public function __construct( Log $log
-                               , Config $config
-                               , DB\IndexDBFactory $db_factory
-                               , IndexerFactory $indexer_factory
-                               , AnalyzerFactory $analyzer_factory
-                               , Listener $analysis_listener
-                               , SourceStatus $source_status
-                               ) {
+    public function __construct(
+        Log $log,
+        Config $config,
+        DB\IndexDBFactory $db_factory,
+        IndexerFactory $indexer_factory,
+        AnalyzerFactory $analyzer_factory,
+        Listener $analysis_listener,
+        SourceStatus $source_status
+    ) {
         $this->log = $log;
         $this->config = $config;
         $this->db_factory = $db_factory;
@@ -78,10 +80,11 @@ class Engine {
 
     /**
      * Run the analysis.
-     * 
+     *
      * @return null
      */
-    public function run() {
+    public function run()
+    {
         $index_db_path = $this->index_database_path();
         if (!$this->db_factory->index_db_exists($index_db_path)) {
             $index = $this->build_index();
@@ -91,8 +94,7 @@ class Engine {
                 $index_db->write_cached_inserts();
                 $index = $this->force_graph_index_db($index->first());
             }
-        }
-        else {
+        } else {
             $index_db = $this->db_factory->load_index_db($index_db_path);
             $this->log->notice("Reading index from database '$index_db_path'...");
             $index = $this->read_index_from($index_db);
@@ -100,38 +102,42 @@ class Engine {
         $this->run_analysis($index);
     }
 
-    protected function index_database_path() {
+    protected function index_database_path()
+    {
         $commit_hash = $this->source_status->commit_hash();
-        return $this->config->project_storage()."/$commit_hash.sqlite";
+        return $this->config->project_storage() . "/$commit_hash.sqlite";
     }
 
-    protected function run_indexing(Insert $index) {
+    protected function run_indexing(Insert $index)
+    {
         $this->log->notice("Building index...");
         $indexer = $this->indexer_factory->build($index);
-        $this->with_time_measurement
-            ( function ($s) { return "Indexing took $s seconds to run."; }
-            , function () use ($indexer) {
-                $indexer->index_directory
-                    ( $this->config->project_root()
-                    , $this->config->analysis_ignore()
+        $this->with_time_measurement(function ($s) {
+                return "Indexing took $s seconds to run.";
+            }, function () use ($indexer) {
+                $indexer->index_directory(
+                        $this->config->project_root(),
+                        $this->config->analysis_ignore()
                     );
             });
     }
 
-    protected function run_analysis(Index $index) {
+    protected function run_analysis(Index $index)
+    {
         $this->log->notice("Running analysis...");
         $commit_hash = $this->source_status->commit_hash();
         $this->analysis_listener->begin_run($commit_hash);
         $analyzer = $this->analyzer_factory->build($index, $this->analysis_listener);
-        $this->with_time_measurement
-            ( function ($s) { return "Analysis took $s seconds to run."; }
-            , function () use ($analyzer) {
+        $this->with_time_measurement(function ($s) {
+                return "Analysis took $s seconds to run.";
+            }, function () use ($analyzer) {
                 $analyzer->run();
             });
         $this->analysis_listener->end_run();
     }
 
-    protected function build_index() {
+    protected function build_index()
+    {
         if ($this->config->analysis_store_index()) {
             $index_db_path = $this->index_database_path();
             $index_db = $this->db_factory->build_index_db($index_db_path);
@@ -145,17 +151,19 @@ class Engine {
     /**
      * @return  Graph\IndexDB
      */
-    protected function read_index_from(DB\IndexDB $db) {
+    protected function read_index_from(DB\IndexDB $db)
+    {
         $index = null;
-        $this->with_time_measurement
-            ( function ($s) { return "Loading the index took $s seconds."; }
-            , function () use ($db, &$index) {
+        $this->with_time_measurement(function ($s) {
+                return "Loading the index took $s seconds.";
+            }, function () use ($db, &$index) {
                 $index = $db->to_graph_index();
             });
         return $this->force_graph_index_db($index);
     }
 
-    protected function with_time_measurement(\Closure $message, \Closure $what) {
+    protected function with_time_measurement(\Closure $message, \Closure $what)
+    {
         $start_time = microtime(true);
         $what();
         $time_elapsed_secs = microtime(true) - $start_time;
@@ -166,14 +174,15 @@ class Engine {
      * @param   mixed   $index
      * @return  Graph\IndexDB
      */
-    protected function force_graph_index_db($index) {
+    protected function force_graph_index_db($index)
+    {
         if ($index instanceof Graph\IndexDB) {
             return $index;
-        }
-        else {
+        } else {
             throw new \LogicException(
-                "Expected index to be of type Graph\IndexDB, but it is '".
-                get_class($index)."'");
+                "Expected index to be of type Graph\IndexDB, but it is '" .
+                get_class($index) . "'"
+            );
         }
     }
 
@@ -181,14 +190,15 @@ class Engine {
      * @param   mixed   $index
      * @return  IndexDB
      */
-    protected function force_app_index_db($index) {
+    protected function force_app_index_db($index)
+    {
         if ($index instanceof DB\IndexDB) {
             return $index;
-        }
-        else {
+        } else {
             throw new \LogicException(
-                "Expected index to be of type App\IndexDB, but it is '".
-                get_class($index)."'");
+                "Expected index to be of type App\IndexDB, but it is '" .
+                get_class($index) . "'"
+            );
         }
     }
 }

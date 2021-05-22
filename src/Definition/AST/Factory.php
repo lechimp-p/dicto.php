@@ -13,12 +13,14 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * Factory for AST nodes.
  */
-class Factory extends Node {
+class Factory extends Node
+{
     /**
      * @param   Line[]  $lines
      * @return  Root
      */
-    public function root(array $lines) {  
+    public function root(array $lines)
+    {
         return new Root($lines);
     }
 
@@ -26,7 +28,8 @@ class Factory extends Node {
      * @param   string  $content
      * @return  Explanation
      */
-    public function explanation($content) {
+    public function explanation($content)
+    {
         return new Explanation($content);
     }
 
@@ -34,7 +37,8 @@ class Factory extends Node {
      * @param   string  $name
      * @return  Name
      */
-    public function name($name) {
+    public function name($name)
+    {
         return new Name($name);
     }
 
@@ -42,7 +46,8 @@ class Factory extends Node {
      * @param   string  $atom
      * @return  Name
      */
-    public function atom($atom) {
+    public function atom($atom)
+    {
         return new Atom($atom);
     }
 
@@ -50,7 +55,8 @@ class Factory extends Node {
      * @param   string  $string
      * @return  StringValue
      */
-    public function string_value($string) {
+    public function string_value($string)
+    {
         return new StringValue($string);
     }
 
@@ -60,7 +66,8 @@ class Factory extends Node {
      * @param   Parameter[] $parameters
      * @return  Property
      */
-    public function property(Definition $left, Atom $id, array $parameters) {
+    public function property(Definition $left, Atom $id, array $parameters)
+    {
         return new Property($left, $id, $parameters);
     }
 
@@ -69,7 +76,8 @@ class Factory extends Node {
      * @param   Definition  $right
      * @return  Except
      */
-    public function except(Definition $left, Definition $right) {
+    public function except(Definition $left, Definition $right)
+    {
         return new Except($left, $right);
     }
 
@@ -78,7 +86,8 @@ class Factory extends Node {
      * @return  Any
      * @return  Any
      */
-    public function any(array $definitions) {
+    public function any(array $definitions)
+    {
         return new Any($definitions);
     }
 
@@ -87,28 +96,32 @@ class Factory extends Node {
      * @param   Definition  $definition
      * @return  Assignment
      */
-    public function assignment(Name $name, Definition $definition) {
+    public function assignment(Name $name, Definition $definition)
+    {
         return new Assignment($name, $definition);
     }
 
     /**
      * @return  Qualifier
      */
-    public function must() {
+    public function must()
+    {
         return new Qualifier(Qualifier::MUST);
     }
 
     /**
      * @return  Qualifier
      */
-    public function cannot() {
+    public function cannot()
+    {
         return new Qualifier(Qualifier::CANNOT);
     }
 
     /**
      * @return  Qualifier
      */
-    public function only_X_can() {
+    public function only_X_can()
+    {
         return new Qualifier(Qualifier::ONLY_X_CAN);
     }
 
@@ -119,7 +132,8 @@ class Factory extends Node {
      * @param   Parameter[] $parameters
      * @return  Property
      */
-    public function rule(Qualifier $qualifier, Definition $definition) {
+    public function rule(Qualifier $qualifier, Definition $definition)
+    {
         return new Rule($qualifier, $definition);
     }
 }

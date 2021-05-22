@@ -8,8 +8,10 @@
  * a copy of the license along with the code.
  */
 
-class CallsVariableMethod {
-    public function call_variable_method() {
+class CallsVariableMethod
+{
+    public function call_variable_method()
+    {
         return $this->$method();
-    }    
+    }
 }

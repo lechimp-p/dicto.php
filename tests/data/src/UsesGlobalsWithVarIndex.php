@@ -8,8 +8,10 @@
  * a copy of the license along with the code.
  */
 
-class UsesGlobalsWithVarIndex {
-    public function use_global_with_var_index() {
+class UsesGlobalsWithVarIndex
+{
+    public function use_global_with_var_index()
+    {
         return $GLOBALS[$foo];
     }
 }

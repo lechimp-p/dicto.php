@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -25,11 +25,13 @@ use PhpParser\ParserFactory;
 /**
  * The dependency injection container for the app.
  */
-class DIC extends Container {
-    public function __construct(Config $config) {
+class DIC extends Container
+{
+    public function __construct(Config $config)
+    {
         $this["config"] = $config;
 
-        $this["ruleset"] = function($c) {
+        $this["ruleset"] = function ($c) {
             $rule_file_path = $c["config"]->project_rules();
             if (!file_exists($rule_file_path)) {
                 throw new \RuntimeException("Unknown rule-file '$rule_file_path'");
@@ -38,27 +40,27 @@ class DIC extends Container {
             return $ruleset;
         };
 
-        $this["rule_loader"] = function($c) {
+        $this["rule_loader"] = function ($c) {
             return new RuleLoader($c["rule_parser"]);
         };
 
-        $this["rule_parser"] = function($c) {
-            return new RuleBuilder
-                ( $c["variables"]
-                , $c["schemas"]
-                , $c["properties"]
+        $this["rule_parser"] = function ($c) {
+            return new RuleBuilder(
+                    $c["variables"],
+                    $c["schemas"],
+                    $c["properties"]
                 );
         };
 
-        $this["engine"] = function($c) {
-            return new Engine
-                ( $c["log"]
-                , $c["config"]
-                , $c["indexdb_factory"]
-                , $c["indexer_factory"]
-                , $c["analyzer_factory"]
-                , $c["result_database"]
-                , $c["source_status"]
+        $this["engine"] = function ($c) {
+            return new Engine(
+                    $c["log"],
+                    $c["config"],
+                    $c["indexdb_factory"],
+                    $c["indexer_factory"],
+                    $c["analyzer_factory"],
+                    $c["result_database"],
+                    $c["source_status"]
                 );
         };
 
@@ -66,38 +68,36 @@ class DIC extends Container {
             return new CLILogger();
         };
 
-        $this["indexdb_factory"] = function() {
+        $this["indexdb_factory"] = function () {
             return new DB\IndexDBFactory();
         };
 
-        $this["indexer_factory"] = function($c) {
-            return new \Lechimp\Dicto\Indexer\IndexerFactory
-                ( $c["log"]
-                , $c["php_parser"]
-                , $c["schemas"]
+        $this["indexer_factory"] = function ($c) {
+            return new \Lechimp\Dicto\Indexer\IndexerFactory(
+                    $c["log"],
+                    $c["php_parser"],
+                    $c["schemas"]
                 );
         };
 
-        $this["analyzer_factory"] = function($c) {
-            return new \Lechimp\Dicto\Analysis\AnalyzerFactory
-                ( $c["log"]
-                , $c["ruleset"]
+        $this["analyzer_factory"] = function ($c) {
+            return new \Lechimp\Dicto\Analysis\AnalyzerFactory(
+                    $c["log"],
+                    $c["ruleset"]
                 );
         };
 
-        $this["php_parser"] = function() {
-            $lexer = new \PhpParser\Lexer\Emulative
-                (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
+        $this["php_parser"] = function () {
+            $lexer = new \PhpParser\Lexer\Emulative(["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
             return (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         };
 
-        $this["result_database"] = function($c) {
+        $this["result_database"] = function ($c) {
             $config = $c["config"];
             if ($config->analysis_store_results()) {
                 $path = $this->result_database_path($config);
                 $connection = DB\DB::sqlite_connection($path);
-            }
-            else {
+            } else {
                 $connection = DB\DB::sqlite_connection();
             }
             $db = new Report\ResultDB($connection);
@@ -105,27 +105,27 @@ class DIC extends Container {
             return $db;
         };
 
-        $this["report_generator"] = function($c) {
+        $this["report_generator"] = function ($c) {
             return new Report\Generator($c["report_queries"]);
         };
 
-        $this["report_queries"] = function($c) {
+        $this["report_queries"] = function ($c) {
             return new Report\Queries($c["result_database"]);
         };
 
-        $this["source_status"] = function($c) {
+        $this["source_status"] = function ($c) {
             return new SourceStatusGit($c["config"]->project_root());
         };
 
-        $this["schemas"] = function($c) {
+        $this["schemas"] = function ($c) {
             return $this->load_schemas($c["config"]->rules_schemas());
         };
 
-        $this["properties"] = function($c) {
+        $this["properties"] = function ($c) {
             return $this->load_properties($c["config"]->rules_properties());
         };
 
-        $this["variables"] = function($c) {
+        $this["variables"] = function ($c) {
             return $this->load_variables($c["config"]->rules_variables());
         };
     }
@@ -136,7 +136,8 @@ class DIC extends Container {
      * @param   array   $schema_classes
      * @return  R\Schema[]
      */
-    protected function load_schemas(array $schema_classes) {
+    protected function load_schemas(array $schema_classes)
+    {
         $schemas = array();
         foreach ($schema_classes as $schema_class) {
             $schema = new $schema_class;
@@ -154,7 +155,8 @@ class DIC extends Container {
      * @param   array   $property_classes
      * @return  R\Schema[]
      */
-    protected function load_properties(array $property_classes) {
+    protected function load_properties(array $property_classes)
+    {
         $properties = array();
         foreach ($property_classes as $property_class) {
             $property = new $property_class;
@@ -172,7 +174,8 @@ class DIC extends Container {
      * @param   array   $variable_classes
      * @return  R\Schema[]
      */
-    protected function load_variables(array $variable_classes) {
+    protected function load_variables(array $variable_classes)
+    {
         $variables = array();
         foreach ($variable_classes as $variable_class) {
             $variable = new $variable_class;
@@ -185,7 +188,8 @@ class DIC extends Container {
     }
 
     // TODO: This should totally go to config.
-    protected function result_database_path(Config $c) {
-        return $c->project_storage()."/results.sqlite";
+    protected function result_database_path(Config $c)
+    {
+        return $c->project_storage() . "/results.sqlite";
     }
 }

@@ -13,7 +13,8 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * A rule.
  */
-class Rule extends Line {
+class Rule extends Line
+{
     /**
      * @var Qualifier
      */
@@ -26,23 +27,25 @@ class Rule extends Line {
 
     // A rule is just the qualification over the existence of entities
     // according to some definition.
-    public function __construct(Qualifier $qualifier, Definition $definition) {
+    public function __construct(Qualifier $qualifier, Definition $definition)
+    {
         $this->qualifier = $qualifier;
         $this->definition = $definition;
     }
 
     /**
-     * @return  Qualifier 
+     * @return  Qualifier
      */
-    public function qualifier() {
+    public function qualifier()
+    {
         return $this->qualifier;
     }
 
     /**
      * @return  Definition
      */
-    public function definition() {
+    public function definition()
+    {
         return $this->definition;
     }
 }
-

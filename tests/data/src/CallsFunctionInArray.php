@@ -8,8 +8,10 @@
  * a copy of the license along with the code.
  */
 
-class CallsFunctionInArray {
-    public function call_function_in_array() {
+class CallsFunctionInArray
+{
+    public function call_function_in_array()
+    {
         return $foo["bar"]();
     }
 }

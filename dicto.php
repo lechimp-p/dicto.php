@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-require_once(__DIR__."/vendor/autoload.php");
+require_once(__DIR__ . "/vendor/autoload.php");
 
 use Symfony\Component\Console\Application;
 
@@ -19,6 +19,5 @@ $start_time = microtime(true);
 $app->run();
 $time_elapsed_secs = microtime(true) - $start_time;
 
-echo "execution time:    ".$time_elapsed_secs."s\n";
-echo "peak memory usage: ".number_format(memory_get_peak_usage(), 0, ".", ".")." byte\n";
-
+echo "execution time:    " . $time_elapsed_secs . "s\n";
+echo "peak memory usage: " . number_format(memory_get_peak_usage(), 0, ".", ".") . " byte\n";

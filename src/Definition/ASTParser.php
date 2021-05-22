@@ -3,7 +3,7 @@
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
  *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
- * 
+ *
  * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
@@ -26,7 +26,8 @@ namespace Lechimp\Dicto\Definition;
  * statement = def qualifier rule
  * rule = atom ((name|string|atom)...)?
  */
-class ASTParser extends Parser {
+class ASTParser extends Parser
+{
     const EXPLANATION_RE = "[/][*][*](([^*]|([*][^/]))*)[*][/]";
     const SINGLE_LINE_COMMENT_RE = "[/][/]([^\n]*)";
     const MULTI_LINE_COMMENT_RE = "[/][*](([^*]|([*][^/]))*)[*][/]";
@@ -34,15 +35,16 @@ class ASTParser extends Parser {
     const STRING_RE = "[\"]((([\\\\][\"])|[^\"])+)[\"]";
     const NAME_RE = "[A-Z][A-Za-z_]*";
     const ATOM_RE = "[a-z ]*";
-    const ASSIGNMENT_RE = "(".self::NAME_RE.")\s*=\s*";
-    const ATOM_HEAD_RE = "(".self::ATOM_RE.")\s*:\s*";
+    const ASSIGNMENT_RE = "(" . self::NAME_RE . ")\s*=\s*";
+    const ATOM_HEAD_RE = "(" . self::ATOM_RE . ")\s*:\s*";
 
     /**
      * @var AST\Factory
      */
     protected $ast_factory;
 
-    public function __construct(AST\Factory $ast_factory) {
+    public function __construct(AST\Factory $ast_factory)
+    {
         $this->ast_factory = $ast_factory;
         parent::__construct();
     }
@@ -52,14 +54,15 @@ class ASTParser extends Parser {
     /**
      * @inheritdocs
      */
-    protected function add_symbols_to(SymbolTable $table) {
+    protected function add_symbols_to(SymbolTable $table)
+    {
         $this->add_symbols_for_comments($table);
 
         $this->add_symbols_for_variables_to($table);
 
         $this->add_symbols_for_rules_to($table);
 
-        // Assignment 
+        // Assignment
         $table->symbol(self::ASSIGNMENT_RE);
 
         // Strings
@@ -74,8 +77,7 @@ class ASTParser extends Parser {
         $table->symbol(self::ATOM_HEAD_RE, 20)
             ->left_denotation_is(function ($left, &$matches) {
                 if (!($left instanceof AST\Definition)) {
-                    throw new ParserException
-                        ("Expected a variable at the left of \"{$matches[0]}\".");
+                    throw new ParserException("Expected a variable at the left of \"{$matches[0]}\".");
                 }
                 $id = $this->ast_factory->atom($matches[1]);
                 $arguments = $this->arguments();
@@ -95,7 +97,8 @@ class ASTParser extends Parser {
      * @param   SymbolTable
      * @return  null
      */
-    protected function add_symbols_for_comments(SymbolTable $table) {
+    protected function add_symbols_for_comments(SymbolTable $table)
+    {
         $table->symbol(self::EXPLANATION_RE);
         $table->symbol(self::SINGLE_LINE_COMMENT_RE);
         $table->symbol(self::MULTI_LINE_COMMENT_RE);
@@ -105,12 +108,13 @@ class ASTParser extends Parser {
      * @param   SymbolTable
      * @return  null
      */
-    protected function add_symbols_for_variables_to(SymbolTable $table) {
+    protected function add_symbols_for_variables_to(SymbolTable $table)
+    {
         // Any
         $table->operator("{")
-            ->null_denotation_is(function() {
+            ->null_denotation_is(function () {
                 $arr = array();
-                while(true) {
+                while (true) {
                     $arr[] = $this->variable(0);
                     if ($this->is_current_token_operator("}")) {
                         $this->advance_operator("}");
@@ -124,10 +128,9 @@ class ASTParser extends Parser {
 
         // Except
         $table->symbol("except", 10)
-            ->left_denotation_is(function($left) {
+            ->left_denotation_is(function ($left) {
                 if (!($left instanceof AST\Definition)) {
-                    throw new ParserException
-                        ("Expected a variable at the left of except.");
+                    throw new ParserException("Expected a variable at the left of except.");
                 }
                 $right = $this->variable(10);
                 return $this->ast_factory->except($left, $right);
@@ -138,7 +141,8 @@ class ASTParser extends Parser {
      * @param   SymbolTable
      * @return  null
      */
-    protected function add_symbols_for_rules_to(SymbolTable $table) {
+    protected function add_symbols_for_rules_to(SymbolTable $table)
+    {
         // Rules
         $table->symbol("only");
         $table->symbol(self::RULE_MODE_RE, 0)
@@ -152,7 +156,7 @@ class ASTParser extends Parser {
                 if ($matches[0] == "cannot") {
                     return $this->ast_factory->cannot();
                 }
-                throw new \LogicException("Unexpected \"".$matches[0]."\".");
+                throw new \LogicException("Unexpected \"" . $matches[0] . "\".");
             });
     }
 
@@ -161,7 +165,8 @@ class ASTParser extends Parser {
     /**
      * @return  Ruleset
      */
-    public function parse($source) {
+    public function parse($source)
+    {
         $this->variables = array();
         $this->rules = array();
         return parent::parse($source);
@@ -171,9 +176,10 @@ class ASTParser extends Parser {
      * Root expression for the parser is some whitespace or comment where a
      * top level statement is in the middle.
      *
-     * @return  Ruleset 
+     * @return  Ruleset
      */
-    protected function root() {
+    protected function root()
+    {
         $lines = [];
         while (true) {
             // drop empty lines
@@ -194,7 +200,8 @@ class ASTParser extends Parser {
      *
      * @return  null
      */
-    public function top_level_statement() {
+    public function top_level_statement()
+    {
         // A top level statements is either..
         // ..an explanation
         if ($this->is_current_token_matched_by(self::EXPLANATION_RE)) {
@@ -217,7 +224,8 @@ class ASTParser extends Parser {
      *
      * @return string|null
      */
-    public function is_current_token_to_be_dropped() {
+    public function is_current_token_to_be_dropped()
+    {
         if ($this->is_current_token_matched_by("\n")) {
             return "\n";
         }
@@ -234,7 +242,8 @@ class ASTParser extends Parser {
      * @param   string
      * @return  string
      */
-    protected function trim_explanation($content) {
+    protected function trim_explanation($content)
+    {
         return trim(
             preg_replace("%\s*\n\s*([*]\s*)?%s", "\n", $content)
         );
@@ -245,7 +254,8 @@ class ASTParser extends Parser {
      *
      * @return mixed
      */
-    protected function rule_mode() {
+    protected function rule_mode()
+    {
         $this->is_current_token_matched_by(self::RULE_MODE_RE);
         $t = $this->current_symbol();
         $m = $this->current_match();
@@ -259,13 +269,19 @@ class ASTParser extends Parser {
      *
      * @return  string
      */
-    protected function string() {
+    protected function string()
+    {
         $m = $this->current_match();
         $this->fetch_next_token();
-        return $this->ast_factory->string_value
-            (str_replace("\\\"", "\"",
-                str_replace("\\n", "\n",
-                    $m[1])));
+        return $this->ast_factory->string_value(str_replace(
+                "\\\"",
+                "\"",
+                str_replace(
+                    "\\n",
+                    "\n",
+                    $m[1]
+                )
+            ));
     }
 
     /**
@@ -273,7 +289,8 @@ class ASTParser extends Parser {
      *
      * @return  V\Variable
      */
-    protected function variable($right_binding_power = 0) {
+    protected function variable($right_binding_power = 0)
+    {
         $t = $this->current_symbol();
         $m = $this->current_match();
         $this->fetch_next_token();
@@ -298,7 +315,8 @@ class ASTParser extends Parser {
      *
      * @return  array   of atoms, variables or strings
      */
-    protected function arguments() {
+    protected function arguments()
+    {
         $args = [];
         while (true) {
             // An argument is either
@@ -306,21 +324,25 @@ class ASTParser extends Parser {
             if ($this->is_current_token_matched_by(self::STRING_RE)) {
                 $m = $this->current_match();
                 $this->fetch_next_token();
-                $args[] = $this->ast_factory->string_value
-                    (str_replace("\\\"", "\"",
-                        str_replace("\\n", "\n",
-                            $m[1])));
+                $args[] = $this->ast_factory->string_value(str_replace(
+                        "\\\"",
+                        "\"",
+                        str_replace(
+                            "\\n",
+                            "\n",
+                            $m[1]
+                        )
+                    ));
             }
             // ..a variable
             // TODO: this won't do with {..}
             if ($this->is_current_token_matched_by(self::NAME_RE)) {
                 $args[] = $this->variable(0);
-            }
-            else {
+            } else {
                 break;
             }
         }
-        return $args; 
+        return $args;
     }
 
     /**
@@ -328,7 +350,8 @@ class ASTParser extends Parser {
      *
      * @return  array   (R\Schema, array)
      */
-    protected function schema() {
+    protected function schema()
+    {
         $t = $this->current_symbol();
         $m = $this->current_match();
         $this->fetch_next_token();
@@ -346,8 +369,9 @@ class ASTParser extends Parser {
      *
      * @return  null
      */
-    protected function variable_assignment() {
-        $m = $this->current_match(); 
+    protected function variable_assignment()
+    {
+        $m = $this->current_match();
         $name = $this->ast_factory->name($m[1]);
         $this->fetch_next_token();
         $def = $this->variable();
@@ -359,7 +383,8 @@ class ASTParser extends Parser {
      *
      * @return  null
      */
-    protected function rule_declaration() {
+    protected function rule_declaration()
+    {
         if ($this->is_current_token_matched_by("only")) {
             $this->advance("only");
         }
@@ -368,12 +393,12 @@ class ASTParser extends Parser {
         $schema = $this->schema();
         $arguments = $this->arguments();
         assert('is_array($arguments)');
-        return $this->ast_factory->rule
-            ( $mode
-            , $this->ast_factory->property
-                ( $var
-                , $schema
-                , $arguments
+        return $this->ast_factory->rule(
+                $mode,
+                $this->ast_factory->property(
+                    $var,
+                    $schema,
+                    $arguments
                 )
             );
     }

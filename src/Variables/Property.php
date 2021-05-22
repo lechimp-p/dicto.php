@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -17,7 +17,8 @@ use Lechimp\Dicto\Definition\ArgumentParser;
 /**
  * Defines the property of some variable.
  */
-abstract class Property {
+abstract class Property
+{
     /**
      * Name of the property.
      *
@@ -32,8 +33,9 @@ abstract class Property {
      *
      * @return string
      */
-    public function parse_as() {
-        return "with ".$this->name();
+    public function parse_as()
+    {
+        return "with " . $this->name();
     }
 
     /**
@@ -48,7 +50,7 @@ abstract class Property {
      * Check if the given arguments are valid for the property.
      *
      * @param   array   $arguments
-     * @return  bool 
+     * @return  bool
      */
     abstract public function arguments_are_valid(array &$arguments);
 

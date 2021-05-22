@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -12,7 +12,8 @@ namespace Lechimp\Dicto\Analysis;
 
 use Lechimp\Dicto\Rules\Rule;
 
-class Violation {
+class Violation
+{
     /**
      * @var Rule
      */
@@ -33,7 +34,8 @@ class Violation {
      */
     protected $line;
 
-    public function __construct(Rule $rule, $filename, $line_no, $line) {
+    public function __construct(Rule $rule, $filename, $line_no, $line)
+    {
         $this->rule = $rule;
         assert('is_string($filename)');
         $this->filename = $filename;
@@ -46,28 +48,32 @@ class Violation {
     /**
      * @return Def\Rules\Rule
      */
-    public function rule() {
+    public function rule()
+    {
         return $this->rule;
     }
 
     /**
      * @return string
      */
-    public function filename() {
+    public function filename()
+    {
         return $this->filename;
     }
 
     /**
      * @return int
      */
-    public function line_no() {
+    public function line_no()
+    {
         return $this->line_no;
     }
 
     /**
      * @return string
      */
-    public function line() {
+    public function line()
+    {
         return $this->line;
     }
 }

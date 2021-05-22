@@ -5,13 +5,15 @@ namespace Lechimp\Dicto\Report;
 /**
  * Queries on the ResultDB.
  */
-class Queries {
+class Queries
+{
     /**
      * @var ResultDB
      */
     protected $result_db;
 
-    public function __construct(ResultDB $result_db) {
+    public function __construct(ResultDB $result_db)
+    {
         $this->result_db = $result_db;
     }
 
@@ -20,7 +22,8 @@ class Queries {
      *
      * @return  int
      */
-    public function last_run() {
+    public function last_run()
+    {
         $b = $this->result_db->builder();
         $res = $b
             ->select("id")
@@ -30,7 +33,7 @@ class Queries {
             ->execute()
             ->fetch();
         if ($res) {
-            return (int)$res["id"];
+            return (int) $res["id"];
         }
         throw new \RuntimeException("Result database contains no runs.");
     }
@@ -41,7 +44,8 @@ class Queries {
      * @param   string  $commit_hash
      * @return  int|null
      */
-    public function last_run_for($commit_hash) {
+    public function last_run_for($commit_hash)
+    {
         $b = $this->result_db->builder();
         $res = $b
             ->select("id")
@@ -53,7 +57,7 @@ class Queries {
             ->execute()
             ->fetch();
         if ($res) {
-            return (int)$res["id"];
+            return (int) $res["id"];
         }
         throw new \RuntimeException("Result database contains no run for commit '$commit_hash'.");
     }
@@ -64,7 +68,8 @@ class Queries {
      * @param   int     $run
      * @return  int
      */
-    public function run_before($run) {
+    public function run_before($run)
+    {
         $b = $this->result_db->builder();
         $res = $b
             ->select("id")
@@ -76,7 +81,7 @@ class Queries {
             ->execute();
         $res = $res->fetch();
         if ($res) {
-            return (int)$res["id"];
+            return (int) $res["id"];
         }
         throw new \RuntimeException("Result database contains no run before '$run'.");
     }
@@ -88,7 +93,8 @@ class Queries {
      * @param   int     $run
      * @return  int
      */
-    public function run_with_different_commit_before($run) {
+    public function run_with_different_commit_before($run)
+    {
         $commit_hash = $this->run_info($run)["commit_hash"];
         $b = $this->result_db->builder();
         $res = $b
@@ -102,7 +108,7 @@ class Queries {
             ->execute()
             ->fetch();
         if ($res) {
-            return (int)$res["id"];
+            return (int) $res["id"];
         }
         throw new \RuntimeException("Result database contains no run before '$run' with a different commit.");
     }
@@ -113,7 +119,8 @@ class Queries {
      * @param   int $run
      * @return  array<string,string>     with keys 'commit_hash'
      */
-    public function run_info($run) {
+    public function run_info($run)
+    {
         $b = $this->result_db->builder();
         $res = $b
             ->select("commit_hash")
@@ -135,15 +142,24 @@ class Queries {
      * @param   int|null    $rule
      * @return  int
      */
-    public function count_violations_in($run, $rule = null) {
+    public function count_violations_in($run, $rule = null)
+    {
         $b = $this->result_db->builder();
         $q = $b
             ->select("COUNT(*) cnt")
             ->from("runs", "rs")
-            ->innerJoin("rs", "violations", "vs",
-                "rs.id >= vs.first_seen AND rs.id <= vs.last_seen")
-            ->innerJoin("vs", "violation_locations", "vls",
-                "vs.id = vls.violation_id AND rs.id = vls.run_id")
+            ->innerJoin(
+                "rs",
+                "violations",
+                "vs",
+                "rs.id >= vs.first_seen AND rs.id <= vs.last_seen"
+            )
+            ->innerJoin(
+                "vs",
+                "violation_locations",
+                "vls",
+                "vs.id = vls.violation_id AND rs.id = vls.run_id"
+            )
             ->where("rs.id = ?")
             ->setParameter(0, $run);
         if ($rule !== null) {
@@ -155,7 +171,7 @@ class Queries {
             ->execute()
             ->fetch();
         if ($res) {
-            return (int)$res["cnt"];
+            return (int) $res["cnt"];
         }
         throw new \RuntimeException("Result database contains no run with id '$run'.");
     }
@@ -168,17 +184,20 @@ class Queries {
      * @param   int|null    $rule
      * @return  int
      */
-    public function count_added_violations($run_former, $run_latter, $rule = null) {
+    public function count_added_violations($run_former, $run_latter, $rule = null)
+    {
         $b = $this->result_db->builder();
         $q = $b
             ->select(
-                "(SELECT COUNT (*) ".
-                "FROM violation_locations vls ".
-                "WHERE vls.run_id = :former AND vls.violation_id = vs.id) cnt_former")
+                "(SELECT COUNT (*) " .
+                "FROM violation_locations vls " .
+                "WHERE vls.run_id = :former AND vls.violation_id = vs.id) cnt_former"
+            )
             ->addSelect(
-                "(SELECT COUNT (*) ".
-                "FROM violation_locations vls ".
-                "WHERE vls.run_id = :latter AND vls.violation_id = vs.id) cnt_latter")
+                "(SELECT COUNT (*) " .
+                "FROM violation_locations vls " .
+                "WHERE vls.run_id = :latter AND vls.violation_id = vs.id) cnt_latter"
+            )
             ->from("violations", "vs")
             ->where("cnt_former < cnt_latter")
             ->setParameter("former", $run_former)
@@ -190,9 +209,9 @@ class Queries {
         }
         $rows = $q->execute();
         $res = 0;
-        while($r = $rows->fetch()) {
-            if ((int)$r["cnt_latter"] > (int)$r["cnt_former"]) {
-                $res += (int)$r["cnt_latter"] - (int)$r["cnt_former"];
+        while ($r = $rows->fetch()) {
+            if ((int) $r["cnt_latter"] > (int) $r["cnt_former"]) {
+                $res += (int) $r["cnt_latter"] - (int) $r["cnt_former"];
             }
         }
         return $res;
@@ -206,17 +225,20 @@ class Queries {
      * @param   int|null    $rule
      * @return  int
      */
-    public function count_resolved_violations($run_former, $run_latter, $rule = null) {
+    public function count_resolved_violations($run_former, $run_latter, $rule = null)
+    {
         $b = $this->result_db->builder();
         $q = $b
             ->select(
-                "(SELECT COUNT (*) ".
-                "FROM violation_locations vls ".
-                "WHERE vls.run_id = :former AND vls.violation_id = vs.id) cnt_former")
+                "(SELECT COUNT (*) " .
+                "FROM violation_locations vls " .
+                "WHERE vls.run_id = :former AND vls.violation_id = vs.id) cnt_former"
+            )
             ->addSelect(
-                "(SELECT COUNT (*) ".
-                "FROM violation_locations vls ".
-                "WHERE vls.run_id = :latter AND vls.violation_id = vs.id) cnt_latter")
+                "(SELECT COUNT (*) " .
+                "FROM violation_locations vls " .
+                "WHERE vls.run_id = :latter AND vls.violation_id = vs.id) cnt_latter"
+            )
             ->from("violations", "vs")
             ->where("cnt_former > cnt_latter")
             ->setParameter("former", $run_former)
@@ -228,9 +250,9 @@ class Queries {
         }
         $rows = $q->execute();
         $res = 0;
-        while($r = $rows->fetch()) {
-            if ((int)$r["cnt_former"] > (int)$r["cnt_latter"]) {
-                $res += (int)$r["cnt_former"] - (int)$r["cnt_latter"];
+        while ($r = $rows->fetch()) {
+            if ((int) $r["cnt_former"] > (int) $r["cnt_latter"]) {
+                $res += (int) $r["cnt_former"] - (int) $r["cnt_latter"];
             }
         }
         return $res;
@@ -242,18 +264,25 @@ class Queries {
      * @param   int $run
      * @return  int[]
      */
-    public function analyzed_rules($run) {
+    public function analyzed_rules($run)
+    {
         $b = $this->result_db->builder();
         $res = $b
             ->select("rrs.id")
             ->from("runs", "rs")
-            ->innerJoin("rs", "rules", "rrs",
-                "rs.id >= rrs.first_seen AND rs.id <= rrs.last_seen")
+            ->innerJoin(
+                "rs",
+                "rules",
+                "rrs",
+                "rs.id >= rrs.first_seen AND rs.id <= rrs.last_seen"
+            )
             ->where("rs.id = ?")
             ->setParameter(0, $run)
             ->execute()
             ->fetchAll();
-        return array_map(function($r) { return $r["id"]; }, $res);
+        return array_map(function ($r) {
+            return $r["id"];
+        }, $res);
     }
 
     /**
@@ -262,7 +291,8 @@ class Queries {
      * @param   int $rule
      * @return  array<string,string>    with keys 'rule', 'explanation'
      */
-    public function rule_info($rule) {
+    public function rule_info($rule)
+    {
         $b = $this->result_db->builder();
         $res = $b
             ->select("rule", "explanation")
@@ -284,15 +314,24 @@ class Queries {
      * @param   int $run
      * @return  array<string,(string|int)>[]  with keys 'file', 'line_no', 'introduced_in'
      */
-    public function violations_of($rule, $run) {
+    public function violations_of($rule, $run)
+    {
         $b = $this->result_db->builder();
         return $b
             ->select("vs.file", "vls.line_no", "vs.first_seen introduced_in")
             ->from("runs", "rs")
-            ->innerJoin("rs", "violations", "vs",
-                "rs.id >= vs.first_seen AND rs.id <= vs.last_seen")
-            ->innerJoin("vs", "violation_locations", "vls",
-                "vs.id = vls.violation_id AND rs.id = vls.run_id")
+            ->innerJoin(
+                "rs",
+                "violations",
+                "vs",
+                "rs.id >= vs.first_seen AND rs.id <= vs.last_seen"
+            )
+            ->innerJoin(
+                "vs",
+                "violation_locations",
+                "vls",
+                "vs.id = vls.violation_id AND rs.id = vls.run_id"
+            )
             ->where("rs.id = ?")
             ->andWhere("vs.rule_id = ?")
             ->setParameter(0, $run)
@@ -312,14 +351,19 @@ class Queries {
      *
      * @return  array<string,(string|int)>[]  with keys 'file', 'line_no', 'introduced_in', 'resolved_in'
      */
-    public function resolved_violations($rule, $run_former, $run_latter) {
+    public function resolved_violations($rule, $run_former, $run_latter)
+    {
         $b = $this->result_db->builder();
 
         return $b
             ->select('vs.file', 'vls.line_no', 'vs.first_seen introduced_in', 'vs.last_seen last_seen_in')
             ->from('violations', 'vs')
-            ->innerJoin('vs', 'violation_locations', 'vls',
-                'vs.id = vls.violation_id AND vls.run_id = vs.last_seen')
+            ->innerJoin(
+                'vs',
+                'violation_locations',
+                'vls',
+                'vs.id = vls.violation_id AND vls.run_id = vs.last_seen'
+            )
             ->innerJoin('vs', 'rules', 'ru', 'ru.id = vs.rule_id')
             ->where('vs.first_seen <= :former')
             ->andWhere('vs.last_seen < :latter')

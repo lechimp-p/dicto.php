@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -19,7 +19,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command to create a report.
  */
-class ReportCommand extends Command {
+class ReportCommand extends Command
+{
     /**
      * @var Config|null
      */
@@ -33,7 +34,8 @@ class ReportCommand extends Command {
     /**
      * @inheritdoc
      */
-    public function pull_deps_from($dic) {
+    public function pull_deps_from($dic)
+    {
         $this->config = $dic["config"];
         $this->report_generator = $dic["report_generator"];
     }
@@ -42,31 +44,33 @@ class ReportCommand extends Command {
     /**
      * @inheritdoc
      */
-    public function configure() {
+    public function configure()
+    {
         $this
             ->setName("report")
-            ->setDescription
-                ("Create a report."
+            ->setDescription(
+                    "Create a report."
                 )
-            ->setHelp
-                ("This command will create a named report from the given configs."
+            ->setHelp(
+                    "This command will create a named report from the given configs."
                 )
-            ->addArgument
-                ( "name"
-                , InputArgument::REQUIRED
-                , "Give the name of the report you want to create."
+            ->addArgument(
+                    "name",
+                    InputArgument::REQUIRED,
+                    "Give the name of the report you want to create."
                 )
-            ->addArgument
-                ( "configs"
-                , InputArgument::IS_ARRAY
-                , "Give paths to config files, separated by spaces."
+            ->addArgument(
+                    "configs",
+                    InputArgument::IS_ARRAY,
+                    "Give paths to config files, separated by spaces."
                 );
     }
 
     /**
      * @inheritdoc
      */
-    public function execute(InputInterface $input, OutputInterface $output) {
+    public function execute(InputInterface $input, OutputInterface $output)
+    {
         assert('!is_null($this->config)');
         assert('!is_null($this->report_generator)');
 

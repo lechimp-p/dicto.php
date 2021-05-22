@@ -16,7 +16,8 @@ use PhpParser\Node as N;
 /**
  * Visitor for the AST used by Indexer.
  */
-class BaseVisitor implements \PhpParser\NodeVisitor {
+class BaseVisitor implements \PhpParser\NodeVisitor
+{
     /**
      * @var LocationImpl
      */
@@ -35,7 +36,8 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
      */
     protected $jump_labels;
 
-    public function __construct(LocationImpl $location, Insert $insert) {
+    public function __construct(LocationImpl $location, Insert $insert)
+    {
         $this->location = $location;
         $this->insert = $insert;
         $this->jump_labels =
@@ -53,7 +55,8 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
     /**
      * @inheritdoc
      */
-    public function beforeTraverse(array $nodes) {
+    public function beforeTraverse(array $nodes)
+    {
         $handle = $this->insert->_file($this->location->_file_name(), $this->location->_file_content());
         $this->location->push_entity(Variable::FILE_TYPE, $handle);
     }
@@ -61,13 +64,15 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
     /**
      * @inheritdoc
      */
-    public function afterTraverse(array $nodes) {
+    public function afterTraverse(array $nodes)
+    {
     }
 
     /**
      * @inheritdoc
      */
-    public function enterNode(\PhpParser\Node $node) {
+    public function enterNode(\PhpParser\Node $node)
+    {
         $cls = get_class($node);
         if (isset($this->jump_labels[$cls])) {
             $this->location->set_current_node($node);
@@ -80,63 +85,69 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
         }
     }
 
-    public function enterNamespace(N\Stmt\Namespace_ $node, $start_line, $end_line) {
-        $handle = $this->insert->_namespace
-            ( "".$node->name // force string representation
+    public function enterNamespace(N\Stmt\Namespace_ $node, $start_line, $end_line)
+    {
+        $handle = $this->insert->_namespace(
+                "" . $node->name // force string representation
             );
         return [Variable::NAMESPACE_TYPE, $handle];
     }
 
-    public function enterClass(N\Stmt\Class_ $node, $start_line, $end_line) {
-        $handle = $this->insert->_class
-            ( $node->name
-            , $this->location->_file()
-            , $start_line
-            , $end_line
-            , $this->location->_namespace()
+    public function enterClass(N\Stmt\Class_ $node, $start_line, $end_line)
+    {
+        $handle = $this->insert->_class(
+                $node->name,
+                $this->location->_file(),
+                $start_line,
+                $end_line,
+                $this->location->_namespace()
             );
         return [Variable::CLASS_TYPE, $handle];
     }
 
-    public function enterInterface(N\Stmt\Interface_ $node, $start_line, $end_line) {
-        $handle = $this->insert->_interface
-            ( $node->name
-            , $this->location->_file()
-            , $start_line
-            , $end_line
-            , $this->location->_namespace()
+    public function enterInterface(N\Stmt\Interface_ $node, $start_line, $end_line)
+    {
+        $handle = $this->insert->_interface(
+                $node->name,
+                $this->location->_file(),
+                $start_line,
+                $end_line,
+                $this->location->_namespace()
             );
         return [Variable::INTERFACE_TYPE, $handle];
     }
 
-    public function enterTrait(N\Stmt\Trait_ $node, $start_line, $end_line) {
-        $handle = $this->insert->_trait
-            ( $node->name
-            , $this->location->_file()
-            , $start_line
-            , $end_line
-            , $this->location->_namespace()
+    public function enterTrait(N\Stmt\Trait_ $node, $start_line, $end_line)
+    {
+        $handle = $this->insert->_trait(
+                $node->name,
+                $this->location->_file(),
+                $start_line,
+                $end_line,
+                $this->location->_namespace()
             );
         return [Variable::INTERFACE_TYPE, $handle];
     }
 
-    public function enterMethod(N\Stmt\ClassMethod $node, $start_line, $end_line) {
-        $handle = $this->insert->_method
-            ( $node->name
-            , $this->location->_class_interface_trait()
-            , $this->location->_file()
-            , $start_line
-            , $end_line
+    public function enterMethod(N\Stmt\ClassMethod $node, $start_line, $end_line)
+    {
+        $handle = $this->insert->_method(
+                $node->name,
+                $this->location->_class_interface_trait(),
+                $this->location->_file(),
+                $start_line,
+                $end_line
             );
         return [Variable::METHOD_TYPE, $handle];
     }
 
-    public function enterFunction(N\Stmt\Function_ $node, $start_line, $end_line) {
-        $handle = $this->insert->_function
-            ( $node->name
-            , $this->location->_file()
-            , $start_line
-            , $end_line
+    public function enterFunction(N\Stmt\Function_ $node, $start_line, $end_line)
+    {
+        $handle = $this->insert->_function(
+                $node->name,
+                $this->location->_file(),
+                $start_line,
+                $end_line
             );
         return [Variable::FUNCTION_TYPE, $handle];
     }
@@ -144,13 +155,13 @@ class BaseVisitor implements \PhpParser\NodeVisitor {
     /**
      * @inheritdoc
      */
-    public function leaveNode(\PhpParser\Node $node) {
-        if (  $node instanceof N\Stmt\Namespace_
+    public function leaveNode(\PhpParser\Node $node)
+    {
+        if ($node instanceof N\Stmt\Namespace_
            || $node instanceof N\Stmt\Class_
            || $node instanceof N\Stmt\Interface_
            || $node instanceof N\Stmt\ClassMethod
            || $node instanceof N\Stmt\Function_) {
-
             $this->location->pop_entity();
         }
     }

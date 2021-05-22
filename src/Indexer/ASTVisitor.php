@@ -17,7 +17,8 @@ namespace Lechimp\Dicto\Indexer;
  * i.e. be aware that using internal state in your implementation might wreak
  * havoc when used in conjunction with the jump labels.
  */
-interface ASTVisitor {
+interface ASTVisitor
+{
     /**
      * Return (class => method) mapping for Nodes the Visitor is interested in
      * and the corresponding handlers.

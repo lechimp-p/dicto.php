@@ -13,13 +13,15 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * An any-definition.
  */
-class Any extends Definition { 
+class Any extends Definition
+{
     /**
      * @var Definition[]
      */
-    protected  $definitions;
+    protected $definitions;
 
-    public function __construct(array $definitions) {
+    public function __construct(array $definitions)
+    {
         $this->definitions = array_map(function (Definition $d) {
             return $d;
         }, $definitions);
@@ -28,7 +30,8 @@ class Any extends Definition {
     /**
      * @return Definition[]
      */
-    public function definitions() {
+    public function definitions()
+    {
         return $this->definitions;
     }
 }

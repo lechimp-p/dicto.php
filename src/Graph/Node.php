@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -14,7 +14,8 @@ namespace Lechimp\Dicto\Graph;
  * A node in the graph. It has an id to make it identifiable. It also
  * has some relations to other nodes.
  */
-class Node extends Entity {
+class Node extends Entity
+{
     /**
      * @var int
      */
@@ -30,7 +31,8 @@ class Node extends Entity {
      * @param   string                      $type
      * @param   array<string,mixed>|null    $properties
      */
-    public function __construct($id, $type, array $properties = null) {
+    public function __construct($id, $type, array $properties = null)
+    {
         assert('is_int($id)');
         $this->id = $id;
         parent::__construct($type, $properties);
@@ -39,9 +41,10 @@ class Node extends Entity {
     /**
      * Get the id.
      *
-     * @return  int 
+     * @return  int
      */
-    public function id() {
+    public function id()
+    {
         return $this->id;
     }
 
@@ -53,13 +56,15 @@ class Node extends Entity {
      * @param   Node                $other
      * @return  Relation
      */
-    public function add_relation($type, array $properties, Node $other) {
+    public function add_relation($type, array $properties, Node $other)
+    {
         $rel = $this->build_relation($type, $properties, $other);
         $this->relations[] = $rel;
         return $rel;
     }
 
-    protected function build_relation($type, array $properties, $other) {
+    protected function build_relation($type, array $properties, $other)
+    {
         return new Relation($type, $properties, $other);
     }
 
@@ -69,11 +74,11 @@ class Node extends Entity {
      * @param   \Closure|null   $filter
      * @return  Relation[]
      */
-    public function relations(\Closure $filter = null) {
+    public function relations(\Closure $filter = null)
+    {
         if ($filter !== null) {
             return array_values(array_filter($this->relations, $filter));
-        }
-        else {
+        } else {
             return $this->relations;
         }
     }
@@ -84,9 +89,12 @@ class Node extends Entity {
      * @param   \Closure|null   $filter
      * @return  Node[]
      */
-    public function related_nodes(\Closure $filter = null) {
+    public function related_nodes(\Closure $filter = null)
+    {
         $filtered = $this->relations($filter);
-        $get_node = function($r) { return $r->target(); };
+        $get_node = function ($r) {
+            return $r->target();
+        };
         return array_values(array_map($get_node, $filtered));
     }
 }

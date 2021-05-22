@@ -16,7 +16,8 @@ use Lechimp\Dicto\Rules\Rule;
 /**
  * Listen to events during analysis.
  */
-interface Listener {
+interface Listener
+{
     /**
      * Tell the listener that a run begins.
      *

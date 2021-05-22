@@ -13,13 +13,15 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * An explanation explains the next line.
  */
-class Explanation extends Line {
+class Explanation extends Line
+{
     /**
      * @var string
      */
     protected $content;
 
-    public function __construct($content) {
+    public function __construct($content)
+    {
         assert('is_string($content)');
         $this->content = $content;
     }
@@ -27,8 +29,8 @@ class Explanation extends Line {
     /**
      * @return  string
      */
-    public function content() {
+    public function content()
+    {
         return $this->content;
     }
 }
-

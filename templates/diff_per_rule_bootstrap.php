@@ -15,31 +15,25 @@
  * @param array $report
  * @return void
  */
-function template_diff_per_rule_bootstrap(array $report) {
+function template_diff_per_rule_bootstrap(array $report)
+{
     $total = $report["violations"]["total"];
     $resolved = $report["violations"]["resolved"];
     $added = $report["violations"]["added"];
     $diff = $resolved - $added;
     if ($resolved == 0 && $added == 0) {
         $msg = 0;
-    }
-    else if ($diff == 0) {
+    } elseif ($diff == 0) {
         $msg = 1;
-    }
-    else if ($diff > 0 && $added == 0) {
+    } elseif ($diff > 0 && $added == 0) {
         $msg = 2;
-    }
-    else if ($diff > 0) {
+    } elseif ($diff > 0) {
         $msg = 3;
-    }
-    else if ($diff < 0 && $resolved != 0) {
+    } elseif ($diff < 0 && $resolved != 0) {
         $msg = 4;
-    }
-    else {
+    } else {
         $msg = 5;
-    }
-
-?>
+    } ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -241,24 +235,24 @@ function template_diff_per_rule_bootstrap(array $report) {
                                     <dd><?= $report["previous"]["commit_hash"] ?></dd>
                                 </dl>
                                 <div class="jumbotron" id="violations-overview-message">
-                                    <p <?=($msg!=0)?'class="no-display"':""?>>
+                                    <p <?=($msg != 0)?'class="no-display"':""?>>
                                         Nothing new...
                                     </p>
-                                    <p <?=($msg!=1)?'class="no-display"':""?>>
+                                    <p <?=($msg != 1)?'class="no-display"':""?>>
                                         You added and removed violations, but no change
                                         in total. Maybe you refactored some code?
                                     </p>
-                                    <p class="text-success<?=($msg!=2)?' no-display':""?>">
+                                    <p class="text-success<?=($msg != 2)?' no-display':""?>">
                                         You resolved some violations. Great Success!
                                     </p>
-                                    <p class="text-success<?=($msg!=3)?' no-display':""?>">
+                                    <p class="text-success<?=($msg != 3)?' no-display':""?>">
                                         You resolved more violations than you added. Nice!
                                     </p>
-                                    <p class="text-danger<?=($msg!=4)?' no-display':""?>">
+                                    <p class="text-danger<?=($msg != 4)?' no-display':""?>">
                                         You added more violations than you resolved. Don't
                                         give up!
                                     </p>
-                                    <p class="text-danger<?=($msg!=5)?' no-display':""?>">
+                                    <p class="text-danger<?=($msg != 5)?' no-display':""?>">
                                         You added some violations. Please take care of the
                                         code!
                                     </p>
@@ -275,11 +269,11 @@ function template_diff_per_rule_bootstrap(array $report) {
                                                 <strong>total</strong>
                                                 <span class="badge" id="violations-overview-total"><?=$total?></span>
                                             </li>
-                                            <li class="list-group-item <?=$resolved>0?"list-group-item-success":""?>">
+                                            <li class="list-group-item <?=$resolved > 0?"list-group-item-success":""?>">
                                                 resolved
                                                 <span class="badge" id="violations-overview-resolved"><?=$resolved?></span>
                                             </li>
-                                            <li class="list-group-item <?=$added>0?"list-group-item-danger":""?>">
+                                            <li class="list-group-item <?=$added > 0?"list-group-item-danger":""?>">
                                                 added 
                                                 <span class="badge" id="violations-overview-added"><?=$added?></span>
                                             </li>
@@ -299,31 +293,28 @@ function template_diff_per_rule_bootstrap(array $report) {
             role="tablist"
             aria-multiselectable="true">
 <?php   $i = 0;
-        foreach ($report["rules"] as $rule) {
-            $i++;
-            $total = $rule["violations"]["total"];
-            $resolved = $rule["violations"]["resolved"];
-            $added = $rule["violations"]["added"];
-            $diff = $resolved - $added;
-            if ($diff == 0) {
-                $class = "default";
-            }
-            else if ($diff < 0) {
-                $class = "danger";
-            }
-            else {
-                $class = "success";
-            }
-?>
+    foreach ($report["rules"] as $rule) {
+        $i++;
+        $total = $rule["violations"]["total"];
+        $resolved = $rule["violations"]["resolved"];
+        $added = $rule["violations"]["added"];
+        $diff = $resolved - $added;
+        if ($diff == 0) {
+            $class = "default";
+        } elseif ($diff < 0) {
+            $class = "danger";
+        } else {
+            $class = "success";
+        } ?>
             <div class="panel panel-<?=$class?> rule">
                 <div class="panel-heading" role="tab" id="rule_<?=$i?>_heading">
                     <h4 class="panel-title">
                         <a
-                            role="<?=$i==1?"button":"collapsed"?>"
+                            role="<?=$i == 1?"button":"collapsed"?>"
                             data-toggle="collapse"
                             data-parent="#rules-accordion"
                             href="#rule_<?=$i?>"
-                            aria-expanded="<?=$i==1?"true":"false"?>"
+                            aria-expanded="<?=$i == 1?"true":"false"?>"
                             aria-controls"#rule_<?=$i?>">
                             <?=htmlentities(wordwrap($rule["rule"], 80, " ", true))?>
                         </a>
@@ -331,7 +322,7 @@ function template_diff_per_rule_bootstrap(array $report) {
                 </div>
                 <div
                     id="rule_<?=$i?>"
-                    class="panel-collapse collapse <?=$i==1?"in":""?>"
+                    class="panel-collapse collapse <?=$i == 1?"in":""?>"
                     role="tabpanel"
                     aria-labelledby="rule_<?=$i?>_heading">
                     <div class="panel-body">
@@ -343,17 +334,13 @@ function template_diff_per_rule_bootstrap(array $report) {
                                     </div>
                                     <ul class="list-group rule-violations">
 <?php       foreach ($rule["violations"]["list"] as $v) {
-                if(isset($v["last_seen_in"])) {
-                    $cl = "list-group-item-success";
-                }
-                else if ($v["introduced_in"] == $report["run_id"]) {
-                    $cl = "list-group-item-danger";
-                }
-
-                else {
-                    $cl = "";
-                }
-?>
+            if (isset($v["last_seen_in"])) {
+                $cl = "list-group-item-success";
+            } elseif ($v["introduced_in"] == $report["run_id"]) {
+                $cl = "list-group-item-danger";
+            } else {
+                $cl = "";
+            } ?>
                                         <li class="list-group-item <?=$cl?>">
                                             <?=$v["file"]?> (l. <?=$v["line_no"]?>)
 <?php           if ($v["url"] !== null) { ?>
@@ -365,7 +352,8 @@ function template_diff_per_rule_bootstrap(array $report) {
                                             </a>
 <?php           } ?>
                                         </li>
-<?php       } ?>
+<?php
+        } ?>
                                     </ul>
                                 </div>
                                 <div class="col-md-3">
@@ -379,11 +367,11 @@ function template_diff_per_rule_bootstrap(array $report) {
                                                     <strong>total</strong>
                                                     <span class="badge violation-total"><?=$total?></span>
                                                 </li>
-                                                <li class="list-group-item <?=$resolved>0?"list-group-item-success":""?>">
+                                                <li class="list-group-item <?=$resolved > 0?"list-group-item-success":""?>">
                                                     resolved
                                                     <span class="badge violation-resolved"><?=$resolved?></span>
                                                 </li>
-                                                <li class="list-group-item <?=$added>0?"list-group-item-danger":""?>">
+                                                <li class="list-group-item <?=$added > 0?"list-group-item-danger":""?>">
                                                     added 
                                                     <span class="badge violation-added"><?=$added?></span>
                                                 </li>
@@ -396,7 +384,8 @@ function template_diff_per_rule_bootstrap(array $report) {
                     </div>
                 </div>
             </div>
-<?php } ?>
+<?php
+    } ?>
         </div>
     </div>
 </body>

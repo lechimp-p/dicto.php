@@ -15,21 +15,24 @@ use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\Relation;
 use Lechimp\Dicto\Graph\Query;
 
-class GraphQueryTest extends \PHPUnit\Framework\TestCase {
-    public function setUp() : void {
-        $this->g = new Graph(); 
+class GraphQueryTest extends \PHPUnit\Framework\TestCase
+{
+    public function setUp() : void
+    {
+        $this->g = new Graph();
         $this->f = new PredicateFactory();
     }
 
-    public function test_filter() {
+    public function test_filter()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
         $res = $this->g->query()
-            ->filter($this->f->_custom(function(Node $n) {
+            ->filter($this->f->_custom(function (Node $n) {
                 return $n->type() == "a_type";
             }))
-            ->extract(function(Node $n, array &$result) {
+            ->extract(function (Node $n, array &$result) {
                 $result[] = $n;
             })
             ->run([]);
@@ -37,12 +40,13 @@ class GraphQueryTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals([[$n1]], $res);
     }
 
-    public function test_match_all() {
+    public function test_match_all()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
         $res = $this->g->query()
-            ->extract(function(Node $n, array &$result) {
+            ->extract(function (Node $n, array &$result) {
                 $result[] = $n;
             })
             ->run([]);
@@ -50,15 +54,16 @@ class GraphQueryTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals([[$n1],[$n2]], $res);
     }
 
-    public function test_match_none() {
+    public function test_match_none()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
         $res = $this->g->query()
-            ->expand(function(Node $n) {
+            ->expand(function (Node $n) {
                 return [];
             })
-            ->extract(function(Node $n, array &$result) {
+            ->extract(function (Node $n, array &$result) {
                 $result[] = $n;
             })
             ->run([]);
@@ -66,14 +71,21 @@ class GraphQueryTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals([], $res);
     }
 
-    public function test_path1() {
+    public function test_path1()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
         $rel = $this->g->add_relation($n1, "rel_type", [], $n2);
 
-        $extract_self = function(Entity $e, array &$res) { $res[] = $e; };
-        $all_relations = function(Node $n) { return $n->relations(); };
-        $target = function(Relation $r) { return [$r->target()]; };
+        $extract_self = function (Entity $e, array &$res) {
+            $res[] = $e;
+        };
+        $all_relations = function (Node $n) {
+            return $n->relations();
+        };
+        $target = function (Relation $r) {
+            return [$r->target()];
+        };
 
         $res = $this->g->query()
             ->extract($extract_self)
@@ -86,26 +98,32 @@ class GraphQueryTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals([[$n1,$rel,$n2]], $res);
     }
 
-    public function test_path2() {
+    public function test_path2()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
         $n3 = $this->g->create_node("c_type", []);
         $r1 = $this->g->add_relation($n1, "rel_A", [], $n2);
         $r2 = $this->g->add_relation($n2, "rel_B", [], $n3);
 
-        $extract_self = function(Entity $e, array &$res) { $res[] = $e; };
-        $all_relations = function(Node $n) { return $n->relations(); };
-        $target = function(Relation $r) { return [$r->target()]; };
+        $extract_self = function (Entity $e, array &$res) {
+            $res[] = $e;
+        };
+        $all_relations = function (Node $n) {
+            return $n->relations();
+        };
+        $target = function (Relation $r) {
+            return [$r->target()];
+        };
 
         $res = $this->g->query()
             ->extract($extract_self)
             ->expand($all_relations)
             ->extract($extract_self)
-            ->expand(function($r) {
+            ->expand(function ($r) {
                 if ($r->type() == "rel_B") {
                     return [$r->target()];
-                }
-                else {
+                } else {
                     return [];
                 }
             })
@@ -115,16 +133,23 @@ class GraphQueryTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals([[$n2,$r2,$n3]], $res);
     }
 
-    public function test_paths() {
+    public function test_paths()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
         $n3 = $this->g->create_node("c_type", []);
         $r1 = $this->g->add_relation($n1, "rel_A", [], $n2);
         $r2 = $this->g->add_relation($n2, "rel_A", [], $n3);
 
-        $extract_self = function(Entity $e, array &$res) { $res[] = $e; };
-        $all_relations = function(Node $n) { return $n->relations(); };
-        $target = function(Relation $r) { return [$r->target()]; };
+        $extract_self = function (Entity $e, array &$res) {
+            $res[] = $e;
+        };
+        $all_relations = function (Node $n) {
+            return $n->relations();
+        };
+        $target = function (Relation $r) {
+            return [$r->target()];
+        };
 
         $res = $this->g->query()
             ->extract($extract_self)
@@ -137,22 +162,32 @@ class GraphQueryTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals([[$n1,$r1,$n2],[$n2,$r2,$n3]], $res);
     }
 
-    public function test_empty_result() {
+    public function test_empty_result()
+    {
         $res = $this->g->query()
-            ->expand(function($n) { return $n->relations(); })
-            ->expand(function($n) { return [$n->target()]; })
-            ->extract(function($_,&$r) { $r["foo"] = "bar"; })
+            ->expand(function ($n) {
+                return $n->relations();
+            })
+            ->expand(function ($n) {
+                return [$n->target()];
+            })
+            ->extract(function ($_, &$r) {
+                $r["foo"] = "bar";
+            })
             ->run([]);
 
         $this->assertEquals([], $res);
     }
 
-    public function test_filter_by_types_empty() {
+    public function test_filter_by_types_empty()
+    {
         $this->g->create_node("a_type", []);
         $this->g->create_node("b_type", []);
         $this->g->create_node("c_type", []);
 
-        $extract_self = function(Entity $e, array &$res) { $res[] = $e; };
+        $extract_self = function (Entity $e, array &$res) {
+            $res[] = $e;
+        };
 
         $res = $this->g->query()
             ->filter_by_types([])

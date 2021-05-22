@@ -1,3 +1,4 @@
 /vendor/
 *.swp
 *.swo
+.php-cs-fixer.cache

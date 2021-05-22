@@ -15,7 +15,8 @@ use Lechimp\Dicto\Variables\Variable;
 /**
  * Fetches arguments for parsing the rules.
  */
-interface ArgumentParser {
+interface ArgumentParser
+{
     /**
      * Fetch a string from the token stream.
      *

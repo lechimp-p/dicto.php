@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -17,7 +17,8 @@ use Lechimp\Dicto\Graph\PredicateFactory;
 /**
  * A variable with a certain property.
  */
-class WithProperty extends Variable {
+class WithProperty extends Variable
+{
     /**
      * @var Variable
      */
@@ -33,7 +34,8 @@ class WithProperty extends Variable {
      */
     private $arguments;
 
-    public function __construct(Variable $other, Property $property, array $arguments) {
+    public function __construct(Variable $other, Property $property, array $arguments)
+    {
         parent::__construct();
         assert('$property->arguments_are_valid($arguments)');
         $this->other = $other;
@@ -44,37 +46,36 @@ class WithProperty extends Variable {
     /**
      * @return  Variable
      */
-    public function variable() {
+    public function variable()
+    {
         return $this->other;
     }
 
     /**
      * @inheritdocs
      */
-    public function meaning() {
-        return $this->variable()->meaning()." ".$this->property->parse_as().": ".$this->argument_list();
+    public function meaning()
+    {
+        return $this->variable()->meaning() . " " . $this->property->parse_as() . ": " . $this->argument_list();
     }
 
-    protected function argument_list() {
+    protected function argument_list()
+    {
         $args = array();
         foreach ($this->arguments as $argument) {
             if (is_string($argument)) {
                 $args[] = "\"$argument\"";
-            }
-            else if ($argument instanceof Regexp) {
-                $args[] = "\"".$argument->raw()."\"";
-            }
-            else if ($argument instanceof Variable) {
+            } elseif ($argument instanceof Regexp) {
+                $args[] = "\"" . $argument->raw() . "\"";
+            } elseif ($argument instanceof Variable) {
                 $name = $argument->name();
                 if ($name !== null) {
                     $args[] = $name;
+                } else {
+                    $args[] = "(" . $argument->meaning() . ")";
                 }
-                else {
-                    $args[] = "(".$argument->meaning().")";
-                }
-            }
-            else {
-                throw new \LogicException("Unknown arg type: ".gettype($argument));
+            } else {
+                throw new \LogicException("Unknown arg type: " . gettype($argument));
             }
         }
         return implode(", ", $args);
@@ -83,7 +84,8 @@ class WithProperty extends Variable {
     /**
      * @inheritdocs
      */
-    public function compile(PredicateFactory $f) {
+    public function compile(PredicateFactory $f)
+    {
         $l = $this->other->compile($f);
         $p = $this->property->compile($f, $this->arguments);
 

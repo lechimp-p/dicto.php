@@ -13,12 +13,15 @@ namespace Lechimp\Dicto\Variables;
 use Lechimp\Dicto\Variables\Any;
 use Lechimp\Dicto\Variables\LanguageConstructs;
 
-class ExitOrDie extends Any {
-    public function __construct() {
+class ExitOrDie extends Any
+{
+    public function __construct()
+    {
         parent::__construct(
             [ new LanguageConstruct("die", "die")
             , new LanguageConstruct("exit", "exit")
-            ], "ExitOrDie");
+            ],
+            "ExitOrDie"
+        );
     }
 }
-

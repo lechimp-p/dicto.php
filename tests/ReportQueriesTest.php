@@ -8,13 +8,15 @@
  * a copy of the license along with the code.
  */
 
-require_once(__DIR__."/ReportTestBase.php");
+require_once(__DIR__ . "/ReportTestBase.php");
 
 use Lechimp\Dicto\Rules;
 use Lechimp\Dicto\Analysis\Violation;
 
-class ReportQueriesTest extends ReportTestBase {
-    public function test_last_run() {
+class ReportQueriesTest extends ReportTestBase
+{
+    public function test_last_run()
+    {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
         $cur_run = $this->queries->last_run();
@@ -26,7 +28,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertGreaterThan($cur_run, $next_run);
     }
 
-    public function test_run_before() {
+    public function test_run_before()
+    {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
         $first_run = $this->queries->last_run();
@@ -40,7 +43,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals($first_run, $prev_run);
     }
 
-    public function test_run_with_different_commit_before() {
+    public function test_run_with_different_commit_before()
+    {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
         $first_run = $this->queries->last_run();
@@ -55,7 +59,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals($first_run, $prev_run);
     }
 
-    public function test_last_run_for() {
+    public function test_last_run_for()
+    {
         $this->db->begin_run("#COMMIT_HASH#");
         $this->db->end_run();
         $run1 = $this->queries->last_run();
@@ -80,7 +85,8 @@ class ReportQueriesTest extends ReportTestBase {
     }
 
 
-    public function test_run_info() {
+    public function test_run_info()
+    {
         $hash = "#COMMIT_HASH#";
         $this->db->begin_run($hash);
         $this->db->end_run();
@@ -91,7 +97,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals($hash, $info["commit_hash"]);
     }
 
-    public function test_analyzed_rules() {
+    public function test_analyzed_rules()
+    {
         $this->init_scenario();
 
         $run = $this->queries->last_run_for("#COMMIT_1#");
@@ -107,7 +114,8 @@ class ReportQueriesTest extends ReportTestBase {
     /**
      * @depends test_analyzed_rules
      */
-    public function test_rule_info() {
+    public function test_rule_info()
+    {
         $this->init_scenario();
 
         $run = $this->queries->last_run_for("#COMMIT_3#");
@@ -121,13 +129,14 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertArrayHasKey("explanation", $rule1);
         $this->assertArrayHasKey("explanation", $rule2);
 
-        $this->assertTrue( $rule1["rule"] == $this->rule1->pprint()
+        $this->assertTrue($rule1["rule"] == $this->rule1->pprint()
                         || $rule2["rule"] == $this->rule1->pprint());
-        $this->assertTrue( $rule1["rule"] == $this->rule2->pprint()
+        $this->assertTrue($rule1["rule"] == $this->rule2->pprint()
                         || $rule2["rule"] == $this->rule2->pprint());
     }
 
-    public function test_count_violations_in_run() {
+    public function test_count_violations_in_run()
+    {
         $this->init_scenario();
 
         $run = $this->queries->last_run_for("#COMMIT_1#");
@@ -143,7 +152,8 @@ class ReportQueriesTest extends ReportTestBase {
     /**
      * @depends test_rule_info
      */
-    public function test_count_violations_in_run_and_rule($_) {
+    public function test_count_violations_in_run_and_rule($_)
+    {
         $this->init_scenario();
 
         list($rule1, $rule2) = $this->query_rule_ids();
@@ -161,7 +171,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals(2, $this->queries->count_violations_in($run, $rule2));
     }
 
-    public function test_count_added_violations() {
+    public function test_count_added_violations()
+    {
         $this->init_scenario();
 
         $run1 = $this->queries->last_run_for("#COMMIT_1#");
@@ -172,7 +183,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals(2, $this->queries->count_added_violations($run2, $run3));
     }
 
-    public function test_count_added_violations_in_rule() {
+    public function test_count_added_violations_in_rule()
+    {
         $this->init_scenario();
 
         list($rule1, $rule2) = $this->query_rule_ids();
@@ -187,7 +199,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals(2, $this->queries->count_added_violations($run2, $run3, $rule2));
     }
 
-    public function test_count_resolved_violations() {
+    public function test_count_resolved_violations()
+    {
         $this->init_scenario();
 
         $run1 = $this->queries->last_run_for("#COMMIT_1#");
@@ -198,7 +211,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals(3, $this->queries->count_resolved_violations($run2, $run3));
     }
 
-    public function test_count_resolved_violations_in_rule() {
+    public function test_count_resolved_violations_in_rule()
+    {
         $this->init_scenario();
 
         list($rule1, $rule2) = $this->query_rule_ids();
@@ -213,7 +227,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals(1, $this->queries->count_resolved_violations($run2, $run3, $rule2));
     }
 
-    public function test_violations_of() {
+    public function test_violations_of()
+    {
         $this->init_scenario();
 
         list($rule1, $rule2) = $this->query_rule_ids();
@@ -224,12 +239,12 @@ class ReportQueriesTest extends ReportTestBase {
 
         $run1_rule1 = $this->queries->violations_of($rule1, $run1);
         $this->assertCount(1, $run1_rule1);
-        $this->assertEquals
-                (   [ "file" => "file.php"
+        $this->assertEquals(
+                    [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run1
-                    ]
-                , $run1_rule1[0]
+                    ],
+                    $run1_rule1[0]
                 );
 
         $run1_rule2 = $this->queries->violations_of($rule2, $run1);
@@ -237,29 +252,29 @@ class ReportQueriesTest extends ReportTestBase {
 
         $run2_rule1 = $this->queries->violations_of($rule1, $run2);
         $this->assertCount(2, $run2_rule1);
-        $this->assertEquals
-                (   [ "file" => "file.php"
+        $this->assertEquals(
+                    [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run1
-                    ]
-                , $run2_rule1[0]
+                    ],
+                    $run2_rule1[0]
                 );
-        $this->assertEquals
-                (   [ "file" => "file2.php"
+        $this->assertEquals(
+                    [ "file" => "file2.php"
                     , "line_no" => 23
                     , "introduced_in" => $run2
-                    ]
-                , $run2_rule1[1]
+                    ],
+                    $run2_rule1[1]
                 );
 
         $run2_rule2 = $this->queries->violations_of($rule2, $run2);
         $this->assertCount(1, $run2_rule2);
-        $this->assertEquals
-                (   [ "file" => "file3.php"
+        $this->assertEquals(
+                    [ "file" => "file3.php"
                     , "line_no" => 13
                     , "introduced_in" => $run2
-                    ]
-                , $run2_rule2[0]
+                    ],
+                    $run2_rule2[0]
                 );
 
         $run3_rule1 = $this->queries->violations_of($rule1, $run3);
@@ -267,23 +282,24 @@ class ReportQueriesTest extends ReportTestBase {
 
         $run3_rule2 = $this->queries->violations_of($rule2, $run3);
         $this->assertCount(2, $run2_rule1);
-        $this->assertEquals
-                (   [ "file" => "file.php"
+        $this->assertEquals(
+                    [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run3
-                    ]
-                , $run3_rule2[0]
+                    ],
+                    $run3_rule2[0]
                 );
-        $this->assertEquals
-                (   [ "file" => "file2.php"
+        $this->assertEquals(
+                    [ "file" => "file2.php"
                     , "line_no" => 23
                     , "introduced_in" => $run3
-                    ]
-                , $run3_rule2[1]
+                    ],
+                    $run3_rule2[1]
                 );
     }
 
-    public function test_resolved_violations() {
+    public function test_resolved_violations()
+    {
         $this->init_scenario();
 
         list($rule1, $rule2) = $this->query_rule_ids();
@@ -300,50 +316,51 @@ class ReportQueriesTest extends ReportTestBase {
 
         $run2_3_rule1 = $this->queries->resolved_violations($rule1, $run2, $run3);
         $this->assertCount(2, $run2_3_rule1);
-        $this->assertEquals
-                (   [ "file" => "file.php"
+        $this->assertEquals(
+                    [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run1
                     , "last_seen_in" => $run2
-                    ]
-                , $run2_3_rule1[0]
+                    ],
+                    $run2_3_rule1[0]
                 );
-        $this->assertEquals
-                (   [ "file" => "file2.php"
+        $this->assertEquals(
+                    [ "file" => "file2.php"
                     , "line_no" => 23
                     , "introduced_in" => $run2
                     , "last_seen_in" => $run2
-                    ]
-                , $run2_3_rule1[1]
+                    ],
+                    $run2_3_rule1[1]
                 );
 
         $run2_3_rule2 = $this->queries->resolved_violations($rule2, $run2, $run3);
         $this->assertCount(1, $run2_3_rule2);
-        $this->assertEquals
-                (   [ "file" => "file3.php"
+        $this->assertEquals(
+                    [ "file" => "file3.php"
                     , "line_no" => 13
                     , "introduced_in" => $run2
                     , "last_seen_in" => $run2
-                    ]
-                , $run2_3_rule2[0]
+                    ],
+                    $run2_3_rule2[0]
                 );
 
         $run1_3_rule1 = $this->queries->resolved_violations($rule1, $run1, $run3);
         $this->assertCount(1, $run1_3_rule1);
-        $this->assertEquals
-                (   [ "file" => "file.php"
+        $this->assertEquals(
+                    [ "file" => "file.php"
                     , "line_no" => 42
                     , "introduced_in" => $run1
                     , "last_seen_in" => $run2
-                    ]
-                , $run2_3_rule1[0]
+                    ],
+                    $run2_3_rule1[0]
                 );
 
         $run1_3_rule2 = $this->queries->resolved_violations($rule2, $run1, $run3);
         $this->assertCount(0, $run1_3_rule2);
     }
 
-    public function test_regression_1_1() {
+    public function test_regression_1_1()
+    {
         // Count had a bug where a similar looking line in the same file
         // was only counted once.
         $rule1 = $this->all_classes_cannot_depend_on_globals();
@@ -355,9 +372,11 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->begin_ruleset($ruleset);
         $this->db->begin_rule($rule1);
         $this->db->report_violation(
-            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+            new Violation($rule1, "file.php", 42, "file.php_line_42")
+        );
         $this->db->report_violation(
-            new Violation($rule1, "file.php", 23, "file.php_line_42"));
+            new Violation($rule1, "file.php", 23, "file.php_line_42")
+        );
         $this->db->end_rule();
         $this->db->end_ruleset();
         $this->db->end_run();
@@ -366,7 +385,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals(2, $this->queries->count_violations_in($run));
     }
 
-    public function test_regression_1_2() {
+    public function test_regression_1_2()
+    {
         // see test_regression_1_1
         $rule1 = $this->all_classes_cannot_depend_on_globals();
         $vars = $rule1->variables();
@@ -377,7 +397,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->begin_ruleset($ruleset);
         $this->db->begin_rule($rule1);
         $this->db->report_violation(
-            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+            new Violation($rule1, "file.php", 42, "file.php_line_42")
+        );
         $this->db->end_rule();
         $this->db->end_ruleset();
         $this->db->end_run();
@@ -389,9 +410,11 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->begin_ruleset($ruleset);
         $this->db->begin_rule($rule1);
         $this->db->report_violation(
-            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+            new Violation($rule1, "file.php", 42, "file.php_line_42")
+        );
         $this->db->report_violation(
-            new Violation($rule1, "file.php", 23, "file.php_line_42"));
+            new Violation($rule1, "file.php", 23, "file.php_line_42")
+        );
         $this->db->end_rule();
         $this->db->end_ruleset();
         $this->db->end_run();
@@ -401,7 +424,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->assertEquals(1, $this->queries->count_added_violations($run1, $run2));
     }
 
-    public function test_regression_1_3() {
+    public function test_regression_1_3()
+    {
         // see test_regression_1_1
         $rule1 = $this->all_classes_cannot_depend_on_globals();
         $vars = $rule1->variables();
@@ -412,9 +436,11 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->begin_ruleset($ruleset);
         $this->db->begin_rule($rule1);
         $this->db->report_violation(
-            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+            new Violation($rule1, "file.php", 42, "file.php_line_42")
+        );
         $this->db->report_violation(
-            new Violation($rule1, "file.php", 23, "file.php_line_42"));
+            new Violation($rule1, "file.php", 23, "file.php_line_42")
+        );
         $this->db->end_rule();
         $this->db->end_ruleset();
         $this->db->end_run();
@@ -426,7 +452,8 @@ class ReportQueriesTest extends ReportTestBase {
         $this->db->begin_ruleset($ruleset);
         $this->db->begin_rule($rule1);
         $this->db->report_violation(
-            new Violation($rule1, "file.php", 42, "file.php_line_42"));
+            new Violation($rule1, "file.php", 42, "file.php_line_42")
+        );
         $this->db->end_rule();
         $this->db->end_ruleset();
         $this->db->end_run();

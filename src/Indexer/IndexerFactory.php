@@ -16,7 +16,8 @@ use Psr\Log\LoggerInterface as Log;
 /**
  * Creates Indexers.
  */
-class IndexerFactory {
+class IndexerFactory
+{
     /**
      * @var Log
      */
@@ -40,11 +41,12 @@ class IndexerFactory {
     /**
      * @param   Schema[]    $schemas
      */
-    public function __construct(Log $log, \PhpParser\Parser $parser, array $schemas) {
+    public function __construct(Log $log, \PhpParser\Parser $parser, array $schemas)
+    {
         $this->log = $log;
         $this->parser = $parser;
         $this->ast_visitors = [];
-        $this->schemas = array_map(function(Schema $s) {
+        $this->schemas = array_map(function (Schema $s) {
             if ($s instanceof ASTVisitor) {
                 $this->ast_visitors[] = $s;
             }
@@ -55,12 +57,13 @@ class IndexerFactory {
     /**
      * @return  Indexer
      */
-    public function build(Insert $insert) {
-        $indexer = new Indexer
-            ( $this->log
-            , $this->parser
-            , $insert
-            , $this->ast_visitors
+    public function build(Insert $insert)
+    {
+        $indexer = new Indexer(
+                $this->log,
+                $this->parser,
+                $insert,
+                $this->ast_visitors
             );
         return $indexer;
     }

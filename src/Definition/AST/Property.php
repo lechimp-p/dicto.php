@@ -13,9 +13,10 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * A property of some variable.
  */
-class Property extends Definition {
+class Property extends Definition
+{
     /**
-     * @var Definition 
+     * @var Definition
      */
     protected $left;
 
@@ -29,33 +30,36 @@ class Property extends Definition {
      */
     protected $parameters;
 
-    public function __construct(Definition $left, Atom $id, array $parameters) {
+    public function __construct(Definition $left, Atom $id, array $parameters)
+    {
         $this->left = $left;
         $this->id = $id;
-        $this->parameters = array_map(function(Parameter $p) {
+        $this->parameters = array_map(function (Parameter $p) {
             return $p;
         }, $parameters);
     }
 
     /**
-     * @return  Definition 
+     * @return  Definition
      */
-    public function left() {
+    public function left()
+    {
         return $this->left;
     }
 
     /**
-     * @return  Atom 
+     * @return  Atom
      */
-    public function id() {
+    public function id()
+    {
         return $this->id;
     }
 
     /**
-     * @return  Parameter[] 
+     * @return  Parameter[]
      */
-    public function parameters() {
+    public function parameters()
+    {
         return $this->parameters;
     }
 }
-

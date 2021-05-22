@@ -13,5 +13,6 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * Tags a parameter for a rule or a property.
  */
-abstract class Parameter extends Node { 
+abstract class Parameter extends Node
+{
 }

@@ -13,7 +13,8 @@ namespace Lechimp\Dicto\Definition;
 /**
  * Exceptions created during parsing.
  */
-class ParserException extends \Exception {
+class ParserException extends \Exception
+{
     /**
      * @var int|null
      */
@@ -27,14 +28,16 @@ class ParserException extends \Exception {
     /**
      * @return  int|null
      */
-    public function line() {
+    public function line()
+    {
         return $this->s_line;
     }
 
     /**
      * @return  int|null
      */
-    public function column() {
+    public function column()
+    {
         return $this->s_column;
     }
 
@@ -43,7 +46,8 @@ class ParserException extends \Exception {
      * @param   int     $column
      * @return  null
      */
-    public function setPosition($line, $column) {
+    public function setPosition($line, $column)
+    {
         assert('is_null($this->s_line)');
         assert('is_null($this->s_column)');
         assert('is_int($line)');
@@ -53,4 +57,3 @@ class ParserException extends \Exception {
         $this->message = "At line $line, column $column: $this->message";
     }
 }
-

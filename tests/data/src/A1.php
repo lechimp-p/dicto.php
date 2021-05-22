@@ -8,8 +8,10 @@
  * a copy of the license along with the code.
  */
 
-class A1 {
-    public function invoke_a_function() {
+class A1
+{
+    public function invoke_a_function()
+    {
         return a_bogus_function();
-    }    
+    }
 }

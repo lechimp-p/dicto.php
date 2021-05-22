@@ -11,19 +11,22 @@
 use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Variables as V;
 
-class VariablesTest extends \PHPUnit\Framework\TestCase {
+class VariablesTest extends \PHPUnit\Framework\TestCase
+{
     /**
      * @dataProvider    var_test_cases_provider
      */
-    public function test_name($var, $name, $_) {
+    public function test_name($var, $name, $_)
+    {
         $this->assertEquals($name, $var->name());
     }
 
     /**
      * @dataProvider    var_test_cases_provider
      */
-    public function test_withName($var, $_, $meaning) {
-        $renamed = $var->withName("RENAMED"); 
+    public function test_withName($var, $_, $meaning)
+    {
+        $renamed = $var->withName("RENAMED");
         $this->assertEquals("RENAMED", $renamed->name());
         $this->assertEquals(get_class($var), get_class($renamed));
         $this->assertEquals($meaning, $renamed->meaning());
@@ -32,44 +35,42 @@ class VariablesTest extends \PHPUnit\Framework\TestCase {
     /**
      * @dataProvider    var_test_cases_provider
      */
-    public function test_meaning($var, $_, $meaning) {
+    public function test_meaning($var, $_, $meaning)
+    {
         $this->assertEquals($meaning, $var->meaning());
     }
 
-    public function var_test_cases_provider() {
-        return array
-            ( array
-                ( new V\Classes()
+    public function var_test_cases_provider()
+    {
+        return array( array( new V\Classes()
                 , "Classes"
                 , "classes"
                 )
-            , array
-                ( new V\WithProperty
-                    ( new V\Classes()
-                    , new V\Name()
-                    , array(new Regexp(".*GUI"))
+            , array( new V\WithProperty(
+                        new V\Classes(),
+                        new V\Name(),
+                        array(new Regexp(".*GUI"))
                     )
                 , null
                 , "classes with name: \".*GUI\""
                 )
-            , array
-                ( new V\WithProperty
-                    ( new V\Classes()
-                    , new V\In()
-                    , array(new V\Files)
+            , array( new V\WithProperty(
+                        new V\Classes(),
+                        new V\In(),
+                        array(new V\Files)
                     )
                 , null
                   // TODO: this is really inconsitent...
-                , "classes in: Files" 
+                , "classes in: Files"
                 )
             // TODO: add more TestCases here, that cover all
             //       types of variables.
             );
     }
 
-    public function var_entities_provider() {
-        return array
-            ( array(new V\Classes())
+    public function var_entities_provider()
+    {
+        return array( array(new V\Classes())
             , array(new V\Interfaces())
             , array(new V\Functions())
             , array(new V\Globals())

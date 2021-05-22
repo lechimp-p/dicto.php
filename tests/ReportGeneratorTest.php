@@ -12,35 +12,48 @@ use Lechimp\Dicto\Report\Generator;
 use Lechimp\Dicto\Report\Config;
 use Lechimp\Dicto\Report\DiffPerRuleReport;
 
-require_once(__DIR__."/ReportMock.php");
-require_once(__DIR__."/ReportTestBase.php");
+require_once(__DIR__ . "/ReportMock.php");
+require_once(__DIR__ . "/ReportTestBase.php");
 
-class _Generator extends Generator {
-    public function _maybe_load_source($path) {
+class _Generator extends Generator
+{
+    public function _maybe_load_source($path)
+    {
         return $this->maybe_load_source($path);
     }
-    public function _build_report($config) {
+    public function _build_report($config)
+    {
         return $this->build_report($config);
     }
-    public function _open_handle($handle) {
+    public function _open_handle($handle)
+    {
         return $this->open_handle($handle);
     }
-    public function _fully_qualified_class_name($handle) {
+    public function _fully_qualified_class_name($handle)
+    {
         return $this->fully_qualified_class_name($handle);
     }
 }
 
-class ReportGeneratorTest extends ReportTestBase {
-    public function setUp() : void {
+class ReportGeneratorTest extends ReportTestBase
+{
+    public function setUp() : void
+    {
         parent::setUp();
         $this->gen = new _Generator($this->queries);
     }
 
-    public function test_generate() {
+    public function test_generate()
+    {
         $data = ["foo" => "bar"];
         $temp_file = tempnam(sys_get_temp_dir(), 'dicto.php');
-        $cfg = new Config("/foo", "ReportMock", $temp_file,
-            ["data" => $data], "foo");
+        $cfg = new Config(
+            "/foo",
+            "ReportMock",
+            $temp_file,
+            ["data" => $data],
+            "foo"
+        );
         $this->gen->generate($cfg);
 
         $output = file_get_contents($temp_file);
@@ -48,23 +61,24 @@ class ReportGeneratorTest extends ReportTestBase {
         $this->assertEquals(json_encode($data), $output);
     }
 
-    public function test_maybe_load_source() {
+    public function test_maybe_load_source()
+    {
         try {
-            $this->gen->_maybe_load_source(__DIR__."/thistotallynotexists.php");
+            $this->gen->_maybe_load_source(__DIR__ . "/thistotallynotexists.php");
             $this->assertFalse("This should not happen.");
-        }
-        catch (\RuntimeException $e) {
-            $this->assertNotInstanceOf
-                ( \PHPUnit\Framework\ExpectationFailedException::class
-                , $e
+        } catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(
+                    \PHPUnit\Framework\ExpectationFailedException::class,
+                    $e
                 );
         }
 
-        $this->gen->_maybe_load_source(__DIR__."/data/SomeIncludeFileForReportGeneratorTest.php");
+        $this->gen->_maybe_load_source(__DIR__ . "/data/SomeIncludeFileForReportGeneratorTest.php");
         $this->assertTrue(class_exists(ThisIsSomeClassThatWasIncludedInReportGeneratorTest::class));
     }
 
-    public function test_build_report() {
+    public function test_build_report()
+    {
         $report = $this->gen->_build_report(new Config("", "DiffPerRule", "", []));
         $this->assertInstanceOf(DiffPerRuleReport::class, $report);
 
@@ -72,15 +86,15 @@ class ReportGeneratorTest extends ReportTestBase {
         $this->assertInstanceOf(ReportMock::class, $report);
     }
 
-    public function test_open_handle() {
+    public function test_open_handle()
+    {
         try {
             $this->gen->_open_handle("/");
             $this->assertFalse("This should not happen.");
-        }
-        catch (\RuntimeException $e) {
-            $this->assertNotInstanceOf
-                ( \PHPUnit\Framework\ExpectationFailedException::class
-                , $e
+        } catch (\RuntimeException $e) {
+            $this->assertNotInstanceOf(
+                    \PHPUnit\Framework\ExpectationFailedException::class,
+                    $e
                 );
         }
 
@@ -91,15 +105,16 @@ class ReportGeneratorTest extends ReportTestBase {
         $this->assertTrue(is_resource($handle));
     }
 
-    public function test_fully_qualified_class_name() {
+    public function test_fully_qualified_class_name()
+    {
         $fq = $this->gen->_fully_qualified_class_name("\\Foo\\Bar");
         $this->assertEquals("\\Foo\\Bar", $fq);
 
         $fq = $this->gen->_fully_qualified_class_name("DiffPerRule");
-        $this->assertEquals("\\".DiffPerRuleReport::class, $fq);
+        $this->assertEquals("\\" . DiffPerRuleReport::class, $fq);
 
         $fq = $this->gen->_fully_qualified_class_name("DiffPerRuleReport");
-        $this->assertEquals("\\".DiffPerRuleReport::class, $fq);
+        $this->assertEquals("\\" . DiffPerRuleReport::class, $fq);
 
         $fq = $this->gen->_fully_qualified_class_name("Foo");
         $this->assertEquals("\\Foo", $fq);

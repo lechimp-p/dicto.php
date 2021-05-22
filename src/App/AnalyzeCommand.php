@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -17,7 +17,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 /**
  * Command to run an analysis.
  */
-class AnalyzeCommand extends Command {
+class AnalyzeCommand extends Command
+{
     /**
      * @var Engine|null
      */
@@ -26,34 +27,37 @@ class AnalyzeCommand extends Command {
     /**
      * @inheritdoc
      */
-    public function pull_deps_from($dic) {
+    public function pull_deps_from($dic)
+    {
         $this->engine = $dic["engine"];
     }
 
     /**
      * @inheritdoc
      */
-    public function configure() {
+    public function configure()
+    {
         $this
             ->setName("analyze")
-            ->setDescription
-                ("Runs an analysis"
+            ->setDescription(
+                    "Runs an analysis"
                 )
-            ->setHelp
-                ("This command will index a codebase and analyze it, according to "
-                ."the given configs."
+            ->setHelp(
+                    "This command will index a codebase and analyze it, according to "
+                . "the given configs."
                 )
-            ->addArgument
-                ( "configs"
-                , InputArgument::IS_ARRAY
-                , "Give paths to config files, separated by spaces."
+            ->addArgument(
+                    "configs",
+                    InputArgument::IS_ARRAY,
+                    "Give paths to config files, separated by spaces."
                 );
     }
 
     /**
      * @inheritdoc
      */
-    public function execute(InputInterface $input, OutputInterface $output) {
+    public function execute(InputInterface $input, OutputInterface $output)
+    {
         assert('$this->engine !== null');
         $this->engine->run();
     }

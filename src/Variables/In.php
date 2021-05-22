@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -18,27 +18,31 @@ use Lechimp\Dicto\Definition\ArgumentParser;
 /**
  * Name is a property, right?
  */
-class In extends Property {
-    static private $relations = ["contained in"];
+class In extends Property
+{
+    private static $relations = ["contained in"];
 
     /**
      * @inheritdocs
      */
-    public function name() {
+    public function name()
+    {
         return "in";
     }
 
     /**
      * @inheritdocs
      */
-    public function parse_as() {
+    public function parse_as()
+    {
         return $this->name();
     }
 
     /**
      * @inheritdocs
      */
-    public function fetch_arguments(ArgumentParser $parser) {
+    public function fetch_arguments(ArgumentParser $parser)
+    {
         $other = $parser->fetch_variable();
         return array($other);
     }
@@ -46,7 +50,8 @@ class In extends Property {
     /**
      * @inheritdocs
      */
-    public function arguments_are_valid(array &$arguments) {
+    public function arguments_are_valid(array &$arguments)
+    {
         if (count($arguments) != 1) {
             return false;
         }
@@ -56,7 +61,8 @@ class In extends Property {
     /**
      * @inheritdocs
      */
-    public function compile(PredicateFactory $f, array &$arguments) {
+    public function compile(PredicateFactory $f, array &$arguments)
+    {
         $condition = $arguments[0]->compile($f)->compile();
         return $f->_custom(function (Node $n) use ($condition) {
             $nodes = $n->related_nodes(function (Relation $r) {

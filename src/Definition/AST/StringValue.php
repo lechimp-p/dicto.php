@@ -13,13 +13,15 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * Just a string...
  */
-class StringValue extends Parameter {
+class StringValue extends Parameter
+{
     /**
      * @var string
      */
     protected $string;
 
-    public function __construct($string) {
+    public function __construct($string)
+    {
         assert('is_string($string)');
         $this->string = $string;
     }
@@ -27,7 +29,8 @@ class StringValue extends Parameter {
     /**
      * @return  string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->string;
     }
 }

@@ -15,13 +15,15 @@ namespace Lechimp\Dicto\Definition\AST;
  *
  * Atoms look like ^[a-z]+(\s+[a-z]+)*$
  */
-class Atom extends Definition {
+class Atom extends Definition
+{
     /**
      * @var string
      */
     protected $atom;
 
-    public function __construct($atom) {
+    public function __construct($atom)
+    {
         assert('is_string($atom)');
         $this->check($atom);
         $this->atom = $atom;
@@ -30,7 +32,8 @@ class Atom extends Definition {
     /**
      * @return  string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->atom;
     }
 
@@ -39,7 +42,8 @@ class Atom extends Definition {
      * @throws  \InvalidArgumentException if string is not a valid atom.
      * @return  null
      */
-    protected function check($atom) {
+    protected function check($atom)
+    {
         if (preg_match("%^[a-z]+(\s+[a-z]+)*$%", $atom) !== 1) {
             throw new \InvalidArgumentException("Invalid atom '$atom'");
         }

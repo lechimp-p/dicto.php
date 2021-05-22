@@ -15,7 +15,8 @@ use Lechimp\Dicto\Graph\Query;
 /**
  * Interface to an Index of the codebase.
  */
-interface Index {
+interface Index
+{
     /**
      * Get a builder to create queries.
      *

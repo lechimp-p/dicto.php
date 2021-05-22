@@ -12,12 +12,13 @@ namespace Lechimp\Dicto\Variables;
 
 use Lechimp\Dicto\Graph\Node;
 
-class Eval_ extends LanguageConstruct {
-    public function __construct($name = null) {
+class Eval_ extends LanguageConstruct
+{
+    public function __construct($name = null)
+    {
         if ($name === null) {
             $name = "Eval";
         }
         parent::__construct("eval", $name);
     }
 }
-

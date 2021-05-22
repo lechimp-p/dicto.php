@@ -1,16 +1,17 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016, 2015 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
 namespace Lechimp\Dicto\Variables;
 
-abstract class Combinator extends Variable {
+abstract class Combinator extends Variable
+{
     /**
      * @var Variable
      */
@@ -21,7 +22,8 @@ abstract class Combinator extends Variable {
      */
     private $right;
 
-    public function __construct(Variable $left, Variable $right) {
+    public function __construct(Variable $left, Variable $right)
+    {
         parent::__construct();
         $this->left = $left;
         $this->right = $right;
@@ -40,22 +42,25 @@ abstract class Combinator extends Variable {
     /**
      * @inheritdocs
      */
-    public function meaning() {
+    public function meaning()
+    {
         $cb = str_replace("_", " ", $this->id());
-        return $this->left()->meaning()." $cb ".$this->right()->meaning();
+        return $this->left()->meaning() . " $cb " . $this->right()->meaning();
     }
 
     /**
      * @return  Variable
      */
-    public function left() {
+    public function left()
+    {
         return $this->left;
     }
 
     /**
      * @return  Variable
      */
-    public function right() {
+    public function right()
+    {
         return $this->right;
     }
 }

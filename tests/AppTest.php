@@ -19,81 +19,96 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
-require_once(__DIR__."/tempdir.php");
+require_once(__DIR__ . "/tempdir.php");
 
-class _Command extends Command {
+class _Command extends Command
+{
     public $dic = null;
     public $executed = false;
 
-    public function pull_deps_from($dic) {
+    public function pull_deps_from($dic)
+    {
         $this->dic = $dic;
     }
 
-    public function configure() {
+    public function configure()
+    {
         $this->setName("test");
-        $this->addArgument
-            ( "configs"
-            , InputArgument::IS_ARRAY
-            , "Give paths to config files, separated by spaces."
+        $this->addArgument(
+                "configs",
+                InputArgument::IS_ARRAY,
+                "Give paths to config files, separated by spaces."
             );
     }
 
     /**
      * @inheritdoc
      */
-    public function execute(InputInterface $input, OutputInterface $output) {
+    public function execute(InputInterface $input, OutputInterface $output)
+    {
         $this->executed = true;
         return 0;
     }
 }
 
-class _Command2 extends Command {
+class _Command2 extends Command
+{
     public $dic = null;
     public $executed = false;
 
-    public function pull_deps_from($dic) {
+    public function pull_deps_from($dic)
+    {
         $this->dic = $dic;
     }
 
-    public function configure() {
+    public function configure()
+    {
         $this->setName("test2");
     }
 
     /**
      * @inheritdoc
      */
-    public function execute(InputInterface $input, OutputInterface $output) {
+    public function execute(InputInterface $input, OutputInterface $output)
+    {
         $this->executed = true;
         return 0;
     }
 }
 
-class _App extends App {
+class _App extends App
+{
     public $command = null;
 
-    protected function add_commands() {
+    protected function add_commands()
+    {
         $this->command = new _Command();
         $this->add($this->command);
         $this->command2 = new _Command2();
         $this->add($this->command2);
     }
 
-    public function _load_config(array $paths) {
+    public function _load_config(array $paths)
+    {
         return $this->load_config($paths);
     }
 
-    public function _configure_runtime($config) {
+    public function _configure_runtime($config)
+    {
         return $this->configure_runtime($config);
     }
 
-    public function _build_dic($config) {
+    public function _build_dic($config)
+    {
         return $this->build_dic($config);
     }
 }
 
 
-class AppTest extends \PHPUnit\Framework\TestCase {
-    public function setUp() : void {
+class AppTest extends \PHPUnit\Framework\TestCase
+{
+    public function setUp() : void
+    {
         $this->app = new _App();
 
         $config_params =
@@ -108,10 +123,11 @@ class AppTest extends \PHPUnit\Framework\TestCase {
                     ]
                 ]
             ];
-        $this->config = new Config(__DIR__."/data", [$config_params]);
+        $this->config = new Config(__DIR__ . "/data", [$config_params]);
     }
 
-    public function test_configure_runtime_1() {
+    public function test_configure_runtime_1()
+    {
         $active = assert_options(ASSERT_ACTIVE);
         $warning = assert_options(ASSERT_WARNING);
         $bail = assert_options(ASSERT_BAIL);
@@ -135,7 +151,8 @@ class AppTest extends \PHPUnit\Framework\TestCase {
         assert_options(ASSERT_BAIL, $bail);
     }
 
-    public function test_configure_runtime_2() {
+    public function test_configure_runtime_2()
+    {
         $active = assert_options(ASSERT_ACTIVE);
         $warning = assert_options(ASSERT_WARNING);
         $bail = assert_options(ASSERT_BAIL);
@@ -159,26 +176,29 @@ class AppTest extends \PHPUnit\Framework\TestCase {
         assert_options(ASSERT_BAIL, $bail);
     }
 
-    public function test_load_config() {
+    public function test_load_config()
+    {
         $config = $this->app->_load_config(
-            [ __DIR__."/data/base_config.yaml"
-            , __DIR__."/data/additional_config.yaml"
-            ]);
+            [ __DIR__ . "/data/base_config.yaml"
+            , __DIR__ . "/data/additional_config.yaml"
+            ]
+        );
         $this->assertInstanceOf(Config::class, $config);
     }
 
-    public function test_build_dic() {
+    public function test_build_dic()
+    {
         $dic = $this->app->_build_dic($this->config);
         $this->assertInstanceOf(DIC::class, $dic);
     }
 
-    public function test_run() {
+    public function test_run()
+    {
         $configs = ["config1.yml", "config2.yml"];
 
         $app_mock = $this
             ->getMockBuilder(_App::class)
-            ->setMethods
-                (["configure_runtime"
+            ->setMethods(["configure_runtime"
                 , "load_config"
                 , "build_dic"
                 ])
@@ -205,8 +225,7 @@ class AppTest extends \PHPUnit\Framework\TestCase {
 
         $app_mock->setAutoExit(false);
 
-        $input = new ArrayInput
-            (["command" => "test"
+        $input = new ArrayInput(["command" => "test"
             , "configs" => $configs
             ]);
         $output = new NullOutput();
@@ -217,11 +236,11 @@ class AppTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals($dic, $app_mock->command->dic);
     }
 
-    public function test_run_no_config() {
+    public function test_run_no_config()
+    {
         $app_mock = $this
             ->getMockBuilder(_App::class)
-            ->setMethods
-                (["configure_runtime"
+            ->setMethods(["configure_runtime"
                 , "load_config"
                 , "build_dic"
                 ])
@@ -243,8 +262,7 @@ class AppTest extends \PHPUnit\Framework\TestCase {
 
         $app_mock->setAutoExit(false);
 
-        $input = new ArrayInput
-            (["command" => "test2"
+        $input = new ArrayInput(["command" => "test2"
             ]);
         $output = new NullOutput();
 

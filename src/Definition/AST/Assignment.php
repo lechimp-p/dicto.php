@@ -13,7 +13,8 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * An assignment of one variable to some definition.
  */
-class Assignment extends Line {
+class Assignment extends Line
+{
     /**
      * @var Name
      */
@@ -22,9 +23,10 @@ class Assignment extends Line {
     /**
      * @var Definition
      */
-    protected  $definition;
+    protected $definition;
 
-    public function __construct(Name $name, Definition $definition) {
+    public function __construct(Name $name, Definition $definition)
+    {
         $this->name = $name;
         $this->definition = $definition;
     }
@@ -32,14 +34,16 @@ class Assignment extends Line {
     /**
      * @return Name
      */
-    public function name() {
+    public function name()
+    {
         return $this->name;
     }
 
     /**
      * @return Definition
      */
-    public function definition() {
+    public function definition()
+    {
         return $this->definition;
     }
 }

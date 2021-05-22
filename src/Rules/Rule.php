@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -16,13 +16,13 @@ use Lechimp\Dicto\Variables\Variable;
 use Lechimp\Dicto\Variables\Except;
 use Lechimp\Dicto\Variables\Everything;
 
-class Rule extends Definition {
-    const MODE_CANNOT   = "CANNOT";
-    const MODE_MUST     = "MUST";
+class Rule extends Definition
+{
+    const MODE_CANNOT = "CANNOT";
+    const MODE_MUST = "MUST";
     const MODE_ONLY_CAN = "ONLY_CAN";
 
-    private static $modes = array
-        ( Rule::MODE_CANNOT
+    private static $modes = array( Rule::MODE_CANNOT
         , Rule::MODE_MUST
         , Rule::MODE_ONLY_CAN
         );
@@ -50,7 +50,8 @@ class Rule extends Definition {
     /**
      * @param string $mode
      */
-    public function __construct($mode, Variable $subject, Schema $schema, array $arguments) {
+    public function __construct($mode, Variable $subject, Schema $schema, array $arguments)
+    {
         assert('in_array($mode, self::$modes)');
         assert('$schema->arguments_are_valid($arguments)');
         $this->mode = $mode;
@@ -62,7 +63,8 @@ class Rule extends Definition {
     /**
      * @return string
      */
-    public function mode() {
+    public function mode()
+    {
         return $this->mode;
     }
 
@@ -71,7 +73,8 @@ class Rule extends Definition {
      *
      * @return  Variable
      */
-    public function subject() {
+    public function subject()
+    {
         return $this->subject;
     }
 
@@ -84,11 +87,12 @@ class Rule extends Definition {
      *
      * @return  Variable
      */
-    public function checked_on() {
+    public function checked_on()
+    {
         if ($this->mode() == self::MODE_ONLY_CAN) {
-            return new Except
-                ( new Everything("EVERYTHING")
-                , $this->subject()
+            return new Except(
+                    new Everything("EVERYTHING"),
+                    $this->subject()
                 );
         }
         return $this->subject();
@@ -99,7 +103,8 @@ class Rule extends Definition {
      *
      * @return  Vars\Variable[]
      */
-    public function variables() {
+    public function variables()
+    {
         $vars = array($this->subject());
         foreach ($this->arguments as $argument) {
             if ($argument instanceof Variable) {
@@ -114,7 +119,8 @@ class Rule extends Definition {
      *
      * @return Schema
      */
-    public function schema() {
+    public function schema()
+    {
         return $this->schema;
     }
 
@@ -123,17 +129,18 @@ class Rule extends Definition {
      *
      * @return string
      */
-    public function pprint() {
+    public function pprint()
+    {
         $name = $this->subject()->name();
         switch ($this->mode()) {
             case self::MODE_CANNOT:
-                return "$name cannot ".$this->schema()->pprint($this);
+                return "$name cannot " . $this->schema()->pprint($this);
             case self::MODE_MUST:
-                return "$name must ".$this->schema()->pprint($this);
+                return "$name must " . $this->schema()->pprint($this);
             case self::MODE_ONLY_CAN:
-                return "only $name can ".$this->schema()->pprint($this);
+                return "only $name can " . $this->schema()->pprint($this);
             default:
-                throw new \Exception("Unknown rule mode '".$this->mode()."'");
+                throw new \Exception("Unknown rule mode '" . $this->mode() . "'");
         }
     }
 
@@ -143,7 +150,8 @@ class Rule extends Definition {
      * @param   Index   $index
      * @return  Query[]
      */
-    public function compile(Index $index) {
+    public function compile(Index $index)
+    {
         return $this->schema->compile($index, $this);
     }
 
@@ -152,9 +160,10 @@ class Rule extends Definition {
      *
      * @throws  \OutOfRangeException
      * @param   int     $index
-     * @return  mixed 
+     * @return  mixed
      */
-    public function argument($index) {
+    public function argument($index)
+    {
         if ($index < 0 || $index >= count($this->arguments)) {
             throw new \OutOfRangeException("'$index' out of range.");
         }
@@ -166,8 +175,8 @@ class Rule extends Definition {
      *
      * @return array
      */
-    public function arguments() {
+    public function arguments()
+    {
         return $this->arguments;
     }
 }
-

@@ -25,15 +25,16 @@ if (file_exists($phar_path)) {
     unlink($phar_path);
 }
 
-$phar = new Phar
-    ( $phar_path
-    , FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::KEY_AS_FILENAME
-    , $phar_name
+$phar = new Phar(
+        $phar_path,
+        FilesystemIterator::CURRENT_AS_FILEINFO | FilesystemIterator::KEY_AS_FILENAME,
+        $phar_name
     );
 
 $phar->buildFromDirectory($base_dir);
 
-$phar->setStub(<<<STUB
+$phar->setStub(
+    <<<STUB
 #!/usr/bin/env php
 <?php
 Phar::mapPhar();

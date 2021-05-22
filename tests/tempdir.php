@@ -8,7 +8,8 @@
  * a copy of the license along with the code.
  */
 
-function tempdir() {
+function tempdir()
+{
     $name = tempnam(sys_get_temp_dir(), "dicto.php");
     if (file_exists($name)) {
         unlink($name);

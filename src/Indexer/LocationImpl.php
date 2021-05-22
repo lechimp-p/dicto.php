@@ -16,7 +16,8 @@ use Lechimp\Dicto\Variables\Variable;
  * TODO: This is not the correct name for this thing. It also holds
  * information about the file.
  */
-class LocationImpl implements Location {
+class LocationImpl implements Location
+{
     /**
      * @var string
      */
@@ -57,7 +58,8 @@ class LocationImpl implements Location {
      */
     protected $current_node = null;
 
-    public function __construct($file_name, $file_content) {
+    public function __construct($file_name, $file_content)
+    {
         assert('is_string($file_name)');
         assert('is_string($file_content)');
         $this->file_name = $file_name;
@@ -67,58 +69,65 @@ class LocationImpl implements Location {
     /**
      * @inheritdocs
      */
-    public function _file() {
+    public function _file()
+    {
         return $this->file;
     }
 
     /**
      * @inheritdocs
      */
-    public function _namespace() {
+    public function _namespace()
+    {
         return $this->namespace;
     }
 
     /**
      * @inheritdocs
      */
-    public function _class_interface_trait() {
+    public function _class_interface_trait()
+    {
         $c = count($this->class_interface_trait);
         if ($c == 0) {
             return null;
         }
-        return $this->class_interface_trait[$c-1];
+        return $this->class_interface_trait[$c - 1];
     }
 
     /**
      * @inheritdocs
      */
-    public function _function_method() {
+    public function _function_method()
+    {
         $c = count($this->function_method);
         assert('$c == 0 || $c == 1 || $c = 2');
         if ($c == 0) {
             return null;
         }
-        return $this->function_method[$c-1];
+        return $this->function_method[$c - 1];
     }
 
     /**
      * @return  string
      */
-    public function _file_name() {
+    public function _file_name()
+    {
         return $this->file_name;
     }
 
     /**
      * @return  string
      */
-    public function _file_content() {
+    public function _file_content()
+    {
         return $this->file_content;
     }
 
     /**
      * @return  int
      */
-    public function _line() {
+    public function _line()
+    {
         assert('$this->current_node !== null');
         return $this->current_node->getAttribute("startLine");
     }
@@ -126,7 +135,8 @@ class LocationImpl implements Location {
     /**
      * @return  int
      */
-    public function _column() {
+    public function _column()
+    {
         assert('$this->current_node !== null');
         if ($this->running_line_length === null) {
             $this->init_running_line_length();
@@ -143,20 +153,17 @@ class LocationImpl implements Location {
      * @param   mixed   $handle
      * @return  null
      */
-    public function push_entity($type, $handle) {
+    public function push_entity($type, $handle)
+    {
         if ($type == Variable::FILE_TYPE) {
             $this->file = $handle;
-        }
-        else if ($type == Variable::NAMESPACE_TYPE) {
+        } elseif ($type == Variable::NAMESPACE_TYPE) {
             $this->namespace = $handle;
-        }
-        else if (in_array($type, [Variable::CLASS_TYPE, Variable::INTERFACE_TYPE, Variable::TRAIT_TYPE])) {
+        } elseif (in_array($type, [Variable::CLASS_TYPE, Variable::INTERFACE_TYPE, Variable::TRAIT_TYPE])) {
             $this->class_interface_trait[] = $handle;
-        }
-        else if (in_array($type, [Variable::METHOD_TYPE, Variable::FUNCTION_TYPE])) {
+        } elseif (in_array($type, [Variable::METHOD_TYPE, Variable::FUNCTION_TYPE])) {
             $this->function_method[] = $handle;
-        }
-        else {
+        } else {
             throw new \LogicException("What should i do with handles of type '$type'?");
         }
     }
@@ -166,20 +173,17 @@ class LocationImpl implements Location {
      *
      * @return null
      */
-    public function pop_entity() {
+    public function pop_entity()
+    {
         if (count($this->function_method) > 0) {
             array_pop($this->function_method);
-        }
-        else if (count($this->class_interface_trait) > 0) {
+        } elseif (count($this->class_interface_trait) > 0) {
             array_pop($this->class_interface_trait);
-        }
-        else if ($this->namespace !== null) {
+        } elseif ($this->namespace !== null) {
             $this->namespace = null;
-        }
-        else if ($this->file !== null) {
+        } elseif ($this->file !== null) {
             $this->file = null;
-        }
-        else {
+        } else {
             throw new \LogicException("Can't pop anymore entities.");
         }
     }
@@ -188,7 +192,8 @@ class LocationImpl implements Location {
      * @param   \PhpParser\Node $node
      * @return  null
      */
-    public function set_current_node(\PhpParser\Node $node) {
+    public function set_current_node(\PhpParser\Node $node)
+    {
         assert('$this->current_node === null');
         $this->current_node = $node;
     }
@@ -196,7 +201,8 @@ class LocationImpl implements Location {
     /**
      * @return  \PhpParser\Node $node
      */
-    public function current_node() {
+    public function current_node()
+    {
         assert('$this->current_node !== null');
         return $this->current_node;
     }
@@ -204,12 +210,14 @@ class LocationImpl implements Location {
     /**
      * @return  null
      */
-    public function flush_current_node() {
+    public function flush_current_node()
+    {
         assert('$this->current_node !== null');
         $this->current_node = null;
     }
 
-    protected function init_running_line_length() {
+    protected function init_running_line_length()
+    {
         $pos = 0;
         $count = 0;
         while (true) {
@@ -223,4 +231,3 @@ class LocationImpl implements Location {
         }
     }
 }
-

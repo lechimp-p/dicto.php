@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -19,14 +19,17 @@ use Symfony\Component\Yaml\Yaml;
 /**
  * The App to be run from a script.
  */
-class App extends Application {
-    public function __construct() {
+class App extends Application
+{
+    public function __construct()
+    {
         parent::__construct();
         ini_set('xdebug.max_nesting_level', 200);
         $this->add_commands();
     }
 
-    protected function add_commands() {
+    protected function add_commands()
+    {
         $this->add(new AnalyzeCommand());
         $this->add(new ReportCommand());
     }
@@ -37,7 +40,8 @@ class App extends Application {
      *
      * @inheritdoc
      */
-    public function doRunCommand(SCommand $command, InputInterface $input, OutputInterface $output) {
+    public function doRunCommand(SCommand $command, InputInterface $input, OutputInterface $output)
+    {
         if ($command instanceof Command) {
             $command->mergeApplicationDefinition();
             if ($command->getDefinition()->hasArgument("configs")) {
@@ -58,13 +62,13 @@ class App extends Application {
      * @param   Config  $config
      * @return  null
      */
-    protected function configure_runtime(Config $config) {
+    protected function configure_runtime(Config $config)
+    {
         if ($config->runtime_check_assertions()) {
             assert_options(ASSERT_ACTIVE, true);
             assert_options(ASSERT_WARNING, true);
             assert_options(ASSERT_BAIL, false);
-        }
-        else {
+        } else {
             assert_options(ASSERT_ACTIVE, false);
             assert_options(ASSERT_WARNING, false);
             assert_options(ASSERT_BAIL, false);
@@ -77,7 +81,8 @@ class App extends Application {
      * @param   array   $config_file_paths
      * @return  array
      */
-    protected function load_config(array $config_file_paths) {
+    protected function load_config(array $config_file_paths)
+    {
         $configs_array = array();
         $config_file_path = null;
 
@@ -104,7 +109,8 @@ class App extends Application {
      * @param   Config
      * @return  DIC
      */
-    protected function build_dic(Config $config) {
+    protected function build_dic(Config $config)
+    {
         return new DIC($config);
     }
 }

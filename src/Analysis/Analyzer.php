@@ -18,7 +18,8 @@ use Psr\Log\LoggerInterface as Log;
  * Performs the actual analysis of a ruleset over a query-object
  * using a specific rules to sql compiler.
  */
-class Analyzer {
+class Analyzer
+{
     /**
      * @var Log
      */
@@ -39,12 +40,12 @@ class Analyzer {
      */
     protected $listener;
 
-    public function __construct
-                        ( Log $log
-                        , Ruleset $ruleset
-                        , Index $index
-                        , Listener $listener
-                        ) {
+    public function __construct(
+        Log $log,
+        Ruleset $ruleset,
+        Index $index,
+        Listener $listener
+    ) {
         $this->log = $log;
         $this->ruleset = $ruleset;
         $this->index = $index;
@@ -56,10 +57,11 @@ class Analyzer {
      *
      * @return  null
      */
-    public function run() {
+    public function run()
+    {
         $this->listener->begin_ruleset($this->ruleset);
         foreach ($this->ruleset->rules() as $rule) {
-            $this->log->info("checking: ".$rule->pprint());
+            $this->log->info("checking: " . $rule->pprint());
             $this->listener->begin_rule($rule);
             $queries = $rule->compile($this->index);
             foreach ($queries as $query) {
@@ -73,7 +75,8 @@ class Analyzer {
         $this->listener->end_ruleset();
     }
 
-    public function build_violation($info) {
+    public function build_violation($info)
+    {
         assert('array_key_exists("rule", $info)');
         assert('$info["rule"] instanceof \\Lechimp\\Dicto\\Rules\\Rule');
         assert('array_key_exists("file", $info)');
@@ -82,11 +85,11 @@ class Analyzer {
         assert('is_int($info["line"])');
         assert('array_key_exists("source", $info)');
         assert('is_string($info["source"])');
-        return new Violation
-            ( $info["rule"]
-            , $info["file"]
-            , $info["line"]
-            , $info["source"]
+        return new Violation(
+                $info["rule"],
+                $info["file"],
+                $info["line"],
+                $info["source"]
             );
     }
-} 
+}

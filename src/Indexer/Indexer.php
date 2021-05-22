@@ -21,7 +21,8 @@ use Lechimp\Flightcontrol\FSObject;
 /**
  * Creates an index of source files.
  */
-class Indexer {
+class Indexer
+{
     /**
      * @var Log
      */
@@ -42,11 +43,12 @@ class Indexer {
      */
     protected $ast_visitors;
 
-    public function __construct(Log $log, \PhpParser\Parser $parser, Insert $insert, array $ast_visitors) {
+    public function __construct(Log $log, \PhpParser\Parser $parser, Insert $insert, array $ast_visitors)
+    {
         $this->log = $log;
         $this->parser = $parser;
         $this->insert = $insert;
-        $this->ast_visitors = array_map(function (ASTVisitor $v) { 
+        $this->ast_visitors = array_map(function (ASTVisitor $v) {
             return $v;
         }, $ast_visitors);
     }
@@ -58,14 +60,15 @@ class Indexer {
      * @param   array   $ignore_paths
      * @return  null
      */
-    public function index_directory($path, array $ignore_paths) {
-        $ignore_paths_re = array_map(function($ignore) {
+    public function index_directory($path, array $ignore_paths)
+    {
+        $ignore_paths_re = array_map(function ($ignore) {
             return new Regexp($ignore);
         }, $ignore_paths);
         $fc = $this->init_flightcontrol($path);
         $fc->directory("/")
             ->recurseOn()
-            ->filter(function(FSObject $obj) use (&$ignore_paths_re) {
+            ->filter(function (FSObject $obj) use (&$ignore_paths_re) {
                 foreach ($ignore_paths_re as $re) {
                     if ($re->match($obj->path())) {
                         return false;
@@ -73,12 +76,11 @@ class Indexer {
                 }
                 return true;
             })
-            ->foldFiles(null, function($_, File $file) use ($path) {
+            ->foldFiles(null, function ($_, File $file) use ($path) {
                 try {
                     $this->index_file($path, $file->path());
-                }
-                catch (\PhpParser\Error $e) {
-                    $this->log->error("in ".$file->path().": ".$e->getMessage());
+                } catch (\PhpParser\Error $e) {
+                    $this->log->error("in " . $file->path() . ": " . $e->getMessage());
                 }
             });
     }
@@ -88,7 +90,8 @@ class Indexer {
      *
      * @return  Flightcontrol
      */
-    public function init_flightcontrol($path) {
+    public function init_flightcontrol($path)
+    {
         $adapter = new LocalFilesystemAdapter(realpath($path), null, LOCK_EX, LocalFilesystemAdapter::SKIP_LINKS);
         $flysystem = new Filesystem($adapter);
         return new Flightcontrol($flysystem);
@@ -99,10 +102,11 @@ class Indexer {
      * @param   string  $path
      * @return  null
      */
-    public function index_file($base_dir, $path) {
+    public function index_file($base_dir, $path)
+    {
         assert('is_string($base_dir)');
         assert('is_string($path)');
-        $this->log->info("indexing: ".$path);
+        $this->log->info("indexing: " . $path);
         $full_path = "$base_dir/$path";
         $content = file_get_contents($full_path);
         if ($content === false) {
@@ -116,7 +120,8 @@ class Indexer {
      * @param   string  $content
      * @return  null
      */
-    public function index_content($path, $content) {
+    public function index_content($path, $content)
+    {
         assert('is_string($path)');
         assert('is_string($content)');
 

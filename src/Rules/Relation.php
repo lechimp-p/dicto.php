@@ -21,11 +21,13 @@ use Lechimp\Dicto\Graph\Node;
  * This is a rule that checks a relation between two entities
  * in the code.
  */
-abstract class Relation extends Schema {
+abstract class Relation extends Schema
+{
     /**
      * @inheritdoc
      */
-    public function fetch_arguments(ArgumentParser $parser) {
+    public function fetch_arguments(ArgumentParser $parser)
+    {
         $var = $parser->fetch_variable();
         return array($var);
     }
@@ -33,8 +35,9 @@ abstract class Relation extends Schema {
     /**
      * @inheritdoc
      */
-    public function arguments_are_valid(array &$arguments) {
-         if (count($arguments) != 1) {
+    public function arguments_are_valid(array &$arguments)
+    {
+        if (count($arguments) != 1) {
             return false;
         }
         if (!($arguments[0] instanceof Variable)) {
@@ -46,14 +49,16 @@ abstract class Relation extends Schema {
     /**
      * @inheritdoc
      */
-    public function pprint(Rule $rule) {
-        return $this->name()." ".$rule->argument(0)->name();
+    public function pprint(Rule $rule)
+    {
+        return $this->name() . " " . $rule->argument(0)->name();
     }
 
     /**
      * @inheritdoc
      */
-    public function compile(Index $index, Rule $rule) {
+    public function compile(Index $index, Rule $rule)
+    {
         $mode = $rule->mode();
         $var_left = $rule->checked_on();
         $var_right = $rule->argument(0);
@@ -65,7 +70,7 @@ abstract class Relation extends Schema {
             return [$query
                 ->filter($filter_left)
                 ->expand_relations([$this->name()])
-                ->extract(function($e,&$r) use ($rule) {
+                ->extract(function ($e, &$r) use ($rule) {
                     $file = $e->property("file");
                     assert('$file->type() == "file"');
                     $r["file"] = $file->property("path");
@@ -82,8 +87,8 @@ abstract class Relation extends Schema {
             $filter_right = $var_right->compile($predicate_factory)->compile();
             return [$query
                 ->filter($filter_left)
-                ->filter($predicate_factory->_custom(function(Node $n) use ($filter_right) {
-                    $rels = $n->relations(function($r) {
+                ->filter($predicate_factory->_custom(function (Node $n) use ($filter_right) {
+                    $rels = $n->relations(function ($r) {
                         return $r->type() == $this->name();
                     });
                     if (count($rels) == 0) {
@@ -96,8 +101,8 @@ abstract class Relation extends Schema {
                     }
                     return true;
                 }))
-                ->extract(function($e,&$r) use ($index, $rule) {
-                    $rels = $e->relations(function($r) {
+                ->extract(function ($e, &$r) use ($index, $rule) {
+                    $rels = $e->relations(function ($r) {
                         return $r->type() == "defined in";
                     });
                     assert('count($rels) == 1');
@@ -122,23 +127,24 @@ abstract class Relation extends Schema {
      * @param   mixed       $other
      * @return  null
      */
-    protected function insert_relation_into(Insert $insert, Location $location, $other) {
+    protected function insert_relation_into(Insert $insert, Location $location, $other)
+    {
         if ($cit = $location->_class_interface_trait()) {
-            $insert->_relation
-                ( $cit
-                , $this->name()
-                , $other
-                , $location->_file()
-                , $location->_line()
+            $insert->_relation(
+                    $cit,
+                    $this->name(),
+                    $other,
+                    $location->_file(),
+                    $location->_line()
                 );
         }
         if ($fm = $location->_function_method()) {
-            $insert->_relation
-                ( $fm
-                , $this->name()
-                , $other
-                , $location->_file()
-                , $location->_line()
+            $insert->_relation(
+                    $fm,
+                    $this->name(),
+                    $other,
+                    $location->_file(),
+                    $location->_line()
                 );
         }
         // TODO: Should i be introducing namespace here?

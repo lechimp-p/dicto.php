@@ -8,8 +8,10 @@
  * a copy of the license along with the code.
  */
 
-class A4 {
-    public function use_stfu() {
+class A4
+{
+    public function use_stfu()
+    {
         return @stfu();
-    }    
+    }
 }

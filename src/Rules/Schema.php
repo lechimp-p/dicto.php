@@ -19,13 +19,14 @@ use Lechimp\Dicto\Graph\Query;
 /**
  * This is what every rule needs to define.
  */
-abstract class Schema {
+abstract class Schema
+{
     /**
      * Get the name of the schema.
      *
      * @return  string
      */
-    abstract public function name(); 
+    abstract public function name();
 
     /**
      * Fetch arguments for the Schema from a stream of tokens during parsing.
@@ -39,7 +40,7 @@ abstract class Schema {
      * Check if the given arguments are valid for the rule schema.
      *
      * @param   array   $arguments
-     * @return  bool 
+     * @return  bool
      */
     abstract public function arguments_are_valid(array &$arguments);
 

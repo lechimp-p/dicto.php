@@ -15,7 +15,8 @@ use Lechimp\Dicto\Indexer\Insert;
 /**
  * Reads in an sql IndexDB to another Index.
  */
-class IndexDBReader {
+class IndexDBReader
+{
     /**
      * @var array
      */
@@ -66,7 +67,8 @@ class IndexDBReader {
      * @param   array   $int_fields list of fields that contain an int
      * @param   \Closure    $get_query_builder  to get a QueryBuilder
      */
-    public function __construct($tables, $id_fields, $int_fields, \Closure $get_query_builder, Insert $insert) {
+    public function __construct($tables, $id_fields, $int_fields, \Closure $get_query_builder, Insert $insert)
+    {
         $this->tables = $tables;
         $this->id_fields = $id_fields;
         $this->int_fields = $int_fields;
@@ -79,7 +81,8 @@ class IndexDBReader {
     /**
      * Read the index from the database and put it to insert.
      */
-    public function run() {
+    public function run()
+    {
         assert('!$this->already_run');
 
         $this->id_map = [null => null];
@@ -96,7 +99,8 @@ class IndexDBReader {
      *
      * @return  \Iterator   $table => $values
      */
-    protected function get_inserts() {
+    protected function get_inserts()
+    {
         $count = count($this->results);
         $i = 0;
         $expected_id = 0;
@@ -123,8 +127,7 @@ class IndexDBReader {
             $res = $this->results[$i][2]->fetch();
             if ($res) {
                 $this->results[$i][1] = $res;
-            }
-            else {
+            } else {
                 $count--;
                 unset($this->results[$i]);
                 $this->results = array_values($this->results);
@@ -143,7 +146,8 @@ class IndexDBReader {
      *
      * @return  array[] containing [$table_name, null, $results]
      */
-    protected function build_results_with_id() {
+    protected function build_results_with_id()
+    {
         $results = [];
         foreach ($this->tables as $key => $_) {
             if ($key == "relations") {
@@ -158,7 +162,8 @@ class IndexDBReader {
      * @param   string  $table
      * @return  \Iterator
      */
-    protected function select_all_from($table) {
+    protected function select_all_from($table)
+    {
         $get_query_builder = $this->get_query_builder;
         return $get_query_builder()
             ->select($this->tables[$table][1])
@@ -175,13 +180,13 @@ class IndexDBReader {
      * @param   array   &$results    from database
      * @return  array
      */
-    protected function transform_results(array &$results) {
+    protected function transform_results(array &$results)
+    {
         foreach (array_keys($results) as $field) {
             if (isset($this->id_fields[$field])) {
                 $results[$field] = $this->id_map[$results[$field]];
-            }
-            else if (isset($this->int_fields[$field])) {
-                $results[$field] = (int)$results[$field];
+            } elseif (isset($this->int_fields[$field])) {
+                $results[$field] = (int) $results[$field];
             }
         }
     }
@@ -190,7 +195,8 @@ class IndexDBReader {
      * @param   \Iterator       $inserts
      * @return  null
      */
-    protected function write_inserts(\Iterator $inserts) {
+    protected function write_inserts(\Iterator $inserts)
+    {
         foreach ($inserts as $table => $insert) {
             assert('array_key_exists($table, $this->tables)');
             $method = $this->tables[$table][0];
@@ -198,8 +204,7 @@ class IndexDBReader {
                 $id = $insert["id"];
                 unset($insert["id"]);
                 $this->id_map[$id] = call_user_func_array([$this->other, $method], $insert);
-            }
-            else {
+            } else {
                 call_user_func_array([$this->other, $method], $insert);
             }
         }

@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -14,7 +14,8 @@ use Lechimp\Dicto\Definition as Def;
 use Lechimp\Dicto\Graph\Predicate;
 use Lechimp\Dicto\Graph\PredicateFactory;
 
-abstract class Variable extends Def\Definition {
+abstract class Variable extends Def\Definition
+{
     // TODO: Use these in Graph/IndexDB.
     const NAMESPACE_TYPE = "namespace";
     const CLASS_TYPE = "class";
@@ -26,9 +27,9 @@ abstract class Variable extends Def\Definition {
     const METHOD_TYPE = "method";
     const LANGUAGE_CONSTRUCT_TYPE = "language construct";
 
-    public static function is_type($t) {
-        static $types = array
-            ( "namespace"
+    public static function is_type($t)
+    {
+        static $types = array( "namespace"
             , "class"
             , "interface"
             , "trait"
@@ -46,7 +47,8 @@ abstract class Variable extends Def\Definition {
      */
     private $name;
 
-    public function __construct($name = null) {
+    public function __construct($name = null)
+    {
         assert('is_string($name) || ($name === null)');
         $this->name = $name;
     }
@@ -54,7 +56,8 @@ abstract class Variable extends Def\Definition {
     /**
      * @return  string|null
      */
-    public function name() {
+    public function name()
+    {
         return $this->name;
     }
 
@@ -62,7 +65,8 @@ abstract class Variable extends Def\Definition {
      * @param   string  $name
      * @return  self
      */
-    public function withName($name) {
+    public function withName($name)
+    {
         assert('is_string($name)');
         $clone = clone $this;
         $clone->name = $name;
@@ -86,4 +90,3 @@ abstract class Variable extends Def\Definition {
      */
     abstract public function compile(PredicateFactory $f);
 }
-

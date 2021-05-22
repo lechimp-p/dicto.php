@@ -13,37 +13,40 @@ use Lechimp\Dicto\Definition\ParserException;
 use Lechimp\Dicto\Definition\Tokenizer;
 use Lechimp\Dicto\Definition\SymbolTable;
 
-class Parser extends ParserBase {
-    public function __construct() {
+class Parser extends ParserBase
+{
+    public function __construct()
+    {
         parent::__construct();
     }
 
-    protected function add_symbols_to(SymbolTable $table) {
-        $table->literal("\\d+", function(array &$matches) {
-                return intval($matches[0]);
-            });
+    protected function add_symbols_to(SymbolTable $table)
+    {
+        $table->literal("\\d+", function (array &$matches) {
+            return intval($matches[0]);
+        });
         $table->operator("+", 10)
-            ->left_denotation_is(function($left, array &$matches) {
+            ->left_denotation_is(function ($left, array &$matches) {
                 return $left + $this->expression(10);
             });
         $table->operator("-", 10)
-            ->left_denotation_is(function($left, array &$matches) {
+            ->left_denotation_is(function ($left, array &$matches) {
                 return $left - $this->expression(10);
             });
         $table->operator("**", 30)
-            ->left_denotation_is(function($left, array &$matches) {
-                return pow($left, $this->expression(30-1));
+            ->left_denotation_is(function ($left, array &$matches) {
+                return pow($left, $this->expression(30 - 1));
             });
         $table->operator("*", 20)
-            ->left_denotation_is(function($left, array &$matches) {
+            ->left_denotation_is(function ($left, array &$matches) {
                 return $left * $this->expression(20);
             });
         $table->operator("/", 20)
-            ->left_denotation_is(function($left, array &$matches) {
+            ->left_denotation_is(function ($left, array &$matches) {
                 return $left / $this->expression(20);
             });
         $table->operator("(")
-            ->null_denotation_is(function(array &$matches) {
+            ->null_denotation_is(function (array &$matches) {
                 $res = $this->expression(0);
                 $this->advance_operator(")");
                 return $res;
@@ -52,7 +55,8 @@ class Parser extends ParserBase {
         $table->symbol("\n");
     }
 
-    protected function root() {
+    protected function root()
+    {
         // Empty file
         if ($this->is_end_of_file_reached()) {// End of file
             return array();
@@ -68,7 +72,8 @@ class Parser extends ParserBase {
         }
     }
 
-    protected function expression($right_binding_power) {
+    protected function expression($right_binding_power)
+    {
         $t = $this->current_symbol();
         $m = $this->current_match();
         $this->fetch_next_token();
@@ -84,84 +89,98 @@ class Parser extends ParserBase {
     }
 }
 
-class ParsingTest extends \PHPUnit\Framework\TestCase {
-    public function setUp() : void {
+class ParsingTest extends \PHPUnit\Framework\TestCase
+{
+    public function setUp() : void
+    {
         $this->parser = new Parser();
     }
 
-    public function parse($expr) {
+    public function parse($expr)
+    {
         return $this->parser->parse($expr);
     }
 
-    public function test_1() {
+    public function test_1()
+    {
         $res = $this->parse("1");
         $this->assertEquals(array(1), $res);
     }
 
-    public function test_add() {
+    public function test_add()
+    {
         $res = $this->parse("1 + 2");
         $this->assertEquals(array(3), $res);
     }
 
-    public function test_subtract() {
+    public function test_subtract()
+    {
         $res = $this->parse("1 - 2");
         $this->assertEquals(array(-1), $res);
     }
 
-    public function test_multiply() {
+    public function test_multiply()
+    {
         $res = $this->parse("2 * 3");
         $this->assertEquals(array(6), $res);
     }
 
-    public function test_binding() {
+    public function test_binding()
+    {
         $res = $this->parse("2 * 3 - 1");
         $this->assertEquals(array(5), $res);
     }
 
-    public function test_pow() {
+    public function test_pow()
+    {
         $res = $this->parse("2 ** 3");
         $this->assertEquals(array(8), $res);
     }
 
-    public function test_right_binding() {
+    public function test_right_binding()
+    {
         $res = $this->parse("2 ** 3 ** 2");
         $this->assertEquals(array(512), $res);
     }
 
-    public function test_parantheses() {
+    public function test_parantheses()
+    {
         $res = $this->parse("2 * ( 3 - 1 )");
         $this->assertEquals(array(4), $res);
     }
 
-    public function test_parantheses_2() {
+    public function test_parantheses_2()
+    {
         $res = $this->parse("( 3 - 1 )");
         $this->assertEquals(array(2), $res);
     }
 
-    public function test_no_space() {
+    public function test_no_space()
+    {
         $res = $this->parse("(3-1)");
         $this->assertEquals(array(2), $res);
     }
 
-    public function test_empty() {
+    public function test_empty()
+    {
         $res = $this->parse("");
         $this->assertEquals(array(), $res);
     }
 
-    public function test_multiline() {
+    public function test_multiline()
+    {
         $res = $this->parse("1-2\n4-3");
         $this->assertEquals(array(-1,1), $res);
     }
 
-    public function test_error() {
+    public function test_error()
+    {
         try {
             $this->parse("1-2\n4-a");
             $this->assertFalse("This should not happen.");
-        }
-        catch (ParserException $e) {
+        } catch (ParserException $e) {
             $this->assertEquals(2, $e->line());
             $this->assertEquals(3, $e->column());
         }
-
     }
 }

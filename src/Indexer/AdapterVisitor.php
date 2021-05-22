@@ -13,7 +13,8 @@ namespace Lechimp\Dicto\Indexer;
 /**
  * Visitor that wraps an ASTVisitor to make it compatible with PhpParser.
  */
-class AdapterVisitor implements \PhpParser\NodeVisitor {
+class AdapterVisitor implements \PhpParser\NodeVisitor
+{
     /**
      * @var LocationImpl
      */
@@ -37,7 +38,8 @@ class AdapterVisitor implements \PhpParser\NodeVisitor {
      */
     protected $jump_labels;
 
-    public function __construct(LocationImpl $location, Insert $insert, ASTVisitor $visitor) {
+    public function __construct(LocationImpl $location, Insert $insert, ASTVisitor $visitor)
+    {
         $this->location = $location;
         $this->insert = $insert;
         $this->visitor = $visitor;
@@ -45,7 +47,8 @@ class AdapterVisitor implements \PhpParser\NodeVisitor {
         assert('$this->jump_labels_are_correct()');
     }
 
-    protected function jump_labels_are_correct() {
+    protected function jump_labels_are_correct()
+    {
         if (!is_array($this->jump_labels)) {
             return false;
         }
@@ -60,20 +63,22 @@ class AdapterVisitor implements \PhpParser\NodeVisitor {
     /**
      * @inheritdoc
      */
-    public function beforeTraverse(array $nodes) {
+    public function beforeTraverse(array $nodes)
+    {
     }
 
     /**
      * @inheritdoc
      */
-    public function afterTraverse(array $nodes) {
+    public function afterTraverse(array $nodes)
+    {
     }
 
     /**
      * @inheritdoc
      */
-    public function enterNode(\PhpParser\Node $node) {
-
+    public function enterNode(\PhpParser\Node $node)
+    {
         $cls = get_class($node);
         if (isset($this->jump_labels[$cls])) {
             $this->location->set_current_node($node);
@@ -86,6 +91,7 @@ class AdapterVisitor implements \PhpParser\NodeVisitor {
     /**
      * @inheritdoc
      */
-    public function leaveNode(\PhpParser\Node $node) {
+    public function leaveNode(\PhpParser\Node $node)
+    {
     }
 }

@@ -12,12 +12,13 @@ namespace Lechimp\Dicto\Variables;
 
 use Lechimp\Dicto\Graph\Node;
 
-class ErrorSuppressor extends LanguageConstruct {
-    public function __construct($name = null) {
+class ErrorSuppressor extends LanguageConstruct
+{
+    public function __construct($name = null)
+    {
         if ($name === null) {
             $name = "ErrorSuppressor";
         }
         parent::__construct("@", $name);
     }
 }
-

@@ -11,17 +11,21 @@
 use Lechimp\Dicto\Definition\Symbol;
 use Lechimp\Dicto\Definition\SymbolTable;
 
-class SymbolTableTest extends \PHPUnit\Framework\TestCase {
-    public function setUp() : void {
+class SymbolTableTest extends \PHPUnit\Framework\TestCase
+{
+    public function setUp() : void
+    {
         $this->symbol_table = new SymbolTable();
     }
 
-    public function test_null_table() {
+    public function test_null_table()
+    {
         $symbols = iterator_to_array($this->symbol_table->symbols());
         $this->assertEmpty($symbols);
     }
 
-    public function test_add_symbol() {
+    public function test_add_symbol()
+    {
         $s = $this->symbol_table->add_symbol("foo", 10);
         $symbols = iterator_to_array($this->symbol_table->symbols());
 
@@ -30,14 +34,14 @@ class SymbolTableTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals(array($expected), $symbols);
     }
 
-    public function test_no_double_symbol() {
+    public function test_no_double_symbol()
+    {
         $this->symbol_table->add_symbol("foo", 10);
 
         try {
             $this->symbol_table->add_symbol("foo", 10);
             $this->assertFalse("This should not happen.");
-        }
-        catch (\LogicException $e) {
+        } catch (\LogicException $e) {
             $this->assertTrue(true);
         }
     }

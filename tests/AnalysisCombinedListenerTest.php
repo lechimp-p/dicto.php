@@ -13,45 +13,52 @@ use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Rules\Rule;
 
-require_once(__DIR__."/AnalysisListenerMock.php");
+require_once(__DIR__ . "/AnalysisListenerMock.php");
 
-class AnalysisCombinedListenerTest extends \PHPUnit\Framework\TestCase {
-    public function setUp() : void {
+class AnalysisCombinedListenerTest extends \PHPUnit\Framework\TestCase
+{
+    public function setUp() : void
+    {
         $this->al1 = new AnalysisListenerMock();
         $this->al2 = new AnalysisListenerMock();
         $this->c = new CombinedListener([$this->al1, $this->al2]);
     }
 
-    public function test_begin_run() {
+    public function test_begin_run()
+    {
         $this->c->begin_run("foo");
 
         $this->assertEquals("foo", $this->al1->begin_run_called_with);
         $this->assertEquals("foo", $this->al2->begin_run_called_with);
     }
 
-    public function test_end_run() {
+    public function test_end_run()
+    {
         $this->c->end_run();
 
         $this->assertTrue($this->al1->end_run_called);
         $this->assertTrue($this->al2->end_run_called);
     }
 
-    public function test_begin_ruleset() {
-        $rs = new Ruleset([],[]);
+    public function test_begin_ruleset()
+    {
+        $rs = new Ruleset([], []);
         $this->c->begin_ruleset($rs);
 
         $this->assertSame($rs, $this->al1->begin_ruleset_called_with);
         $this->assertSame($rs, $this->al2->begin_ruleset_called_with);
     }
 
-    public function test_end_ruleset() {
+    public function test_end_ruleset()
+    {
         $this->c->end_ruleset();
 
         $this->assertTrue($this->al1->end_ruleset_called);
         $this->assertTrue($this->al2->end_ruleset_called);
     }
 
-    public function test_begin_rule() {
+    public function test_begin_rule()
+    {
         $r = $this->getMockBuilder(Rule::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -61,14 +68,16 @@ class AnalysisCombinedListenerTest extends \PHPUnit\Framework\TestCase {
         $this->assertSame($r, $this->al2->begin_rule_called_with);
     }
 
-    public function test_end_rule() {
+    public function test_end_rule()
+    {
         $this->c->end_rule();
 
         $this->assertTrue($this->al1->end_rule_called);
         $this->assertTrue($this->al2->end_rule_called);
     }
 
-    public function test_report_violation() {
+    public function test_report_violation()
+    {
         $v = $this->getMockBuilder(Violation::class)
             ->disableOriginalConstructor()
             ->getMock();

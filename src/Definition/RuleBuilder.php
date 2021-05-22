@@ -3,7 +3,7 @@
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
  *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
- * 
+ *
  * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
@@ -17,7 +17,8 @@ use Lechimp\Dicto\Rules as R;
 /**
  * Builds Rulesets from strings.
  */
-class RuleBuilder {
+class RuleBuilder
+{
     /**
      * @var ASTParser
      */
@@ -33,9 +34,8 @@ class RuleBuilder {
      * @param   R\Schema[]      $schemas
      * @param   V\Property[]    $properties
      */
-    public function __construct( array $predefined_variables
-                               , array $schemas
-                               , array $properties) {
+    public function __construct(array $predefined_variables, array $schemas, array $properties)
+    {
         $this->parser = $this->build_parser();
         $this->compiler = $this->build_compiler($predefined_variables, $schemas, $properties);
     }
@@ -43,14 +43,16 @@ class RuleBuilder {
     /**
      * @return AST\Factory
      */
-    protected function build_factory() {
+    protected function build_factory()
+    {
         return new AST\Factory();
     }
 
     /**
      * @return ASTParser
      */
-    protected function build_parser() {
+    protected function build_parser()
+    {
         return new ASTParser($this->build_factory());
     }
 
@@ -60,9 +62,8 @@ class RuleBuilder {
      * @param   V\Property[]    $properties
      * @return  Compiler
      */
-    protected function build_compiler( array $predefined_variables
-                                     , array $schemas
-                                     , array $properties) {
+    protected function build_compiler(array $predefined_variables, array $schemas, array $properties)
+    {
         return new Compiler($predefined_variables, $schemas, $properties);
     }
 
@@ -70,7 +71,8 @@ class RuleBuilder {
      * @param   string
      * @return  Ruleset
      */
-    public function parse($source) {
+    public function parse($source)
+    {
         assert('is_string($source)');
         $ast = $this->parser->parse($source);
         return $this->compiler->compile($ast);

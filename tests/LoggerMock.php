@@ -11,9 +11,11 @@
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
-class LoggerMock extends AbstractLogger {
+class LoggerMock extends AbstractLogger
+{
     public $log = array();
-    public function log($level, $message, array $context = array()) {
+    public function log($level, $message, array $context = array())
+    {
         $this->log[] = array($level, $message, $context);
     }
 }

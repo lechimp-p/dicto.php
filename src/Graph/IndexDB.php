@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -16,7 +16,8 @@ use Lechimp\Dicto\Analysis\Index;
 /**
  * A database for the indexer based on graph.
  */
-class IndexDB extends Graph implements Insert, Index {
+class IndexDB extends Graph implements Insert, Index
+{
     /**
      * @var array<string,Node>
      */
@@ -30,7 +31,7 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @var array<string,Node>
      */
-    protected $language_constructs = []; 
+    protected $language_constructs = [];
 
     /**
      * @var array<string,Node>
@@ -45,15 +46,16 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _file($path, $source) {
+    public function _file($path, $source)
+    {
         assert('is_string($path)');
         assert('is_string($source)');
 
         $parts = explode("/", $path);
         $name = array_pop($parts);
-        return $this->create_node
-            ( "file"
-            ,   [ "path" => $path
+        return $this->create_node(
+                "file",
+                [ "path" => $path
                 , "name" => $name
                 , "source" => explode("\n", $source)
                 ]
@@ -63,16 +65,17 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _namespace($name) {
+    public function _namespace($name)
+    {
         assert('is_string($name)');
 
         if (array_key_exists($name, $this->namespaces)) {
             return $this->namespaces[$name];
         }
 
-        $namespace = $this->create_node
-            ( "namespace"
-            ,   [ "name" => $name
+        $namespace = $this->create_node(
+                "namespace",
+                [ "name" => $name
                 ]
             );
 
@@ -83,16 +86,17 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _class($name, $file, $start_line, $end_line, $namespace = null) {
+    public function _class($name, $file, $start_line, $end_line, $namespace = null)
+    {
         assert('is_string($name)');
         assert('$file->type() == "file"');
         assert('is_int($start_line)');
         assert('is_int($end_line)');
         assert('$namespace === null || $namespace->type() == "namespace"');
 
-        $class = $this->create_node
-            ( "class"
-            ,   [ "name" => $name
+        $class = $this->create_node(
+                "class",
+                [ "name" => $name
                 ]
             );
         $this->add_definition($class, $file, $start_line, $end_line, $namespace);
@@ -102,16 +106,17 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _interface($name, $file, $start_line, $end_line, $namespace = null) {
+    public function _interface($name, $file, $start_line, $end_line, $namespace = null)
+    {
         assert('is_string($name)');
         assert('$file->type() == "file"');
         assert('is_int($start_line)');
         assert('is_int($end_line)');
         assert('$namespace === null || $namespace->type() == "namespace"');
 
-        $interface = $this->create_node
-            ( "interface"
-            ,   [ "name" => $name
+        $interface = $this->create_node(
+                "interface",
+                [ "name" => $name
                 ]
             );
         $this->add_definition($interface, $file, $start_line, $end_line, $namespace);
@@ -121,16 +126,17 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _trait($name, $file, $start_line, $end_line, $namespace = null) {
+    public function _trait($name, $file, $start_line, $end_line, $namespace = null)
+    {
         assert('is_string($name)');
         assert('$file->type() == "file"');
         assert('is_int($start_line)');
         assert('is_int($end_line)');
         assert('$namespace === null || $namespace->type() == "namespace"');
 
-        $interface = $this->create_node
-            ( "trait"
-            ,   [ "name" => $name
+        $interface = $this->create_node(
+                "trait",
+                [ "name" => $name
                 ]
             );
         $this->add_definition($interface, $file, $start_line, $end_line, $namespace);
@@ -140,16 +146,17 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _method($name, $class, $file, $start_line, $end_line) {
+    public function _method($name, $class, $file, $start_line, $end_line)
+    {
         assert('is_string($name)');
         assert('in_array($class->type(), ["class", "interface", "trait"])');
         assert('$file->type() == "file"');
         assert('is_int($start_line)');
         assert('is_int($end_line)');
 
-        $method = $this->create_node
-            ( "method"
-            ,   [ "name" => $name
+        $method = $this->create_node(
+                "method",
+                [ "name" => $name
                 ]
             );
         $this->add_definition($method, $file, $start_line, $end_line);
@@ -162,16 +169,17 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _function($name, $file, $start_line, $end_line, $namespace = null) {
+    public function _function($name, $file, $start_line, $end_line, $namespace = null)
+    {
         assert('is_string($name)');
         assert('$file->type() == "file"');
         assert('is_int($start_line)');
         assert('is_int($end_line)');
         assert('$namespace === null || $namespace->type() == "namespace"');
 
-        $function = $this->create_node
-            ( "function"
-            ,   [ "name" => $name
+        $function = $this->create_node(
+                "function",
+                [ "name" => $name
                 ]
             );
         $this->add_definition($function, $file, $start_line, $end_line, $namespace);
@@ -182,7 +190,8 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _global($name) {
+    public function _global($name)
+    {
         assert('is_string($name)');
 
         if (array_key_exists($name, $this->globals)) {
@@ -198,7 +207,8 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _language_construct($name) {
+    public function _language_construct($name)
+    {
         assert('is_string($name)');
 
         if (array_key_exists($name, $this->language_constructs)) {
@@ -214,23 +224,24 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _method_reference($name, $file, $line, $column) {
+    public function _method_reference($name, $file, $line, $column)
+    {
         assert('is_string($name)');
         assert('$file->type() == "file"');
         assert('is_int($line)');
 
-        $key = $name."_".$file->property("path")."_".$line."_".$column;
+        $key = $name . "_" . $file->property("path") . "_" . $line . "_" . $column;
 
         if (array_key_exists($key, $this->method_references)) {
             return $this->method_references[$key];
         }
 
         $method = $this->create_node("method reference", ["name" => $name]);
-        $this->add_relation
-            ( $method
-            , "referenced at"
-            , ["line" => $line, "column" => $column]
-            , $file
+        $this->add_relation(
+                $method,
+                "referenced at",
+                ["line" => $line, "column" => $column],
+                $file
             );
 
         $this->method_references[$key] = $method;
@@ -240,23 +251,24 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _function_reference($name, $file, $line, $column) {
+    public function _function_reference($name, $file, $line, $column)
+    {
         assert('is_string($name)');
         assert('$file->type() == "file"');
         assert('is_int($line)');
 
-        $key = $name."_".$file->property("path")."_".$line."_".$column;
+        $key = $name . "_" . $file->property("path") . "_" . $line . "_" . $column;
 
         if (array_key_exists($key, $this->function_references)) {
             return $this->function_references[$key];
         }
 
         $function = $this->create_node("function reference", ["name" => $name]);
-        $this->add_relation
-            ( $function
-            , "referenced at"
-            , ["line" => $line, "column" => $column]
-            , $file
+        $this->add_relation(
+                $function,
+                "referenced at",
+                ["line" => $line, "column" => $column],
+                $file
             );
 
         $this->function_references[$key] = $function;
@@ -266,7 +278,8 @@ class IndexDB extends Graph implements Insert, Index {
     /**
      * @inheritdocs
      */
-    public function _relation($left_entity, $relation, $right_entity, $file, $line) {
+    public function _relation($left_entity, $relation, $right_entity, $file, $line)
+    {
         assert('$left_entity instanceof \\Lechimp\\Dicto\\Graph\\Node');
         assert('$right_entity instanceof \\Lechimp\\Dicto\\Graph\\Node');
         assert('is_string($relation)');
@@ -286,16 +299,17 @@ class IndexDB extends Graph implements Insert, Index {
 
     // Helper
 
-    protected function add_definition(Node $n, Node $file, $start_line, $end_line, Node $namespace = null) {
+    protected function add_definition(Node $n, Node $file, $start_line, $end_line, Node $namespace = null)
+    {
         assert('$namespace === null || $namespace->type() == "namespace"');
         assert('$n->type() !== "method" || $namespace === null');
-        $this->add_relation
-            ( $n
-            , "defined in"
-            ,   [ "start_line" => $start_line
+        $this->add_relation(
+                $n,
+                "defined in",
+                [ "start_line" => $start_line
                 , "end_line" => $end_line
-                ]
-            , $file
+                ],
+                $file
             );
         if ($namespace !== null) {
             $this->add_relation($n, "contained in", [], $namespace);

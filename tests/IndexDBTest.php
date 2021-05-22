@@ -14,8 +14,10 @@ use Lechimp\Dicto\Graph;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
-class _GraphIndexDB extends Graph\IndexDB {
-    public function flush_caches() {
+class _GraphIndexDB extends Graph\IndexDB
+{
+    public function flush_caches()
+    {
         $this->globals = [];
         $this->language_constructs = [];
         $this->method_references = [];
@@ -23,42 +25,48 @@ class _GraphIndexDB extends Graph\IndexDB {
     }
 }
 
-class _IndexDB extends IndexDB {
-    protected function build_graph_index_db() {
+class _IndexDB extends IndexDB
+{
+    protected function build_graph_index_db()
+    {
         return new _GraphIndexDB();
     }
 }
 
-class IndexDBTest extends \PHPUnit\Framework\TestCase {
-    public function setUp() : void {
+class IndexDBTest extends \PHPUnit\Framework\TestCase
+{
+    public function setUp() : void
+    {
         $this->connection = DriverManager::getConnection(
             [ "driver" => "pdo_sqlite"
             , "memory" => true
-            ]);
+            ]
+        );
         $this->db1 = new _IndexDB($this->connection);
         $this->db1->init_database_schema();
         $this->db2 = new _IndexDB($this->connection);
     }
 
-    public function test_read_write_db() {
+    public function test_read_write_db()
+    {
         $in_memory = new _GraphIndexDB();
-        $build = function($db) {
+        $build = function ($db) {
             $file = $db->_file("source.php", "<?php echo \"Hello World!\";");
             $namespace = $db->_namespace("ANamespace");
-            $class1 = $db->_class("AClass", $file, 1,1);
-            $class2 = $db->_class("AnotherClass", $file, 1,1, $namespace);
-            $interface1 = $db->_class("AnInterface", $file, 1,1);
-            $interface2 = $db->_class("AnotherInterface", $file, 1,1, $namespace);
-            $trait1 = $db->_class("AnTrait", $file, 1,1);
-            $trait2 = $db->_class("AnotherTrait", $file, 1,1, $namespace);
-            $db->_method("a_method", $class1, $file, 1,1);
-            $db->_method("a_method", $class2, $file, 1,1);
-            $db->_method("another_method", $interface1, $file, 1,1);
-            $db->_method("another_method", $interface2, $file, 1,1);
-            $db->_method("another_method", $trait1, $file, 1,1);
-            $db->_method("another_method", $trait2, $file, 1,1);
-            $db->_function("a_function", $file, 1,1);
-            $db->_function("another_function", $file, 1,1, $namespace);
+            $class1 = $db->_class("AClass", $file, 1, 1);
+            $class2 = $db->_class("AnotherClass", $file, 1, 1, $namespace);
+            $interface1 = $db->_class("AnInterface", $file, 1, 1);
+            $interface2 = $db->_class("AnotherInterface", $file, 1, 1, $namespace);
+            $trait1 = $db->_class("AnTrait", $file, 1, 1);
+            $trait2 = $db->_class("AnotherTrait", $file, 1, 1, $namespace);
+            $db->_method("a_method", $class1, $file, 1, 1);
+            $db->_method("a_method", $class2, $file, 1, 1);
+            $db->_method("another_method", $interface1, $file, 1, 1);
+            $db->_method("another_method", $interface2, $file, 1, 1);
+            $db->_method("another_method", $trait1, $file, 1, 1);
+            $db->_method("another_method", $trait2, $file, 1, 1);
+            $db->_function("a_function", $file, 1, 1);
+            $db->_function("another_function", $file, 1, 1, $namespace);
             $db->_global("a_global");
             $db->_language_construct("@");
             $method_reference = $db->_method_reference("a_method", $file, 1, 2);

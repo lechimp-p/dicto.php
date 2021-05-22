@@ -8,12 +8,15 @@
  * a copy of the license along with the code.
  */
 
-class IndexesTwice {
-    public function indexes_twice() {
+class IndexesTwice
+{
+    public function indexes_twice()
+    {
         return $foo["bar"]["batz"];
     }
 
-    public function indexes_GLOBAL_twice() {
+    public function indexes_GLOBAL_twice()
+    {
         return $GLOBALS["glob"]["bar"];
     }
 }

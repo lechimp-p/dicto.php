@@ -11,33 +11,35 @@
 use Lechimp\Dicto\Definition\Symbol;
 use Lechimp\Dicto\Definition\ParserException;
 
-class SymbolTest extends \PHPUnit\Framework\TestCase {
-    public function test_valid_regexp_only() {
+class SymbolTest extends \PHPUnit\Framework\TestCase
+{
+    public function test_valid_regexp_only()
+    {
         try {
             new Symbol("(a", 10);
             $this->assertFalse("This should not happen.");
-        }
-        catch (\InvalidArgumentException $e) {
+        } catch (\InvalidArgumentException $e) {
             $this->assertTrue(true);
         }
     }
 
-    public function test_no_null_denotation() {
+    public function test_no_null_denotation()
+    {
         $s = new Symbol("a", 10);
         try {
             $arr = array("match");
             $s->null_denotation($arr);
             $this->assertFalse("This should not happen.");
-        }
-        catch (ParserException $e) {
+        } catch (ParserException $e) {
             $this->assertTrue(true);
         }
     }
 
 
-    public function test_null_denotation() {
+    public function test_null_denotation()
+    {
         $s = new Symbol("a", 10);
-        $s2 = $s->null_denotation_is(function(array $match) {
+        $s2 = $s->null_denotation_is(function (array $match) {
             return $match[0];
         });
 
@@ -48,22 +50,23 @@ class SymbolTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals("match", $res);
     }
 
-    public function test_no_left_denotation() {
+    public function test_no_left_denotation()
+    {
         $s = new Symbol("a", 10);
         try {
             $arr = array("match");
             $s->left_denotation("foo", $arr);
             $this->assertFalse("This should not happen.");
-        }
-        catch (ParserException $e) {
+        } catch (ParserException $e) {
             $this->assertTrue(true);
         }
     }
 
 
-    public function test_left_denotation() {
+    public function test_left_denotation()
+    {
         $s = new Symbol("a", 10);
-        $s2 = $s->left_denotation_is(function($left, array $match) {
+        $s2 = $s->left_denotation_is(function ($left, array $match) {
             return $left + $match[0];
         });
 

@@ -12,11 +12,13 @@ use Lechimp\Dicto\Regexp;
 use Lechimp\Dicto\Rules;
 use Lechimp\Dicto\Variables as Vars;
 
-class ExplainTest extends \PHPUnit\Framework\TestCase {
+class ExplainTest extends \PHPUnit\Framework\TestCase
+{
     /**
      * @dataProvider    explainable_provider
      */
-    public function test_explain($explainable) {
+    public function test_explain($explainable)
+    {
         $this->assertEquals("", $explainable->explanation());
         $explained = $explainable->withExplanation("EXPLANATION");
         $this->assertEquals(get_class($explainable), get_class($explained));
@@ -25,15 +27,18 @@ class ExplainTest extends \PHPUnit\Framework\TestCase {
         if ($explainable instanceof Vars\Variable) {
             foreach ($methods as $m) {
                 if ($m == "__construct"
-                ||  $m == "explanation"
-                ||  $m == "withName"
+                || $m == "explanation"
+                || $m == "withName"
                 || $m == "is_type"
                 || $m == "withExplanation"
                 || $m == "compile") {
                     continue;
                 }
-                $this->assertEquals($explainable->$m(), $explained->$m(),
-                                    "property '$m' should match");
+                $this->assertEquals(
+                    $explainable->$m(),
+                    $explained->$m(),
+                    "property '$m' should match"
+                );
             }
         }
         if ($explained instanceof Rules\Rule) {
@@ -44,9 +49,9 @@ class ExplainTest extends \PHPUnit\Framework\TestCase {
         }
     }
 
-    public function explainable_provider() {
-        $base = array
-            ( new Vars\Classes("CLASSES")
+    public function explainable_provider()
+    {
+        $base = array( new Vars\Classes("CLASSES")
             , new Vars\Interfaces("INTERFACES")
             , new Vars\Functions("FUNCTIONS")
             , new Vars\Globals("GLOBALS")
@@ -60,11 +65,10 @@ class ExplainTest extends \PHPUnit\Framework\TestCase {
         $explainable = array();
         foreach ($base as $b) {
             $explainable[] = array($b);
-            $explainable[] = array
-                ( new Vars\WithProperty
-                    ( $b
-                    , new Vars\Name()
-                    , array(new Regexp("the_name"))
+            $explainable[] = array( new Vars\WithProperty(
+                        $b,
+                        new Vars\Name(),
+                        array(new Regexp("the_name"))
                     )
                 );
             foreach ($base as $b2) {
@@ -75,28 +79,25 @@ class ExplainTest extends \PHPUnit\Framework\TestCase {
             }
         }
 
-        $explainable[] = array
-            ( new Rules\Rule
-                ( Rules\Rule::MODE_CANNOT
-                , new Vars\Classes("CLASSES")
-                , new Rules\ContainText()
-                , array(new Regexp("foo"))
+        $explainable[] = array( new Rules\Rule(
+                    Rules\Rule::MODE_CANNOT,
+                    new Vars\Classes("CLASSES"),
+                    new Rules\ContainText(),
+                    array(new Regexp("foo"))
                 )
             );
-        $explainable[] = array
-            ( new Rules\Rule
-                ( Rules\Rule::MODE_ONLY_CAN
-                , new Vars\Functions("FUNCTIONS")
-                , new Rules\DependOn()
-                , array(new Vars\Methods("METHODS"))
+        $explainable[] = array( new Rules\Rule(
+                    Rules\Rule::MODE_ONLY_CAN,
+                    new Vars\Functions("FUNCTIONS"),
+                    new Rules\DependOn(),
+                    array(new Vars\Methods("METHODS"))
                 )
             );
-        $explainable[] = array
-            ( new Rules\Rule
-                ( Rules\Rule::MODE_ONLY_CAN
-                , new Vars\Globals("GLOBALS")
-                , new Rules\Invoke()
-                , array(new Vars\ErrorSuppressor("ERROR_SUPPRESSOR"))
+        $explainable[] = array( new Rules\Rule(
+                    Rules\Rule::MODE_ONLY_CAN,
+                    new Vars\Globals("GLOBALS"),
+                    new Rules\Invoke(),
+                    array(new Vars\ErrorSuppressor("ERROR_SUPPRESSOR"))
                 )
             );
 

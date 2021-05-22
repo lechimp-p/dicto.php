@@ -5,7 +5,8 @@ namespace Lechimp\Dicto\Report;
 /**
  * Configuration for a concrete report.
  */
-class Config {
+class Config
+{
     /**
      * @var string
      */
@@ -45,7 +46,8 @@ class Config {
      * @param   string|null $source_path of the report class if it needs to be loaded
      *                      explicitely
      */
-    public function __construct($path, $class_name, $target = null, array $config = [], $name = null, $source_path = null) {
+    public function __construct($path, $class_name, $target = null, array $config = [], $name = null, $source_path = null)
+    {
         assert('is_string($path)');
         assert('is_string($class_name)');
         assert('is_string($target) || is_null($target)');
@@ -62,28 +64,32 @@ class Config {
     /**
      * @return  string
      */
-    public function name() {
+    public function name()
+    {
         return $this->name;
     }
 
     /**
      * @return string
      */
-    public function path() {
+    public function path()
+    {
         return $this->path;
     }
 
     /**
      * @return string
      */
-    public function class_name() {
+    public function class_name()
+    {
         return $this->class_name;
     }
 
     /**
      * @return string
      */
-    public function target() {
+    public function target()
+    {
         return $this->target;
     }
 
@@ -91,7 +97,8 @@ class Config {
      * @param   string
      * @return  self
      */
-    public function with_target($target) {
+    public function with_target($target)
+    {
         assert('is_string($target)');
         $clone = clone $this;
         $clone->target = $target;
@@ -101,14 +108,16 @@ class Config {
     /**
      * @return array
      */
-    public function config() {
+    public function config()
+    {
         return $this->config;
     }
 
     /**
      * @return string
      */
-    public function source_path() {
+    public function source_path()
+    {
         return $this->source_path;
     }
 }

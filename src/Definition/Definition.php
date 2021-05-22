@@ -1,19 +1,20 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
 namespace Lechimp\Dicto\Definition;
 
 /**
- * Base class for all definitions. 
+ * Base class for all definitions.
  */
-abstract class Definition {
+abstract class Definition
+{
     /**
      * @var string|null
      */
@@ -23,7 +24,8 @@ abstract class Definition {
      * @param   string
      * return   self
      */
-    public function withExplanation($explanation) {
+    public function withExplanation($explanation)
+    {
         $clone = clone $this;
         $clone->explanation = $explanation;
         return $clone;
@@ -32,8 +34,8 @@ abstract class Definition {
     /**
      * @return  string|null
      */
-    public function explanation() {
+    public function explanation()
+    {
         return $this->explanation;
     }
 }
-

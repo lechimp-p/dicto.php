@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -13,13 +13,15 @@ namespace Lechimp\Dicto\Graph;
 /**
  * Factory for Predicates on Nodes.
  */
-class PredicateFactory {
+class PredicateFactory
+{
     /**
      * A predicate that is always true.
      *
      * @return  Predicate
      */
-    public function _true() {
+    public function _true()
+    {
         return new Predicate\_True();
     }
 
@@ -28,7 +30,8 @@ class PredicateFactory {
      *
      * @return  Predicate
      */
-    public function _false() {
+    public function _false()
+    {
         return new Predicate\_False();
     }
 
@@ -39,10 +42,10 @@ class PredicateFactory {
      * @throws  \InvalidArgumentException   if count($predicates) == 0
      * @return  Predicate
      */
-    public function _and(array $predicates) {
+    public function _and(array $predicates)
+    {
         if (count($predicates) == 0) {
-            throw new \InvalidArgumentException
-                ("Predicates for _and can not be empty.");
+            throw new \InvalidArgumentException("Predicates for _and can not be empty.");
         }
         if (count($predicates) == 1) {
             return array_shift($predicates);
@@ -56,10 +59,10 @@ class PredicateFactory {
      * @param   Predicate[]     $predicates
      * @return  Predicate
      */
-    public function _or(array $predicates) {
+    public function _or(array $predicates)
+    {
         if (count($predicates) == 0) {
-            throw new \InvalidArgumentException
-                ("Predicates for _or can not be empty.");
+            throw new \InvalidArgumentException("Predicates for _or can not be empty.");
         }
         if (count($predicates) == 1) {
             return array_shift($predicates);
@@ -73,7 +76,8 @@ class PredicateFactory {
      * @param   Predicate       $predicate
      * @return  Predicate
      */
-    public function _not(Predicate $predicate) {
+    public function _not(Predicate $predicate)
+    {
         return new Predicate\_Not($predicate);
     }
 
@@ -83,7 +87,8 @@ class PredicateFactory {
      * @param   string      $type
      * @return  Predicate
      */
-    public function _type_is($type) {
+    public function _type_is($type)
+    {
         return new Predicate\_TypeIs($type);
     }
 
@@ -93,7 +98,8 @@ class PredicateFactory {
      * @param   string      $name
      * @return  PropertyPredicate
      */
-    public function _property($name) {
+    public function _property($name)
+    {
         return new PropertyPredicateFactory($name);
     }
 
@@ -103,7 +109,8 @@ class PredicateFactory {
      * @param   \Closure    $predicate Entity -> bool
      * @return  Predicate
      */
-    public function _custom(\Closure $predicate) {
+    public function _custom(\Closure $predicate)
+    {
         return new Predicate\_Custom($predicate);
     }
 }

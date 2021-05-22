@@ -17,11 +17,13 @@ use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Psr\Log\LogLevel;
 
-require_once(__DIR__."/LoggerMock.php");
-require_once(__DIR__."/AnalysisListenerMock.php");
+require_once(__DIR__ . "/LoggerMock.php");
+require_once(__DIR__ . "/AnalysisListenerMock.php");
 
-class AnalyzerTest extends \PHPUnit\Framework\TestCase {
-    public function setUp() : void {
+class AnalyzerTest extends \PHPUnit\Framework\TestCase
+{
+    public function setUp() : void
+    {
         $this->al = new AnalysisListenerMock();
         $this->log = new LoggerMock();
         $this->query_mocks = [];
@@ -31,7 +33,7 @@ class AnalyzerTest extends \PHPUnit\Framework\TestCase {
             ->getMock();
         $this->index
             ->method("query")
-            ->will($this->returnCallback(function() {
+            ->will($this->returnCallback(function () {
                 $methods =
                     [ "expand"
                     , "extract"
@@ -59,18 +61,19 @@ class AnalyzerTest extends \PHPUnit\Framework\TestCase {
             }));
     }
 
-    public function test_logging() {
-        $rule1 = new R\Rule
-            ( R\Rule::MODE_CANNOT
-            , new V\Classes("allClasses")
-            , new R\ContainText()
-            , array(new Regexp("foo"))
+    public function test_logging()
+    {
+        $rule1 = new R\Rule(
+                R\Rule::MODE_CANNOT,
+                new V\Classes("allClasses"),
+                new R\ContainText(),
+                array(new Regexp("foo"))
             );
-        $rule2 = new R\Rule
-            ( R\Rule::MODE_CANNOT
-            , new V\Functions("allFunctions")
-            , new R\DependOn()
-            , array(new V\Methods("allMethods"))
+        $rule2 = new R\Rule(
+                R\Rule::MODE_CANNOT,
+                new V\Functions("allFunctions"),
+                new R\DependOn(),
+                array(new V\Methods("allMethods"))
             );
         $vars = array_merge($rule1->variables(), $rule2->variables());
 
@@ -78,10 +81,10 @@ class AnalyzerTest extends \PHPUnit\Framework\TestCase {
         $analyzer = new Analyzer($this->log, $ruleset, $this->index, $this->al);
         $analyzer->run();
 
-        $expected = array(LogLevel::INFO, "checking: ".$rule1->pprint(), array());
+        $expected = array(LogLevel::INFO, "checking: " . $rule1->pprint(), array());
         $this->assertContains($expected, $this->log->log);
 
-        $expected = array(LogLevel::INFO, "checking: ".$rule2->pprint(), array());
+        $expected = array(LogLevel::INFO, "checking: " . $rule2->pprint(), array());
         $this->assertContains($expected, $this->log->log);
     }
 }

@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -19,7 +19,8 @@ use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 /**
  * Configuration for the app and engine.
  */
-class Config implements ConfigurationInterface {
+class Config implements ConfigurationInterface
+{
     /**
      * @var string
      */
@@ -40,7 +41,8 @@ class Config implements ConfigurationInterface {
      *
      * @param   string  $path
      */
-    public function __construct($path, array $values) {
+    public function __construct($path, array $values)
+    {
         assert('is_string($path)');
         if (substr($path, strlen($path) - 1, 1) == "/") {
             $path = substr($path, 0, strlen($path) - 1);
@@ -55,7 +57,8 @@ class Config implements ConfigurationInterface {
      *
      * @inheritdocs
      */
-    public function getConfigTreeBuilder() {
+    public function getConfigTreeBuilder()
+    {
         $tree_builder = new TreeBuilder("dicto");
         $root = $tree_builder->getRootNode();
         $c = $root->children();
@@ -68,7 +71,8 @@ class Config implements ConfigurationInterface {
         return $tree_builder;
     }
 
-    protected function add_project_node($c) {
+    protected function add_project_node($c)
+    {
         $c->arrayNode("project")
             ->children()
                 ->scalarNode("root")
@@ -84,7 +88,8 @@ class Config implements ConfigurationInterface {
         ->end();
     }
 
-    protected function add_analysis_node($c) {
+    protected function add_analysis_node($c)
+    {
         $c->arrayNode("analysis")
             ->children()
                 ->arrayNode("ignore")
@@ -103,14 +108,14 @@ class Config implements ConfigurationInterface {
         ->end();
     }
 
-    protected function add_rules_node($c) {
+    protected function add_rules_node($c)
+    {
         $c->arrayNode("rules")
             ->children()
                 ->arrayNode("schemas")
                     ->prototype("scalar")
                     ->end()
-                    ->defaultValue
-                        ([\Lechimp\Dicto\Rules\DependOn::class
+                    ->defaultValue([\Lechimp\Dicto\Rules\DependOn::class
                         , \Lechimp\Dicto\Rules\Invoke::class
                         , \Lechimp\Dicto\Rules\ContainText::class
                         ])
@@ -118,16 +123,14 @@ class Config implements ConfigurationInterface {
                 ->arrayNode("properties")
                     ->prototype("scalar")
                     ->end()
-                    ->defaultValue
-                        ([\Lechimp\Dicto\Variables\Name::class
+                    ->defaultValue([\Lechimp\Dicto\Variables\Name::class
                         , \Lechimp\Dicto\Variables\In::class
                         ])
                 ->end()
                 ->arrayNode("variables")
                     ->prototype("scalar")
                     ->end()
-                    ->defaultValue
-                        ([\Lechimp\Dicto\Variables\Everything::class
+                    ->defaultValue([\Lechimp\Dicto\Variables\Everything::class
                         , \Lechimp\Dicto\Variables\Namespaces::class
                         , \Lechimp\Dicto\Variables\Classes::class
                         , \Lechimp\Dicto\Variables\Interfaces::class
@@ -146,7 +149,8 @@ class Config implements ConfigurationInterface {
         ->end();
     }
 
-    protected function add_runtime_node($c) {
+    protected function add_runtime_node($c)
+    {
         $c->arrayNode("runtime")
             ->children()
                 ->booleanNode("check_assertions")
@@ -157,7 +161,8 @@ class Config implements ConfigurationInterface {
         ->end();
     }
 
-    protected function add_reports_node($c) {
+    protected function add_reports_node($c)
+    {
         $c->arrayNode("reports")
             ->prototype("array")
                 ->children()
@@ -183,14 +188,16 @@ class Config implements ConfigurationInterface {
     /**
      * @return  string
      */
-    public function path() {
+    public function path()
+    {
         return $this->path;
     }
 
-    protected function maybe_prepend_path($path) {
+    protected function maybe_prepend_path($path)
+    {
         assert('is_string($path)');
         if (substr($path, 0, 2) === "./") {
-            return $this->path()."/".substr($path, 2);
+            return $this->path() . "/" . substr($path, 2);
         }
         return $path;
     }
@@ -198,89 +205,100 @@ class Config implements ConfigurationInterface {
     /**
      * @return  string
      */
-    public function project_rules() {
+    public function project_rules()
+    {
         return $this->maybe_prepend_path($this->values["project"]["rules"]);
     }
 
     /**
      * @return  string
      */
-    public function project_root() {
+    public function project_root()
+    {
         return $this->maybe_prepend_path($this->values["project"]["root"]);
     }
 
     /**
      * @return  string
      */
-    public function project_storage() {
+    public function project_storage()
+    {
         return $this->maybe_prepend_path($this->values["project"]["storage"]);
     }
 
     /**
      * @return  string[]
      */
-    public function analysis_ignore() {
+    public function analysis_ignore()
+    {
         return $this->values["analysis"]["ignore"];
     }
 
     /**
      * @return  bool
      */
-    public function analysis_store_index() {
+    public function analysis_store_index()
+    {
         return $this->values["analysis"]["store_index"];
     }
 
     /**
      * @return  bool
      */
-    public function analysis_store_results() {
+    public function analysis_store_results()
+    {
         return $this->values["analysis"]["store_results"];
     }
 
     /**
      * @return  string[]
      */
-    public function rules_schemas() {
+    public function rules_schemas()
+    {
         return $this->values["rules"]["schemas"];
     }
 
     /**
      * @return  string[]
      */
-    public function rules_properties() {
+    public function rules_properties()
+    {
         return $this->values["rules"]["properties"];
     }
 
     /**
      * @return  string[]
      */
-    public function rules_variables() {
+    public function rules_variables()
+    {
         return $this->values["rules"]["variables"];
     }
 
     /**
      * @return  bool
      */
-    public function runtime_check_assertions() {
+    public function runtime_check_assertions()
+    {
         return $this->values["runtime"]["check_assertions"];
     }
 
     /**
      * @return Report\Config[]
      */
-    public function reports() {
+    public function reports()
+    {
         if ($this->reports !== null) {
             return $this->reports;
         }
         $this->reports = [];
         foreach ($this->values["reports"] as $rep) {
-            $this->reports[] = new Report\Config
-                ( $this->path()
-                , $rep["class"]
-                , $rep["target"]
-                , $rep["config"]
-                , $rep["name"]
-                , $rep["source"]
+            $this->reports[] = new Report\Config(
+                    $this->path(),
+                    $rep["class"],
+                    $rep["target"],
+                    $rep["config"],
+                    $rep["name"],
+                    $rep["source"]
                 );
         }
         return $this->reports;

@@ -10,12 +10,14 @@
 
 use Lechimp\Dicto;
 
-require_once(__DIR__."/IndexerExpectations.php");
+require_once(__DIR__ . "/IndexerExpectations.php");
 
-class IndexerTest extends \PHPUnit\Framework\TestCase {
+class IndexerTest extends \PHPUnit\Framework\TestCase
+{
     use IndexerExpectations;
 
-    public function test_file_empty() {
+    public function test_file_empty()
+    {
         $source = <<<PHP
 <?php
 PHP;
@@ -28,7 +30,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_class_definition() {
+    public function test_class_definition()
+    {
         $source = <<<PHP
 <?php
 
@@ -46,7 +49,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_method_definition() {
+    public function test_method_definition()
+    {
         $source = <<<PHP
 <?php
 
@@ -68,7 +72,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_function_definition() {
+    public function test_function_definition()
+    {
         $source = <<<PHP
 <?php
 
@@ -86,7 +91,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_interface_definition() {
+    public function test_interface_definition()
+    {
         $source = <<<PHP
 <?php
 
@@ -104,7 +110,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_method_in_interface() {
+    public function test_method_in_interface()
+    {
         $source = <<<PHP
 <?php
 
@@ -126,7 +133,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_trait_definition() {
+    public function test_trait_definition()
+    {
         $source = <<<PHP
 <?php
 
@@ -144,7 +152,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_method_in_trait() {
+    public function test_method_in_trait()
+    {
         $source = <<<PHP
 <?php
 
@@ -166,7 +175,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_class_in_namespace_1() {
+    public function test_class_in_namespace_1()
+    {
         $source = <<<PHP
 <?php
 namespace SomeNamespace;
@@ -187,7 +197,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_class_in_namespace_2() {
+    public function test_class_in_namespace_2()
+    {
         $source = <<<PHP
 <?php
 namespace SomeNamespace {
@@ -208,7 +219,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_class_in_nested_namespace() {
+    public function test_class_in_nested_namespace()
+    {
         $source = <<<PHP
 <?php
 namespace Some\\NestedNamespace;
@@ -229,7 +241,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_interface_in_namespace() {
+    public function test_interface_in_namespace()
+    {
         $source = <<<PHP
 <?php
 namespace SomeNamespace;
@@ -250,7 +263,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_trait_in_namespace() {
+    public function test_trait_in_namespace()
+    {
         $source = <<<PHP
 <?php
 namespace SomeNamespace;
@@ -271,7 +285,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_class_and_method_in_namespace() {
+    public function test_class_and_method_in_namespace()
+    {
         $source = <<<PHP
 <?php
 namespace SomeNamespace;
@@ -296,7 +311,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_file_with_mixed_namespace() {
+    public function test_file_with_mixed_namespace()
+    {
         $source = <<<PHP
 <?php
 namespace SomeNamespace {
@@ -316,33 +332,31 @@ PHP;
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_namespace")
-            ->withConsecutive
-                (["SomeNamespace"]
-                ,["SomeOtherNamespace"]
+            ->withConsecutive(
+                    ["SomeNamespace"],
+                    ["SomeOtherNamespace"]
                 )
-            ->willReturnOnConsecutiveCalls
-                ( "namespace123"
-                , "namespace456"
+            ->willReturnOnConsecutiveCalls(
+                    "namespace123",
+                    "namespace456"
                 );
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_class")
-            ->withConsecutive
-                ([$this->equalTo("AClass")
+            ->withConsecutive([$this->equalTo("AClass")
                 , $this->equalTo("file23")
                 , $this->equalTo(3)
                 , $this->equalTo(4)
                 , $this->equalTo("namespace123")
-                ]
-                ,[$this->equalTo("BClass")
+                ], [$this->equalTo("BClass")
                 , $this->equalTo("file23")
                 , $this->equalTo(8)
                 , $this->equalTo(9)
                 , $this->equalTo("namespace456")
                 ])
-            ->willReturnOnConsecutiveCalls
-                ( "class1"
-                , "class2"
+            ->willReturnOnConsecutiveCalls(
+                    "class1",
+                    "class2"
                 );
 
         $indexer = $this->indexer($insert_mock);
@@ -350,7 +364,8 @@ PHP;
     }
 
     // IMHO no one should do this, but it is allowed anyway.
-    public function test_inline_function_definition() {
+    public function test_inline_function_definition()
+    {
         $source = <<<PHP
 <?php
 class AClass{
@@ -376,7 +391,8 @@ PHP;
     }
 
     // IMHO no one should do this, but it is allowed anyway.
-    public function test_inline_function_definition_and_after() {
+    public function test_inline_function_definition_and_after()
+    {
         $source = <<<PHP
 <?php
 class AClass{
@@ -397,21 +413,18 @@ PHP;
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_method")
-            ->withConsecutive
-                ([$this->equalTo("a_method")
+            ->withConsecutive([$this->equalTo("a_method")
                 , $this->equalTo("class42")
                 , $this->equalTo("file23")
                 , $this->equalTo(3)
                 , $this->equalTo(6)
-                ]
-                ,[$this->equalTo("another_method")
+                ], [$this->equalTo("another_method")
                 , $this->equalTo("class42")
                 , $this->equalTo("file23")
                 , $this->equalTo(7)
                 , $this->equalTo(8)
                 ])
-            ->willReturnOnConsecutiveCalls
-                ("a_method", "b_method");
+            ->willReturnOnConsecutiveCalls("a_method", "b_method");
         $this->expect_function($insert_mock, "a_function", "file23", 4, 5)
             ->willReturn("function666");
 
@@ -419,7 +432,8 @@ PHP;
         $indexer->index_content("source.php", $source);
     }
 
-    public function test_anonymous_class() {
+    public function test_anonymous_class()
+    {
         $source = <<<PHP
 <?php
 class AClass{
@@ -439,38 +453,32 @@ PHP;
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_class")
-            ->withConsecutive
-                ([$this->equalTo("AClass")
+            ->withConsecutive([$this->equalTo("AClass")
                 , $this->equalTo("file23")
                 , $this->equalTo(2)
                 , $this->equalTo(9)
-                ]
-                ,[$this->equalTo("")
+                ], [$this->equalTo("")
                 , $this->equalTo("file23")
                 , $this->equalTo(4)
                 , $this->equalTo(7)
                 ])
-            ->willReturnOnConsecutiveCalls
-                ("class42", "class19");
+            ->willReturnOnConsecutiveCalls("class42", "class19");
 
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_method")
-            ->withConsecutive
-                ([$this->equalTo("a_method")
+            ->withConsecutive([$this->equalTo("a_method")
                 , $this->equalTo("class42")
                 , $this->equalTo("file23")
                 , $this->equalTo(3)
                 , $this->equalTo(8)
-                ]
-                ,[$this->equalTo("b_method")
+                ], [$this->equalTo("b_method")
                 , $this->equalTo("class19")
                 , $this->equalTo("file23")
                 , $this->equalTo(5)
                 , $this->equalTo(6)
                 ])
-            ->willReturnOnConsecutiveCalls
-                ("a_method", "b_method");
+            ->willReturnOnConsecutiveCalls("a_method", "b_method");
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $source);

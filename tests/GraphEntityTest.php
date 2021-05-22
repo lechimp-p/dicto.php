@@ -10,34 +10,40 @@
 
 use Lechimp\Dicto\Graph\Entity;
 
-class TestEntity extends Entity {
+class TestEntity extends Entity
+{
 }
 
-class GraphEntityTest extends \PHPUnit\Framework\TestCase {
-    public function test_type() {
+class GraphEntityTest extends \PHPUnit\Framework\TestCase
+{
+    public function test_type()
+    {
         $e = new TestEntity("a_type", array());
 
         $this->assertEquals("a_type", $e->type());
     }
 
-    public function test_properties() {
+    public function test_properties()
+    {
         $e = new TestEntity("a_type", ["prop" => "value"]);
 
         $this->assertEquals(["prop" => "value"], $e->properties());
     }
 
-    public function test_property() {
+    public function test_property()
+    {
         $e = new TestEntity("a_type", ["prop" => "value"]);
 
         $this->assertEquals("value", $e->property("prop"));
         try {
             $e->property("another_prop");
             $this->assertFalse("This should not happen.");
+        } catch (\InvalidArgumentException $e) {
         }
-        catch (\InvalidArgumentException $e) {}
     }
 
-    public function test_has_property() {
+    public function test_has_property()
+    {
         $e = new TestEntity("a_type", ["prop" => "value"]);
 
         $this->assertTrue($e->has_property("prop"));

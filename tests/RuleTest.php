@@ -20,11 +20,12 @@ use Lechimp\Dicto\Indexer\Insert;
 use Lechimp\Dicto\Indexer\Indexer;
 use PhpParser\ParserFactory;
 
-require_once(__DIR__."/LoggerMock.php");
-require_once(__DIR__."/AnalysisListenerMock.php");
-require_once(__DIR__."/IndexerExpectations.php");
+require_once(__DIR__ . "/LoggerMock.php");
+require_once(__DIR__ . "/AnalysisListenerMock.php");
+require_once(__DIR__ . "/IndexerExpectations.php");
 
-abstract class RuleTest extends \PHPUnit\Framework\TestCase {
+abstract class RuleTest extends \PHPUnit\Framework\TestCase
+{
     use IndexerExpectations;
 
     /**
@@ -32,39 +33,40 @@ abstract class RuleTest extends \PHPUnit\Framework\TestCase {
      */
     abstract public function schema();
 
-    protected function indexer(Insert $insert_mock) {
-        $lexer = new \PhpParser\Lexer\Emulative
-            (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
+    protected function indexer(Insert $insert_mock)
+    {
+        $lexer = new \PhpParser\Lexer\Emulative(["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
         $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         $logger_mock = new LoggerMock();
         $schema = $this->schema();
-        $indexer = new Indexer
-            ( $logger_mock
-            , $parser
-            , $insert_mock
-            , $schema instanceof ASTVisitor ? [$schema] : []
+        $indexer = new Indexer(
+                $logger_mock,
+                $parser,
+                $insert_mock,
+                $schema instanceof ASTVisitor ? [$schema] : []
             );
         return $indexer;
     }
 
-    public function setUp() : void {
+    public function setUp() : void
+    {
         $this->db = new IndexDB();
 
         $this->al = new AnalysisListenerMock();
         $this->log = new LoggerMock();
-        $lexer = new \PhpParser\Lexer\Emulative
-            (["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
+        $lexer = new \PhpParser\Lexer\Emulative(["usedAttributes" => ["comments", "startLine", "endLine", "startFilePos"]]);
         $this->parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7, $lexer);
         $schema = $this->schema();
-        $this->indexer = new Indexer
-            ( $this->log
-            , $this->parser
-            , $this->db
-            , $schema instanceof ASTVisitor ? [$schema] : []
+        $this->indexer = new Indexer(
+                $this->log,
+                $this->parser,
+                $this->db,
+                $schema instanceof ASTVisitor ? [$schema] : []
             );
     }
 
-    public function analyze(R\Rule $rule, $source) {
+    public function analyze(R\Rule $rule, $source)
+    {
         $this->indexer->index_content("source.php", $source);
 
         $ruleset = new R\Ruleset($rule->variables(), array($rule));
@@ -73,10 +75,10 @@ abstract class RuleTest extends \PHPUnit\Framework\TestCase {
         return $this->al->violations;
     }
 
-    public function parse($rules) {
-        $parser = new RuleBuilder
-            ( array
-                ( new V\Namespaces()
+    public function parse($rules)
+    {
+        $parser = new RuleBuilder(
+                array( new V\Namespaces()
                 , new V\Classes()
                 , new V\Interfaces()
                 , new V\Traits()
@@ -86,12 +88,10 @@ abstract class RuleTest extends \PHPUnit\Framework\TestCase {
                 , new V\Methods()
                 , new V\ErrorSuppressor()
                 , new V\ExitOrDie()
-                )
-            , array
-                ( $this->schema()
-                )
-            , array
-                ( new V\Name()
+                ),
+                array( $this->schema()
+                ),
+                array( new V\Name()
                 , new V\In()
                 )
             );

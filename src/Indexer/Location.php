@@ -13,7 +13,8 @@ namespace Lechimp\Dicto\Indexer;
 /**
  * Provides information on the location where something was detected.
  */
-interface Location {
+interface Location
+{
     /**
      * Get the handle to the file where the location is in.
      *
@@ -52,4 +53,3 @@ interface Location {
      */
     public function _column();
 }
-

@@ -5,13 +5,15 @@ namespace Lechimp\Dicto\Report;
 /**
  * Generates reports from configs.
  */
-class Generator {
+class Generator
+{
     /**
      * @var Queries
      */
     protected $queries;
 
-    public function __construct(Queries $queries) {
+    public function __construct(Queries $queries)
+    {
         $this->queries = $queries;
     }
 
@@ -21,7 +23,8 @@ class Generator {
      * @param   Config
      * @return  null
      */
-    public function generate(Config $config) {
+    public function generate(Config $config)
+    {
         $this->maybe_load_source($config->source_path());
         $report = $this->build_report($config);
         $handle = $this->open_handle($config->target());
@@ -35,7 +38,8 @@ class Generator {
      * @param   string|null $path
      * @return  null
      */
-    protected function maybe_load_source($path) {
+    protected function maybe_load_source($path)
+    {
         if ($path === null) {
             return;
         }
@@ -53,7 +57,8 @@ class Generator {
      * @throws  \RuntimeException if given class does not inherit from namespace.
      * @return  Report
      */
-    protected function build_report($config) {
+    protected function build_report($config)
+    {
         $class_name = $config->class_name();
         $fq_name = $this->fully_qualified_class_name($class_name);
         if (!class_exists($fq_name)) {
@@ -72,7 +77,8 @@ class Generator {
      * @param   string  $handle_name
      * @return  resource
      */
-    protected function open_handle($handle_name) {
+    protected function open_handle($handle_name)
+    {
         $handle = fopen($handle_name, "w");
         if (!$handle) {
             throw new \RuntimeException("Could not open handle '$handle_name'.");
@@ -92,7 +98,8 @@ class Generator {
      *
      * @return  string
      */
-    protected function fully_qualified_class_name($name) {
+    protected function fully_qualified_class_name($name)
+    {
         if (substr($name, 0, 1) == "\\") {
             return $name;
         }

@@ -12,7 +12,8 @@ namespace Lechimp\Dicto\DB;
 
 use Lechimp\Dicto\Report\ResultDB;
 
-class IndexDBFactory {
+class IndexDBFactory
+{
     /**
      * Create a new database for index at path.
      *
@@ -20,7 +21,8 @@ class IndexDBFactory {
      * @throws  \RuntimeException   if database already exists.
      * @return  IndexDB
      */
-    public function build_index_db($path) {
+    public function build_index_db($path)
+    {
         if (file_exists($path)) {
             throw new \RuntimeException("File at '$path' already exists, can't build database.");
         }
@@ -37,18 +39,20 @@ class IndexDBFactory {
      * @param   string  $path
      * @return  bool
      */
-    public function index_db_exists($path) {
+    public function index_db_exists($path)
+    {
         return file_exists($path);
     }
 
     /**
-     * Load existing index database. 
+     * Load existing index database.
      *
      * @param   string  $path
      * @throws  \RuntimeException   if file does not exist
-     * @return  IndexDB 
+     * @return  IndexDB
      */
-    public function load_index_db($path) {
+    public function load_index_db($path)
+    {
         if (!$this->index_db_exists($path)) {
             throw new \RuntimeException("There is no index database at '$path'");
         }

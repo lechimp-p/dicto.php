@@ -11,43 +11,49 @@
 use Lechimp\Dicto\Graph\Graph;
 use Lechimp\Dicto\Graph\Node;
 
-class GraphTest extends \PHPUnit\Framework\TestCase {
-    public function setUp() : void {
-        $this->g = new Graph(); 
+class GraphTest extends \PHPUnit\Framework\TestCase
+{
+    public function setUp() : void
+    {
+        $this->g = new Graph();
     }
 
-    public function test_add_nodes() {
+    public function test_add_nodes()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
         $ns = iterator_to_array($this->g->nodes());
 
         $this->assertCount(2, $ns);
-        $this->assertSame($n1, $ns[0]); 
-        $this->assertSame($n2, $ns[1]); 
+        $this->assertSame($n1, $ns[0]);
+        $this->assertSame($n2, $ns[1]);
         $this->assertInstanceOf(Node::class, $n1);
         $this->assertInstanceOf(Node::class, $n2);
     }
 
-    public function test_node_props() {
-        $props = 
+    public function test_node_props()
+    {
+        $props =
             [ "some" => "prop"
             , "some_oth" => "er_prop"
             ];
         $n1 = $this->g->create_node("a_type", $props);
 
         $this->assertEquals("a_type", $n1->type());
-        $this->assertEquals($props, $n1->properties()); 
+        $this->assertEquals($props, $n1->properties());
     }
 
-    public function test_node_ids() {
+    public function test_node_ids()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
         $this->assertEquals(0, $n1->id());
         $this->assertEquals(1, $n2->id());
-    } 
+    }
 
-    public function test_relation() {
+    public function test_relation()
+    {
         $l = $this->g->create_node("a_type", []);
         $r = $this->g->create_node("b_type", []);
         $props =
@@ -73,14 +79,16 @@ class GraphTest extends \PHPUnit\Framework\TestCase {
         $this->assertSame($l, $rel2->target());
     }
 
-    public function test_nodes() {
+    public function test_nodes()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
         $this->assertEquals([$n1,$n2], iterator_to_array($this->g->nodes()));
     }
 
-    public function test_filtered_nodes() {
+    public function test_filtered_nodes()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
         $matcher = $this->g->query()->predicate_factory()->_custom(function (Node $n) {
@@ -90,7 +98,8 @@ class GraphTest extends \PHPUnit\Framework\TestCase {
         $this->assertEquals([$n2], iterator_to_array($this->g->nodes($matcher)));
     }
 
-    public function test_node() {
+    public function test_node()
+    {
         $n1 = $this->g->create_node("a_type", []);
         $n2 = $this->g->create_node("b_type", []);
 
@@ -99,11 +108,12 @@ class GraphTest extends \PHPUnit\Framework\TestCase {
         try {
             $this->g->node(42);
             $this->assertFalse("This should not happen.");
+        } catch (\InvalidArgumentException $e) {
         }
-        catch (\InvalidArgumentException $e) {}
     }
 
-    public function test_no_initial_props() {
+    public function test_no_initial_props()
+    {
         $n1 = $this->g->create_node("a_type");
 
         $this->assertInstanceOf(Node::class, $n1);

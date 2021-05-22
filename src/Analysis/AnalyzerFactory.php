@@ -17,7 +17,8 @@ use Psr\Log\LoggerInterface as Log;
 /**
  * Creates analyzers.
  */
-class AnalyzerFactory {
+class AnalyzerFactory
+{
     /**
      * @var Log
      */
@@ -28,10 +29,10 @@ class AnalyzerFactory {
      */
     protected $ruleset;
 
-    public function __construct
-                        ( Log $log
-                        , Ruleset $ruleset
-                        ) {
+    public function __construct(
+        Log $log,
+        Ruleset $ruleset
+    ) {
         $this->log = $log;
         $this->ruleset = $ruleset;
     }
@@ -41,7 +42,8 @@ class AnalyzerFactory {
      * @param   Listener    $listener
      * @return  Analyzer
      */
-    public function build(Index $index, Listener $listener) {
+    public function build(Index $index, Listener $listener)
+    {
         return new Analyzer($this->log, $this->ruleset, $index, $listener);
     }
-} 
+}

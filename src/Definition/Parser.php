@@ -3,7 +3,7 @@
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
  *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
- * 
+ *
  * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
@@ -13,7 +13,8 @@ namespace Lechimp\Dicto\Definition;
 /**
  * Baseclass for Parsers.
  */
-abstract class Parser {
+abstract class Parser
+{
     /**
      * @var SymbolTable
      */
@@ -29,7 +30,8 @@ abstract class Parser {
      */
     protected $token = null;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->symbol_table = $this->create_symbol_table();
         $this->add_symbols_to($this->symbol_table);
     }
@@ -39,18 +41,17 @@ abstract class Parser {
      *
      * @return mixed
      */
-    public function parse($source) {
+    public function parse($source)
+    {
         try {
             $this->tokenizer = $this->create_tokenizer($source);
             $this->token = $this->tokenizer->current();
             return $this->root();
-        }
-        catch (ParserException $e) {
+        } catch (ParserException $e) {
             list($l, $c) = $this->tokenizer->source_position();
             $e->setPosition($l, $c);
             throw $e;
-        }
-        finally {
+        } finally {
             $this->tokenizer = null;
             $this->token = null;
         }
@@ -70,7 +71,8 @@ abstract class Parser {
      *
      * @return  Tokenizer
      */
-    public function create_tokenizer($source) {
+    public function create_tokenizer($source)
+    {
         assert('is_string($source)');
         return new Tokenizer($this->symbol_table, $source);
     }
@@ -80,7 +82,8 @@ abstract class Parser {
      *
      * @return SymbolTable
      */
-    protected function create_symbol_table() {
+    protected function create_symbol_table()
+    {
         return new SymbolTable();
     }
 
@@ -100,7 +103,8 @@ abstract class Parser {
      *
      * @return  null
      */
-    protected function fetch_next_token() {
+    protected function fetch_next_token()
+    {
         assert('is_array($this->token)');
         assert('$this->tokenizer !== null');
         $this->tokenizer->next();
@@ -112,16 +116,18 @@ abstract class Parser {
      *
      * @return  Symbol
      */
-    protected function current_symbol() {
+    protected function current_symbol()
+    {
         return $this->token[0];
     }
 
     /**
      * Get the current match.
      *
-     * @return  string[] 
+     * @return  string[]
      */
-    protected function current_match() {
+    protected function current_match()
+    {
         return $this->token[1];
     }
 
@@ -132,7 +138,8 @@ abstract class Parser {
      * @param   string  $regexp
      * @return  null
      */
-    protected function advance($regexp) {
+    protected function advance($regexp)
+    {
         assert('is_string($regexp)');
         assert('is_array($this->token)');
         assert('$this->tokenizer !== null');
@@ -151,7 +158,8 @@ abstract class Parser {
      * @param   string  $op
      * @return  null
      */
-    protected function advance_operator($op) {
+    protected function advance_operator($op)
+    {
         $this->advance($this->symbol_table->operator_regexp($op));
     }
 
@@ -160,7 +168,8 @@ abstract class Parser {
      *
      * @return  bool
      */
-    public function is_end_of_file_reached() {
+    public function is_end_of_file_reached()
+    {
         return $this->is_current_token_matched_by("");
     }
 
@@ -170,7 +179,8 @@ abstract class Parser {
      * @param   string  $regexp
      * @return  bool
      */
-    protected function is_current_token_matched_by($regexp) {
+    protected function is_current_token_matched_by($regexp)
+    {
         assert('is_string($regexp)');
         // Extra () for regexp are added by Symbol.
         return $this->token[0]->regexp()->raw() == "($regexp)";
@@ -182,8 +192,8 @@ abstract class Parser {
      * @param   string  $operator
      * @return  bool
      */
-    protected function is_current_token_operator($operator) {
-        return $this->is_current_token_matched_by
-            ($this->symbol_table->operator_regexp($operator));
+    protected function is_current_token_operator($operator)
+    {
+        return $this->is_current_token_matched_by($this->symbol_table->operator_regexp($operator));
     }
 }

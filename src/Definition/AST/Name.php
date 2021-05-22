@@ -13,13 +13,15 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * A name of a variable.
  */
-class Name extends Definition {
+class Name extends Definition
+{
     /**
      * @var string
      */
     protected $name;
 
-    public function __construct($name) {
+    public function __construct($name)
+    {
         assert('is_string($name)');
         $this->name = $name;
     }
@@ -27,8 +29,8 @@ class Name extends Definition {
     /**
      * @return  string
      */
-    public function __toString() {
+    public function __toString()
+    {
         return $this->name;
     }
 }
-

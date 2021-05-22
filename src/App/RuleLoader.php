@@ -14,13 +14,15 @@ use Lechimp\Dicto\Rule\Ruleset;
 use Lechimp\Dicto\Definition\RuleBuilder;
 use Lechimp\Dicto\Definition\ParserException;
 
-class RuleLoader {
+class RuleLoader
+{
     /**
      * @var RuleBuilder
      */
     protected $parser;
 
-    public function __construct(RuleBuilder $parser) {
+    public function __construct(RuleBuilder $parser)
+    {
         $this->parser = $parser;
     }
 
@@ -31,7 +33,8 @@ class RuleLoader {
      * @throws  ParserException if file can't be parsed.
      * @return  Ruleset
      */
-    public function load_rules_from($rule_file_path) {
+    public function load_rules_from($rule_file_path)
+    {
         if (!file_exists($rule_file_path)) {
             throw new \InvalidArgumentException("$rule_file_path does not exist.");
         }

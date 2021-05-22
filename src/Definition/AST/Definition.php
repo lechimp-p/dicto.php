@@ -13,6 +13,6 @@ namespace Lechimp\Dicto\Definition\AST;
 /**
  * Any definition of a variable.
  */
-abstract class Definition extends Parameter {
+abstract class Definition extends Parameter
+{
 }
-

@@ -1,10 +1,10 @@
 <?php
 /******************************************************************************
  * An implementation of dicto (scg.unibe.ch/dicto) in and for PHP.
- * 
+ *
  * Copyright (c) 2016 Richard Klees <richard.klees@rwth-aachen.de>
  *
- * This software is licensed under GPLv3. You should have received 
+ * This software is licensed under GPLv3. You should have received
  * a copy of the license along with the code.
  */
 
@@ -14,7 +14,8 @@ namespace Lechimp\Dicto\Graph;
  * An entity in the graph has a type and stores key value pairs as properties.
  * It will be concretized to a node or a relation.
  */
-abstract class Entity {
+abstract class Entity
+{
     /**
      * @var string
      */
@@ -29,7 +30,8 @@ abstract class Entity {
      * @param   string                      $type
      * @param   array<string,mixed>|null    $properties
      */
-    public function __construct($type, array $properties = null) {
+    public function __construct($type, array $properties = null)
+    {
         assert('is_string($type)');
         $this->type = $type;
         if ($properties !== null) {
@@ -44,7 +46,8 @@ abstract class Entity {
      *
      * @return  string
      */
-    public function type() {
+    public function type()
+    {
         return $this->type;
     }
 
@@ -55,7 +58,8 @@ abstract class Entity {
      * @param   mixed   $value
      * @return  null
      */
-    private function set_property($key, $value) {
+    private function set_property($key, $value)
+    {
         assert('is_string($key)');
         $this->properties[$key] = $value;
     }
@@ -65,7 +69,8 @@ abstract class Entity {
      *
      * @return  array<string,mixed>
      */
-    public function properties() {
+    public function properties()
+    {
         if ($this->properties === null) {
             return [];
         }
@@ -79,11 +84,13 @@ abstract class Entity {
      * @throws  \InvalidArgumentException   if named propery does not exist
      * @return  mixed
      */
-    public function property($name) {
+    public function property($name)
+    {
         if (!$this->has_property($name)) {
             $type = $this->type;
             throw new \InvalidArgumentException(
-                "Unknown property '$name' for entity with type '$type'");
+                "Unknown property '$name' for entity with type '$type'"
+            );
         }
         return $this->properties[$name];
     }
@@ -94,7 +101,8 @@ abstract class Entity {
      * @param   string  $name
      * @return  bool
      */
-    public function has_property($name) {
+    public function has_property($name)
+    {
         return array_key_exists($name, $this->properties);
     }
 }

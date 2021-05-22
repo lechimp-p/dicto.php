@@ -21,18 +21,21 @@ use PhpParser\Node as N;
  * of definition makes use of the thing. Language constructs, files or globals
  * can't depend on anything.
  */
-class DependOn extends Relation implements ASTVisitor {
+class DependOn extends Relation implements ASTVisitor
+{
     /**
      * @inheritdoc
      */
-    public function name() {
+    public function name()
+    {
         return "depend on";
     }
 
     /**
      * @inheritdoc
      */
-    public function visitorJumpLabels() {
+    public function visitorJumpLabels()
+    {
         return
             [ N\Expr\MethodCall::class => "enterMethodCall"
             , N\Expr\FuncCall::class => "enterFunctionCall"
@@ -42,80 +45,86 @@ class DependOn extends Relation implements ASTVisitor {
             ];
     }
 
-    public function enterMethodCall(Insert $insert, Location $location, N\Expr\MethodCall $node) {
+    public function enterMethodCall(Insert $insert, Location $location, N\Expr\MethodCall $node)
+    {
         // The 'name' could also be a variable like in $this->$method();
         if ($node->name instanceof N\Identifier) {
-            $method_reference = $insert->_method_reference
-                ( $node->name
-                , $location->_file()
-                , $location->_line()
-                , $location->_column()
+            $method_reference = $insert->_method_reference(
+                    $node->name,
+                    $location->_file(),
+                    $location->_line(),
+                    $location->_column()
                 );
-            $this->insert_relation_into
-                ( $insert
-                , $location
-                , $method_reference
-                , $location->_line()
+            $this->insert_relation_into(
+                    $insert,
+                    $location,
+                    $method_reference,
+                    $location->_line()
                 );
         }
     }
 
-    public function enterFunctionCall(Insert $insert, Location $location, N\Expr\FuncCall $node) {
+    public function enterFunctionCall(Insert $insert, Location $location, N\Expr\FuncCall $node)
+    {
         // Omit calls to closures, we would not be able to
         // analyze them anyway atm.
         // Omit functions in arrays, we would not be able to
         // analyze them anyway atm.
         if (!($node->name instanceof N\Expr\Variable ||
               $node->name instanceof N\Expr\ArrayDimFetch)) {
-            $function_reference = $insert->_function_reference
-                ( $node->name->parts[0]
-                , $location->_file()
-                , $location->_line()
-                , $location->_column()
+            $function_reference = $insert->_function_reference(
+                    $node->name->parts[0],
+                    $location->_file(),
+                    $location->_line(),
+                    $location->_column()
                 );
-            $this->insert_relation_into
-                ( $insert
-                , $location
-                , $function_reference
+            $this->insert_relation_into(
+                    $insert,
+                    $location,
+                    $function_reference
                 );
         }
     }
 
-    public function enterGlobal(Insert $insert, Location $location, N\Stmt\Global_ $node) {
+    public function enterGlobal(Insert $insert, Location $location, N\Stmt\Global_ $node)
+    {
         foreach ($node->vars as $var) {
             if (!($var instanceof N\Expr\Variable) || !is_string($var->name)) {
                 throw new \RuntimeException(
-                    "Expected Variable with string name, found: ".print_r($var, true));
+                    "Expected Variable with string name, found: " . print_r($var, true)
+                );
             }
             $global = $insert->_global($var->name);
-            $this->insert_relation_into
-                ( $insert
-                , $location
-                , $global
+            $this->insert_relation_into(
+                    $insert,
+                    $location,
+                    $global
                 );
         }
     }
 
-    public function enterArrayDimFetch(Insert $insert, Location $location, N\Expr\ArrayDimFetch $node) {
+    public function enterArrayDimFetch(Insert $insert, Location $location, N\Expr\ArrayDimFetch $node)
+    {
         if ($node->var instanceof N\Expr\Variable
-        &&  $node->var->name == "GLOBALS"
+        && $node->var->name == "GLOBALS"
         // Ignore usage of $GLOBALS with variable index.
         && !($node->dim instanceof N\Expr\Variable)) {
             $global = $insert->_global($node->dim->value);
-            $this->insert_relation_into
-                ( $insert
-                , $location
-                , $global
+            $this->insert_relation_into(
+                    $insert,
+                    $location,
+                    $global
                 );
         }
     }
 
-    public function enterErrorSuppress(Insert $insert, Location $location, N\Expr\ErrorSuppress $node) {
+    public function enterErrorSuppress(Insert $insert, Location $location, N\Expr\ErrorSuppress $node)
+    {
         $language_construct = $insert->_language_construct("@");
-        $this->insert_relation_into
-            ( $insert
-            , $location
-            , $language_construct
+        $this->insert_relation_into(
+                $insert,
+                $location,
+                $language_construct
             );
     }
 }

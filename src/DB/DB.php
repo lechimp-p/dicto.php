@@ -13,47 +13,54 @@ namespace Lechimp\Dicto\DB;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
 
-abstract class DB {
+abstract class DB
+{
     /**
      * @var Connection
      */
     protected $connection;
 
-    public function __construct(Connection $connection) {
+    public function __construct(Connection $connection)
+    {
         $this->connection = $connection;
     }
 
     /**
      * @return \Doctrine\DBAL\Query\Builder
      */
-    public function builder() {
+    public function builder()
+    {
         return $this->connection->createQueryBuilder();
     }
 
     /**
      * @return Connection
      */
-    public function connection() {
+    public function connection()
+    {
         return $this->connection;
     }
 
     /**
      * Initialize REGEXP for sqlite.
      */
-    public function init_sqlite_regexp() {
+    public function init_sqlite_regexp()
+    {
         $pdo = $this->connection->getWrappedConnection();
         if (!($pdo instanceof \PDO)) {
             throw new \RuntimeException(
-                "Expected wrapped connection to be PDO-object.");
+                "Expected wrapped connection to be PDO-object."
+            );
         }
-        $pdo->sqliteCreateFunction("regexp", function($pattern, $data) {
+        $pdo->sqliteCreateFunction("regexp", function ($pattern, $data) {
             return preg_match("%$pattern%", $data) > 0;
         });
     }
 
     // Creation of database.
 
-    public function is_inited() {
+    public function is_inited()
+    {
         $res = $this->builder()
             ->select("COUNT(*)")
             ->from("sqlite_master")
@@ -63,7 +70,8 @@ abstract class DB {
         return $res > 0;
     }
 
-    public function maybe_init_database_schema() {
+    public function maybe_init_database_schema()
+    {
         if (!$this->is_inited()) {
             $this->init_database_schema();
         }
@@ -78,18 +86,16 @@ abstract class DB {
      * @param   string|null $path
      * @return  Connection
      */
-    public static function sqlite_connection($path = null) {
+    public static function sqlite_connection($path = null)
+    {
         assert('is_string($path) || is_null($path)');
         if ($path !== null) {
-            return DriverManager::getConnection
-                (["driver" => "pdo_sqlite"
+            return DriverManager::getConnection(["driver" => "pdo_sqlite"
                 , "memory" => false
                 , "path" => $path
                 ]);
-        }
-        else {
-            return DriverManager::getConnection
-                (["driver" => "pdo_sqlite"
+        } else {
+            return DriverManager::getConnection(["driver" => "pdo_sqlite"
                 , "memory" => true
                 ]);
         }

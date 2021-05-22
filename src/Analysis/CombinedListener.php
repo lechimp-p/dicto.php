@@ -16,7 +16,8 @@ use Lechimp\Dicto\Rules\Rule;
 /**
  * Combines multiple listeners into one.
  */
-class CombinedListener implements Listener {
+class CombinedListener implements Listener
+{
     /**
      * @var Listener[]
      */
@@ -25,8 +26,9 @@ class CombinedListener implements Listener {
     /**
      * @param   Listener[]  $listeners
      */
-    public function __construct(array $listeners) {
-        $this->listeners = array_map(function(Listener $l) {
+    public function __construct(array $listeners)
+    {
+        $this->listeners = array_map(function (Listener $l) {
             return $l;
         }, $listeners);
     }
@@ -34,14 +36,16 @@ class CombinedListener implements Listener {
     /**
      * @return  Listener[]
      */
-    public function listeners() {
+    public function listeners()
+    {
         return $this->listeners;
     }
 
     /**
      * @inheritdocs
      */
-    public function begin_run($commit_hash) {
+    public function begin_run($commit_hash)
+    {
         foreach ($this->listeners as $g) {
             $g->begin_run($commit_hash);
         }
@@ -50,7 +54,8 @@ class CombinedListener implements Listener {
     /**
      * @inheritdocs
      */
-    public function end_run() {
+    public function end_run()
+    {
         foreach ($this->listeners as $g) {
             $g->end_run();
         }
@@ -59,7 +64,8 @@ class CombinedListener implements Listener {
     /**
      * @inheritdocs
      */
-    public function begin_ruleset(Ruleset $ruleset) {
+    public function begin_ruleset(Ruleset $ruleset)
+    {
         foreach ($this->listeners as $g) {
             $g->begin_ruleset($ruleset);
         }
@@ -68,7 +74,8 @@ class CombinedListener implements Listener {
     /**
      * @inheritdocs
      */
-    public function end_ruleset() {
+    public function end_ruleset()
+    {
         foreach ($this->listeners as $g) {
             $g->end_ruleset();
         }
@@ -77,7 +84,8 @@ class CombinedListener implements Listener {
     /**
      * @inheritdocs
      */
-    public function begin_rule(Rule $rule) {
+    public function begin_rule(Rule $rule)
+    {
         foreach ($this->listeners as $g) {
             $g->begin_rule($rule);
         }
@@ -86,7 +94,8 @@ class CombinedListener implements Listener {
     /**
      * @inheritdocs
      */
-    public function end_rule() {
+    public function end_rule()
+    {
         foreach ($this->listeners as $g) {
             $g->end_rule();
         }
@@ -95,7 +104,8 @@ class CombinedListener implements Listener {
     /**
      * @inheritdocs
      */
-    public function report_violation(Violation $violation) {
+    public function report_violation(Violation $violation)
+    {
         foreach ($this->listeners as $g) {
             $g->report_violation($violation);
         }

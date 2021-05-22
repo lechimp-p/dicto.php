@@ -10,19 +10,21 @@
 
 namespace Lechimp\Dicto\Variables;
 
-class Methods extends Entities {
+class Methods extends Entities
+{
     /**
      * @inheritdoc
      */
-    public function id() {
+    public function id()
+    {
         return Variable::METHOD_TYPE;
     }
 
     /**
      * @inheritdoc
      */
-    public function meaning() {
+    public function meaning()
+    {
         return "methods";
     }
 }
-

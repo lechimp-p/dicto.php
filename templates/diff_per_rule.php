@@ -1,7 +1,8 @@
 <?php
 
-function template_diff_per_rule(array $report) {
-?>
+function template_diff_per_rule(array $report)
+{
+    ?>
 
 ====================================================================================
  DICTO - automated architectural tests     (https://github.com/lechimp-p/dicto.php)
