@@ -203,9 +203,15 @@ class IndexDBReader
             if (isset($insert["id"])) {
                 $id = $insert["id"];
                 unset($insert["id"]);
-                $this->id_map[$id] = call_user_func_array([$this->other, $method], $insert);
+                $this->id_map[$id] = call_user_func_array(
+                    [$this->other, $method],
+                    array_values($insert)
+                );
             } else {
-                call_user_func_array([$this->other, $method], $insert);
+                call_user_func_array(
+                    [$this->other, $method],
+                    array_values($insert)
+                );
             }
         }
     }
