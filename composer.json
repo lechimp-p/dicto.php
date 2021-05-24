@@ -21,8 +21,7 @@
     "require": {
         "nikic/php-parser" : "^4.10",
         "pimple/pimple" : "3.0.*",
-        "doctrine/dbal" : "2.5.*",
-        "doctrine/inflector" : "1.1.*",
+        "doctrine/dbal" : "^3.1",
         "symfony/config" : "^5.2",
         "symfony/console" : "^5.2",
         "symfony/yaml" : "^5.2",

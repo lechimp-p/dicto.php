@@ -47,11 +47,12 @@ abstract class DB
     public function init_sqlite_regexp()
     {
         $pdo = $this->connection->getWrappedConnection();
-        if (!($pdo instanceof \PDO)) {
+        if (!($pdo instanceof \Doctrine\DBAL\Driver\PDO\Connection)) {
             throw new \RuntimeException(
                 "Expected wrapped connection to be PDO-object."
             );
         }
+        $pdo = $pdo->getWrappedConnection();
         $pdo->sqliteCreateFunction("regexp", function ($pattern, $data) {
             return preg_match("%$pattern%", $data) > 0;
         });
@@ -66,7 +67,7 @@ abstract class DB
             ->from("sqlite_master")
             ->where("type = 'table'")
             ->execute()
-            ->fetchColumn();
+            ->fetchOne();
         return $res > 0;
     }
 

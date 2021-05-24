@@ -296,14 +296,14 @@ class IndexDB extends DB implements Insert
     {
         $index = $this->build_graph_index_db();
         $reader = new IndexDBReader(
-                $this->tables,
-                $this->id_fields,
-                $this->int_fields,
-                function () {
+            $this->tables,
+            $this->id_fields,
+            $this->int_fields,
+            function () {
                 return $this->builder();
             },
-                $index
-            );
+            $index
+        );
         $reader->run();
         return $index;
     }
@@ -331,27 +331,27 @@ class IndexDB extends DB implements Insert
                 case "line":
                 case "column":
                     $table->addColumn(
-                            $field,
-                            "integer",
-                            ["notnull" => true, "unsigned" => true]
-                        );
+                        $field,
+                        "integer",
+                        ["notnull" => true, "unsigned" => true]
+                    );
                     break;
                 case "namespace_id":
                     $table->addColumn(
-                            $field,
-                            "integer",
-                            ["notnull" => false, "unsigned" => true]
-                        );
+                        $field,
+                        "integer",
+                        ["notnull" => false, "unsigned" => true]
+                    );
                    break;
                 case "path":
                 case "source":
                 case "name":
                 case "relation":
                     $table->addColumn(
-                            $field,
-                            "string",
-                            ["notnull" => true]
-                        );
+                        $field,
+                        "string",
+                        ["notnull" => true]
+                    );
                     break;
                 default:
                     throw new \LogicException("Unknown field '$field'");
@@ -362,10 +362,10 @@ class IndexDB extends DB implements Insert
             if ($field == "file_id") {
                 if ($file_table instanceof Schema\Table) {
                     $table->addForeignKeyConstraint(
-                            $file_table,
-                            array("file_id"),
-                            array("id")
-                        );
+                        $file_table,
+                        array("file_id"),
+                        array("id")
+                    );
                 } else {
                     throw new \LogicException(
                         "Expected \$file_table to be a schema when file_id is used."
@@ -375,10 +375,10 @@ class IndexDB extends DB implements Insert
             if ($field == "namespace_id") {
                 if ($namespace_table instanceof Schema\Table) {
                     $table->addForeignKeyConstraint(
-                            $namespace_table,
-                            array("namespace_id"),
-                            array("id")
-                        );
+                        $namespace_table,
+                        array("namespace_id"),
+                        array("id")
+                    );
                 } else {
                     throw new \LogicException(
                         "Expected \$namespace_table to be a schema when namespace_id is used."
@@ -391,23 +391,27 @@ class IndexDB extends DB implements Insert
 
     public function init_database_schema()
     {
-        $schema = new Schema\Schema();
+        $manager = $this->connection->getSchemaManager();
+        $from = $manager->createSchema();
+        $to = clone $from;
 
-        $file_table = $this->init_table("files", $schema);
-        $namespace_table = $this->init_table("namespaces", $schema);
-        $this->init_table("classes", $schema, $file_table, $namespace_table);
-        $this->init_table("interfaces", $schema, $file_table, $namespace_table);
-        $this->init_table("traits", $schema, $file_table, $namespace_table);
-        $this->init_table("methods", $schema, $file_table);
-        $this->init_table("functions", $schema, $file_table, $namespace_table);
-        $this->init_table("globals", $schema);
-        $this->init_table("language_constructs", $schema);
-        $this->init_table("method_references", $schema, $file_table);
-        $this->init_table("function_references", $schema, $file_table);
-        $relation_table = $this->init_table("relations", $schema, $file_table);
+        $file_table = $this->init_table("files", $to);
+        $namespace_table = $this->init_table("namespaces", $to);
+        $this->init_table("classes", $to, $file_table, $namespace_table);
+        $this->init_table("interfaces", $to, $file_table, $namespace_table);
+        $this->init_table("traits", $to, $file_table, $namespace_table);
+        $this->init_table("methods", $to, $file_table);
+        $this->init_table("functions", $to, $file_table, $namespace_table);
+        $this->init_table("globals", $to);
+        $this->init_table("language_constructs", $to);
+        $this->init_table("method_references", $to, $file_table);
+        $this->init_table("function_references", $to, $file_table);
+        $relation_table = $this->init_table("relations", $to, $file_table);
         $relation_table->setPrimaryKey(["left_id", "relation", "right_id"]);
 
-        $sync = new SingleDatabaseSynchronizer($this->connection);
-        $sync->createSchema($schema);
+        $sql = $from->getMigrateToSql($to, $this->connection->getDatabasePlatform());
+        foreach ($sql as $s) {
+            $this->connection->executeStatement($s);
+        }
     }
 }

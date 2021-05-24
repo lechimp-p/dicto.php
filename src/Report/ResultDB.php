@@ -199,9 +199,9 @@ class ResultDB extends DB implements Listener
             ->select("id")
             ->from("variables")
             ->where($this->builder()->expr()->andX(
-                    "name = ?",
-                    "meaning = ?"
-                ))
+                "name = ?",
+                "meaning = ?"
+            ))
             ->setParameter(0, $var->name())
             ->setParameter(1, $var->meaning())
             ->execute()
@@ -265,10 +265,10 @@ class ResultDB extends DB implements Listener
             ->select("id")
             ->from("violations")
             ->where($this->builder()->expr()->andX(
-                    "rule_id = ?",
-                    "file = ?",
-                    "line = ?"
-                ))
+                "rule_id = ?",
+                "file = ?",
+                "line = ?"
+            ))
             ->setParameter(0, $this->current_rule_id)
             ->setParameter(1, $violation->filename())
             ->setParameter(2, $violation->line())
@@ -287,15 +287,15 @@ class ResultDB extends DB implements Listener
     {
         $run_table = $schema->createTable("runs");
         $run_table->addColumn(
-                "id",
-                "integer",
-                array("notnull" => true, "unsigned" => true, "autoincrement" => true)
-            );
+            "id",
+            "integer",
+            array("notnull" => true, "unsigned" => true, "autoincrement" => true)
+        );
         $run_table->addColumn(
-                "commit_hash",
-                "string",
-                array("notnull" => true)
-            );
+            "commit_hash",
+            "string",
+            array("notnull" => true)
+        );
         // TODO: maybe add time
         // TODO: do we need some other meta information per run of the analysis?
         // TODO: Might be a good idea to store config and rules file here
@@ -308,43 +308,43 @@ class ResultDB extends DB implements Listener
     {
         $rule_table = $schema->createTable("rules");
         $rule_table->addColumn(
-                "id",
-                "integer",
-                array("notnull" => true, "unsigned" => true, "autoincrement" => true)
-            );
+            "id",
+            "integer",
+            array("notnull" => true, "unsigned" => true, "autoincrement" => true)
+        );
         $rule_table->addColumn(
-                "rule",
-                "string",
-                array("notnull" => true)
-            );
+            "rule",
+            "string",
+            array("notnull" => true)
+        );
 
         $rule_table->addColumn(
-                "explanation",
-                "string",
-                array("notnull" => false)
-            );
+            "explanation",
+            "string",
+            array("notnull" => false)
+        );
         $rule_table->addColumn(
-                "first_seen",
-                "integer",
-                array("notnull" => true)
-            );
+            "first_seen",
+            "integer",
+            array("notnull" => true)
+        );
         $rule_table->addColumn(
-                "last_seen",
-                "integer",
-                array("notnull" => true)
-            );
+            "last_seen",
+            "integer",
+            array("notnull" => true)
+        );
         $rule_table->setPrimaryKey(array("id"));
         $rule_table->addUniqueIndex(array("rule"));
         $rule_table->addForeignKeyConstraint(
-                $run_table,
-                array("first_seen"),
-                array("id")
-            );
+            $run_table,
+            array("first_seen"),
+            array("id")
+        );
         $rule_table->addForeignKeyConstraint(
-                $run_table,
-                array("last_seen"),
-                array("id")
-            );
+            $run_table,
+            array("last_seen"),
+            array("id")
+        );
 
         return $rule_table;
     }
@@ -353,31 +353,31 @@ class ResultDB extends DB implements Listener
     {
         $variable_table = $schema->createTable("variables");
         $variable_table->addColumn(
-                "id",
-                "integer",
-                array("notnull" => true)
-            );
+            "id",
+            "integer",
+            array("notnull" => true)
+        );
         $variable_table->addColumn(
-                "name",
-                "string",
-                array("notnull" => true)
-            );
+            "name",
+            "string",
+            array("notnull" => true)
+        );
         $variable_table->addColumn(
-                "meaning",
-                "string",
-                array("notnull" => true)
-            );
+            "meaning",
+            "string",
+            array("notnull" => true)
+        );
         // TODO: Some field for explanation is missing here.
         $variable_table->addColumn(
-                "first_seen",
-                "integer",
-                array("notnull" => true)
-            );
+            "first_seen",
+            "integer",
+            array("notnull" => true)
+        );
         $variable_table->addColumn(
-                "last_seen",
-                "integer",
-                array("notnull" => true)
-            );
+            "last_seen",
+            "integer",
+            array("notnull" => true)
+        );
         $variable_table->setPrimaryKey(array("id"));
 
         return $variable_table;
@@ -387,52 +387,52 @@ class ResultDB extends DB implements Listener
     {
         $violation_table = $schema->createTable("violations");
         $violation_table->addColumn(
-                "id",
-                "integer",
-                array("notnull" => true, "unsigned" => true, "autoincrement" => true)
-            );
+            "id",
+            "integer",
+            array("notnull" => true, "unsigned" => true, "autoincrement" => true)
+        );
         $violation_table->addColumn(
-                "rule_id",
-                "integer",
-                array("notnull" => true)
-            );
+            "rule_id",
+            "integer",
+            array("notnull" => true)
+        );
         $violation_table->addColumn(
-                "file",
-                "string",
-                array("notnull" => true)
-            );
+            "file",
+            "string",
+            array("notnull" => true)
+        );
         $violation_table->addColumn(
-                "line",
-                "string",
-                array("notnull" => true)
-            );
+            "line",
+            "string",
+            array("notnull" => true)
+        );
         $violation_table->addColumn(
-                "first_seen",
-                "integer",
-                array("notnull" => true)
-            );
+            "first_seen",
+            "integer",
+            array("notnull" => true)
+        );
         $violation_table->addColumn(
-                "last_seen",
-                "integer",
-                array("notnull" => true)
-            );
+            "last_seen",
+            "integer",
+            array("notnull" => true)
+        );
         $violation_table->setPrimaryKey(array("id"));
         $violation_table->addUniqueIndex(array("rule_id", "file", "line"));
         $violation_table->addForeignKeyConstraint(
-                $rule_table,
-                array("rule_id"),
-                array("id")
-            );
+            $rule_table,
+            array("rule_id"),
+            array("id")
+        );
         $violation_table->addForeignKeyConstraint(
-                $run_table,
-                array("first_seen"),
-                array("id")
-            );
+            $run_table,
+            array("first_seen"),
+            array("id")
+        );
         $violation_table->addForeignKeyConstraint(
-                $run_table,
-                array("last_seen"),
-                array("id")
-            );
+            $run_table,
+            array("last_seen"),
+            array("id")
+        );
 
         return $violation_table;
     }
@@ -441,50 +441,54 @@ class ResultDB extends DB implements Listener
     {
         $violation_location_table = $schema->createTable("violation_locations");
         $violation_location_table->addColumn(
-                "id",
-                "integer",
-                array("notnull" => true, "unsigned" => true, "autoincrement" => true)
-            );
+            "id",
+            "integer",
+            array("notnull" => true, "unsigned" => true, "autoincrement" => true)
+        );
         $violation_location_table->addColumn(
-                "violation_id",
-                "integer",
-                array("notnull" => true)
-            );
+            "violation_id",
+            "integer",
+            array("notnull" => true)
+        );
         $violation_location_table->addColumn(
-                "run_id",
-                "integer",
-                array("notnull" => true)
-            );
+            "run_id",
+            "integer",
+            array("notnull" => true)
+        );
         $violation_location_table->addColumn(
-                "line_no",
-                "integer",
-                array("notnull" => true)
-            );
+            "line_no",
+            "integer",
+            array("notnull" => true)
+        );
         $violation_location_table->setPrimaryKey(array("id"));
         $violation_location_table->addForeignKeyConstraint(
-                $violation_table,
-                array("violation_id"),
-                array("id")
-            );
+            $violation_table,
+            array("violation_id"),
+            array("id")
+        );
         $violation_location_table->addForeignKeyConstraint(
-                $run_table,
-                array("run_id"),
-                array("id")
-            );
+            $run_table,
+            array("run_id"),
+            array("id")
+        );
         return $violation_location_table;
     }
 
     public function init_database_schema()
     {
-        $schema = new Schema\Schema();
+        $manager = $this->connection->getSchemaManager();
+        $from = $manager->createSchema();
+        $to = clone $from;
 
-        $run_table = $this->init_run_table($schema);
-        $rule_table = $this->init_rule_table($schema, $run_table);
-        $this->init_variable_table($schema);
-        $violation_table = $this->init_violation_table($schema, $run_table, $rule_table);
-        $this->init_violation_location_table($schema, $run_table, $violation_table);
+        $run_table = $this->init_run_table($to);
+        $rule_table = $this->init_rule_table($to, $run_table);
+        $this->init_variable_table($to);
+        $violation_table = $this->init_violation_table($to, $run_table, $rule_table);
+        $this->init_violation_location_table($to, $run_table, $violation_table);
 
-        $sync = new SingleDatabaseSynchronizer($this->connection);
-        $sync->createSchema($schema);
+        $sql = $from->getMigrateToSql($to, $this->connection->getDatabasePlatform());
+        foreach ($sql as $s) {
+            $this->connection->executeStatement($s);
+        }
     }
 }
