@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "42a74dd4111c84a5d1fa8ee2e2995bc1",
+    "content-hash": "c24486a4c08ffe860de1f74808cfc3af",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -617,6 +617,48 @@
                 "source": "https://github.com/lechimp-p/flightcontrol"
             },
             "time": "2021-05-16T18:28:29+00:00"
+        },
+        {
+            "name": "lechimp-p/regexp",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lechimp-p/regexp.git",
+                "reference": "96375c5cbf46791dea67a98c038b6dbce7824e4b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lechimp-p/regexp/zipball/96375c5cbf46791dea67a98c038b6dbce7824e4b",
+                "reference": "96375c5cbf46791dea67a98c038b6dbce7824e4b",
+                "shasum": ""
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Lechimp\\Regexp\\": "src",
+                    "Lechimp\\Regexp\\Tests\\": "tests"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Richard Klees",
+                    "email": "richard.klees@rwth-aachen.de"
+                }
+            ],
+            "description": "A basic wrapper around PHP's regexps.",
+            "support": {
+                "issues": "https://github.com/lechimp-p/regexp/issues",
+                "source": "https://github.com/lechimp-p/regexp/tree/2.0.0"
+            },
+            "time": "2021-05-27T18:25:44+00:00"
         },
         {
             "name": "nikic/php-parser",

@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Graph;
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 
 /**
  * Create some predicate over a property.

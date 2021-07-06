@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Indexer;
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Psr\Log\LoggerInterface as Log;
 use League\Flysystem\Local\LocalFilesystemAdapter;
 use League\Flysystem\Filesystem;

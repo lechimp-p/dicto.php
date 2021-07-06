@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Graph\IndexDB;
 use Lechimp\Dicto\Graph\PredicateFactory;
@@ -208,10 +208,10 @@ class VariableCompilationTest extends \PHPUnit\Framework\TestCase
     public function test_compile_except()
     {
         $var = new V\WithProperty(
-                new V\Classes(),
-                new V\Name(),
-                array(new Regexp("AClass"))
-            );
+            new V\Classes(),
+            new V\Name(),
+            array(new Regexp("AClass"))
+        );
         $var = new V\Except(new V\Classes, $var);
         $compiled = $var->compile($this->f);
 
@@ -232,10 +232,10 @@ class VariableCompilationTest extends \PHPUnit\Framework\TestCase
     public function test_compile_name1()
     {
         $var = new V\WithProperty(
-                new V\Classes(),
-                new V\Name(),
-                array(new Regexp("AClass"))
-            );
+            new V\Classes(),
+            new V\Name(),
+            array(new Regexp("AClass"))
+        );
         $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
@@ -255,10 +255,10 @@ class VariableCompilationTest extends \PHPUnit\Framework\TestCase
     public function test_compile_name2()
     {
         $var = new V\WithProperty(
-                new V\Classes(),
-                new V\Name(),
-                array(new Regexp(".Class"))
-            );
+            new V\Classes(),
+            new V\Name(),
+            array(new Regexp(".Class"))
+        );
         $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
@@ -278,15 +278,15 @@ class VariableCompilationTest extends \PHPUnit\Framework\TestCase
     public function test_compile_methods_in_some_classes()
     {
         $a_classes = new V\WithProperty(
-                new V\Classes(),
-                new V\Name(),
-                array(new Regexp("AClass"))
-            );
+            new V\Classes(),
+            new V\Name(),
+            array(new Regexp("AClass"))
+        );
         $var = new V\WithProperty(
-                new V\Methods(),
-                new V\In(),
-                array($a_classes)
-            );
+            new V\Methods(),
+            new V\In(),
+            array($a_classes)
+        );
         $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
@@ -307,15 +307,15 @@ class VariableCompilationTest extends \PHPUnit\Framework\TestCase
     public function test_compile_methods_in_some_interface()
     {
         $a_interfaces = new V\WithProperty(
-                new V\Interfaces(),
-                new V\Name(),
-                array(new Regexp("AInterface"))
-            );
+            new V\Interfaces(),
+            new V\Name(),
+            array(new Regexp("AInterface"))
+        );
         $var = new V\WithProperty(
-                new V\Methods(),
-                new V\In(),
-                array($a_interfaces)
-            );
+            new V\Methods(),
+            new V\In(),
+            array($a_interfaces)
+        );
         $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
@@ -336,15 +336,15 @@ class VariableCompilationTest extends \PHPUnit\Framework\TestCase
     public function test_compile_methods_in_some_traits()
     {
         $a_traits = new V\WithProperty(
-                new V\Traits(),
-                new V\Name(),
-                array(new Regexp("ATrait"))
-            );
+            new V\Traits(),
+            new V\Name(),
+            array(new Regexp("ATrait"))
+        );
         $var = new V\WithProperty(
-                new V\Methods(),
-                new V\In(),
-                array($a_traits)
-            );
+            new V\Methods(),
+            new V\In(),
+            array($a_traits)
+        );
         $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
@@ -365,10 +365,10 @@ class VariableCompilationTest extends \PHPUnit\Framework\TestCase
     public function test_compile_anything_in_some_namespace()
     {
         $var = new V\WithProperty(
-                new V\Everything(),
-                new V\In(),
-                array(new V\Namespaces())
-            );
+            new V\Everything(),
+            new V\In(),
+            array(new V\Namespaces())
+        );
         $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");
@@ -394,14 +394,14 @@ class VariableCompilationTest extends \PHPUnit\Framework\TestCase
     public function test_compile_anything_in_specific_nested_namespace()
     {
         $var = new V\WithProperty(
-                new V\Everything(),
-                new V\In(),
-                array(new V\WithProperty(
+            new V\Everything(),
+            new V\In(),
+            array(new V\WithProperty(
                     new V\Namespaces(),
                     new V\Name(),
                     array(new Regexp("Test[\\\\]Namespace"))
                 ))
-            );
+        );
         $compiled = $var->compile($this->f);
 
         $f = $this->db->_file("source.php", "A\nB");

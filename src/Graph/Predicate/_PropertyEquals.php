@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Graph\Predicate;
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Graph\Predicate;
 use Lechimp\Dicto\Graph\Entity;
 

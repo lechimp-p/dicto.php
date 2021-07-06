@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Definition;
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 
 /**
  * A symbol in known to the parser.

@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Analysis\Violation;
@@ -32,11 +32,11 @@ class DependOnTest extends RuleTest
         $res = $this->parse("Classes cannot depend on: Functions");
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_CANNOT,
-                    new V\Classes(),
-                    new R\DependOn,
-                    array(new V\Functions())
-                )
+            R\Rule::MODE_CANNOT,
+            new V\Classes(),
+            new R\DependOn,
+            array(new V\Functions())
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -68,26 +68,26 @@ CODE;
             ->expects($this->once())
             ->method("_global")
             ->with(
-                    "foo"
-                )
+                "foo"
+            )
             ->willReturn("global");
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_relation")
             ->withConsecutive(
-                    array( "class"
+                array( "class"
                     , "depend on"
                     , "global"
                     , "file"
                     , 5
                     ),
-                    array( "method"
+                array( "method"
                     , "depend on"
                     , "global"
                     , "file"
                     , 5
                     )
-                );
+            );
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $code);
@@ -118,26 +118,26 @@ CODE;
             ->expects($this->once())
             ->method("_global")
             ->with(
-                    "foo"
-                )
+                "foo"
+            )
             ->willReturn("global");
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_relation")
             ->withConsecutive(
-                    array( "class"
+                array( "class"
                     , "depend on"
                     , "global"
                     , "file"
                     , 5
                     ),
-                    array( "method"
+                array( "method"
                     , "depend on"
                     , "global"
                     , "file"
                     , 5
                     )
-                );
+            );
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $code);
@@ -168,29 +168,29 @@ CODE;
             ->expects($this->once())
             ->method("_method_reference")
             ->with(
-                    "bar",
-                    "file",
-                    5,
-                    9
-                )
+                "bar",
+                "file",
+                5,
+                9
+            )
             ->willReturn("method_reference");
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_relation")
             ->withConsecutive(
-                    array( "class"
+                array( "class"
                     , "depend on"
                     , "method_reference"
                     , "file"
                     , 5
                     ),
-                    array( "method"
+                array( "method"
                     , "depend on"
                     , "method_reference"
                     , "file"
                     , 5
                     )
-                );
+            );
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $code);
@@ -221,29 +221,29 @@ CODE;
             ->expects($this->once())
             ->method("_function_reference")
             ->with(
-                    "foobar",
-                    "file",
-                    5,
-                    9
-                )
+                "foobar",
+                "file",
+                5,
+                9
+            )
             ->willReturn("function_reference");
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_relation")
             ->withConsecutive(
-                    array( "class"
+                array( "class"
                     , "depend on"
                     , "function_reference"
                     , "file"
                     , 5
                     ),
-                    array( "method"
+                array( "method"
                     , "depend on"
                     , "function_reference"
                     , "file"
                     , 5
                     )
-                );
+            );
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $code);
@@ -274,48 +274,48 @@ CODE;
             ->expects($this->once())
             ->method("_language_construct")
             ->with(
-                    "@"
-                )
+                "@"
+            )
             ->willReturn("error_suppressor");
         $insert_mock
             ->expects($this->once())
             ->method("_function_reference")
             ->with(
-                    "foobar",
-                    "file",
-                    5,
-                    10
-                )
+                "foobar",
+                "file",
+                5,
+                10
+            )
             ->willReturn("function_reference");
         $insert_mock
             ->expects($this->exactly(4))
             ->method("_relation")
             ->withConsecutive(
-                    array( "class"
+                array( "class"
                     , "depend on"
                     , "error_suppressor"
                     , "file"
                     , 5
                     ),
-                    array( "method"
+                array( "method"
                     , "depend on"
                     , "error_suppressor"
                     , "file"
                     , 5
                     ),
-                    array( "class"
+                array( "class"
                     , "depend on"
                     , "function_reference"
                     , "file"
                     , 5
                     ),
-                    array( "method"
+                array( "method"
                     , "depend on"
                     , "function_reference"
                     , "file"
                     , 5
                     )
-                );
+            );
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $code);
@@ -327,21 +327,21 @@ CODE;
     protected function only_a_classes_can_depend_on_globals()
     {
         $a_classes = new V\WithProperty(
-                    new V\Classes(),
-                    new V\Name(),
-                    array(new Regexp("A.*"))
-                );
+            new V\Classes(),
+            new V\Name(),
+            array(new Regexp("A.*"))
+        );
         $methods_in_a_classes = new V\WithProperty(
-                    new V\Methods(),
-                    new V\In(),
-                    array($a_classes)
-                );
+            new V\Methods(),
+            new V\In(),
+            array($a_classes)
+        );
         return new R\Rule(
-                R\Rule::MODE_ONLY_CAN,
-                new V\Any(array($a_classes, $methods_in_a_classes)),
-                new R\DependOn(),
-                array(new V\Globals())
-            );
+            R\Rule::MODE_ONLY_CAN,
+            new V\Any(array($a_classes, $methods_in_a_classes)),
+            new R\DependOn(),
+            array(new V\Globals())
+        );
     }
 
     public function test_rule1_no_violation_1()
@@ -393,18 +393,18 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    5,
-                    "        global \$foo;"
-                )
+            $rule,
+            "source.php",
+            5,
+            "        global \$foo;"
+        )
 
             , new Violation(
-                    $rule,
-                    "source.php",
-                    5,
-                    "        global \$foo;"
-                )
+                $rule,
+                "source.php",
+                5,
+                "        global \$foo;"
+            )
             );
         $this->assertEquals($expected, $violations);
     }
@@ -414,15 +414,15 @@ CODE;
     protected function classes_must_depend_on_a_globals()
     {
         return new R\Rule(
-                R\Rule::MODE_MUST,
-                new V\Classes,
-                new R\DependOn(),
-                array(new V\WithProperty(
+            R\Rule::MODE_MUST,
+            new V\Classes,
+            new R\DependOn(),
+            array(new V\WithProperty(
                     new V\Globals(),
                     new V\Name(),
                     array(new Regexp("a_.*"))
                 ))
-            );
+        );
     }
 
     public function test_rule2_no_violation_1()
@@ -477,11 +477,11 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    3,
-                    "class SomeClass {"
-                )
+            $rule,
+            "source.php",
+            3,
+            "class SomeClass {"
+        )
             );
         $this->assertEquals($expected, $violations);
     }

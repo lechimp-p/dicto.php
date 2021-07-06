@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Graph\Predicate;
 use Lechimp\Dicto\Graph\Graph;

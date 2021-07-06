@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Variables as V;
 
 class VariablesTest extends \PHPUnit\Framework\TestCase
@@ -47,18 +47,18 @@ class VariablesTest extends \PHPUnit\Framework\TestCase
                 , "classes"
                 )
             , array( new V\WithProperty(
-                        new V\Classes(),
-                        new V\Name(),
-                        array(new Regexp(".*GUI"))
-                    )
+                new V\Classes(),
+                new V\Name(),
+                array(new Regexp(".*GUI"))
+            )
                 , null
                 , "classes with name: \".*GUI\""
                 )
             , array( new V\WithProperty(
-                        new V\Classes(),
-                        new V\In(),
-                        array(new V\Files)
-                    )
+                new V\Classes(),
+                new V\In(),
+                array(new V\Files)
+            )
                 , null
                   // TODO: this is really inconsitent...
                 , "classes in: Files"

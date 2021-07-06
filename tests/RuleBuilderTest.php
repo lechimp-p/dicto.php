@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Definition\RuleBuilder;
 use Lechimp\Dicto\Rules\Ruleset;
 use Lechimp\Dicto\Variables as V;
@@ -30,7 +30,7 @@ class RuleBuilderTest extends \PHPUnit\Framework\TestCase
     public function setUp() : void
     {
         $this->parser = new _RuleBuilder(
-                array( new V\Namespaces()
+            array( new V\Namespaces()
                 , new V\Classes()
                 , new V\Interfaces()
                 , new V\Traits()
@@ -41,12 +41,12 @@ class RuleBuilderTest extends \PHPUnit\Framework\TestCase
                 , new V\ErrorSuppressor()
                 , new V\ExitOrDie()
                 ),
-                array( new R\ContainText()
+            array( new R\ContainText()
                 ),
-                array( new V\Name()
+            array( new V\Name()
                 , new V\In()
                 )
-            );
+        );
     }
 
     public function parse($expr)
@@ -126,10 +126,10 @@ class RuleBuilderTest extends \PHPUnit\Framework\TestCase
         $res = $this->parse("Foo = Classes with name: \"foo\"");
 
         $expected = array( "Foo" => (new V\WithProperty(
-                    new V\Classes(),
-                    new V\Name,
-                    array(new Regexp("foo"))
-                ))
+            new V\Classes(),
+            new V\Name,
+            array(new Regexp("foo"))
+        ))
                 ->withName("Foo")
             );
         $this->assertEquals($expected, $res->variables());
@@ -140,11 +140,11 @@ class RuleBuilderTest extends \PHPUnit\Framework\TestCase
         $res = $this->parser->parse("Classes cannot contain text: \"foo\"");
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_CANNOT,
-                    new V\Classes(),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            R\Rule::MODE_CANNOT,
+            new V\Classes(),
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -154,11 +154,11 @@ class RuleBuilderTest extends \PHPUnit\Framework\TestCase
         $res = $this->parser->parse("Classes must contain text: \"foo\"");
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_MUST,
-                    new V\Classes(),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            R\Rule::MODE_MUST,
+            new V\Classes(),
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -168,11 +168,11 @@ class RuleBuilderTest extends \PHPUnit\Framework\TestCase
         $res = $this->parser->parse("only Classes can contain text: \"foo\"");
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_ONLY_CAN,
-                    new V\Classes(),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            R\Rule::MODE_ONLY_CAN,
+            new V\Classes(),
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -182,13 +182,13 @@ class RuleBuilderTest extends \PHPUnit\Framework\TestCase
         $res = $this->parser->parse("only {Classes, Methods} can contain text: \"foo\"");
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_ONLY_CAN,
-                    new V\Any(array( new V\Classes()
+            R\Rule::MODE_ONLY_CAN,
+            new V\Any(array( new V\Classes()
                     , new V\Methods()
                     )),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -198,17 +198,17 @@ class RuleBuilderTest extends \PHPUnit\Framework\TestCase
         $res = $this->parser->parse("only {Classes, Methods in: Classes} can contain text: \"foo\"");
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_ONLY_CAN,
-                    new V\Any(array( new V\Classes()
+            R\Rule::MODE_ONLY_CAN,
+            new V\Any(array( new V\Classes()
                     , new V\WithProperty(
-                            new V\Methods(),
-                            new V\In(),
-                            array(new V\Classes())
-                        )
+                        new V\Methods(),
+                        new V\In(),
+                        array(new V\Classes())
+                    )
                     )),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -218,15 +218,15 @@ class RuleBuilderTest extends \PHPUnit\Framework\TestCase
         $res = $this->parser->parse("Classes with name: \"foo\" must contain text: \"foo\"");
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_MUST,
-                    new V\WithProperty(
+            R\Rule::MODE_MUST,
+            new V\WithProperty(
                         new V\Classes(),
                         new V\Name(),
                         array(new Regexp("foo"))
                     ),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -236,13 +236,13 @@ class RuleBuilderTest extends \PHPUnit\Framework\TestCase
         $res = $this->parser->parse("{Classes,Functions} must contain text: \"foo\"");
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_MUST,
-                    new V\Any(array( new V\Classes()
+            R\Rule::MODE_MUST,
+            new V\Any(array( new V\Classes()
                     , new V\Functions()
                     )),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }

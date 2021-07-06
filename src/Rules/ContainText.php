@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Rules;
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Analysis\Violation;
 use Lechimp\Dicto\Definition\ArgumentParser;
@@ -142,22 +142,22 @@ class ContainText extends Schema
         $start_line = $r->property("start_line");
         $end_line = $r->property("end_line");
         return implode(
-                "\n",
-                array_slice(
+            "\n",
+            array_slice(
                     $r->target()->property("source"),
                     $start_line - 1,
                     $end_line - $start_line
                 )
-            );
+        );
     }
 
     protected function get_source_for_file(Graph\Node $f)
     {
         assert('$f->type() == "file"');
         return implode(
-                "\n",
-                $f->property("source")
-            );
+            "\n",
+            $f->property("source")
+        );
     }
 
     protected function regexp_source_filter(PredicateFactory $f, Regexp $regexp, $negate)

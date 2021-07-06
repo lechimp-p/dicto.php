@@ -10,7 +10,7 @@
 
 namespace Lechimp\Dicto\Variables;
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Graph\PredicateFactory;
 use Lechimp\Dicto\Definition\ArgumentParser;
 

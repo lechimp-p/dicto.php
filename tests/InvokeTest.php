@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Analysis\Violation;
@@ -32,11 +32,11 @@ class InvokeTest extends RuleTest
         $res = $this->parse("Classes cannot invoke: Functions");
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_CANNOT,
-                    new V\Classes(),
-                    new R\Invoke,
-                    array(new V\Functions())
-                )
+            R\Rule::MODE_CANNOT,
+            new V\Classes(),
+            new R\Invoke,
+            array(new V\Functions())
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -69,29 +69,29 @@ CODE;
             ->expects($this->once())
             ->method("_method_reference")
             ->with(
-                    "bar",
-                    "file",
-                    5,
-                    9
-                )
+                "bar",
+                "file",
+                5,
+                9
+            )
             ->willReturn("method_reference");
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_relation")
             ->withConsecutive(
-                    array( "class"
+                array( "class"
                     , "invoke"
                     , "method_reference"
                     , "file"
                     , 5
                     ),
-                    array( "method"
+                array( "method"
                     , "invoke"
                     , "method_reference"
                     , "file"
                     , 5
                     )
-                );
+            );
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $code);
@@ -122,29 +122,29 @@ CODE;
             ->expects($this->once())
             ->method("_function_reference")
             ->with(
-                    "foobar",
-                    "file",
-                    5,
-                    9
-                )
+                "foobar",
+                "file",
+                5,
+                9
+            )
             ->willReturn("function_reference");
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_relation")
             ->withConsecutive(
-                    array( "class"
+                array( "class"
                     , "invoke"
                     , "function_reference"
                     , "file"
                     , 5
                     ),
-                    array( "method"
+                array( "method"
                     , "invoke"
                     , "function_reference"
                     , "file"
                     , 5
                     )
-                );
+            );
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $code);
@@ -175,26 +175,26 @@ CODE;
             ->expects($this->once())
             ->method("_language_construct")
             ->with(
-                    "exit"
-                )
+                "exit"
+            )
             ->willReturn("exit");
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_relation")
             ->withConsecutive(
-                    array( "class"
+                array( "class"
                     , "invoke"
                     , "exit"
                     , "file"
                     , 5
                     ),
-                    array( "method"
+                array( "method"
                     , "invoke"
                     , "exit"
                     , "file"
                     , 5
                     )
-                );
+            );
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $code);
@@ -225,26 +225,26 @@ CODE;
             ->expects($this->once())
             ->method("_language_construct")
             ->with(
-                    "die"
-                )
+                "die"
+            )
             ->willReturn("die");
         $insert_mock
             ->expects($this->exactly(2))
             ->method("_relation")
             ->withConsecutive(
-                    array( "class"
+                array( "class"
                     , "invoke"
                     , "die"
                     , "file"
                     , 5
                     ),
-                    array( "method"
+                array( "method"
                     , "invoke"
                     , "die"
                     , "file"
                     , 5
                     )
-                );
+            );
 
         $indexer = $this->indexer($insert_mock);
         $indexer->index_content("source.php", $code);
@@ -255,21 +255,21 @@ CODE;
     protected function only_a_classes_can_invoke_functions()
     {
         $a_classes = new V\WithProperty(
-                    new V\Classes(),
-                    new V\Name(),
-                    array(new Regexp("A.*"))
-                );
+            new V\Classes(),
+            new V\Name(),
+            array(new Regexp("A.*"))
+        );
         $methods_in_a_classes = new V\WithProperty(
-                    new V\Methods(),
-                    new V\In(),
-                    array($a_classes)
-                );
+            new V\Methods(),
+            new V\In(),
+            array($a_classes)
+        );
         return new R\Rule(
-                R\Rule::MODE_ONLY_CAN,
-                new V\Any(array($a_classes, $methods_in_a_classes)),
-                new R\Invoke(),
-                array(new V\Functions())
-            );
+            R\Rule::MODE_ONLY_CAN,
+            new V\Any(array($a_classes, $methods_in_a_classes)),
+            new R\Invoke(),
+            array(new V\Functions())
+        );
     }
 
     public function test_rule1_no_violation_1()
@@ -321,18 +321,18 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    5,
-                    "        some_function();"
-                )
+            $rule,
+            "source.php",
+            5,
+            "        some_function();"
+        )
 
             , new Violation(
-                    $rule,
-                    "source.php",
-                    5,
-                    "        some_function();"
-                )
+                $rule,
+                "source.php",
+                5,
+                "        some_function();"
+            )
             );
         $this->assertEquals($expected, $violations);
     }
@@ -342,15 +342,15 @@ CODE;
     protected function classes_must_invoke_a_functions()
     {
         return new R\Rule(
-                R\Rule::MODE_MUST,
-                new V\Classes,
-                new R\Invoke(),
-                array(new V\WithProperty(
+            R\Rule::MODE_MUST,
+            new V\Classes,
+            new R\Invoke(),
+            array(new V\WithProperty(
                     new V\Functions(),
                     new V\Name(),
                     array(new Regexp("a_.*"))
                 ))
-            );
+        );
     }
 
     public function test_rule2_no_violation_1()
@@ -387,11 +387,11 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    3,
-                    "class SomeClass {"
-                )
+            $rule,
+            "source.php",
+            3,
+            "class SomeClass {"
+        )
             );
         $this->assertEquals($expected, $violations);
     }
@@ -412,11 +412,11 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    3,
-                    "class SomeClass {"
-                )
+            $rule,
+            "source.php",
+            3,
+            "class SomeClass {"
+        )
             );
         $this->assertEquals($expected, $violations);
     }
@@ -426,14 +426,14 @@ CODE;
     protected function classes_cannot_invoke_exit_or_die()
     {
         return new R\Rule(
-                R\Rule::MODE_CANNOT,
-                new V\Classes,
-                new R\Invoke(),
-                array(new V\Any(
-                [ new V\ExitOrDie()
+            R\Rule::MODE_CANNOT,
+            new V\Classes,
+            new R\Invoke(),
+            array(new V\Any(
+                    [ new V\ExitOrDie()
                 ]
-            ))
-            );
+                ))
+        );
     }
 
     public function test_rule3_no_violation_1()
@@ -470,11 +470,11 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    5,
-                    "        exit(\"foo\");"
-                )
+            $rule,
+            "source.php",
+            5,
+            "        exit(\"foo\");"
+        )
             );
         $this->assertEquals($expected, $violations);
     }
@@ -495,11 +495,11 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    5,
-                    "        die;"
-                )
+            $rule,
+            "source.php",
+            5,
+            "        die;"
+        )
             );
         $this->assertEquals($expected, $violations);
     }
@@ -509,11 +509,11 @@ CODE;
     protected function classes_cannot_invoke_eval()
     {
         return new R\Rule(
-                R\Rule::MODE_CANNOT,
-                new V\Classes,
-                new R\Invoke(),
-                array(new V\Eval_())
-            );
+            R\Rule::MODE_CANNOT,
+            new V\Classes,
+            new R\Invoke(),
+            array(new V\Eval_())
+        );
     }
 
     public function test_rule4_violation_1()
@@ -532,11 +532,11 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    5,
-                    '        eval("echo foo;");'
-                )
+            $rule,
+            "source.php",
+            5,
+            '        eval("echo foo;");'
+        )
             );
         $this->assertEquals($expected, $violations);
     }

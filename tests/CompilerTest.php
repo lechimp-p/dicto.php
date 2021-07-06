@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Definition\AST;
 use Lechimp\Dicto\Definition\Compiler;
 use Lechimp\Dicto\Rules\Ruleset;
@@ -33,7 +33,7 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->f = new AST\Factory();
         $this->compiler = new _Compiler(
-                array( new V\Namespaces()
+            array( new V\Namespaces()
                 , new V\Classes()
                 , new V\Interfaces()
                 , new V\Traits()
@@ -44,12 +44,12 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
                 , new V\ErrorSuppressor()
                 , new V\ExitOrDie()
                 ),
-                array( new R\ContainText()
+            array( new R\ContainText()
                 ),
-                array( new V\Name()
+            array( new V\Name()
                 , new V\In()
                 )
-            );
+        );
     }
 
     public function compile($ast)
@@ -66,12 +66,12 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_variable()
     {
         $res = $this->compile(
-                $this->f->root([ $this->f->assignment(
-                        $this->f->name("AllClasses"),
-                        $this->f->name("Classes")
-                    )
+            $this->f->root([ $this->f->assignment(
+                    $this->f->name("AllClasses"),
+                    $this->f->name("Classes")
+                )
                 ])
-            );
+        );
 
         $expected = array( "AllClasses" => new V\Classes("AllClasses")
             );
@@ -82,12 +82,12 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_error_suppressor()
     {
         $res = $this->compile(
-                $this->f->root([ $this->f->assignment(
-                        $this->f->name("TheErrorSuppressor"),
-                        $this->f->name("ErrorSuppressor")
-                    )
+            $this->f->root([ $this->f->assignment(
+                    $this->f->name("TheErrorSuppressor"),
+                    $this->f->name("ErrorSuppressor")
+                )
                 ])
-            );
+        );
 
         $expected = array( "TheErrorSuppressor" => new V\ErrorSuppressor("TheErrorSuppressor")
             );
@@ -98,12 +98,12 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_interface_variable()
     {
         $res = $this->compile(
-                $this->f->root([ $this->f->assignment(
-                        $this->f->name("AllInterfaces"),
-                        $this->f->name("Interfaces")
-                    )
+            $this->f->root([ $this->f->assignment(
+                    $this->f->name("AllInterfaces"),
+                    $this->f->name("Interfaces")
+                )
                 ])
-            );
+        );
 
         $expected = array( "AllInterfaces" => new V\Interfaces("AllInterfaces")
             );
@@ -114,12 +114,12 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_trait_variable()
     {
         $res = $this->compile(
-                $this->f->root([ $this->f->assignment(
-                        $this->f->name("AllTraits"),
-                        $this->f->name("Traits")
-                    )
+            $this->f->root([ $this->f->assignment(
+                    $this->f->name("AllTraits"),
+                    $this->f->name("Traits")
+                )
                 ])
-            );
+        );
 
         $expected = array( "AllTraits" => new V\Traits("AllTraits")
             );
@@ -130,12 +130,12 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_namespace_variable()
     {
         $res = $this->compile(
-                $this->f->root([ $this->f->assignment(
-                        $this->f->name("AllNamespaces"),
-                        $this->f->name("Namespaces")
-                    )
+            $this->f->root([ $this->f->assignment(
+                    $this->f->name("AllNamespaces"),
+                    $this->f->name("Namespaces")
+                )
                 ])
-            );
+        );
 
         $expected = array( "AllNamespaces" => new V\Namespaces("AllNamespaces")
             );
@@ -147,7 +147,7 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->compiler->_add_predefined_variables();
         $res = $this->compiler->_compile_definition(
-                $this->f->property(
+            $this->f->property(
                     $this->f->name("Classes"),
                     $this->f->atom("in"),
                     [ $this->f->property(
@@ -156,18 +156,18 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
                         [ $this->f->string_value("foo.*") ]
                     )]
                 )
-            );
+        );
 
         $expected = new V\WithProperty(
-                new V\Classes,
-                new V\In,
-                array( new V\WithProperty(
-                        new V\Namespaces,
-                        new V\Name,
-                        array(new Regexp("foo.*"))
-                    )
+            new V\Classes,
+            new V\In,
+            array( new V\WithProperty(
+                    new V\Namespaces,
+                    new V\Name,
+                    array(new Regexp("foo.*"))
                 )
-            );
+                )
+        );
 
         $this->assertEquals($expected, $res);
     }
@@ -176,7 +176,7 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->compiler->_add_predefined_variables();
         $res = $this->compiler->_compile_definition(
-                $this->f->property(
+            $this->f->property(
                     $this->f->property(
                         $this->f->name("Classes"),
                         $this->f->atom("in"),
@@ -185,17 +185,17 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
                     $this->f->atom("with name"),
                     [ $this->f->string_value("foo.*") ]
                 )
-            );
+        );
 
         $expected = new V\WithProperty(
-                new V\WithProperty(
+            new V\WithProperty(
                     new V\Classes,
                     new V\In,
                     array(new V\Namespaces)
                 ),
-                new V\Name,
-                array(new Regexp("foo.*"))
-            );
+            new V\Name,
+            array(new Regexp("foo.*"))
+        );
 
         $this->assertEquals($expected, $res);
     }
@@ -203,16 +203,16 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_variables()
     {
         $res = $this->compile(
-                $this->f->root([$this->f->assignment(
-                        $this->f->name("AllClasses"),
-                        $this->f->name("Classes")
-                    )
+            $this->f->root([$this->f->assignment(
+                    $this->f->name("AllClasses"),
+                    $this->f->name("Classes")
+                )
                 , $this->f->assignment(
-                        $this->f->name("AllFunctions"),
-                        $this->f->name("Functions")
-                    )
+                    $this->f->name("AllFunctions"),
+                    $this->f->name("Functions")
+                )
                 ])
-            );
+        );
 
         $expected = array( "AllClasses" => new V\Classes("AllClasses")
             , "AllFunctions" => new V\Functions("AllFunctions")
@@ -225,8 +225,8 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->compiler->_add_predefined_variables();
         $res = $this->compiler->_compile_definition(
-                $this->f->any([$this->f->name("Classes")])
-            );
+            $this->f->any([$this->f->name("Classes")])
+        );
 
         $expected = new V\Classes();
         $this->assertEquals($expected, $res);
@@ -236,10 +236,10 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->compiler->_add_predefined_variables();
         $res = $this->compiler->_compile_definition(
-                $this->f->any([$this->f->name("Classes")
+            $this->f->any([$this->f->name("Classes")
                 , $this->f->name("Functions")
                 ])
-            );
+        );
 
         $expected = new V\Any(array( new V\Classes()
             , new V\Functions()
@@ -251,16 +251,16 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->compiler->_add_predefined_variables();
         $res = $this->compiler->_compile_definition(
-                $this->f->except(
+            $this->f->except(
                     $this->f->name("Classes"),
                     $this->f->name("Functions")
                 )
-            );
+        );
 
         $expected = new V\Except(
-                new V\Classes(),
-                new V\Functions()
-            );
+            new V\Classes(),
+            new V\Functions()
+        );
         $this->assertEquals($expected, $res);
     }
 
@@ -268,26 +268,26 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->compiler->_add_predefined_variables();
         $res = $this->compiler->_compile_definition(
-                $this->f->except(
+            $this->f->except(
                     $this->f->any([$this->f->except(
-                            $this->f->name("Classes"),
-                            $this->f->name("Functions")
-                        )
+                        $this->f->name("Classes"),
+                        $this->f->name("Functions")
+                    )
                     , $this->f->name("Methods")
                     ]),
                     $this->f->name("Globals")
                 )
-            );
+        );
 
         $expected = new V\Except(
-                new V\Any(array( new V\Except(
-                        new V\Classes(),
-                        new V\Functions()
-                    )
+            new V\Any(array( new V\Except(
+                    new V\Classes(),
+                    new V\Functions()
+                )
                 , new V\Methods()
                 )),
-                new V\Globals()
-            );
+            new V\Globals()
+        );
         $this->assertEquals($expected, $res);
     }
 
@@ -295,40 +295,40 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->compiler->_add_predefined_variables();
         $res = $this->compiler->_compile_definition(
-                $this->f->property(
+            $this->f->property(
                     $this->f->name("Classes"),
                     $this->f->atom("with name"),
                     [$this->f->string_value("foo")]
                 )
-            );
+        );
 
         $expected = new V\WithProperty(
-                new V\Classes(),
-                new V\Name,
-                array(new Regexp("foo"))
-            );
+            new V\Classes(),
+            new V\Name,
+            array(new Regexp("foo"))
+        );
         $this->assertEquals($expected, $res);
     }
 
     public function test_with_name_assignment()
     {
         $res = $this->compile(
-                $this->f->root([$this->f->assignment(
-                        $this->f->name("Foo"),
-                        $this->f->property(
+            $this->f->root([$this->f->assignment(
+                    $this->f->name("Foo"),
+                    $this->f->property(
                             $this->f->name("Classes"),
                             $this->f->atom("with name"),
                             [$this->f->string_value("foo")]
                         )
-                    )
+                )
                 ])
-            );
+        );
 
         $expected = array( "Foo" => (new V\WithProperty(
-                    new V\Classes(),
-                    new V\Name,
-                    array(new Regexp("foo"))
-                ))
+            new V\Classes(),
+            new V\Name,
+            array(new Regexp("foo"))
+        ))
                 ->withName("Foo")
             );
         $this->assertEquals($expected, $res->variables());
@@ -338,18 +338,18 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->compiler->_add_predefined_variables();
         $res = $this->compiler->_compile_definition(
-                $this->f->property(
+            $this->f->property(
                     $this->f->name("Methods"),
                     $this->f->atom("in"),
                     [$this->f->name("Classes")]
                 )
-            );
+        );
 
         $expected = new V\WithProperty(
-                new V\Methods(),
-                new V\In,
-                array(new V\Classes())
-            );
+            new V\Methods(),
+            new V\In,
+            array(new V\Classes())
+        );
         $this->assertEquals($expected, $res);
     }
 
@@ -357,8 +357,8 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     {
         $this->compiler->_add_predefined_variables();
         $res = $this->compiler->_compile_definition(
-                $this->f->name("ExitOrDie")
-            );
+            $this->f->name("ExitOrDie")
+        );
 
         $expected = new V\ExitOrDie();
         $this->assertEquals($expected, $res);
@@ -367,23 +367,23 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_classes_cannot_contain_text()
     {
         $res = $this->compile(
-                $this->f->root([$this->f->rule(
-                        $this->f->cannot(),
-                        $this->f->property(
+            $this->f->root([$this->f->rule(
+                    $this->f->cannot(),
+                    $this->f->property(
                             $this->f->name("Classes"),
                             $this->f->atom("contain text"),
                             [$this->f->string_value("foo")]
                         )
-                    )
+                )
                 ])
-            );
+        );
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_CANNOT,
-                    new V\Classes(),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            R\Rule::MODE_CANNOT,
+            new V\Classes(),
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -391,23 +391,23 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_classes_must_contain_text()
     {
         $res = $this->compile(
-                $this->f->root([$this->f->rule(
-                        $this->f->must(),
-                        $this->f->property(
+            $this->f->root([$this->f->rule(
+                    $this->f->must(),
+                    $this->f->property(
                             $this->f->name("Classes"),
                             $this->f->atom("contain text"),
                             [$this->f->string_value("foo")]
                         )
-                    )
+                )
                 ])
-            );
+        );
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_MUST,
-                    new V\Classes(),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            R\Rule::MODE_MUST,
+            new V\Classes(),
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -415,23 +415,23 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_only_classes_can_contain_text()
     {
         $res = $this->compile(
-                $this->f->root([$this->f->rule(
-                        $this->f->only_X_can(),
-                        $this->f->property(
+            $this->f->root([$this->f->rule(
+                    $this->f->only_X_can(),
+                    $this->f->property(
                             $this->f->name("Classes"),
                             $this->f->atom("contain text"),
                             [$this->f->string_value("foo")]
                         )
-                    )
+                )
                 ])
-            );
+        );
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_ONLY_CAN,
-                    new V\Classes(),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            R\Rule::MODE_ONLY_CAN,
+            new V\Classes(),
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -439,27 +439,27 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_only_classes_and_methods_can_contain_text()
     {
         $res = $this->compile(
-                $this->f->root([$this->f->rule(
-                        $this->f->only_X_can(),
-                        $this->f->property(
+            $this->f->root([$this->f->rule(
+                    $this->f->only_X_can(),
+                    $this->f->property(
                             $this->f->any([$this->f->name("Classes")
                             , $this->f->name("Methods")
                             ]),
                             $this->f->atom("contain text"),
                             [$this->f->string_value("foo")]
                         )
-                    )
+                )
                 ])
-            );
+        );
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_ONLY_CAN,
-                    new V\Any(array( new V\Classes()
+            R\Rule::MODE_ONLY_CAN,
+            new V\Any(array( new V\Classes()
                     , new V\Methods()
                     )),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -467,35 +467,35 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_only_classes_and_methods_in_classes_can_contain_text()
     {
         $res = $this->compile(
-                $this->f->root([$this->f->rule(
-                        $this->f->only_X_can(),
-                        $this->f->property(
+            $this->f->root([$this->f->rule(
+                    $this->f->only_X_can(),
+                    $this->f->property(
                             $this->f->any([$this->f->name("Classes")
                             , $this->f->property(
-                                    $this->f->name("Methods"),
-                                    $this->f->atom("in"),
-                                    [$this->f->name("Classes")]
-                                )
+                                $this->f->name("Methods"),
+                                $this->f->atom("in"),
+                                [$this->f->name("Classes")]
+                            )
                             ]),
                             $this->f->atom("contain text"),
                             [$this->f->string_value("foo")]
                         )
-                    )
+                )
                 ])
-            );
+        );
 
         $expected = array( new R\Rule(
-                    R\Rule::MODE_ONLY_CAN,
-                    new V\Any(array( new V\Classes()
+            R\Rule::MODE_ONLY_CAN,
+            new V\Any(array( new V\Classes()
                     , new V\WithProperty(
-                            new V\Methods(),
-                            new V\In(),
-                            array(new V\Classes())
-                        )
+                        new V\Methods(),
+                        new V\In(),
+                        array(new V\Classes())
+                    )
                     )),
-                    new R\ContainText,
-                    array(new Regexp("foo"))
-                )
+            new R\ContainText,
+            array(new Regexp("foo"))
+        )
             );
         $this->assertEquals($expected, $res->rules());
     }
@@ -503,13 +503,13 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_explain_variables()
     {
         $res = $this->compile(
-                $this->f->root([$this->f->explanation("Explanation")
+            $this->f->root([$this->f->explanation("Explanation")
                 , $this->f->assignment(
-                        $this->f->name("AllClasses"),
-                        $this->f->name("Classes")
-                    )
+                    $this->f->name("AllClasses"),
+                    $this->f->name("Classes")
+                )
                 ])
-            );
+        );
 
         $res = $res->variables()["AllClasses"];
         $this->assertInstanceOf(V\Classes::class, $res);
@@ -519,17 +519,17 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_explain_rules()
     {
         $res = $this->compile(
-                $this->f->root([$this->f->explanation("Explanation")
+            $this->f->root([$this->f->explanation("Explanation")
                 , $this->f->rule(
-                        $this->f->cannot(),
-                        $this->f->property(
+                    $this->f->cannot(),
+                    $this->f->property(
                             $this->f->name("Classes"),
                             $this->f->atom("contain text"),
                             [$this->f->string_value("name")]
                         )
-                    )
+                )
                 ])
-            );
+        );
 
         $res = $res->rules()[0];
         $this->assertInstanceOf(R\Rule::class, $res);
@@ -539,17 +539,17 @@ class CompilerTest extends \PHPUnit\Framework\TestCase
     public function test_no_double_explanation()
     {
         $res = $this->compile(
-                $this->f->root([$this->f->explanation("Explanation")
+            $this->f->root([$this->f->explanation("Explanation")
                 , $this->f->assignment(
-                        $this->f->name("AllClasses"),
-                        $this->f->name("Classes")
-                    )
+                    $this->f->name("AllClasses"),
+                    $this->f->name("Classes")
+                )
                 , $this->f->assignment(
-                        $this->f->name("AllFunctions"),
-                        $this->f->name("Functions")
-                    )
+                    $this->f->name("AllFunctions"),
+                    $this->f->name("Functions")
+                )
                 ])
-            );
+        );
 
         $res = $res->variables()["AllFunctions"];
         $this->assertInstanceOf(V\Functions::class, $res);

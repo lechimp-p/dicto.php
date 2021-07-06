@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Analysis\Analyzer;
 use Lechimp\Dicto\Analysis\Index;
 use Lechimp\Dicto\Graph\PredicateFactory;
@@ -64,17 +64,17 @@ class AnalyzerTest extends \PHPUnit\Framework\TestCase
     public function test_logging()
     {
         $rule1 = new R\Rule(
-                R\Rule::MODE_CANNOT,
-                new V\Classes("allClasses"),
-                new R\ContainText(),
-                array(new Regexp("foo"))
-            );
+            R\Rule::MODE_CANNOT,
+            new V\Classes("allClasses"),
+            new R\ContainText(),
+            array(new Regexp("foo"))
+        );
         $rule2 = new R\Rule(
-                R\Rule::MODE_CANNOT,
-                new V\Functions("allFunctions"),
-                new R\DependOn(),
-                array(new V\Methods("allMethods"))
-            );
+            R\Rule::MODE_CANNOT,
+            new V\Functions("allFunctions"),
+            new R\DependOn(),
+            array(new V\Methods("allMethods"))
+        );
         $vars = array_merge($rule1->variables(), $rule2->variables());
 
         $ruleset = new R\Ruleset($vars, array($rule1, $rule2));

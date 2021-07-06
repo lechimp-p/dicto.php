@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Rules;
 use Lechimp\Dicto\Variables as Vars;
 
@@ -66,10 +66,10 @@ class ExplainTest extends \PHPUnit\Framework\TestCase
         foreach ($base as $b) {
             $explainable[] = array($b);
             $explainable[] = array( new Vars\WithProperty(
-                        $b,
-                        new Vars\Name(),
-                        array(new Regexp("the_name"))
-                    )
+                $b,
+                new Vars\Name(),
+                array(new Regexp("the_name"))
+            )
                 );
             foreach ($base as $b2) {
                 $explainable[] = array((new Vars\Any(array($b, $b2)))
@@ -80,25 +80,25 @@ class ExplainTest extends \PHPUnit\Framework\TestCase
         }
 
         $explainable[] = array( new Rules\Rule(
-                    Rules\Rule::MODE_CANNOT,
-                    new Vars\Classes("CLASSES"),
-                    new Rules\ContainText(),
-                    array(new Regexp("foo"))
-                )
+            Rules\Rule::MODE_CANNOT,
+            new Vars\Classes("CLASSES"),
+            new Rules\ContainText(),
+            array(new Regexp("foo"))
+        )
             );
         $explainable[] = array( new Rules\Rule(
-                    Rules\Rule::MODE_ONLY_CAN,
-                    new Vars\Functions("FUNCTIONS"),
-                    new Rules\DependOn(),
-                    array(new Vars\Methods("METHODS"))
-                )
+            Rules\Rule::MODE_ONLY_CAN,
+            new Vars\Functions("FUNCTIONS"),
+            new Rules\DependOn(),
+            array(new Vars\Methods("METHODS"))
+        )
             );
         $explainable[] = array( new Rules\Rule(
-                    Rules\Rule::MODE_ONLY_CAN,
-                    new Vars\Globals("GLOBALS"),
-                    new Rules\Invoke(),
-                    array(new Vars\ErrorSuppressor("ERROR_SUPPRESSOR"))
-                )
+            Rules\Rule::MODE_ONLY_CAN,
+            new Vars\Globals("GLOBALS"),
+            new Rules\Invoke(),
+            array(new Vars\ErrorSuppressor("ERROR_SUPPRESSOR"))
+        )
             );
 
         return $explainable;

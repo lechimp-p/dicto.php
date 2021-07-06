@@ -8,7 +8,7 @@
  * a copy of the license along with the code.
  */
 
-use Lechimp\Dicto\Regexp;
+use Lechimp\Regexp\Regexp;
 use Lechimp\Dicto\Rules as R;
 use Lechimp\Dicto\Variables as V;
 use Lechimp\Dicto\Analysis\Violation;
@@ -30,16 +30,16 @@ class ContainTextTest extends RuleTest
     protected function a_classes_must_contain_text_foo()
     {
         $a_classes = new V\WithProperty(
-                    new V\Classes(),
-                    new V\Name(),
-                    array(new Regexp("A.*"))
-                );
+            new V\Classes(),
+            new V\Name(),
+            array(new Regexp("A.*"))
+        );
         return new R\Rule(
-                R\Rule::MODE_MUST,
-                $a_classes,
-                new R\ContainText(),
-                array(new Regexp("foo"))
-            );
+            R\Rule::MODE_MUST,
+            $a_classes,
+            new R\ContainText(),
+            array(new Regexp("foo"))
+        );
     }
 
     public function test_rule1_no_violation_1()
@@ -91,11 +91,11 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    3,
-                    "class AClass {"
-                )
+            $rule,
+            "source.php",
+            3,
+            "class AClass {"
+        )
             );
         $this->assertEquals($expected, $violations);
     }
@@ -105,16 +105,16 @@ CODE;
     protected function a_classes_cannot_contain_text_foo()
     {
         $a_classes = new V\WithProperty(
-                    new V\Classes(),
-                    new V\Name(),
-                    array(new Regexp("A.*"))
-                );
+            new V\Classes(),
+            new V\Name(),
+            array(new Regexp("A.*"))
+        );
         return new R\Rule(
-                R\Rule::MODE_CANNOT,
-                $a_classes,
-                new R\ContainText(),
-                array(new Regexp("foo"))
-            );
+            R\Rule::MODE_CANNOT,
+            $a_classes,
+            new R\ContainText(),
+            array(new Regexp("foo"))
+        );
     }
 
     public function test_rule2_no_violation_1()
@@ -189,11 +189,11 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    5,
-                    "        global \$foo;"
-                )
+            $rule,
+            "source.php",
+            5,
+            "        global \$foo;"
+        )
             );
         $this->assertEquals($expected, $violations);
     }
@@ -203,11 +203,11 @@ CODE;
     protected function files_cannot_contain_text_foo()
     {
         return new R\Rule(
-                R\Rule::MODE_CANNOT,
-                new V\Files(),
-                new R\ContainText(),
-                array(new Regexp("foo"))
-            );
+            R\Rule::MODE_CANNOT,
+            new V\Files(),
+            new R\ContainText(),
+            array(new Regexp("foo"))
+        );
     }
 
     public function test_rule3_no_violation_1()
@@ -261,11 +261,11 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    5,
-                    "        global \$foo;"
-                )
+            $rule,
+            "source.php",
+            5,
+            "        global \$foo;"
+        )
             );
         $this->assertEquals($expected, $violations);
     }
@@ -279,11 +279,11 @@ CODE;
 
         $violations = $this->analyze($rule, $code);
         $expected = array( new Violation(
-                    $rule,
-                    "source.php",
-                    1,
-                    "foo"
-                )
+            $rule,
+            "source.php",
+            1,
+            "foo"
+        )
             );
         $this->assertEquals($expected, $violations);
     }
